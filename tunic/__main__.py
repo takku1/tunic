@@ -13,6 +13,7 @@ from .render import render_context
 from .ollama import Ollama
 from .continuation import compare_continuation
 from .benchmark import run_benchmark, run_memory_suite
+from .eval import run_agent_suite
 
 
 def main(argv=None):
@@ -71,9 +72,15 @@ def main(argv=None):
     benchmark.add_argument("--answer-tokens", type=int, default=768)
     benchmark.add_argument("--check", action="store_true", help="fail on core regression or infrastructure failure; known gaps remain reported")
     benchmark.add_argument("--memory", action="store_true", help="run the held-out memory recall evaluation instead of the W1 suite")
+    benchmark.add_argument("--agent", action="store_true", help="run the held-out agent evaluation (none vs lexical vs tunic) instead of the W1 suite")
     args = parser.parse_args(argv)
     try:
         if args.command == "benchmark":
+            if args.agent:
+                result = run_agent_suite(args.suite)
+                print(json.dumps(result, ensure_ascii=True, sort_keys=True, indent=2))
+                tunic = result["conditions"]["tunic"]
+                return 0 if tunic["passed"] == tunic["total"] else 2
             if args.memory:
                 result = run_memory_suite(args.suite, top_k=args.top_k)
                 print(json.dumps(result, ensure_ascii=True, sort_keys=True, indent=2))

@@ -11,6 +11,25 @@ def _tokens(text):
     return re.findall(r"[a-z_][a-z_0-9]*", text.lower())
 
 
+def _rank(documents, lengths, average_length, frequency, terms, skip, top_k):
+    """Shared BM25 scorer; skip excludes one symbol (the query itself)."""
+    count = len(documents)
+    ranking = []
+    for doc, length in zip(documents, lengths):
+        if doc["symbol"] == skip:
+            continue
+        score = 0.0
+        for token in terms:
+            occurrences = doc["tokens"][token]
+            if not occurrences:
+                continue
+            idf = math.log(1 + (count - frequency[token] + 0.5) / (frequency[token] + 0.5))
+            score += idf * occurrences * 2.2 / (occurrences + 1.2 * (0.25 + 0.75 * length / average_length))
+        if score > 0:
+            ranking.append({"symbol": doc["symbol"], "score": score, "is_test": doc["is_test"]})
+    return sorted(ranking, key=lambda d: (-d["score"], d["symbol"]))[:top_k]
+
+
 class BM25:
     """Function chunks plus module-level imports, indexed without graph edges."""
     def __init__(self, root):
@@ -61,21 +80,17 @@ class BM25:
         if not separator:
             raise ValueError("query requires an exact path::function")
         query = set(_tokens(Path(path).stem + " " + function.split(".")[-1]))
-        count = len(self.documents)
-        ranking = []
-        for doc,length in zip(self.documents, self.lengths):
-            if doc["symbol"] == symbol:
-                continue
-            score = 0.0
-            for token in query:
-                frequency = doc["tokens"][token]
-                if not frequency:
-                    continue
-                idf = math.log(1+(count-self.frequency[token]+0.5)/(self.frequency[token]+0.5))
-                score += idf * frequency * 2.2/(frequency + 1.2*(0.25+0.75*length/self.average_length))
-            if score > 0:
-                ranking.append({"symbol": doc["symbol"], "score": score, "is_test": doc["is_test"]})
-        return sorted(ranking, key=lambda d:(-d["score"], d["symbol"]))[:top_k]
+        return _rank(self.documents, self.lengths, self.average_length,
+                     self.frequency, query, symbol, top_k)
+
+    def search_text(self, query, *, top_k=5):
+        """Rank chunks against free task text; the lexical discovery stage."""
+        if type(top_k) is not int or top_k < 1:
+            raise ValueError("top_k must be positive")
+        if not isinstance(query, str) or not query.strip():
+            raise ValueError("query must be a non-empty string")
+        return _rank(self.documents, self.lengths, self.average_length,
+                     self.frequency, set(_tokens(query)), None, top_k)
 
 
 def direct_callers(store, symbol, snapshot):

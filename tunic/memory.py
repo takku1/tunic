@@ -12,6 +12,7 @@ import json
 from pathlib import Path
 
 from . import compiler
+from .baselines import BM25
 from .extract import CLAIM_RELATIONS, is_iso_date
 from .store import GraphStore
 
@@ -73,15 +74,19 @@ class Memory:
     def draft(self, document, **kwargs):
         return compiler.compile_drafts(self.store, document, **kwargs)
 
-    def answer(self, task, *, snapshot=None, limit=3):
+    def answer(self, task, *, snapshot=None, limit=3, mode="hybrid"):
         """Task-based retrieval without an exact symbol.
 
         Links bare names in the task to code entities the same way document
-        mentions do, then merges the cross-source evidence per candidate.
-        Exact keys outrank bare names; nothing is asserted or traversed
-        beyond what the compiler already proves.
+        mentions do, then adds a lexical discovery stage over the indexed
+        chunks for tasks that name no symbol. Exact keys outrank bare names,
+        which outrank lexical candidates; nothing is asserted or traversed
+        beyond what the compiler already proves. Lexical hits are discovery
+        only: they select candidates, never graph edges.
         """
         import re
+        if mode not in ("graph", "hybrid"):
+            raise ValueError("mode must be 'graph' or 'hybrid'")
         snapshot, view = self.store.view(snapshot)
         code = [(s["key"], s["name"].split(".")[-1])
                 for s in view["symbols"] if not s["key"].endswith("::document")]
@@ -92,6 +97,9 @@ class Memory:
             elif len(leaf) >= 2 and re.search(r"\b" + re.escape(leaf) + r"\b", task,
                                               flags=re.IGNORECASE):
                 scored.setdefault(key, (1, "name"))
+        if mode == "hybrid":
+            for hit in BM25(self.root).search_text(task, top_k=limit):
+                scored.setdefault(hit["symbol"], (0.5, "lexical"))
         top = sorted(scored, key=lambda key: (-scored[key][0], key))[:max(limit, 0)]
         impacts = {}
         mentions = []

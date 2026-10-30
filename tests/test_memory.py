@@ -58,9 +58,17 @@ class MemoryTests(unittest.TestCase):
         memory.ingest()
         result = memory.answer("Which functions break if calculate changes?")
         self.assertEqual(result["outcome"], "complete")
-        self.assertEqual([c["symbol"] for c in result["candidates"]], ["core.py::calculate"])
+        self.assertEqual([c["symbol"] for c in result["candidates"]],
+                         ["core.py::calculate", "service.py::process"])
         self.assertEqual(result["candidates"][0]["match"], "name")
+        self.assertEqual(result["candidates"][1]["match"], "lexical")
         self.assertIn("service.py::process", [i["symbol"] for i in result["impacts"]])
+        graph_only = memory.answer("Which functions break if calculate changes?",
+                                   mode="graph")
+        self.assertEqual([c["symbol"] for c in graph_only["candidates"]],
+                         ["core.py::calculate"])
+        with self.assertRaises(ValueError):
+            memory.answer("Which functions break if calculate changes?", mode="semantic")
         empty = memory.answer("How do I bake bread?")
         self.assertEqual(empty["outcome"], "empty")
         self.assertEqual(empty["candidates"], [])
