@@ -365,6 +365,26 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(len(claims["claims"]), 1)
         self.assertIsNone(claims["claims"][0]["effective"])
 
+    def test_recorded_outcome_changes_later_retrieval(self):
+        self.write("notes.md", "# Session 2026-10-30\n\nInvestigating `core.py::calculate` impact. The process helper needs review.\n")
+        self.store.ingest(self.root)
+        first = compile_related(self.store, "core.py::calculate")
+        self.assertEqual(first["claims"]["claims"], [])
+        self.assertTrue(any(m["status"] == "syntactic_observation" for m in first["mentions"]["mentions"]))
+        self.write("outcome.md", "# Outcome 2026-10-30\n\nVerified: changing calculate requires updating the service layer.\n\n```tunic-claims\n"
+                 + '[{"rel": "depends_on", "subject": "service.py::process", "object": "core.py::calculate", '
+                 + '"effective": "2026-10-30", "authority": "verified-outcome"}]\n```\n')
+        self.store.ingest(self.root)
+        second = compile_related(self.store, "core.py::calculate")
+        self.assertNotEqual(first["snapshot"], second["snapshot"])
+        depends = [c for c in second["claims"]["claims"]
+                   if c["relation"] == "depends_on" and c["status"] == "asserted_in_source"]
+        self.assertEqual(len(depends), 1)
+        self.assertEqual(depends[0]["authority"], "verified-outcome")
+        self.assertEqual(depends[0]["effective"], "2026-10-30")
+        line = compile_timeline(self.store, "core.py::calculate", at="2026-12-01")
+        self.assertTrue(any(e["relation"] == "depends_on" for e in line["entries"]))
+
     def test_shadowing_dynamic_scopes_and_parse_errors(self):
         self.write("shadow.py", "from core import calculate\ndef wrong(calculate):\n    return calculate(9)\n")
         self.write("broken.py", "def bad(:\n")
