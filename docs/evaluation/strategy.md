@@ -1,6 +1,6 @@
 # Tunic evaluation and research plan
 
-Status: proposed experiments. No baseline measurements have been collected.
+Status: proposed comparative experiments. No V/G/T baseline measurements have been collected. Separate [local continuation smoke results](continuation-results.md) record integration checks and exploratory model traces.
 
 The [three-workload protocol](workloads.md) specifies the next comparison: conventional vector RAG, graph retrieval, and Tunic's graph-plus-typed-compiler path. It owns workload definitions and arm controls; this document supplies broader evaluation guidance.
 
@@ -45,7 +45,7 @@ Use paired queries and fixed replay traces. Report uncertainty across runs and q
 
 Numeric acceptance thresholds remain unset until the workload and deployment budget are known. Do not invent a speedup target from published headline results.
 
-The optional runtime-controller track has its own [factorial experiment protocol](../research/runtime-memory.md#measurable-experiments): retrieval timing crossed with exact cache use, then bounded prefetch or separately evaluated model changes. It does not replace the V/G/T comparison. Shared/model-backed runs must also execute the [security acceptance cases](../architecture/security.md#required-tests-before-a-shared-or-model-backed-runtime); all remain unexecuted.
+The optional runtime-controller track has its own [factorial experiment protocol](../research/runtime-memory.md#measurable-experiments): retrieval timing crossed with exact cache use, then bounded prefetch or separately evaluated model changes. It does not replace the V/G/T comparison. [Local continuation checks](continuation-results.md) cover a small trusted single-principal path. The full [security acceptance cases](../architecture/security.md#required-tests-before-a-shared-or-model-backed-runtime), controlled cache ablations and independent quality evaluation remain outstanding.
 
 ## Follow-up literature work
 

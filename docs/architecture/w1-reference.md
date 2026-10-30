@@ -6,7 +6,7 @@ Status: implementation profile for the first bounded vertical slice. It does not
 
 `tunic/extract.py` captures Python source and static observations without executing repository code. `tunic/store.py` owns immutable SQLite source versions and atomically published full-rebuild snapshots. `tunic/compiler.py` owns reverse-call traversal, evidence-path compilation, and mechanical artifact validation. `tunic/__main__.py` exposes those operations as a CLI.
 
-This profile uses only Python's standard library. It accepts one local trusted repository per database and one explicit Python source root per snapshot. No multi-user access boundary, valid-time history, inference engine, vectors, language model, or runtime cache is implemented. Snapshot history is transaction history, not real-world valid time. Retained source bytes are intentional local history; erasure is not implemented.
+This profile uses only Python's standard library. It accepts one local trusted repository per database and one explicit Python source root per snapshot. The graph profile itself implements no multi-user access boundary, valid-time history, inference engine, vectors, language model or runtime cache. A separate [continuation profile](continuation-reference.md) now renders its IR for local model execution. Snapshot history is transaction history, not real-world valid time. Retained source bytes are intentional local history; erasure is not implemented.
 
 ## Concrete semantics and choices
 
@@ -19,7 +19,7 @@ This profile uses only Python's standard library. It accepts one local trusted r
 
 ## Delivery and acceptance
 
-The selected write set is `tunic/`, `tests/`, `examples/`, architecture/status documentation, `README.md`, `pyproject.toml`, and `.gitignore`. No existing code or migration is required. Python/SQLite are reversible reference choices; other storage, richer resolution, and runtime lowering remain deferred.
+The selected write set is `tunic/`, `tests/`, `examples/`, architecture/status documentation, `README.md`, `pyproject.toml`, and `.gitignore`. No existing code or migration is required. Python/SQLite are reversible reference choices; other storage and richer resolution remain deferred. Model lowering is a separate bounded continuation increment.
 
 Acceptance checks: independently expected cross-file/alias paths and misleading text exclusion; exact UTF-8 evidence; uncertainty for dynamic/shadowed calls; deterministic repeated ingestion and compilation; persistence across reopen; additions/edits/deletions versus fresh full recomputation; bounded traversal/cycles; rejection of corrupt/stale artifacts; interrupted publication rollback; real CLI ingestion/query/validation. Tests and observed results are recorded after execution. No performance superiority is assumed.
 

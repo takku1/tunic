@@ -1,6 +1,6 @@
 # Evidence and runtime security boundaries
 
-Status: proposed requirements for model-backed or shared deployments. The current [W1 reference](w1-reference.md) is local and single-principal, retains source history, has no model/tools/cache bridge, and does not implement tenant isolation, revocation, erasure, hostile-input resource isolation, or these runtime defenses. This document owns security boundaries; [research](../research/runtime-memory.md#security-assessment) records evidence and limits.
+Status: proposed requirements for model-backed or shared deployments. The current [W1 reference](w1-reference.md) is local and single-principal, retains source history. The separate [local continuation profile](continuation-reference.md) implements trusted template framing, model/profile checks, bounds and a mechanical output-support gate, but has no tool executor or tenant isolation, revocation, erasure, hostile-input process isolation or custom cache bridge. This document owns security boundaries; [research](../research/runtime-memory.md#security-assessment) records evidence and limits.
 
 ## Threat model and limits
 
@@ -35,7 +35,7 @@ Use scoped audit records for authorization, producer, source/snapshot identity, 
 
 ## Required tests before a shared or model-backed runtime
 
-These tests are planned, not executed by the current W1 implementation:
+The full cases below remain planned. Local protocol tests cover template literalization, model/profile drift, stream/budget failures, snapshot changes and unsupported answer rejection; they do not establish model-level injection resistance, shared-cache isolation or authorization. See [executed scope](../evaluation/continuation-results.md).
 
 - Benign and malicious evidence in upfront, reactive and prefetched arms; include natural-language instructions without control tokens, spoofed roles, copied provenance and poisoned high-degree nodes. Report attack success and clean-task/over-refusal regressions separately.
 - Template/tokenizer checks showing that evidence cannot create structural roles, tool metadata or unapproved control IDs; preserve exact source-to-render mappings. Test multilingual/encoded/split-marker variants against the actual backend, without treating passing cases as a semantic guarantee.

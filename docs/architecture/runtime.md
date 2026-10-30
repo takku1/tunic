@@ -1,8 +1,8 @@
 # Tunic lowering and runtime contract
 
-Status: proposed contract. No model/runtime/backend has been selected or integrated. This document owns model-specific input and execution-state semantics; [context IR](context-ir.md) owns model-independent evidence semantics.
+Status: target contract. A bounded [Ollama continuation profile](continuation-reference.md) implements faithful raw-prompt rendering, backend-counted budgets and explicit generation segments for pinned local models. Full cache/backend contracts remain unfinished. This document owns model-specific input and execution-state semantics; [context IR](context-ir.md) owns model-independent evidence semantics.
 
-The optional [runtime memory controller](runtime-memory.md) owns retrieval/attachment scheduling at supported boundaries; the [security contract](security.md) owns authorization, framing, producer and isolation requirements. Neither extension is implemented. Their [research assessment](../research/runtime-memory.md) distinguishes active retrieval, exact reuse, approximate fusion and trained memory.
+The optional [runtime memory controller](runtime-memory.md) owns retrieval/attachment scheduling at supported boundaries; the [security contract](security.md) owns authorization, framing, producer and isolation requirements. The local continuation profile implements part of scheduling/framing; prefetch and shared-runtime security remain unimplemented. Their [research assessment](../research/runtime-memory.md) distinguishes active retrieval, exact reuse, approximate fusion and trained memory.
 
 ## Lowering boundary
 
@@ -32,4 +32,4 @@ A hosted provider without a KV interface receives supported messages and retains
 
 ## Acceptance
 
-Planned checks compare compatible cache reuse with full prefill under declared numerical tolerances; exercise changed prefix/model/adapters/template/masks, partial blocks, eviction/restart, corrupt transfer, and revocation; and lower one IR to two pinned profiles with independent identities. No Tunic runtime checks have run. The [workload protocol](../evaluation/workloads.md) controls benchmark arms; the [strategy](../evaluation/strategy.md) controls general measurement rules.
+Planned checks compare compatible cache reuse with full prefill under declared numerical tolerances; exercise changed prefix/model/adapters/template/masks, partial blocks, eviction/restart, corrupt transfer, and revocation; and lower one IR to two pinned profiles with independent identities. Local adapter checks and model traces are recorded in [continuation results](../evaluation/continuation-results.md); exact-cache equivalence, transport, revocation and general model portability checks remain unexecuted. The [workload protocol](../evaluation/workloads.md) controls benchmark arms; the [strategy](../evaluation/strategy.md) controls general measurement rules.

@@ -1,6 +1,6 @@
 # Tunic documentation
 
-Tunic is an evidence and context substrate under development: semantic graph, context compiler, and model-specific runtime adapter. A bounded [Python/SQLite W1 reference slice](architecture/w1-reference.md) now implements ingestion, static impact queries, snapshot history, and deterministic evidence compilation. The full contracts, runtime adapters, and comparative benchmarks remain unfinished. GraphGraph is historical reference material with no compatibility requirement.
+Tunic is an evidence and context substrate under development: semantic graph, context compiler, and model-specific runtime adapter. A bounded [Python/SQLite W1 reference slice](architecture/w1-reference.md) now implements ingestion, static impact queries, snapshot history, and deterministic evidence compilation. A [local continuation reference](architecture/continuation-reference.md) adds faithful rendering and a pinned Ollama adapter. Full contracts and comparative benchmarks remain unfinished. GraphGraph is historical reference material with no compatibility requirement.
 
 ## Start here
 
@@ -14,11 +14,11 @@ Read [architecture overview](architecture/overview.md), [semantic graph contract
 | What do durable claims, evidence, identity, time, and snapshots mean? | [Semantic graph](architecture/semantic-graph.md) |
 | What does compilation produce and validate? | [Context IR](architecture/context-ir.md) |
 | How are inputs lowered and execution/cache compatibility checked? | [Lowering and runtime](architecture/runtime.md) |
-| How might retrieval continue during an inference session? | [Optional runtime memory controller](architecture/runtime-memory.md) |
+| How might retrieval continue during an inference session? | [Runtime memory controller](architecture/runtime-memory.md) and [bounded implementation](architecture/continuation-reference.md) |
 | Where are security and authority boundaries enforced? | [Security requirements and limits](architecture/security.md) |
 | What can measurements/hypotheses mean without changing facts? | [Optional measurement contract](architecture/measurements.md) |
 | What is chosen or still unresolved? | [Decision dispositions](architecture/decisions.md) |
-| What actually runs, with which limits and checks? | [W1 implementation profile](architecture/w1-reference.md) and [quickstart](../README.md#run-the-reference-slice) |
+| What actually runs, with which limits and checks? | [W1 profile](architecture/w1-reference.md), [continuation results](evaluation/continuation-results.md), and [quickstart](../README.md#run-the-reference-slice) |
 | How will behavior, utility, and costs be assessed? | [Evaluation strategy](evaluation/strategy.md) and [workload definitions](evaluation/workloads.md) |
 
 Architecture contracts describe proposed behavior, not implemented guarantees. Research notes support or challenge choices; references report inspected external artifacts. If they disagree, update the owning contract/decision explicitly rather than treating an older research suggestion as a second requirement.

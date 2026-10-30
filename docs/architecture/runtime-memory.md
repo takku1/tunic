@@ -1,6 +1,6 @@
 # Optional runtime memory controller
 
-Status: proposed experimental extension, not implemented. The [research assessment](../research/runtime-memory.md) supports a controller for retrieval at supported generation boundaries and bounded prefetch. It does not support arbitrary live activation injection as the default. The [runtime contract](runtime.md) continues to own execution compatibility and lowering; [security](security.md) owns trust and isolation.
+Status: experimental target with a bounded [local continuation implementation](continuation-reference.md). Supported segment boundaries and faithful rendering run; prefetch, active triggers and custom KV/latent mechanisms remain unimplemented. The [research assessment](../research/runtime-memory.md) supports a controller for retrieval at supported generation boundaries and bounded prefetch. It does not support arbitrary live activation injection as the default. The [runtime contract](runtime.md) continues to own execution compatibility and lowering; [security](security.md) owns trust and isolation.
 
 ## Ownership and capability boundary
 
@@ -16,7 +16,7 @@ A `MemoryRequest` carries session/request identity, principal/capability and pol
 
 The compiler returns validated IR and its selection receipt, or an explicit partial/failed/denied result. Model-specific preparation returns the [lowering receipt](runtime.md), including actual rendered prefix identity and a compatible cache reference when available. The controller's `AttachmentReceipt` binds those identities to the executed boundary, current authorization decision, evidence-exposure point, mode, discarded/recomputed extent and timing/resource observations. Authorization and compatibility are distinct checks.
 
-These are proposed semantic fields, not an implemented API. The W1 CLI's “current snapshot” is only the last ingested snapshot; it does not monitor or certify freshness against the live filesystem.
+These are target semantic fields, not a fully implemented API. The local profile records a narrower attachment receipt with snapshot/IR/render/profile identities and a fixed segment boundary; it has no authorization engine, cancellation protocol or distributed replay guarantee. The W1 CLI's “current snapshot” is only the last ingested snapshot; it does not monitor or certify freshness against the live filesystem.
 
 ## Lifecycle and freshness
 
@@ -49,4 +49,4 @@ Recheck access and snapshot validity before attachment. Cache keys include polic
 
 The first experiment compares fixed-schedule upfront and boundary-triggered retrieval, then adds prefetch. Cross both with cache on/off and ordinary-prefill controls. Use the [research experiment protocol](../research/runtime-memory.md#measurable-experiments) and [security tests](security.md#required-tests-before-a-shared-or-model-backed-runtime).
 
-Advance only with measured grounded task utility or resource savings at an explicit quality/security threshold. Non-prefix fusion needs quality/latency validation against full prefill. A learned bridge additionally needs graph-free and graph-swap interventions establishing graph use, held-out quality, and training cost accounting. There is no runtime implementation or performance acceptance result yet.
+Advance only with measured grounded task utility or resource savings at an explicit quality/security threshold. Non-prefix fusion needs quality/latency validation against full prefill. A learned bridge additionally needs graph-free and graph-swap interventions establishing graph use, held-out quality, and training cost accounting. The [local smoke results](../evaluation/continuation-results.md) establish a supported two-request path and reject unsupported model answers. They do not establish a performance advantage or complete these adoption gates.

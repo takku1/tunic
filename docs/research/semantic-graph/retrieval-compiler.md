@@ -34,7 +34,7 @@ Scope: SG-17–SG-20 plus adjacent SG-25. A semantic graph is useful even withou
 
 ## SG-20 Context IR
 
-**Gap:** [the IR contract](../../architecture/context-ir.md) is conceptual; there is no serialized schema, validator, canonical identity, or lowering implementation.
+**Remaining gap:** the [IR contract](../../architecture/context-ir.md) now has a bounded serialized W1 profile, validator, canonical identity and [faithful model renderer](../../architecture/continuation-reference.md). General temporal/access/selection contracts, token-offset export and richer derivation schemas remain unfinished.
 
 **Minimum:** typed claims/excerpts, evidence references, derivations, obligation closure, time/access selectors, selection dependencies, and model-lowering receipts. Require explicit unsupported/ambiguous/partial results. Keep source-authoritative metadata outside presentation strings and token IDs. Exact token count comes after whole-input rendering.
 
@@ -44,7 +44,7 @@ Scope: SG-17–SG-20 plus adjacent SG-25. A semantic graph is useful even withou
 
 ## SG-25 Runtime boundary
 
-**Gap:** no model/runtime chosen; no actual KV compatibility or execution adapter.
+**Remaining gap:** the [local Ollama adapter](../../architecture/continuation-reference.md) now executes pinned Llama 3.2/dense Qwen3 segments with measured input budgets. Tunic has no custom KV import/export, cache-off control or verified exact-cache equivalence; broader runtime integration remains conditional.
 
 **Current concepts:** [vLLM prefix caching](https://docs.vllm.ai/en/latest/design/prefix_caching/) includes preceding-prefix identity. [ReCAP](https://arxiv.org/abs/2609.40118) persists attention-derived history signals; [CodeComp](https://arxiv.org/abs/2604.10235) uses program structure for lossy KV selection. These are different mechanisms with different correctness/quality goals.
 

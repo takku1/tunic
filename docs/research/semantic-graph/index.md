@@ -37,12 +37,12 @@ The optional [geometry research extension](../geometry/README.md) explores versi
 | SG-17 | Lexical/dense/graph indexes and representation compatibility | Candidate methods only | Core baseline; advanced retrieval experimental | [Retrieval/compiler](retrieval-compiler.md#sg-17-indexes-and-fusion) |
 | SG-18 | Typed query planning and bounded execution | Gap | Core | [Retrieval/compiler](retrieval-compiler.md#sg-18-query-planning) |
 | SG-19 | Multiple resolutions, source diversity, summaries | Draft; fidelity/utility tradeoff unresolved | Core source grouping; generated summaries experimental | [Retrieval/compiler](retrieval-compiler.md#sg-19-resolution-and-diversity) |
-| SG-20 | Typed context IR validation and model lowering | Draft contract | Core | [Retrieval/compiler](retrieval-compiler.md#sg-20-context-ir) |
+| SG-20 | Typed context IR validation and model lowering | Bounded W1 rendering/validation implemented; full contract open | Core | [Retrieval/compiler](retrieval-compiler.md#sg-20-context-ir) |
 | SG-21 | Authorization, derived-data scope, revocation | Draft; enforcement model missing | Core scope contract; multi-user enforcement conditional | [Trust/evaluation](trust-evaluation.md#sg-21-authorization) |
 | SG-22 | Untrusted evidence and structural poisoning | Reference risks; threat model missing | Core trust labels; attack defenses experimental | [Trust/evaluation](trust-evaluation.md#sg-22-adversarial-evidence) |
 | SG-23 | Interchange, federation, namespace and conflict ownership | Reference ideas only | Conditional | [Trust/evaluation](trust-evaluation.md#sg-23-interchange-and-federation) |
 | SG-24 | Oracles, diagnostics, reproducibility, and economics | Draft workloads; no fixtures/results | Core | [Trust/evaluation](trust-evaluation.md#sg-24-evaluation-and-economics) |
-| SG-25 | Runtime observations, cache compatibility, graph-guided KV | Draft adjacent layer | Conditional runtime; compression experimental | [Retrieval/compiler](retrieval-compiler.md#sg-25-runtime-boundary) |
+| SG-25 | Runtime observations, cache compatibility, graph-guided KV | Local segment adapter; exact KV guarantees untested | Conditional runtime; compression experimental | [Retrieval/compiler](retrieval-compiler.md#sg-25-runtime-boundary) |
 | SG-26 | Multimodal grounding and evidence alignment | Gap | Conditional | [Acquisition](acquisition.md#sg-26-multimodal-grounding) |
 
 ## What the latest research changes

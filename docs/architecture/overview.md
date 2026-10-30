@@ -1,6 +1,6 @@
 # Tunic architecture
 
-Status: target architecture, 2026-10-30. A bounded [W1 reference slice](w1-reference.md) implements local Python evidence ingestion, snapshots, impact queries, and a versioned JSON context profile. Most contracts, runtime adapters, and comparative performance evaluation remain unimplemented. Decision dispositions are maintained in [decisions](decisions.md); [glossary](glossary.md) defines shared terms.
+Status: target architecture, 2026-10-30. A bounded [W1 reference slice](w1-reference.md) implements local Python evidence ingestion, snapshots, impact queries, and a versioned JSON context profile. A [local continuation adapter](continuation-reference.md) also renders evidence and executes supported segments. Most target contracts and comparative performance evaluation remain unfinished. Decision dispositions are maintained in [decisions](decisions.md); [glossary](glossary.md) defines shared terms.
 
 ## Purpose and first slice
 
@@ -71,7 +71,7 @@ Order the work as: settle minimal graph/IR semantics and independent fixtures; i
 
 The [geometry research](../research/geometry/README.md) investigates measurements, task-aware ranking, hypotheses, and controlled discovery. The [research assessment](../research/assessment.md) covers cache fusion, custom attention, and latent bridges. These remain experiments, not initial correctness dependencies.
 
-The [runtime memory assessment](../research/runtime-memory.md) supports investigating boundary-triggered continuation and bounded prefetch, with caching as an independent factor. Non-prefix fusion and trained graph attention require separate quality/security tests and evidence that graph content affects results. No runtime bridge is implemented.
+The [runtime memory assessment](../research/runtime-memory.md) supports investigating boundary-triggered continuation and bounded prefetch, with caching as an independent factor. Non-prefix fusion and trained graph attention require separate quality/security tests and evidence that graph content affects results. A [bounded Ollama continuation path](continuation-reference.md) now runs, with [recorded smoke results](../evaluation/continuation-results.md); prefetch, custom attention and full runtime/security guarantees remain unimplemented.
 
 Wilderbeast may supply code/analysis evidence, Chili Crisp may evaluate candidates, and Team Ops may consume shared evidence. No actual interfaces were audited. Each would need stable source/revision identity, evidence/status/coverage, reproducible artifacts, and explicit ownership. Tunic must work independently before integration is claimed.
 

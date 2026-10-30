@@ -8,11 +8,14 @@ import sys
 
 from .compiler import compile_impact, validate_artifact
 from .store import GraphStore
+from .render import render_context
+from .ollama import Ollama
+from .continuation import compare_continuation
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="tunic")
-    parser.add_argument("--db", required=True, help="SQLite database path (parent must exist)")
+    parser.add_argument("--db", help="SQLite database path (required for graph/render/experiment commands)")
     commands = parser.add_subparsers(dest="command", required=True)
     ingest = commands.add_parser("ingest", help="fully rebuild and atomically publish a Python source snapshot")
     ingest.add_argument("root", help="Python source root; e.g. repository/src for a src layout")
@@ -24,20 +27,52 @@ def main(argv=None):
     validate = commands.add_parser("validate", help="check an artifact against stored evidence")
     validate.add_argument("artifact")
     validate.add_argument("--allow-historical", action="store_true", help="validate old snapshot without requiring current freshness")
+    render = commands.add_parser("render", help="faithfully render current IR; byte bound is not a token count")
+    render.add_argument("artifact")
+    render.add_argument("--max-bytes", type=int, default=65536)
+    models = commands.add_parser("models", help="list installed local Ollama model names/digests")
+    models.add_argument("--endpoint", default="http://127.0.0.1:11434")
+    pin = commands.add_parser("pin", help="pin installed llama3.2/dense qwen3 and verify nontruncating overflow rejection")
+    pin.add_argument("model")
+    pin.add_argument("--endpoint", default="http://127.0.0.1:11434")
+    experiment = commands.add_parser("experiment", help="compare upfront versus boundary-triggered evidence on a pinned local model")
+    experiment.add_argument("symbol")
+    experiment.add_argument("--task", required=True)
+    experiment.add_argument("--profile", required=True)
+    experiment.add_argument("--repeats", type=int, default=1)
+    experiment.add_argument("--plan-tokens", type=int, default=32)
+    experiment.add_argument("--answer-tokens", type=int, default=192)
+    experiment.add_argument("--context-tokens", type=int, default=8192)
+    experiment.add_argument("--max-input-tokens", type=int, default=6000)
     args = parser.parse_args(argv)
     try:
+        if args.command in {"models", "pin"}:
+            client = Ollama(args.endpoint)
+            result = {"models": client.models()} if args.command == "models" else client.pin(args.model)
+            print(json.dumps(result, ensure_ascii=True, sort_keys=True, indent=2))
+            return 0
+        if not args.db:
+            parser.error("--db is required for this command")
         with GraphStore(args.db) as store:
             if args.command == "ingest":
                 result = store.ingest(args.root)
             elif args.command == "impact":
                 result = compile_impact(store, args.symbol, snapshot=args.snapshot,
                                         max_depth=args.max_depth, max_nodes=args.max_nodes)
-            else:
+            elif args.command in {"validate", "render"}:
                 artifact = json.loads(Path(args.artifact).read_text(encoding="utf-8-sig"))
-                result = validate_artifact(store, artifact, expected_snapshot=None if args.allow_historical else store.current())
+                if args.command == "render":
+                    result = render_context(store, artifact, max_bytes=args.max_bytes)
+                else:
+                    result = validate_artifact(store, artifact, expected_snapshot=None if args.allow_historical else store.current())
+            else:
+                profile = json.loads(Path(args.profile).read_text(encoding="utf-8-sig"))
+                result = compare_continuation(store, Ollama(profile["endpoint"]), profile, args.symbol, args.task,
+                    repeats=args.repeats, plan_tokens=args.plan_tokens, answer_tokens=args.answer_tokens,
+                    context_tokens=args.context_tokens, max_input_tokens=args.max_input_tokens)
         print(json.dumps(result, ensure_ascii=True, sort_keys=True, indent=2))
-        return 1 if result.get("valid") is False else 0
-    except (OSError, ValueError, sqlite3.Error) as error:
+        return 1 if result.get("valid") is False or result.get("outcome") in {"failed", "output_limit_reached", "unsupported_answer"} else 0
+    except (OSError, ValueError, KeyError, TypeError, sqlite3.Error) as error:
         print(json.dumps({"outcome": "failed", "error": str(error)}), file=sys.stderr)
         return 2
 
