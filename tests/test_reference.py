@@ -193,6 +193,19 @@ class ReferenceTests(unittest.TestCase):
             {"relation": "static_call", "caller": "worker.py::Worker.run", "callee": "core.py::calculate"}])
         self.assertTrue(validate_artifact(self.store, a)["valid"])
 
+    def test_self_calls_resolve_while_shadowed_names_stay_unresolved(self):
+        self.write("tracker.py", "class Tracker:\n    def score(self):\n        return self.total()\n    def total(self):\n        return 1\n    def shadowed(self, total):\n        return total(2)\n")
+        self.store.ingest(self.root)
+        inner = compile_impact(self.store, "tracker.py::Tracker.total")["impacts"]
+        self.assertEqual([i["symbol"] for i in inner], ["tracker.py::Tracker.score"])
+        self.assertTrue(all(i["derivation"]["rule"] == "reverse_static_reachability_v1"
+                            for i in inner))
+        receipt = self.store.ingest(self.root)
+        kinds = {(d.get("caller"), d.get("expression")) for d in receipt["diagnostics"]
+                 if d["kind"] == "unresolved_call"}
+        self.assertNotIn(("tracker.py::Tracker.score", "self.total"), kinds)
+        self.assertIn(("tracker.py::Tracker.shadowed", "total"), kinds)
+
     def test_document_mentions_link_prose_to_code_symbols(self):
         self.write("notes.md", "# Notes\n\n`core.py::calculate` is used by service.\n\nSee unrelated.py::dynamic for contrast.\n")
         self.store.ingest(self.root)

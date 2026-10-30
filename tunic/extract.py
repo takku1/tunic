@@ -10,7 +10,7 @@ import tokenize
 
 from .identity import digest, identity
 
-PROFILE = "python-static-v6"
+PROFILE = "python-static-v7"
 EXCLUDED = {".git", ".venv", "venv", "__pycache__", ".tunic", ".research", "node_modules"}
 TEXT_EXTENSIONS = {".md", ".txt", ".rst"}
 CLAIM_RELATIONS = {"depends_on", "implements", "supersedes", "decided_by", "contradicts"}
@@ -288,7 +288,8 @@ def _build_code(sources, modules, symbols, assertions, diagnostics):
                     if isinstance(base, ast.Name):
                         constructor = base.id
                         expression = constructor + "()." + call.func.attr
-                if name and head not in local and head not in s["bindings"] and not star:
+                if name and (head not in local or head in ("self", "cls")) \
+                        and head not in s["bindings"] and not star:
                     if "." not in name and name in s["functions"]:
                         target = s["functions"][name]
                     elif (self_class is not None and head in ("self", "cls") and head not in rebound
