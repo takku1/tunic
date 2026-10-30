@@ -8,8 +8,9 @@ import tokenize
 
 from .identity import digest, identity
 
-PROFILE = "python-static-v2"
+PROFILE = "python-static-v3"
 EXCLUDED = {".git", ".venv", "venv", "__pycache__", ".tunic", ".research", "node_modules"}
+TEXT_EXTENSIONS = {".md", ".txt", ".rst"}
 
 
 def _bound_names(tree):
@@ -64,7 +65,8 @@ def capture(root):
                 diagnostics.append({"path": p.relative_to(root).as_posix(), "kind": "excluded_symlink"})
         dirs[:] = sorted(d for d in dirs if d not in EXCLUDED and not (Path(base)/d).is_symlink())
         for name in sorted(files):
-            if not name.endswith(".py"):
+            text = Path(name).suffix in TEXT_EXTENSIONS
+            if not (name.endswith(".py") or text):
                 continue
             p = Path(base)/name
             path = p.relative_to(root).as_posix()
@@ -73,7 +75,10 @@ def capture(root):
                 continue
             data = p.read_bytes()
             source = {"path": path, "digest": digest(data), "data": data,
-                      "id": identity("source", [path, digest(data)]), "tree": None}
+                      "id": identity("source", [path, digest(data)]), "tree": None, "text": text}
+            if text:
+                sources.append(source)
+                continue
             parts = list(Path(path).with_suffix("").parts)
             if parts[-1] == "__init__":
                 parts.pop()
@@ -97,6 +102,12 @@ def extract(root):
     for s in sources:
         tree = s["tree"]
         if tree is None:
+            if s.get("text") and s["data"]:
+                key = s["path"] + "::document"
+                symbols[key] = {"key": key, "path": s["path"], "name": "document",
+                                "source": s["id"], "line": 1,
+                                "start": 0, "end": len(s["data"]),
+                                "is_test": False}
             continue
         # Collect module bindings without descending into function/class scopes.
         wrapper = ast.Module(body=[], type_ignores=[])
@@ -287,4 +298,28 @@ def extract(root):
                 else:
                     diagnostics.append({"path": s["path"], "caller": caller, "line": call.lineno,
                                         "start": start, "end": end, "kind": "unresolved_call", "expression": expression})
+    text_ids = {s["id"] for s in sources if s.get("text")}
+    code_keys = sorted(key for key, record in symbols.items() if record["source"] not in text_ids)
+    seen_mentions = set()
+    for s in sources:
+        if not s.get("text"):
+            continue
+        mentioner = s["path"] + "::document"
+        offset = 0
+        for raw_line in s["data"].splitlines(keepends=True):
+            start, end = offset, offset + len(raw_line)
+            offset = end
+            try:
+                line = raw_line.decode("utf-8")
+            except UnicodeError:
+                continue
+            for key in code_keys:
+                if key in line and (start, key) not in seen_mentions:
+                    seen_mentions.add((start, key))
+                    proposition = {"relation": "text_mention", "caller": mentioner, "callee": key}
+                    assertion = {"proposition": proposition, "source": s["id"], "start": start, "end": end,
+                                 "resolution": {"expression": key, "rule": "exact_key_match_v1", "support": []},
+                                 "producer": PROFILE, "status": "syntactic_observation"}
+                    assertion["id"] = identity("assertion", assertion)
+                    assertions.append(assertion)
     return sources, sorted(symbols.values(), key=lambda x:x["key"]), sorted(assertions, key=lambda x:x["id"]), sorted(diagnostics, key=lambda x: (x["path"], x.get("line") or 0, x["kind"], x.get("start", 0)))

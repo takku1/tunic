@@ -82,4 +82,5 @@ def direct_callers(store, symbol, snapshot):
     """One-hop control shares extraction with Tunic; not an independent analyzer."""
     _, view = store.view(snapshot)
     return sorted({a["proposition"]["caller"] for a in view["assertions"]
-                   if a["proposition"]["callee"] == symbol and a["proposition"]["caller"] != symbol})
+                   if a["proposition"].get("relation") == "static_call"
+                   and a["proposition"]["callee"] == symbol and a["proposition"]["caller"] != symbol})

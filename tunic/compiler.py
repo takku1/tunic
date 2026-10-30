@@ -27,6 +27,8 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100):
         raise ValueError("unknown or unsupported symbol: " + symbol)
     incoming = defaultdict(list)
     for assertion in view["assertions"]:
+        if assertion["proposition"].get("relation") != "static_call":
+            continue
         incoming[assertion["proposition"]["callee"]].append(assertion)
     for edges in incoming.values():
         edges.sort(key=lambda a:(a["proposition"]["caller"], a["id"]))
@@ -80,6 +82,25 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100):
     }
     artifact["id"] = identity("context", artifact)
     return artifact
+
+
+def compile_mentions(store, symbol, *, snapshot=None):
+    """List document spans that mention a symbol key; mentions are never callers."""
+    snapshot, view = store.view(snapshot)
+    symbols = {s["key"]: s for s in view["symbols"]}
+    if symbol not in symbols:
+        raise ValueError("unknown symbol: " + symbol)
+    mentions = []
+    for assertion in view["assertions"]:
+        proposition = assertion["proposition"]
+        if proposition.get("relation") != "text_mention" or proposition.get("callee") != symbol:
+            continue
+        mentions.append({"mentioner": proposition["caller"],
+                         "evidence": _evidence(store, assertion, snapshot),
+                         "resolution": assertion["resolution"]})
+    mentions.sort(key=lambda m: (m["evidence"]["path"], m["evidence"]["start"], m["evidence"]["end"]))
+    return {"symbol": symbol, "snapshot": snapshot, "profile": view["profile"],
+            "mentions": mentions, "outcome": "complete" if mentions else "empty"}
 
 
 def validate_artifact(store, artifact, *, expected_snapshot=None):

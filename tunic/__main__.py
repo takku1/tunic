@@ -6,7 +6,7 @@ from pathlib import Path
 import sqlite3
 import sys
 
-from .compiler import compile_impact, validate_artifact
+from .compiler import compile_impact, compile_mentions, validate_artifact
 from .store import GraphStore
 from .render import render_context
 from .ollama import Ollama
@@ -22,6 +22,8 @@ def main(argv=None):
     ingest.add_argument("root", help="Python source root; e.g. repository/src for a src layout")
     impact = commands.add_parser("impact", help="compile possible reverse-call impact with evidence")
     impact.add_argument("symbol", help="exact path::function key, e.g. core.py::calculate")
+    mentions = commands.add_parser("mentions", help="list document spans that mention a symbol key")
+    mentions.add_argument("symbol", help="exact path::function key, e.g. core.py::calculate")
     impact.add_argument("--snapshot")
     impact.add_argument("--max-depth", type=int, default=8)
     impact.add_argument("--max-nodes", type=int, default=100)
@@ -78,6 +80,8 @@ def main(argv=None):
             elif args.command == "impact":
                 result = compile_impact(store, args.symbol, snapshot=args.snapshot,
                                         max_depth=args.max_depth, max_nodes=args.max_nodes)
+            elif args.command == "mentions":
+                result = compile_mentions(store, args.symbol)
             elif args.command in {"validate", "render"}:
                 artifact = json.loads(Path(args.artifact).read_text(encoding="utf-8-sig"))
                 if args.command == "render":

@@ -8,7 +8,7 @@ import unittest
 import uuid
 from unittest.mock import patch
 
-from tunic import GraphStore, compile_impact, validate_artifact
+from tunic import GraphStore, compile_impact, compile_mentions, validate_artifact
 from tunic.identity import identity
 
 
@@ -191,6 +191,21 @@ class ReferenceTests(unittest.TestCase):
             {"relation": "static_call", "caller": "worker.py::entry", "callee": "worker.py::Worker.run"},
             {"relation": "static_call", "caller": "worker.py::Worker.run", "callee": "core.py::calculate"}])
         self.assertTrue(validate_artifact(self.store, a)["valid"])
+
+    def test_document_mentions_link_prose_to_code_symbols(self):
+        self.write("notes.md", "# Notes\n\n`core.py::calculate` is used by service.\n\nSee unrelated.py::dynamic for contrast.\n")
+        self.store.ingest(self.root)
+        mentions = compile_mentions(self.store, "core.py::calculate")
+        self.assertEqual(len(mentions["mentions"]), 1)
+        evidence = mentions["mentions"][0]["evidence"]
+        self.assertEqual(evidence["path"], "notes.md")
+        raw = (self.root / evidence["path"]).read_bytes()
+        self.assertEqual(raw[evidence["start"]:evidence["end"]].decode("utf-8"), evidence["excerpt"])
+        self.assertIn("core.py::calculate", evidence["excerpt"])
+        # Mentions are not callers: impact results are unchanged.
+        self.assertEqual([i["symbol"] for i in self.artifact()["impacts"]],
+                         ["service.py::process", "test_service.py::test_process"])
+        self.assertTrue(validate_artifact(self.store, self.artifact())["valid"])
 
     def test_shadowing_dynamic_scopes_and_parse_errors(self):
         self.write("shadow.py", "from core import calculate\ndef wrong(calculate):\n    return calculate(9)\n")
