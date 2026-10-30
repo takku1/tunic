@@ -1,0 +1,55 @@
+{
+  "cases": [
+    {
+      "category": "held_out",
+      "expected_edges": [
+        [
+          "dispatch.py::fast",
+          "core.py::target"
+        ],
+        [
+          "dispatch.py::slow",
+          "core.py::target"
+        ],
+        [
+          "entry.py::entry",
+          "dispatch.py::fast"
+        ],
+        [
+          "entry.py::entry",
+          "dispatch.py::slow"
+        ]
+      ],
+      "expected_impacts": [
+        "dispatch.py::fast",
+        "dispatch.py::slow",
+        "entry.py::entry"
+      ],
+      "id": "dispatch",
+      "root": "cases/dispatch",
+      "target": "core.py::target"
+    },
+    {
+      "category": "held_out",
+      "expected_edges": [
+        [
+          "entry.py::entry",
+          "registry.py::handler"
+        ],
+        [
+          "registry.py::handler",
+          "core.py::target"
+        ]
+      ],
+      "expected_impacts": [
+        "entry.py::entry",
+        "registry.py::handler"
+      ],
+      "id": "registry",
+      "root": "cases/registry",
+      "target": "core.py::target"
+    }
+  ],
+  "id": "memory-heldout-v1",
+  "version": 1
+}

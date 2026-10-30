@@ -8,12 +8,13 @@ import unittest
 from unittest.mock import patch
 import uuid
 
-from tunic.benchmark import aggregate, load_suite, run_benchmark, score_response, set_scores
+from tunic.benchmark import aggregate, load_memory_suite, load_suite, run_benchmark, run_memory_suite, score_response, set_scores
 from tunic.compiler import compile_impact
 from tunic.ollama import BackendError
 from tunic.render import TEMPLATE
 
 SUITE = Path(__file__).resolve().parents[1]/"benchmarks"/"w1"/"suite.json"
+MEMORY_SUITE = Path(__file__).resolve().parents[1]/"benchmarks"/"memory"/"suite.json"
 
 
 class ModelFixture:
@@ -46,6 +47,22 @@ class BenchmarkTests(unittest.TestCase):
 
     def run_suite(self, **kwargs):
         return run_benchmark(SUITE, scratch_root=self.base/"runs", **kwargs)
+
+    def test_memory_suite_recall_beats_static_and_lexical_baselines(self):
+        suite = load_memory_suite(MEMORY_SUITE)
+        self.assertEqual({c["id"] for c in suite["cases"]}, {"dispatch", "registry"})
+        result = run_memory_suite(MEMORY_SUITE, scratch_root=self.base/"memory-runs")
+        self.assertEqual(result["outcome"], "complete")
+        self.assertEqual(result["scope"], "held_out_memory_recall_not_tuned")
+        for task in result["tasks"]:
+            self.assertFalse(task["baseline"]["graph"]["exact_match"])
+            self.assertFalse(task["baseline"]["direct"]["exact_match"])
+            self.assertFalse(task["baseline"]["bm25"]["exact_match"])
+            self.assertTrue(task["recall"]["graph"]["exact_match"])
+            self.assertTrue(task["recall"]["validation"])
+        self.assertEqual(result["summary"]["baseline_exact"], 0)
+        self.assertEqual(result["summary"]["recall_exact"], 2)
+        self.assertEqual(result["summary"]["improved"], ["dispatch", "registry"])
 
     def test_hand_scored_sets_and_empty_failure_semantics(self):
         score = set_scores(["a", "wrong"], ["a", "b"])

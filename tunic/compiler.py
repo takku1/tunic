@@ -6,7 +6,8 @@ import re
 from .extract import TRAVERSABLE_CLAIMS, is_iso_date
 from .identity import canonical, digest, identity
 
-IR_VERSION = "tunic.w1.v2"
+IR_VERSION = "tunic.w1.v3"
+POLICIES = ("transparent", "evidence_only", "current")
 
 
 def _evidence(store, record, snapshot):
@@ -20,20 +21,36 @@ def _evidence(store, record, snapshot):
             "start": start, "end": end, "excerpt": source["data"][start:end].decode("utf-8")}
 
 
-def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100):
+def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100, policy="transparent"):
     if type(max_depth) is not int or max_depth < 1 or type(max_nodes) is not int or max_nodes < 1:
         raise ValueError("max_depth and max_nodes must be positive integers")
     snapshot, view = store.view(snapshot)
     symbols = {s["key"]: s for s in view["symbols"]}
     if symbol not in symbols:
         raise ValueError("unknown or unsupported symbol: " + symbol)
+    if policy not in POLICIES:
+        raise ValueError("unknown policy: " + str(policy))
+    as_of = store.committed_on(snapshot)
+    blocked = set()
+    if policy == "current":
+        for assertion in view["assertions"]:
+            proposition = assertion["proposition"]
+            if proposition.get("relation") == "supersedes" and assertion.get("status") == "asserted_in_source":
+                if (proposition.get("effective") or as_of) <= as_of and proposition.get("callee") != symbol:
+                    blocked.add(proposition.get("callee"))
     incoming = defaultdict(list)
     for assertion in view["assertions"]:
         relation = assertion["proposition"].get("relation")
         if relation != "static_call" and not (relation in TRAVERSABLE_CLAIMS
                                               and assertion.get("status") == "asserted_in_source"):
             continue
-        incoming[assertion["proposition"]["callee"]].append(assertion)
+        caller_key = assertion["proposition"]["caller"]
+        callee_key = assertion["proposition"]["callee"]
+        if policy == "evidence_only" and assertion["proposition"].get("relation") != "static_call":
+            continue
+        if policy == "current" and (caller_key in blocked or callee_key in blocked):
+            continue
+        incoming[callee_key].append(assertion)
     for edges in incoming.values():
         edges.sort(key=lambda a:(a["proposition"]["caller"], a["id"]))
     paths = {symbol: []}
@@ -82,7 +99,7 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100):
                       "resolution_support": [_evidence(store, premise, snapshot) for premise in a["resolution"]["support"]]})
     artifact = {
         "ir_version": IR_VERSION,
-        "query": {"symbol": symbol, "max_depth": max_depth, "max_nodes": max_nodes},
+        "query": {"symbol": symbol, "max_depth": max_depth, "max_nodes": max_nodes, "policy": policy},
         "selection_receipt": {"snapshot": snapshot, "profile": view["profile"],
                               "policy": "reverse-static-call-bfs-v1", "reuse": "none_full_recompute",
                               "scope": "local_single_principal", "coverage": "bounded_static_analysis",
@@ -91,6 +108,7 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100):
         "units": units,
         "impacts": impacts,
         "validation_scope": "source_integrity_and_static_path_support_not_runtime_effect",
+        "policy": policy,
         "outcome": "partial",
         "limitations": ["Python profile is an under-approximation; non-observation is not absence.",
                         "A static path establishes possible dependency, not demonstrated execution.",
@@ -188,13 +206,13 @@ def compile_drafts(store, document, *, snapshot=None):
     return drafts
 
 
-def compile_related(store, symbol, *, snapshot=None):
+def compile_related(store, symbol, *, snapshot=None, policy="transparent"):
     """Cross-source context: reverse dependencies plus document mentions, claims, and proposals."""
     snapshot, view = store.view(snapshot)
     if symbol not in {s["key"] for s in view["symbols"]}:
         raise ValueError("unknown symbol: " + symbol)
     return {"symbol": symbol, "snapshot": snapshot, "profile": view["profile"],
-            "impact": compile_impact(store, symbol, snapshot=snapshot),
+            "impact": compile_impact(store, symbol, snapshot=snapshot, policy=policy),
             "mentions": compile_mentions(store, symbol, snapshot=snapshot),
             "claims": compile_claims(store, symbol, snapshot=snapshot),
             "outcome": "complete"}

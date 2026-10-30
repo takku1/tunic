@@ -8,6 +8,7 @@ import time
 import uuid
 
 from .baselines import BM25, direct_callers
+from .memory import Memory
 from .compiler import compile_impact, validate_artifact
 from .continuation import assess_answer, compare_continuation
 from .identity import digest, identity
@@ -314,6 +315,108 @@ def run_benchmark(suite_path, *, top_k=5, backend=None, profile=None, model_case
                     "support_precision": sum(s["supported_claims"] for s in selected)/claims if claims else None}
         result["outcome"] = "complete" if all(r["outcome"] == "complete" for r in tasks) and not model_stopped else "failed"
         result["wall_seconds"] = time.perf_counter()-started
+        return result
+    finally:
+        assert scratch.resolve().is_relative_to(scratch_root) and scratch.resolve() != scratch_root
+        shutil.rmtree(scratch)
+
+
+def load_memory_suite(path):
+    """Validate a held-out memory suite; labels are fixed, never tuned here."""
+    path = Path(path).resolve(strict=True)
+    suite = json.loads(path.read_text(encoding="utf-8-sig"))
+    if not isinstance(suite, dict) or not isinstance(suite.get("cases"), list) or not suite["cases"]:
+        raise ValueError("memory suite must be a non-empty case list")
+    seen = set()
+    for case in suite["cases"]:
+        if not isinstance(case, dict):
+            raise ValueError("memory case must be an object")
+        for key in ("id", "root", "target", "expected_impacts", "expected_edges"):
+            if key not in case:
+                raise ValueError("memory case missing " + key)
+        if case["id"] in seen:
+            raise ValueError("duplicate memory case id: " + case["id"])
+        seen.add(case["id"])
+        if not _inside(path.parent, case["root"]).is_dir():
+            raise ValueError("memory case root is not a directory: " + case["root"])
+        impacts = set(case["expected_impacts"])
+        edges = [tuple(edge) for edge in case["expected_edges"]]
+        if any(len(edge) != 2 for edge in edges):
+            raise ValueError("memory edges must be caller/callee pairs")
+        endpoints = {symbol for edge in edges for symbol in edge}
+        if not impacts <= endpoints or not endpoints - {case["target"]} <= impacts:
+            raise ValueError("memory edges must connect expected impacts for case " + case["id"])
+    return suite
+
+
+def run_memory_suite(suite_path, *, top_k=5, scratch_root=None):
+    """Held-out memory recall evaluation: baseline arms, then oracle-recorded outcomes.
+
+    The oracle records gold edges as verified claims (teacher), then a fresh
+    session recalls them. Static, one-hop, and lexical arms run without memory.
+    Nothing here tunes the suite; improvement must come from memory alone.
+    """
+    if type(top_k) is not int or top_k < 1:
+        raise ValueError("top_k must be positive")
+    suite_path = Path(suite_path).resolve(strict=True)
+    suite = load_memory_suite(suite_path)
+    scratch_root = Path(scratch_root or Path.cwd()/".tunic"/"memory-runs").resolve()
+    scratch_root.mkdir(parents=True, exist_ok=True)
+    scratch = scratch_root/("run-"+uuid.uuid4().hex)
+    scratch.mkdir()
+    code_root = Path(__file__).resolve().parent
+    result = {"suite": suite["id"], "version": suite["version"],
+              "scope": "held_out_memory_recall_not_tuned",
+              "oracle": "gold edges recorded as verified outcomes (teacher), not discovered",
+              "implementation": {p.name: digest(p.read_bytes()) for p in sorted(code_root.glob("*.py"))},
+              "environment": {"python": platform.python_version(), "platform": platform.platform()},
+              "parameters": {"top_k": top_k},
+              "tasks": [], "limitations": ["Teacher-recorded outcomes, not autonomous discovery.",
+                  "Tiny synthetic fixtures do not establish real-repository memory quality."]}
+    try:
+        for case in suite["cases"]:
+            case_dir = scratch/case["id"]
+            root = case_dir/"source"
+            shutil.copytree(_inside(suite_path.parent, case["root"]), root,
+                            ignore=shutil.ignore_patterns("__pycache__"))
+            row = {"case": case["id"], "target": case["target"],
+                   "gold": {"impacts": sorted(case["expected_impacts"]),
+                            "edges": [[caller, callee] for caller, callee in case["expected_edges"]]},
+                   "outcome": "running", "oracle": result["oracle"]}
+            result["tasks"].append(row)
+            with GraphStore(case_dir/"graph.sqlite") as store:
+                capture = store.ingest(root)
+                db_path = str(case_dir/"graph.sqlite")
+                lexical = BM25(root)
+                ranking = lexical.search(case["target"], top_k=top_k)
+                baseline = {
+                    "graph": set_scores([i["symbol"] for i in compile_impact(store, case["target"])["impacts"]],
+                                        case["expected_impacts"]),
+                    "direct": set_scores(direct_callers(store, case["target"], capture["snapshot"]),
+                                         case["expected_impacts"]),
+                    "bm25": set_scores([d["symbol"] for d in ranking], case["expected_impacts"])}
+                row["baseline"] = baseline
+                memory = Memory(db_path, root)
+                try:
+                    for caller, callee in case["expected_edges"]:
+                        memory.record_outcome(caller, callee, authority="memory-benchmark-oracle")
+                    memory.ingest()
+                    recalled = compile_impact(memory.store, case["target"])
+                    row["recall"] = {
+                        "graph": set_scores([i["symbol"] for i in recalled["impacts"]],
+                                            case["expected_impacts"]),
+                        "validation": validate_artifact(memory.store, recalled)["valid"]}
+                finally:
+                    memory.close()
+                row["outcome"] = "complete"
+        summary = {"cases": len(result["tasks"]),
+                   "baseline_exact": sum(1 for r in result["tasks"] if r["baseline"]["graph"]["exact_match"]),
+                   "recall_exact": sum(1 for r in result["tasks"] if r["recall"]["graph"]["exact_match"]),
+                   "improved": sorted(r["case"] for r in result["tasks"]
+                                      if not r["baseline"]["graph"]["exact_match"]
+                                      and r["recall"]["graph"]["exact_match"])}
+        result["summary"] = summary
+        result["outcome"] = "complete"
         return result
     finally:
         assert scratch.resolve().is_relative_to(scratch_root) and scratch.resolve() != scratch_root

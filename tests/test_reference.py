@@ -432,6 +432,35 @@ class ReferenceTests(unittest.TestCase):
         self.assertTrue(all(i["derivation"]["rule"] == "asserted_dependency_v1" for i in after["impacts"]))
         self.assertTrue(validate_artifact(self.store, after)["valid"])
 
+    def test_evidence_only_policy_ignores_asserted_edges(self):
+        self.write("mid.py", "def transform(value):\n    return value * 2\n")
+        self.write("notes.md", "# Design\n\n```tunic-claims\n"
+                 + '[{"rel": "depends_on", "subject": "mid.py::transform", "object": "core.py::calculate"}]\n```\n')
+        self.store.ingest(self.root)
+        strict = compile_impact(self.store, "core.py::calculate", policy="evidence_only")
+        self.assertNotIn("mid.py::transform", [i["symbol"] for i in strict["impacts"]])
+        self.assertIn("service.py::process", [i["symbol"] for i in strict["impacts"]])
+        self.assertEqual(strict["policy"], "evidence_only")
+        open_view = compile_impact(self.store, "core.py::calculate", policy="transparent")
+        self.assertIn("mid.py::transform", [i["symbol"] for i in open_view["impacts"]])
+        with self.assertRaises(ValueError):
+            compile_impact(self.store, "core.py::calculate", policy="trust-me")
+
+    def test_current_policy_excludes_superseded_nodes(self):
+        self.write("old.py", "from core import calculate\n\ndef run(value):\n    return calculate(value)\n")
+        self.write("new.py", "from core import calculate\n\ndef run(value):\n    return calculate(value) + 1\n")
+        self.write("notes.md", "# Migration\n\n```tunic-claims\n"
+                 + '[{"rel": "supersedes", "subject": "new.py::run", "object": "old.py::run", '
+                 + '"effective": "2026-01-01"}]\n```\n')
+        self.store.ingest(self.root)
+        current = compile_impact(self.store, "core.py::calculate", policy="current")
+        self.assertNotIn("old.py::run", [i["symbol"] for i in current["impacts"]])
+        self.assertIn("new.py::run", [i["symbol"] for i in current["impacts"]])
+        self.assertIn("service.py::process", [i["symbol"] for i in current["impacts"]])
+        self.assertEqual(current["policy"], "current")
+        open_view = compile_impact(self.store, "core.py::calculate", policy="transparent")
+        self.assertIn("old.py::run", [i["symbol"] for i in open_view["impacts"]])
+
     def test_shadowing_dynamic_scopes_and_parse_errors(self):
         self.write("shadow.py", "from core import calculate\ndef wrong(calculate):\n    return calculate(9)\n")
         self.write("broken.py", "def bad(:\n")

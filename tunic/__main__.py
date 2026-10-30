@@ -12,7 +12,7 @@ from .store import GraphStore
 from .render import render_context
 from .ollama import Ollama
 from .continuation import compare_continuation
-from .benchmark import run_benchmark
+from .benchmark import run_benchmark, run_memory_suite
 
 
 def main(argv=None):
@@ -23,12 +23,14 @@ def main(argv=None):
     ingest.add_argument("root", help="Python source root; e.g. repository/src for a src layout")
     impact = commands.add_parser("impact", help="compile possible reverse-call impact with evidence")
     impact.add_argument("symbol", help="exact path::function key, e.g. core.py::calculate")
+    impact.add_argument("--policy", default="transparent", help="retrieval policy: transparent, evidence_only, or current")
     mentions = commands.add_parser("mentions", help="list document spans that mention a symbol key")
     mentions.add_argument("symbol", help="exact path::function key, e.g. core.py::calculate")
     claims = commands.add_parser("claims", help="list typed document claims and proposals touching a symbol key")
     claims.add_argument("symbol", help="exact path::function key, e.g. core.py::calculate")
     related = commands.add_parser("related", help="combine impact, mentions, and claims for a symbol key")
     related.add_argument("symbol", help="exact path::function key, e.g. core.py::calculate")
+    related.add_argument("--policy", default="transparent", help="retrieval policy: transparent, evidence_only, or current")
     timeline = commands.add_parser("timeline", help="valid-time evidence view for a symbol key")
     timeline.add_argument("symbol", help="exact path::function key, e.g. core.py::calculate")
     timeline.add_argument("--at", default=None, help="ISO YYYY-MM-DD cutoff; defaults to the snapshot date")
@@ -68,9 +70,14 @@ def main(argv=None):
     benchmark.add_argument("--model-repeats", type=int, default=1)
     benchmark.add_argument("--answer-tokens", type=int, default=768)
     benchmark.add_argument("--check", action="store_true", help="fail on core regression or infrastructure failure; known gaps remain reported")
+    benchmark.add_argument("--memory", action="store_true", help="run the held-out memory recall evaluation instead of the W1 suite")
     args = parser.parse_args(argv)
     try:
         if args.command == "benchmark":
+            if args.memory:
+                result = run_memory_suite(args.suite, top_k=args.top_k)
+                print(json.dumps(result, ensure_ascii=True, sort_keys=True, indent=2))
+                return 0 if result["outcome"] == "complete" else 2
             profile = json.loads(Path(args.profile).read_text(encoding="utf-8-sig")) if args.profile else None
             if args.model_cases and not profile:
                 parser.error("--model-cases requires --profile")
@@ -100,14 +107,14 @@ def main(argv=None):
             if args.command == "ingest":
                 result = store.ingest(args.root)
             elif args.command == "impact":
-                result = compile_impact(store, args.symbol, snapshot=args.snapshot,
+                result = compile_impact(store, args.symbol, snapshot=args.snapshot, policy=args.policy,
                                         max_depth=args.max_depth, max_nodes=args.max_nodes)
             elif args.command == "mentions":
                 result = compile_mentions(store, args.symbol)
             elif args.command == "claims":
                 result = compile_claims(store, args.symbol)
             elif args.command == "related":
-                result = compile_related(store, args.symbol)
+                result = compile_related(store, args.symbol, policy=args.policy)
             elif args.command == "timeline":
                 result = compile_timeline(store, args.symbol, at=args.at)
             elif args.command == "draft":
