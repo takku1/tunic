@@ -36,7 +36,7 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100, 
         for assertion in view["assertions"]:
             proposition = assertion["proposition"]
             if proposition.get("relation") == "supersedes" and assertion.get("status") == "asserted_in_source":
-                if (proposition.get("effective") or as_of) <= as_of and proposition.get("callee") != symbol:
+                if (proposition.get("effective") or as_of) <= as_of:
                     blocked.add(proposition.get("callee"))
     incoming = defaultdict(list)
     for assertion in view["assertions"]:

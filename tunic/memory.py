@@ -111,7 +111,8 @@ class Memory:
         return self.record_outcome(subject, object, rel=rel, effective=effective,
                                    authority=authority, document=document, note=note)
 
-    def answer(self, task, *, snapshot=None, limit=3, mode="hybrid"):
+    def answer(self, task, *, snapshot=None, limit=3, mode="hybrid",
+               policy="transparent"):
         """Task-based retrieval without an exact symbol.
 
         Links bare names in the task to code entities the same way document
@@ -119,11 +120,15 @@ class Memory:
         chunks for tasks that name no symbol. Exact keys outrank bare names,
         which outrank lexical candidates; nothing is asserted or traversed
         beyond what the compiler already proves. Lexical hits are discovery
-        only: they select candidates, never graph edges.
+        only: they select candidates, never graph edges. The policy selects
+        the traversal set for every candidate, so policy="current" answers
+        from un-superseded evidence while transparent keeps disputes visible.
         """
         import re
         if mode not in ("graph", "hybrid"):
             raise ValueError("mode must be 'graph' or 'hybrid'")
+        if policy not in compiler.POLICIES:
+            raise ValueError("unknown policy: " + str(policy))
         snapshot, view = self.store.view(snapshot)
         code = [(s["key"], s["name"].split(".")[-1])
                 for s in view["symbols"] if not s["key"].endswith("::document")]
@@ -142,14 +147,15 @@ class Memory:
         mentions = []
         claims = []
         for symbol in top:
-            related = compiler.compile_related(self.store, symbol, snapshot=snapshot)
+            related = compiler.compile_related(self.store, symbol, snapshot=snapshot,
+                                               policy=policy)
             for entry in related["impact"]["impacts"]:
                 impacts.setdefault(entry["symbol"], entry)
             mentions.extend(related["mentions"]["mentions"])
             claims.extend(related["claims"]["claims"])
         mentions.sort(key=lambda m: (m["evidence"]["path"], m["evidence"]["start"], m["status"]))
         claims.sort(key=lambda c: (c["relation"], c["caller"], c["callee"] or ""))
-        return {"task": task, "snapshot": snapshot,
+        return {"task": task, "snapshot": snapshot, "policy": policy,
                 "candidates": [{"symbol": key, "score": scored[key][0],
                                 "match": scored[key][1]} for key in top],
                 "impacts": [impacts[key] for key in sorted(impacts)],

@@ -2,12 +2,16 @@
 
 Held-out by construction: the suite fixtures live outside every other
 benchmark, and the comparison replays three retrieval conditions over the
-same ingested graph. stdlib only; no embeddings, no network.
+same ingested graph. The Tunic arm answers under policy="current", so
+superseded evidence is excluded while disputes stay visible. stdlib only;
+no embeddings, no network. Latency and context size are measured, not
+modeled: no model is called, so token counts are not reported.
 """
 
 import json
 import shutil
 import tempfile
+import time
 from pathlib import Path
 
 from .baselines import BM25
@@ -19,12 +23,13 @@ CONDITIONS = ("none", "lexical", "tunic")
 def load_agent_suite(path):
     """Load and validate an agent held-out suite file."""
     raw = json.loads(Path(path).read_text(encoding="utf-8-sig"))
-    if raw.get("version") != 1:
+    if raw.get("version") != 2:
         raise ValueError("unsupported agent suite version")
     if not raw.get("tasks"):
         raise ValueError("agent suite has no tasks")
     for task in raw["tasks"]:
-        for field in ("id", "question", "gold", "requires"):
+        for field in ("id", "repo", "question", "gold", "forbidden",
+                      "evidence", "requires"):
             if field not in task:
                 raise ValueError("agent task missing %r" % field)
         if not task["gold"]:
@@ -40,18 +45,20 @@ def _answer_symbols(result):
     return seen
 
 
-def _condition_symbols(condition, question, root, memory, index, limit):
+def _condition_run(condition, question, memory, index, limit):
     if condition == "none":
-        return []
+        return [], []
     if condition == "lexical":
-        return [hit["symbol"] for hit in index.search_text(question, top_k=limit)]
+        ranking = index.search_text(question, top_k=limit)
+        return [hit["symbol"] for hit in ranking], ranking
     if condition == "tunic":
-        return _answer_symbols(memory.answer(question, limit=limit))
+        result = memory.answer(question, limit=limit, policy="current")
+        return _answer_symbols(result), result
     raise ValueError("unknown condition %r" % condition)
 
 
 def _task_evidence(memory, question, limit):
-    result = memory.answer(question, limit=limit)
+    result = memory.answer(question, limit=limit, policy="current")
     kinds = ["mention"] if result["mentions"] else []
     kinds.extend(row["relation"] for row in result["claims"])
     return result, sorted(set(kinds))
@@ -62,33 +69,54 @@ def run_agent_suite(suite_path, *, limit=5):
     if type(limit) is not int or limit < 1:
         raise ValueError("limit must be positive")
     suite = load_agent_suite(suite_path)
-    source = Path(suite_path).parent / suite.get("repo", "repo")
+    base = Path(suite_path).parent
+    conditions = {name: {"passed": 0, "exact": 0, "total": 0,
+                         "total_latency_ms": 0.0, "tasks": []}
+                  for name in CONDITIONS}
     with tempfile.TemporaryDirectory(prefix="tunic-agent-") as work:
-        root = Path(work) / "repo"
-        shutil.copytree(source, root)
-        memory = Memory(Path(work) / "agent.sqlite", root)
+        prepared = {}
+        for repo in sorted({task["repo"] for task in suite["tasks"]}):
+            root = Path(work) / repo
+            shutil.copytree(base / repo, root)
+            memory = Memory(Path(work) / (repo + ".sqlite"), root)
+            try:
+                memory.ingest()
+                prepared[repo] = (memory, BM25(root))
+            except Exception:
+                memory.close()
+                raise
         try:
-            memory.ingest()
-            index = BM25(root)
-            conditions = {}
-            for condition in CONDITIONS:
-                passed, exact, rows = 0, 0, []
-                for task in suite["tasks"]:
-                    symbols = _condition_symbols(condition, task["question"], root,
-                                                 memory, index, limit)
-                    gold = list(task["gold"])
-                    hit = set(gold) <= set(symbols)
-                    passed += hit
-                    exact += hit and set(symbols) == set(gold)
+            for task in suite["tasks"]:
+                memory, index = prepared[task["repo"]]
+                gold = list(task["gold"])
+                forbidden = list(task["forbidden"])
+                for condition in CONDITIONS:
+                    started = time.perf_counter()
+                    symbols, payload = _condition_run(condition, task["question"],
+                                                      memory, index, limit)
+                    elapsed_ms = (time.perf_counter() - started) * 1000.0
                     record = {"id": task["id"], "gold": gold,
-                              "returned": symbols, "pass": hit}
+                              "forbidden": forbidden, "returned": symbols,
+                              "latency_ms": elapsed_ms,
+                              "context_chars": len(json.dumps(payload, sort_keys=True,
+                                                              ensure_ascii=True, default=str))}
+                    entry = conditions[condition]
                     if condition == "tunic":
                         _, kinds = _task_evidence(memory, task["question"], limit)
                         record["evidence_kinds"] = kinds
                         record["requires"] = list(task["requires"])
-                    rows.append(record)
-                conditions[condition] = {"passed": passed, "exact": exact,
-                                         "total": len(suite["tasks"]), "tasks": rows}
+                        evidence_ok = set(task["evidence"]) <= set(kinds)
+                    else:
+                        evidence_ok = True
+                    record["pass"] = (set(gold) <= set(symbols)
+                                      and not (set(forbidden) & set(symbols))
+                                      and evidence_ok)
+                    entry["passed"] += record["pass"]
+                    entry["exact"] += record["pass"] and set(symbols) == set(gold)
+                    entry["total"] += 1
+                    entry["total_latency_ms"] += elapsed_ms
+                    entry["tasks"].append(record)
         finally:
-            memory.close()
+            for memory, _ in prepared.values():
+                memory.close()
     return {"suite": suite["id"], "conditions": conditions}
