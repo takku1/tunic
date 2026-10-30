@@ -1,0 +1,278 @@
+{
+  "version": "tunic.w1.benchmark.v1",
+  "label_policy": "Manually authored from fixture source, independent of Tunic extraction. Public regression data; no independent human audit or held-out quality claim.",
+  "cases": [
+    {
+      "id": "chain",
+      "root": "cases/chain",
+      "category": "core",
+      "target": "core.py::target",
+      "expected_impacts": [
+        "service.py::process",
+        "test_service.py::test_process"
+      ],
+      "expected_tests": [
+        "test_service.py::test_process"
+      ],
+      "rationale": "The alias compute binds target. process calls it; test_process calls process. A string literal is not a call.",
+      "updates": [
+        {
+          "id": "leaf_edit",
+          "writes": {
+            "core.py": "def target(value):\n    return value + 7\n"
+          },
+          "deletes": [],
+          "expected_impacts": [
+            "service.py::process",
+            "test_service.py::test_process"
+          ],
+          "expected_tests": [
+            "test_service.py::test_process"
+          ],
+          "expected_edges": [
+            [
+              "service.py::process",
+              "core.py::target"
+            ],
+            [
+              "test_service.py::test_process",
+              "service.py::process"
+            ]
+          ]
+        },
+        {
+          "id": "new_incoming",
+          "writes": {
+            "late.py": "from core import target\n\ndef newcomer():\n    return target(4)\n"
+          },
+          "deletes": [],
+          "expected_impacts": [
+            "late.py::newcomer",
+            "service.py::process",
+            "test_service.py::test_process"
+          ],
+          "expected_tests": [
+            "test_service.py::test_process"
+          ],
+          "expected_edges": [
+            [
+              "service.py::process",
+              "core.py::target"
+            ],
+            [
+              "test_service.py::test_process",
+              "service.py::process"
+            ],
+            [
+              "late.py::newcomer",
+              "core.py::target"
+            ]
+          ]
+        },
+        {
+          "id": "delete_bridge",
+          "writes": {},
+          "deletes": [
+            "service.py"
+          ],
+          "expected_impacts": [
+            "late.py::newcomer"
+          ],
+          "expected_tests": [],
+          "expected_edges": [
+            [
+              "late.py::newcomer",
+              "core.py::target"
+            ]
+          ]
+        },
+        {
+          "id": "unrelated_edit",
+          "writes": {
+            "notes.py": "def description():\n    return 'documentation changed, without adding a call'\n"
+          },
+          "deletes": [],
+          "expected_impacts": [
+            "late.py::newcomer"
+          ],
+          "expected_tests": [],
+          "expected_edges": [
+            [
+              "late.py::newcomer",
+              "core.py::target"
+            ]
+          ]
+        }
+      ],
+      "expected_edges": [
+        [
+          "service.py::process",
+          "core.py::target"
+        ],
+        [
+          "test_service.py::test_process",
+          "service.py::process"
+        ]
+      ]
+    },
+    {
+      "id": "diamond",
+      "root": "cases/diamond",
+      "category": "core",
+      "target": "core.py::target",
+      "expected_impacts": [
+        "left.py::left",
+        "right.py::right",
+        "top.py::combine",
+        "test_top.py::test_combine"
+      ],
+      "expected_tests": [
+        "test_top.py::test_combine"
+      ],
+      "rationale": "Both branches call target; combine calls both branches and the test calls combine. Count combine once.",
+      "expected_edges": [
+        [
+          "left.py::left",
+          "core.py::target"
+        ],
+        [
+          "right.py::right",
+          "core.py::target"
+        ],
+        [
+          "top.py::combine",
+          "left.py::left"
+        ],
+        [
+          "top.py::combine",
+          "right.py::right"
+        ],
+        [
+          "test_top.py::test_combine",
+          "top.py::combine"
+        ]
+      ]
+    },
+    {
+      "id": "relative",
+      "root": "cases/relative",
+      "category": "core",
+      "target": "pkg/core.py::target",
+      "expected_impacts": [
+        "pkg/consumer.py::use",
+        "test_pkg.py::test_use"
+      ],
+      "expected_tests": [
+        "test_pkg.py::test_use"
+      ],
+      "rationale": "The relative import aliases the package target, then a test calls use.",
+      "expected_edges": [
+        [
+          "pkg/consumer.py::use",
+          "pkg/core.py::target"
+        ],
+        [
+          "test_pkg.py::test_use",
+          "pkg/consumer.py::use"
+        ]
+      ]
+    },
+    {
+      "id": "cycle",
+      "root": "cases/cycle",
+      "category": "core",
+      "target": "cycle.py::target",
+      "expected_impacts": [
+        "cycle.py::relay",
+        "cycle.py::entry"
+      ],
+      "expected_tests": [],
+      "rationale": "relay calls target and entry calls relay. The changed target itself is excluded, even in a cycle.",
+      "expected_edges": [
+        [
+          "cycle.py::target",
+          "cycle.py::relay"
+        ],
+        [
+          "cycle.py::relay",
+          "cycle.py::target"
+        ],
+        [
+          "cycle.py::entry",
+          "cycle.py::relay"
+        ]
+      ]
+    },
+    {
+      "id": "negative",
+      "root": "cases/negative",
+      "category": "core",
+      "target": "core.py::target",
+      "expected_impacts": [],
+      "expected_tests": [],
+      "rationale": "No caller exists in this closed fixture; misleading is only a textual match. This is not a general open-world absence claim.",
+      "expected_edges": []
+    },
+    {
+      "id": "shadow",
+      "root": "cases/shadow",
+      "category": "core",
+      "target": "core.py::target",
+      "expected_impacts": [
+        "consumer.py::actual"
+      ],
+      "expected_tests": [],
+      "rationale": "shadow's parameter hides the imported name and supplies no evidence of calling this target; actual uses the module binding.",
+      "expected_edges": [
+        [
+          "consumer.py::actual",
+          "core.py::target"
+        ]
+      ]
+    },
+    {
+      "id": "method_gap",
+      "root": "cases/method_gap",
+      "category": "known_gap",
+      "target": "core.py::target",
+      "expected_impacts": [
+        "worker.py::Worker.run",
+        "worker.py::entry"
+      ],
+      "expected_tests": [],
+      "rationale": "Worker.run directly calls target and entry instantiates Worker and calls run. Current extractor lacks method resolution.",
+      "expected_edges": [
+        [
+          "worker.py::Worker.run",
+          "core.py::target"
+        ],
+        [
+          "worker.py::entry",
+          "worker.py::Worker.run"
+        ]
+      ]
+    },
+    {
+      "id": "dynamic_gap",
+      "root": "cases/dynamic_gap",
+      "category": "known_gap",
+      "target": "dynamic.py::target",
+      "expected_impacts": [
+        "dynamic.py::indirect",
+        "dynamic.py::entry"
+      ],
+      "expected_tests": [],
+      "rationale": "The literal globals lookup reaches target in this closed module; entry calls indirect. Current extractor lacks this dynamic resolution.",
+      "expected_edges": [
+        [
+          "dynamic.py::indirect",
+          "dynamic.py::target"
+        ],
+        [
+          "dynamic.py::entry",
+          "dynamic.py::indirect"
+        ]
+      ]
+    }
+  ]
+}

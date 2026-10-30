@@ -11,6 +11,7 @@ from .store import GraphStore
 from .render import render_context
 from .ollama import Ollama
 from .continuation import compare_continuation
+from .benchmark import run_benchmark
 
 
 def main(argv=None):
@@ -44,8 +45,26 @@ def main(argv=None):
     experiment.add_argument("--answer-tokens", type=int, default=192)
     experiment.add_argument("--context-tokens", type=int, default=8192)
     experiment.add_argument("--max-input-tokens", type=int, default=6000)
+    benchmark = commands.add_parser("benchmark", help="run public W1 labels/baselines, optionally with real pinned inference")
+    benchmark.add_argument("--suite", default="benchmarks/w1/suite.json")
+    benchmark.add_argument("--top-k", type=int, default=5)
+    benchmark.add_argument("--profile", help="optional existing local Ollama profile; absent means no model calls")
+    benchmark.add_argument("--model-cases", help="comma-separated case IDs for model track; default all")
+    benchmark.add_argument("--model-repeats", type=int, default=1)
+    benchmark.add_argument("--answer-tokens", type=int, default=768)
+    benchmark.add_argument("--check", action="store_true", help="fail on core regression or infrastructure failure; known gaps remain reported")
     args = parser.parse_args(argv)
     try:
+        if args.command == "benchmark":
+            profile = json.loads(Path(args.profile).read_text(encoding="utf-8-sig")) if args.profile else None
+            if args.model_cases and not profile:
+                parser.error("--model-cases requires --profile")
+            result = run_benchmark(args.suite, top_k=args.top_k, profile=profile,
+                backend=Ollama(profile["endpoint"]) if profile else None,
+                model_cases=args.model_cases.split(",") if args.model_cases else None,
+                model_repeats=args.model_repeats, answer_tokens=args.answer_tokens)
+            print(json.dumps(result, ensure_ascii=True, sort_keys=True, indent=2))
+            return 1 if args.check and (not result["core_regression_pass"] or result["outcome"] != "complete") else 0
         if args.command in {"models", "pin"}:
             client = Ollama(args.endpoint)
             result = {"models": client.models()} if args.command == "models" else client.pin(args.model)
