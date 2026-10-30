@@ -8,7 +8,7 @@ import unittest
 import uuid
 from unittest.mock import patch
 
-from tunic import GraphStore, compile_claims, compile_impact, compile_mentions, compile_related, validate_artifact
+from tunic import GraphStore, compile_claims, compile_impact, compile_mentions, compile_related, compile_timeline, validate_artifact
 from tunic.identity import identity
 
 
@@ -308,6 +308,62 @@ class ReferenceTests(unittest.TestCase):
         self.assertTrue(mention["corroborated"])
         self.assertEqual([(c["relation"], c["status"]) for c in related["claims"]["claims"]],
                          [("depends_on", "asserted_in_source")])
+
+    def test_timeline_filters_claims_by_valid_time(self):
+        self.write("mid.py", "def transform(value):\n    return value * 2\n")
+        self.write("notes.md", "# Decisions\n\n```tunic-claims\n"
+                 + '[{"rel": "decided_by", "subject": "mid.py::transform", "object": "core.py::calculate", '
+                 + '"effective": "2026-01-15", "authority": "arch-board"}, '
+                 + '{"rel": "depends_on", "subject": "mid.py::transform", "object": "core.py::calculate", '
+                 + '"effective": "2026-09-01"}]\n```\n')
+        self.store.ingest(self.root)
+        full = compile_timeline(self.store, "mid.py::transform")
+        self.assertEqual([(e["relation"], e["effective"]) for e in full["entries"]],
+                         [("decided_by", "2026-01-15"), ("depends_on", "2026-09-01")])
+        self.assertEqual(full["entries"][0]["authority"], "arch-board")
+        mid = compile_timeline(self.store, "mid.py::transform", at="2026-06-01")
+        self.assertEqual([(e["relation"], e["effective"]) for e in mid["entries"]],
+                         [("decided_by", "2026-01-15")])
+        self.assertEqual(mid["as_of"], "2026-06-01")
+        with self.assertRaises(ValueError):
+            compile_timeline(self.store, "mid.py::transform", at="yesterday")
+
+    def test_supersession_marks_entities_stale_without_traversal(self):
+        self.write("old.py", "def run(value):\n    return value\n")
+        self.write("new.py", "def run(value):\n    return value + 1\n")
+        self.write("notes.md", "# Migration\n\n```tunic-claims\n"
+                 + '[{"rel": "supersedes", "subject": "new.py::run", "object": "old.py::run", '
+                 + '"effective": "2026-05-01"}]\n```\n')
+        self.store.ingest(self.root)
+        current = compile_timeline(self.store, "old.py::run", at="2026-12-01")
+        self.assertEqual([(s["by"], s["effective"]) for s in current["superseded_by"]],
+                         [("new.py::run", "2026-05-01")])
+        earlier = compile_timeline(self.store, "old.py::run", at="2026-01-01")
+        self.assertEqual(earlier["superseded_by"], [])
+        self.assertNotIn("new.py::run",
+                         [i["symbol"] for i in compile_impact(self.store, "old.py::run")["impacts"]])
+
+    def test_contradictions_surface_with_both_sides_preserved(self):
+        self.write("mid.py", "def transform(value):\n    return value * 2\n")
+        self.write("notes.md", "# Debate\n\n```tunic-claims\n"
+                 + '[{"rel": "contradicts", "subject": "mid.py::transform", "object": "core.py::calculate", '
+                 + '"effective": "2026-03-01"}]\n```\n')
+        self.store.ingest(self.root)
+        line = compile_timeline(self.store, "core.py::calculate")
+        self.assertEqual(line["conflicts"], [["mid.py::transform", "core.py::calculate"]])
+        self.assertNotIn("mid.py::transform",
+                         [i["symbol"] for i in compile_impact(self.store, "core.py::calculate")["impacts"]])
+
+    def test_invalid_effective_keeps_claim_with_diagnostic(self):
+        self.write("mid.py", "def transform(value):\n    return value * 2\n")
+        self.write("notes.md", "# Design\n\n```tunic-claims\n"
+                 + '[{"rel": "depends_on", "subject": "mid.py::transform", "object": "core.py::calculate", '
+                 + '"effective": "someday"}]\n```\n')
+        receipt = self.store.ingest(self.root)
+        self.assertTrue(any(d["kind"] == "invalid_effective" for d in receipt["diagnostics"]))
+        claims = compile_claims(self.store, "core.py::calculate")
+        self.assertEqual(len(claims["claims"]), 1)
+        self.assertIsNone(claims["claims"][0]["effective"])
 
     def test_shadowing_dynamic_scopes_and_parse_errors(self):
         self.write("shadow.py", "from core import calculate\ndef wrong(calculate):\n    return calculate(9)\n")

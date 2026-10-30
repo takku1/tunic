@@ -19,6 +19,7 @@ python -m tunic --db .tunic/example.sqlite render .tunic/context.json | Set-Cont
 python -m tunic --db .tunic/example.sqlite mentions core.py::calculate
 python -m tunic --db .tunic/example.sqlite claims core.py::calculate
 python -m tunic --db .tunic/example.sqlite related core.py::calculate
+python -m tunic --db .tunic/example.sqlite timeline core.py::calculate --at 2026-06-01
 python -m unittest discover -s tests -v
 ```
 

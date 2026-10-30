@@ -10,11 +10,17 @@ import tokenize
 
 from .identity import digest, identity
 
-PROFILE = "python-static-v5"
+PROFILE = "python-static-v6"
 EXCLUDED = {".git", ".venv", "venv", "__pycache__", ".tunic", ".research", "node_modules"}
 TEXT_EXTENSIONS = {".md", ".txt", ".rst"}
 CLAIM_RELATIONS = {"depends_on", "implements", "supersedes", "decided_by", "contradicts"}
 TRAVERSABLE_CLAIMS = {"depends_on", "implements"}
+
+
+def is_iso_date(value):
+    """YYYY-MM-DD without importing date parsing; lexicographic order matches time order."""
+    return (isinstance(value, str) and len(value) == 10 and value[4] == "-" and value[7] == "-"
+            and value.replace("-", "").isdigit())
 
 
 def _bound_names(tree):
@@ -368,8 +374,18 @@ def extract(root):
                         s_kind, s_candidates = _resolve_reference(subject)
                         o_kind, o_candidates = _resolve_reference(claim["object"])
                         expression = subject + " " + rel + " " + claim["object"]
+                        qualifiers = {}
+                        if isinstance(claim.get("authority"), str):
+                            qualifiers["authority"] = claim["authority"]
+                        if "effective" in claim:
+                            if is_iso_date(claim["effective"]):
+                                qualifiers["effective"] = claim["effective"]
+                            else:
+                                diagnostics.append({"path": s["path"], "line": fence_line,
+                                                    "kind": "invalid_effective", "expression": expression})
                         if s_kind == "exact" and o_kind == "exact":
                             proposition = {"relation": rel, "caller": s_candidates[0], "callee": o_candidates[0]}
+                            proposition.update(qualifiers)
                             if isinstance(claim.get("note"), str):
                                 proposition["note"] = claim["note"]
                             assertion = {"proposition": proposition, "source": s["id"],
@@ -396,6 +412,7 @@ def extract(root):
                                             "end": record["end"]}]
                                 proposition = {"relation": rel, "caller": caller, "callee": callee,
                                                "candidate": candidate}
+                                proposition.update(qualifiers)
                                 if isinstance(claim.get("note"), str):
                                     proposition["note"] = claim["note"]
                                 assertion = {"proposition": proposition, "source": s["id"],

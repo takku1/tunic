@@ -95,6 +95,13 @@ class GraphStore:
             raise ValueError("database has no published snapshot; ingest a repository first")
         return row[0]
 
+    def committed_on(self, snapshot):
+        row = self.connection.execute("SELECT substr(committed_at,1,10) FROM snapshots WHERE id=?",
+                                      (snapshot,)).fetchone()
+        if row is None:
+            raise ValueError("unknown snapshot")
+        return row[0]
+
     def view(self, snapshot=None):
         snapshot = snapshot or self.current()
         row = self.connection.execute("SELECT manifest FROM snapshots WHERE id=?", (snapshot,)).fetchone()

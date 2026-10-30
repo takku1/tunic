@@ -1,8 +1,9 @@
 """Deterministic reverse-call witnesses and mechanically validated context IR."""
 
 from collections import defaultdict, deque
+import re
 
-from .extract import TRAVERSABLE_CLAIMS
+from .extract import TRAVERSABLE_CLAIMS, is_iso_date
 from .identity import canonical, digest, identity
 
 IR_VERSION = "tunic.w1.v2"
@@ -75,8 +76,8 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100):
                                        "verification": "asserted_not_observed" if asserted
                                        else "syntactic_path_only"}})
     units = []
-    for aid, a in sorted(used.items()):
-        units.append({"id": aid, "kind": "static_call_observation", "assertion": a,
+    for aid, a in used.items():
+        units.append({"id": aid, "kind": "static_call_observation" if a["proposition"].get("relation") == "static_call" else "asserted_claim_observation", "assertion": a,
                       "evidence": _evidence(store, a, snapshot),
                       "resolution_support": [_evidence(store, premise, snapshot) for premise in a["resolution"]["support"]]})
     artifact = {
@@ -162,13 +163,62 @@ def compile_claims(store, symbol, *, snapshot=None):
             continue
         rows.append({"relation": proposition["relation"], "caller": proposition["caller"],
                      "callee": proposition["callee"], "candidate": proposition.get("candidate"),
-                     "note": proposition.get("note"), "status": assertion["status"],
+                     "note": proposition.get("note"), "effective": proposition.get("effective"),
+                     "authority": proposition.get("authority"), "status": assertion["status"],
                      "evidence": _evidence(store, assertion, snapshot),
                      "resolution": assertion["resolution"]})
     rows.sort(key=lambda r: (r["relation"], r["caller"], r["callee"] or "",
                              r["evidence"]["path"], r["evidence"]["start"]))
     return {"symbol": symbol, "snapshot": snapshot, "profile": view["profile"],
             "claims": rows, "outcome": "complete" if rows else "empty"}
+
+
+def compile_timeline(store, symbol, *, snapshot=None, at=None):
+    """Valid-time evidence view: claims, mentions, supersession, and conflicts as of a date.
+
+    Undated evidence counts as of the snapshot commit date. Superseded and
+    future-dated entries are filtered by `at`, never deleted.
+    """
+    if at is not None and not is_iso_date(at):
+        raise ValueError("at must be an ISO YYYY-MM-DD date")
+    snapshot, view = store.view(snapshot)
+    symbols = {s["key"]: s for s in view["symbols"]}
+    if symbol not in symbols:
+        raise ValueError("unknown symbol: " + symbol)
+    current = store.committed_on(snapshot)
+    as_of = at or current
+    entries = []
+    for claim in compile_claims(store, symbol, snapshot=snapshot)["claims"]:
+        effective = claim.get("effective") or current
+        if effective > as_of:
+            continue
+        entries.append({"kind": "claim", **claim, "effective": effective})
+    for mention in compile_mentions(store, symbol, snapshot=snapshot)["mentions"]:
+        if current > as_of:
+            continue
+        entries.append({"kind": "mention", **mention, "effective": current})
+    entries.sort(key=lambda e: (e["effective"], e["kind"], e["evidence"]["path"], e["evidence"]["start"]))
+    superseded_by = []
+    conflicts = []
+    for assertion in view["assertions"]:
+        proposition = assertion["proposition"]
+        if assertion.get("status") != "asserted_in_source":
+            continue
+        relation = proposition.get("relation")
+        effective = proposition.get("effective") or current
+        if effective > as_of:
+            continue
+        if relation == "supersedes" and proposition.get("callee") == symbol:
+            superseded_by.append({"by": proposition.get("caller"), "effective": effective,
+                                  "evidence": _evidence(store, assertion, snapshot)})
+        elif relation == "contradicts" and (proposition.get("caller") == symbol
+                                            or proposition.get("callee") == symbol):
+            conflicts.append([proposition.get("caller"), proposition.get("callee")])
+    superseded_by.sort(key=lambda s: (s["effective"], s["by"]))
+    conflicts.sort()
+    return {"symbol": symbol, "snapshot": snapshot, "as_of": as_of, "entries": entries,
+            "superseded_by": superseded_by, "conflicts": conflicts,
+            "outcome": "complete" if entries or superseded_by or conflicts else "empty"}
 
 
 def validate_artifact(store, artifact, *, expected_snapshot=None):
