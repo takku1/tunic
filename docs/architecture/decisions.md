@@ -1,0 +1,28 @@
+# Tunic design decisions and open choices
+
+Status: design record, 2026-10-30. This is the authoritative list of decision dispositions. It is not an implementation completion tracker. “Working” means a reversible proposal adopted for consistent design/evaluation; it does not imply user approval of an irreversible dependency or demonstrated benefit.
+
+| ID | Question | Disposition | Rationale and revisit condition |
+| --- | --- | --- | --- |
+| D-01 | Product identity | Settled by user: **Tunic** | GraphGraph remains a historical reference name. |
+| D-02 | Compatibility with GraphGraph | Settled by user: not required | Preserve useful evidence and lessons; retain code/contracts only when independently justified. |
+| D-03 | System boundary | Working: semantic graph, context compiler, runtime adapter | Logical owners, not separate mandatory services. Revisit deployment boundaries after measurement. |
+| D-04 | Compiler output | Working: model-independent typed context IR | Separate evidence meaning from rendering/execution. Compare against direct rendering in G/T arms. |
+| D-05 | First comparison | Working: W1 code impact, W2 temporal decisions, W3 task resumption | W1 is the proposed first vertical slice; later suites remain planned. Dataset/model/resource choices are open. |
+| D-06 | Initial evidence policy | Working: source-faithful excerpts and explicit structured assertions/derivations | No silent summarization or premise loss. Add lossy transforms only as separately scored interventions. |
+| D-07 | Initial update correctness | Working: atomic publication and full recomputation oracle | Conservative invalidation is acceptable. Narrower reuse needs an independence argument and differential checks. |
+| D-08 | Geometry | Working: optional derived measurement view | Structural/learned scores never become source authority. Promote a feature only after its quality/cost ablation. |
+| D-09 | Runtime reuse | Working: ordinary prefill; exact compatible prefix reuse when supported | No arbitrary cross-model KV/latent portability. Fusion/compression/custom attention remain experiments. |
+| D-10 | Representation and persistence | Open | Compare simple relational/adjacency, embedded graph, and server-backed options against actual queries and updates. No RDF/property-graph conformance or engine selection is established. |
+| D-11 | Language and process layout | Open | Choose from deployment constraints and profiling; Python/Rust/microservices are not requirements. |
+| D-12 | Model/runtime/hardware | Open | Need pinned model profiles, tokenizer/templates, serving capabilities, hardware, and budgets before implementation benchmarking. |
+| D-13 | Ontology and extraction profile | Open within a narrow first-slice scope | Define initial relation/types, supported languages/sources, coverage, ambiguity, and entailment handling. No automatic schema induction by default. |
+| D-14 | Causal/discovery execution | Deferred | Hypotheses/constraints/transformations may be represented; execution and broad causal identification require a real harness and explicit assumptions. |
+| D-15 | Integrations and federation | Deferred | Wilderbeast, Chili Crisp, and Team Ops are potential partners. No current interface compatibility is verified or required for the first slice. |
+| D-16 | Numeric acceptance targets | Open | Select labels, model/hardware, sample sizes, noninferiority margins, and budgets before held-out evaluation. No imported paper speedup is a Tunic target. |
+
+## Authority and changes
+
+Component contracts live in [semantic graph](semantic-graph.md), [context IR](context-ir.md), [runtime](runtime.md), and [measurements](measurements.md). [Overview](overview.md) owns boundaries and flow; [workloads](../evaluation/workloads.md) owns comparison arms and task definitions. Research notes supply alternatives and evidence, not competing requirements.
+
+When evidence changes a working choice, update this record and the owning contract together. Keep the source/measurement qualification in research. A feature becomes implemented only through actual code/check evidence; none currently has that status.
