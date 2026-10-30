@@ -77,6 +77,8 @@ def main(argv=None):
     benchmark.add_argument("--check", action="store_true", help="fail on core regression or infrastructure failure; known gaps remain reported")
     benchmark.add_argument("--memory", action="store_true", help="run the held-out memory recall evaluation instead of the W1 suite")
     benchmark.add_argument("--agent", action="store_true", help="run the held-out agent evaluation (none vs lexical vs tunic) instead of the W1 suite")
+    mcp = commands.add_parser("mcp", help="serve the agent-memory boundary over stdio (MCP-compatible JSON-RPC)")
+    mcp.add_argument("--root", default=".", help="fixed workspace root for this server session")
     args = parser.parse_args(argv)
     try:
         if args.command == "benchmark":
@@ -114,6 +116,9 @@ def main(argv=None):
             return 0
         if not args.db:
             parser.error("--db is required for this command")
+        if args.command == "mcp":
+            from .mcp import serve
+            return serve(args.db, args.root)
         with GraphStore(args.db) as store:
             if args.command == "ingest":
                 result = store.ingest(args.root)
