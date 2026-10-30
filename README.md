@@ -17,6 +17,7 @@ python -m tunic --db .tunic/example.sqlite impact core.py::calculate | Set-Conte
 python -m tunic --db .tunic/example.sqlite validate .tunic/context.json
 python -m tunic --db .tunic/example.sqlite render .tunic/context.json | Set-Content -Encoding utf8 .tunic/rendered.json
 python -m tunic --db .tunic/example.sqlite mentions core.py::calculate
+python -m tunic --db .tunic/example.sqlite claims core.py::calculate
 python -m unittest discover -s tests -v
 ```
 

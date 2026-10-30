@@ -2,9 +2,10 @@
 
 from collections import defaultdict, deque
 
+from .extract import TRAVERSABLE_CLAIMS
 from .identity import canonical, digest, identity
 
-IR_VERSION = "tunic.w1.v1"
+IR_VERSION = "tunic.w1.v2"
 
 
 def _evidence(store, record, snapshot):
@@ -27,7 +28,9 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100):
         raise ValueError("unknown or unsupported symbol: " + symbol)
     incoming = defaultdict(list)
     for assertion in view["assertions"]:
-        if assertion["proposition"].get("relation") != "static_call":
+        relation = assertion["proposition"].get("relation")
+        if relation != "static_call" and not (relation in TRAVERSABLE_CLAIMS
+                                              and assertion.get("status") == "asserted_in_source"):
             continue
         incoming[assertion["proposition"]["callee"]].append(assertion)
     for edges in incoming.values():
@@ -56,6 +59,17 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100):
             paths[caller] = path
             queue.append(caller)
     used = {a["id"]: a for path in paths.values() for a in path}
+    impacts = []
+    for key, path in sorted(paths.items()):
+        if key == symbol:
+            continue
+        asserted = any(a["proposition"].get("relation") != "static_call" for a in path)
+        impacts.append({"symbol": key, "kind": "possible_impact", "is_test": symbols[key]["is_test"],
+                        "derivation": {"rule": "asserted_dependency_v1" if asserted
+                                       else "reverse_static_reachability_v1",
+                                       "premises": [a["id"] for a in path],
+                                       "verification": "asserted_not_observed" if asserted
+                                       else "syntactic_path_only"}})
     units = []
     for aid, a in sorted(used.items()):
         units.append({"id": aid, "kind": "static_call_observation", "assertion": a,
@@ -70,10 +84,7 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100):
                               "diagnostics": view["diagnostics"], "bounds_hit": sorted(bounds), "cycles_observed": cycles},
         "target": {"entity": symbols[symbol], "evidence": _evidence(store, symbols[symbol], snapshot)},
         "units": units,
-        "impacts": [{"symbol": key, "kind": "possible_impact", "is_test": symbols[key]["is_test"],
-                     "derivation": {"rule": "reverse_static_reachability_v1", "premises": [a["id"] for a in path],
-                                    "verification": "syntactic_path_only"}}
-                    for key, path in sorted(paths.items()) if key != symbol],
+        "impacts": impacts,
         "validation_scope": "source_integrity_and_static_path_support_not_runtime_effect",
         "outcome": "partial",
         "limitations": ["Python profile is an under-approximation; non-observation is not absence.",
@@ -101,6 +112,30 @@ def compile_mentions(store, symbol, *, snapshot=None):
     mentions.sort(key=lambda m: (m["evidence"]["path"], m["evidence"]["start"], m["evidence"]["end"]))
     return {"symbol": symbol, "snapshot": snapshot, "profile": view["profile"],
             "mentions": mentions, "outcome": "complete" if mentions else "empty"}
+
+
+def compile_claims(store, symbol, *, snapshot=None):
+    """List typed document claims and proposals touching a symbol; never traversed here."""
+    snapshot, view = store.view(snapshot)
+    symbols = {s["key"]: s for s in view["symbols"]}
+    if symbol not in symbols:
+        raise ValueError("unknown symbol: " + symbol)
+    rows = []
+    for assertion in view["assertions"]:
+        proposition = assertion["proposition"]
+        if proposition.get("relation") in ("static_call", "text_mention"):
+            continue
+        if proposition.get("caller") != symbol and proposition.get("callee") != symbol:
+            continue
+        rows.append({"relation": proposition["relation"], "caller": proposition["caller"],
+                     "callee": proposition["callee"], "candidate": proposition.get("candidate"),
+                     "note": proposition.get("note"), "status": assertion["status"],
+                     "evidence": _evidence(store, assertion, snapshot),
+                     "resolution": assertion["resolution"]})
+    rows.sort(key=lambda r: (r["relation"], r["caller"], r["callee"] or "",
+                             r["evidence"]["path"], r["evidence"]["start"]))
+    return {"symbol": symbol, "snapshot": snapshot, "profile": view["profile"],
+            "claims": rows, "outcome": "complete" if rows else "empty"}
 
 
 def validate_artifact(store, artifact, *, expected_snapshot=None):

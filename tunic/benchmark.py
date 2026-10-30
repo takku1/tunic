@@ -202,7 +202,11 @@ def run_benchmark(suite_path, *, top_k=5, backend=None, profile=None, model_case
                         row["graph"] = set_scores([i["symbol"] for i in artifact["impacts"]], stage["expected_impacts"])
                         row["graph_tests"] = set_scores([i["symbol"] for i in artifact["impacts"] if i["is_test"]], stage["expected_tests"])
                         _, view = store.view(capture["snapshot"])
-                        extracted_edges = [(a["proposition"]["caller"], a["proposition"]["callee"]) for a in view["assertions"]]
+                        extracted_edges = [(a["proposition"]["caller"], a["proposition"]["callee"])
+                                           for a in view["assertions"]
+                                           if a["proposition"].get("relation") == "static_call"
+                                           or (a["proposition"].get("relation") in ("depends_on", "implements")
+                                               and a.get("status") == "asserted_in_source")]
                         row["edges"] = set_scores(extracted_edges, [tuple(e) for e in stage["expected_edges"]])
                         gold_edges = {tuple(e) for e in stage["expected_edges"]}
                         assertions = {u["id"]:u["assertion"]["proposition"] for u in artifact["units"]}

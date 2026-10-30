@@ -2,15 +2,18 @@
 
 import ast
 import io
+import json
 import os
 from pathlib import Path
 import tokenize
 
 from .identity import digest, identity
 
-PROFILE = "python-static-v3"
+PROFILE = "python-static-v4"
 EXCLUDED = {".git", ".venv", "venv", "__pycache__", ".tunic", ".research", "node_modules"}
 TEXT_EXTENSIONS = {".md", ".txt", ".rst"}
+CLAIM_RELATIONS = {"depends_on", "implements", "supersedes", "decided_by", "contradicts"}
+TRAVERSABLE_CLAIMS = {"depends_on", "implements"}
 
 
 def _bound_names(tree):
@@ -300,15 +303,138 @@ def extract(root):
                                         "start": start, "end": end, "kind": "unresolved_call", "expression": expression})
     text_ids = {s["id"] for s in sources if s.get("text")}
     code_keys = sorted(key for key, record in symbols.items() if record["source"] not in text_ids)
-    seen_mentions = set()
+    code_key_set = set(code_keys)
+
+    def _resolve_reference(ref):
+        if ref in code_key_set:
+            return ("exact", [ref])
+        matches = sorted(key for key in code_keys
+                         if symbols[key]["name"] == ref or key.split("::", 1)[-1].split(".")[-1] == ref)
+        if matches:
+            return ("named", matches)
+        return ("missing", [])
+
+    claim_spans = {}
     for s in sources:
         if not s.get("text"):
             continue
         mentioner = s["path"] + "::document"
         offset = 0
+        lineno = 0
+        in_fence = False
+        fence_start = 0
+        fence_line = 0
+        body = []
         for raw_line in s["data"].splitlines(keepends=True):
             start, end = offset, offset + len(raw_line)
             offset = end
+            lineno += 1
+            try:
+                stripped = raw_line.decode("utf-8").strip()
+            except UnicodeError:
+                stripped = ""
+            if not in_fence and stripped == "```tunic-claims":
+                in_fence = True
+                fence_start = start
+                fence_line = lineno
+                body = []
+                continue
+            if in_fence:
+                if stripped == "```":
+                    in_fence = False
+                    claim_spans.setdefault(s["id"], []).append((fence_start, end))
+                    try:
+                        block = b"".join(chunk for _, _, chunk in body).decode("utf-8")
+                        claims = json.loads(block)
+                        if not isinstance(claims, list):
+                            raise ValueError("claim block must be a JSON list")
+                    except (UnicodeError, ValueError) as error:
+                        diagnostics.append({"path": s["path"], "line": fence_line,
+                                            "kind": "malformed_claims", "error": str(error)})
+                        continue
+                    for claim in claims:
+                        if (not isinstance(claim, dict) or not isinstance(claim.get("rel"), str)
+                                or not isinstance(claim.get("subject"), str)
+                                or not isinstance(claim.get("object"), str)):
+                            diagnostics.append({"path": s["path"], "line": fence_line,
+                                                "kind": "invalid_claim"})
+                            continue
+                        rel = claim["rel"]
+                        if rel not in CLAIM_RELATIONS:
+                            diagnostics.append({"path": s["path"], "line": fence_line,
+                                                "kind": "unknown_relation", "relation": rel})
+                            continue
+                        subject = claim["subject"]
+                        s_kind, s_candidates = _resolve_reference(subject)
+                        o_kind, o_candidates = _resolve_reference(claim["object"])
+                        expression = subject + " " + rel + " " + claim["object"]
+                        if s_kind == "exact" and o_kind == "exact":
+                            proposition = {"relation": rel, "caller": s_candidates[0], "callee": o_candidates[0]}
+                            if isinstance(claim.get("note"), str):
+                                proposition["note"] = claim["note"]
+                            assertion = {"proposition": proposition, "source": s["id"],
+                                         "start": fence_start, "end": end,
+                                         "resolution": {"expression": expression, "rule": "exact_key_match_v1",
+                                                        "support": []},
+                                         "producer": PROFILE, "status": "asserted_in_source"}
+                            assertion["id"] = identity("assertion", assertion)
+                            assertions.append(assertion)
+                            continue
+                        if (s_kind, o_kind) in (("exact", "named"), ("named", "exact")):
+                            if s_kind == "exact":
+                                fixed, candidates = s_candidates[0], o_candidates
+                                subject_named = False
+                            else:
+                                fixed, candidates = o_candidates[0], s_candidates
+                                subject_named = True
+                            ambiguous = len(candidates) > 1
+                            for candidate in candidates:
+                                caller = candidate if subject_named else fixed
+                                callee = fixed if subject_named else candidate
+                                record = symbols[candidate]
+                                support = [{"source": record["source"], "start": record["start"],
+                                            "end": record["end"]}]
+                                proposition = {"relation": rel, "caller": caller, "callee": callee,
+                                               "candidate": candidate}
+                                if isinstance(claim.get("note"), str):
+                                    proposition["note"] = claim["note"]
+                                assertion = {"proposition": proposition, "source": s["id"],
+                                             "start": fence_start, "end": end,
+                                             "resolution": {"expression": expression,
+                                                            "rule": "name_match_proposed_v1",
+                                                            "support": support},
+                                             "producer": PROFILE,
+                                             "status": "proposed_ambiguous" if ambiguous else "proposed"}
+                                assertion["id"] = identity("assertion", assertion)
+                                assertions.append(assertion)
+                            if ambiguous:
+                                diagnostics.append({"path": s["path"], "line": fence_line,
+                                                    "kind": "ambiguous_reference", "expression": expression,
+                                                    "candidates": sorted(candidates)})
+                            continue
+                        diagnostics.append({"path": s["path"], "line": fence_line,
+                                            "kind": ("ambiguous_reference"
+                                                     if s_kind == "named" or o_kind == "named"
+                                                     else "unresolved_reference"),
+                                            "expression": expression,
+                                            "candidates": sorted(s_candidates + o_candidates)})
+                else:
+                    body.append((start, end, raw_line))
+                continue
+        if in_fence:
+            diagnostics.append({"path": s["path"], "line": fence_line, "kind": "unclosed_claims"})
+    seen_mentions = set()
+    for s in sources:
+        if not s.get("text"):
+            continue
+        mentioner = s["path"] + "::document"
+        hidden = claim_spans.get(s["id"], [])
+        offset = 0
+        for raw_line in s["data"].splitlines(keepends=True):
+            start, end = offset, offset + len(raw_line)
+            offset = end
+            if any(first <= start < last for first, last in hidden):
+                continue
             try:
                 line = raw_line.decode("utf-8")
             except UnicodeError:

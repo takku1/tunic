@@ -253,6 +253,23 @@
       ]
     },
     {
+      "id": "docs_claim",
+      "root": "cases/docs_claim",
+      "category": "core",
+      "target": "core.py::target",
+      "expected_impacts": [
+        "mid.py::transform"
+      ],
+      "expected_tests": [],
+      "rationale": "No static call links mid to core; a design note asserts mid depends_on target with an exact-key claim block.",
+      "expected_edges": [
+        [
+          "mid.py::transform",
+          "core.py::target"
+        ]
+      ]
+    },
+    {
       "id": "dynamic_gap",
       "root": "cases/dynamic_gap",
       "category": "known_gap",

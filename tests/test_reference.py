@@ -8,7 +8,7 @@ import unittest
 import uuid
 from unittest.mock import patch
 
-from tunic import GraphStore, compile_impact, compile_mentions, validate_artifact
+from tunic import GraphStore, compile_claims, compile_impact, compile_mentions, validate_artifact
 from tunic.identity import identity
 
 
@@ -206,6 +206,50 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual([i["symbol"] for i in self.artifact()["impacts"]],
                          ["service.py::process", "test_service.py::test_process"])
         self.assertTrue(validate_artifact(self.store, self.artifact())["valid"])
+
+    def test_doc_claims_traverse_asserted_dependencies(self):
+        self.write("mid.py", "def transform(value):\n    return value * 2\n")
+        self.write("notes.md", "# Design\n\n```tunic-claims\n"
+                 + '[{"rel": "depends_on", "subject": "mid.py::transform", '
+                 + '"object": "core.py::calculate"}]\n```\n')
+        self.store.ingest(self.root)
+        a = compile_impact(self.store, "core.py::calculate")
+        paths = {i["symbol"]: i["derivation"] for i in a["impacts"]}
+        self.assertIn("mid.py::transform", paths)
+        self.assertEqual(paths["mid.py::transform"]["rule"], "asserted_dependency_v1")
+        self.assertEqual(paths["mid.py::transform"]["verification"], "asserted_not_observed")
+        self.assertTrue(validate_artifact(self.store, a)["valid"])
+        claims = compile_claims(self.store, "core.py::calculate")
+        self.assertEqual(len(claims["claims"]), 1)
+        self.assertEqual(claims["claims"][0]["relation"], "depends_on")
+
+    def test_ambiguous_references_become_proposals_not_merges(self):
+        self.write("worker.py", "def process(value):\n    return value\n")
+        self.write("notes.md", "# Design\n\n```tunic-claims\n"
+                 + '[{"rel": "depends_on", "subject": "process", '
+                 + '"object": "core.py::calculate"}]\n```\n')
+        receipt = self.store.ingest(self.root)
+        self.assertTrue(any(d["kind"] == "ambiguous_reference" for d in receipt["diagnostics"]))
+        a = compile_impact(self.store, "core.py::calculate")
+        self.assertNotIn("worker.py::process",
+                         [i["symbol"] for i in a["impacts"]])
+        claims = compile_claims(self.store, "core.py::calculate")
+        proposals = [c for c in claims["claims"] if c["status"] == "proposed_ambiguous"]
+        self.assertEqual(len(proposals), 2)
+        self.assertEqual({c["candidate"] for c in proposals},
+                         {"service.py::process", "worker.py::process"})
+
+    def test_contradicts_recorded_not_traversed(self):
+        self.write("mid.py", "def transform(value):\n    return value * 2\n")
+        self.write("notes.md", "# Design\n\n```tunic-claims\n"
+                 + '[{"rel": "contradicts", "subject": "mid.py::transform", '
+                 + '"object": "core.py::calculate"}]\n```\n')
+        self.store.ingest(self.root)
+        a = compile_impact(self.store, "core.py::calculate")
+        self.assertNotIn("mid.py::transform", [i["symbol"] for i in a["impacts"]])
+        claims = compile_claims(self.store, "core.py::calculate")
+        self.assertEqual([(c["relation"], c["status"]) for c in claims["claims"]],
+                         [("contradicts", "asserted_in_source")])
 
     def test_shadowing_dynamic_scopes_and_parse_errors(self):
         self.write("shadow.py", "from core import calculate\ndef wrong(calculate):\n    return calculate(9)\n")
