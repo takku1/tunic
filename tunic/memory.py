@@ -56,6 +56,9 @@ class Memory:
     def ingest(self):
         return self.store.ingest(str(self.root))
 
+    def refresh(self):
+        return self.store.refresh(str(self.root))
+
     def impact(self, symbol, **kwargs):
         return compiler.compile_impact(self.store, symbol, **kwargs)
 

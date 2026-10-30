@@ -61,11 +61,23 @@ def _span(data, node):
     return start, end
 
 
-def capture(root):
+DOC_PHASE_KINDS = {"malformed_claims", "invalid_claim", "unknown_relation",
+                   "invalid_effective", "ambiguous_reference", "unresolved_reference",
+                   "unclosed_claims"}
+STRUCTURE_KINDS = {"excluded_symlink"}
+
+
+def _scan(root):
+    """Walk the source root and read candidate files without parsing.
+
+    Returns (entries, diagnostics) where each entry carries path, data and
+    text flags. Shared by full capture and incremental change detection so
+    both observe the same file set.
+    """
     root = Path(root).resolve(strict=True)
     if not root.is_dir():
         raise ValueError("source root must be a directory")
-    sources, diagnostics, modules = [], [], {}
+    entries, diagnostics = [], []
     def scan_error(error):
         raise error
     for base, dirs, files in os.walk(root, followlinks=False, onerror=scan_error):
@@ -83,32 +95,46 @@ def capture(root):
             if p.is_symlink():
                 diagnostics.append({"path": path, "kind": "excluded_symlink"})
                 continue
-            data = p.read_bytes()
-            source = {"path": path, "digest": digest(data), "data": data,
-                      "id": identity("source", [path, digest(data)]), "tree": None, "text": text}
-            if text:
-                sources.append(source)
-                continue
-            parts = list(Path(path).with_suffix("").parts)
-            if parts[-1] == "__init__":
-                parts.pop()
-            source["module"] = ".".join(parts)
-            modules.setdefault(source["module"], []).append(source)
+            entries.append({"path": path, "data": p.read_bytes(), "text": text})
+    return entries, diagnostics
+
+
+def capture(root):
+    sources, diagnostics, modules = [], [], {}
+    entries, walk_diagnostics = _scan(root)
+    diagnostics.extend(walk_diagnostics)
+    for entry in entries:
+        path, data, text = entry["path"], entry["data"], entry["text"]
+        file_digest = digest(data)
+        source = {"path": path, "digest": file_digest, "data": data,
+                  "id": identity("source", [path, file_digest]), "tree": None, "text": text}
+        if text:
             sources.append(source)
-            try:
-                encoding, _ = tokenize.detect_encoding(io.BytesIO(data).readline)
-                if encoding not in {"utf-8", "utf-8-sig"}:
-                    diagnostics.append({"path": path, "kind": "unsupported_encoding", "encoding": encoding})
-                    continue
-                source["tree"] = ast.parse(data.decode("utf-8-sig"), filename=path)
-            except (SyntaxError, UnicodeError, ValueError) as error:
-                diagnostics.append({"path": path, "kind": "parse_error", "line": getattr(error, "lineno", None)})
+            continue
+        parts = list(Path(path).with_suffix("").parts)
+        if parts[-1] == "__init__":
+            parts.pop()
+        source["module"] = ".".join(parts)
+        modules.setdefault(source["module"], []).append(source)
+        sources.append(source)
+        try:
+            encoding, _ = tokenize.detect_encoding(io.BytesIO(data).readline)
+            if encoding not in {"utf-8", "utf-8-sig"}:
+                diagnostics.append({"path": path, "kind": "unsupported_encoding", "encoding": encoding})
+                continue
+            source["tree"] = ast.parse(data.decode("utf-8-sig"), filename=path)
+        except (SyntaxError, UnicodeError, ValueError) as error:
+            diagnostics.append({"path": path, "kind": "parse_error", "line": getattr(error, "lineno", None)})
     return sources, diagnostics, modules
 
 
-def extract(root):
-    sources, diagnostics, modules = capture(root)
-    symbols, assertions = {}, []
+def _build_code(sources, modules, symbols, assertions, diagnostics):
+    """Populate symbols and static-call assertions from parsed Python sources.
+
+    Reads only code bytes and the module table: document sources are skipped,
+    so rerunning this phase is unnecessary when solely text files changed.
+    Mutates the passed-in containers; see extract for the full pipeline.
+    """
     for s in sources:
         tree = s["tree"]
         if tree is None:
@@ -308,6 +334,17 @@ def extract(root):
                 else:
                     diagnostics.append({"path": s["path"], "caller": caller, "line": call.lineno,
                                         "start": start, "end": end, "kind": "unresolved_call", "expression": expression})
+
+
+def _build_docs(sources, symbols, assertions, diagnostics):
+    """Populate document mentions and typed-claim assertions.
+
+    Reads only text sources against an already built symbol table, so this
+    phase can rerun alone when code bytes are unchanged. The mention dedup
+    set restarts here exactly as in a full rebuild, which refresh replicates
+    by always processing every text source.
+    Mutates the passed-in containers; see extract for the full pipeline.
+    """
     text_ids = {s["id"] for s in sources if s.get("text")}
     code_keys = sorted(key for key, record in symbols.items() if record["source"] not in text_ids)
 
@@ -506,4 +543,12 @@ def extract(root):
                                  "status": "proposed_ambiguous" if len(candidates) > 1 else "proposed"}
                     assertion["id"] = identity("assertion", assertion)
                     assertions.append(assertion)
+
+
+def extract(root):
+    """Full rebuild: capture, code resolution, then document extraction."""
+    sources, diagnostics, modules = capture(root)
+    symbols, assertions = {}, []
+    _build_code(sources, modules, symbols, assertions, diagnostics)
+    _build_docs(sources, symbols, assertions, diagnostics)
     return sources, sorted(symbols.values(), key=lambda x:x["key"]), sorted(assertions, key=lambda x:x["id"]), sorted(diagnostics, key=lambda x: (x["path"], x.get("line") or 0, x["kind"], x.get("start", 0)))
