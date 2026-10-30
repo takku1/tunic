@@ -1,6 +1,6 @@
 # Tunic: three representative workloads
 
-Status: benchmark design only. Fixtures, engines, numeric limits, and runs do not yet exist. The experiment tests whether typed compilation adds value beyond conventional retrieval; no performance or novelty conclusion is implied.
+Status: comparative benchmark design. A bounded [W1 reference slice](../architecture/w1-reference.md) and independent small correctness fixtures exist; V/G/T arms, answer models, numeric acceptance limits, and comparative runs do not. The experiment tests whether typed compilation adds value beyond conventional retrieval; no performance or novelty conclusion is implied.
 
 ## Common comparison
 

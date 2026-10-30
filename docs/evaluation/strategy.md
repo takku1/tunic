@@ -45,6 +45,8 @@ Use paired queries and fixed replay traces. Report uncertainty across runs and q
 
 Numeric acceptance thresholds remain unset until the workload and deployment budget are known. Do not invent a speedup target from published headline results.
 
+The optional runtime-controller track has its own [factorial experiment protocol](../research/runtime-memory.md#measurable-experiments): retrieval timing crossed with exact cache use, then bounded prefetch or separately evaluated model changes. It does not replace the V/G/T comparison. Shared/model-backed runs must also execute the [security acceptance cases](../architecture/security.md#required-tests-before-a-shared-or-model-backed-runtime); all remain unexecuted.
+
 ## Follow-up literature work
 
 Read full methods and code for the shortlisted approaches, tracing claims to implementation revisions. Expand into dynamic graph indexing, temporal databases, program dependence graphs, budgeted/submodular retrieval, sparse graph algorithms, cache scheduling, attention sparsity, learned context compression, and graph-to-language alignment. For each addition record problem, assumptions, training requirement, computational complexity, datasets, limitations, reproduction artifacts, and relevance to a concrete design decision.

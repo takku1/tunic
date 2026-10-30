@@ -6,7 +6,7 @@ Contract ownership: [semantic graph](../../architecture/semantic-graph.md), [con
 
 ## Current state and scope
 
-Tunic has architecture, mathematical sketches, a context IR proposal, workload plans, and reference-project assessments. It has no semantic graph engine or reproduced benchmark. Every capability below is unimplemented. **Draft** means its contract has an initial treatment in existing docs; **gap** means a substantial contract/decision is missing. Neither means working software.
+Tunic has architecture, mathematical sketches, a context IR proposal, workload plans, reference-project assessments, and a bounded [W1 Python/SQLite implementation](../../architecture/w1-reference.md). The table describes full-capability design gaps, not an implementation completion percentage. The reference slice implements parts of source identity, static assertions/provenance, atomic snapshots, bounded traversal, and context validation; none of the 26 capabilities is complete in its full proposed scope. No comparative benchmark has run. **Draft** means a contract has an initial treatment; **gap** means a substantial contract/decision is missing.
 
 The graph must represent **who asserted what, about which entity/event, under which scope and time, from which source, with what uncertainty and derivation**. Topology and vector similarity alone cannot supply those semantics.
 

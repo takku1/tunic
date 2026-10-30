@@ -1,6 +1,6 @@
 # Tunic architecture
 
-Status: proposed architecture, 2026-10-30. No Tunic engine, runtime adapter, serialized contract, or performance result exists. Decision dispositions are maintained in [decisions](decisions.md); [glossary](glossary.md) defines shared terms.
+Status: target architecture, 2026-10-30. A bounded [W1 reference slice](w1-reference.md) implements local Python evidence ingestion, snapshots, impact queries, and a versioned JSON context profile. Most contracts, runtime adapters, and comparative performance evaluation remain unimplemented. Decision dispositions are maintained in [decisions](decisions.md); [glossary](glossary.md) defines shared terms.
 
 ## Purpose and first slice
 
@@ -20,6 +20,7 @@ flowchart LR
     F --> G[Runtime adapter]
     G <--> H[Compatible prefix and KV cache]
     G --> I[LLM or other consumer]
+    G -. optional retrieval at supported boundary .-> D
     B -. authorized projection .-> M[Optional measurements]
     M -. selection features .-> D
 ```
@@ -32,6 +33,8 @@ flowchart LR
 | Optional measurement layer | [Measurement and research-object semantics](measurements.md) | Supplies derived features/hypotheses; cannot promote scores into factual authority. |
 
 These are responsibility boundaries, not mandatory services, processes, crates, or databases. Retrieval/planning is a compiler responsibility over graph-owned views. Storage/indexing implements the graph contract without dictating claim semantics.
+
+The optional [runtime memory controller](runtime-memory.md) schedules additional compiler requests at supported generation boundaries. It remains within the runtime owner; it does not bypass typed IR or establish arbitrary mid-layer injection. [Security](security.md) owns external authorization, framing, tool-execution, cache-isolation and revocation boundaries. Those model-backed/shared-runtime requirements are not implemented by the local W1 slice.
 
 ## End-to-end request
 
@@ -67,6 +70,8 @@ Order the work as: settle minimal graph/IR semantics and independent fixtures; i
 ## Conditional directions
 
 The [geometry research](../research/geometry/README.md) investigates measurements, task-aware ranking, hypotheses, and controlled discovery. The [research assessment](../research/assessment.md) covers cache fusion, custom attention, and latent bridges. These remain experiments, not initial correctness dependencies.
+
+The [runtime memory assessment](../research/runtime-memory.md) supports investigating boundary-triggered continuation and bounded prefetch, with caching as an independent factor. Non-prefix fusion and trained graph attention require separate quality/security tests and evidence that graph content affects results. No runtime bridge is implemented.
 
 Wilderbeast may supply code/analysis evidence, Chili Crisp may evaluate candidates, and Team Ops may consume shared evidence. No actual interfaces were audited. Each would need stable source/revision identity, evidence/status/coverage, reproducible artifacts, and explicit ownership. Tunic must work independently before integration is claimed.
 

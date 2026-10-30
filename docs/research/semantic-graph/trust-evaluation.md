@@ -4,7 +4,7 @@ Scope: SG-21–SG-24. Minimum trust and measurement contracts are required; dist
 
 ## SG-21 Authorization
 
-**Gap:** no principal/scope model, authorization enforcement point, derived-data policy, or revocation contract.
+**Remaining gap:** [security requirements](../../architecture/security.md) now locate authorization, derived-policy and revocation boundaries, but the concrete policy engine and shared/runtime enforcement remain unimplemented. The local W1 reference is explicitly single-principal.
 
 **Established concepts:** [ODRL 2.2](https://www.w3.org/TR/odrl-model/) is a policy-expression reference, not an authorization enforcement engine. Scope-safe source reads in the SmartMemory wrapper are useful local examples, but do not prove arbitrary derived graph isolation.
 
@@ -14,7 +14,7 @@ Scope: SG-21–SG-24. Minimum trust and measurement contracts are required; dist
 
 ## SG-22 Adversarial evidence
 
-**Gap:** source trust, graph mutation authority, and content-as-data boundaries are not formalized.
+**Remaining gap:** [security requirements](../../architecture/security.md) define external authority and content/framing boundaries. Model-backed threat profiles and attack/defense evaluations remain unimplemented. The [runtime research assessment](../runtime-memory.md#security-assessment) rejects model-only controls as authorization boundaries.
 
 **Current research:** [BadGraph](https://www.usenix.org/conference/usenixsecurity26/presentation/yan-leiming), USENIX Security 2026, studies topological manipulation that hides useful evidence using neutral linker text. October's [GraphRAG-LTM](https://arxiv.org/abs/2610.19549) separates attacker access levels; [GuardRAG](https://arxiv.org/abs/2610.35071) proposes post-retrieval clustering/filtering for coordinated poisoning. The latter two are preprints and not universal defenses.
 
@@ -34,7 +34,7 @@ Scope: SG-21–SG-24. Minimum trust and measurement contracts are required; dist
 
 ## SG-24 Evaluation and economics
 
-**Gap:** three workloads are designed, but fixtures, labels, runnable arms, and resource targets are missing.
+**Remaining gap:** small independent W1 correctness fixtures and a runnable Python/SQLite reference now exist. The three comparative workloads still lack runnable V/G/T arms, model-backed labels/runs and resource targets; see the [implementation profile](../../architecture/w1-reference.md).
 
 **Current concepts:** [KGI-Bench](https://github.com/ScaDS/KGI-Bench) covers incremental integration quality. [GraphRAG-Bench](https://arxiv.org/abs/2506.05690) separates graph construction, retrieval, and generation questions. [Does Memory Need Graphs?](https://aclanthology.org/2026.acl-long.1232/) motivates controlled stage-wise baselines rather than graph/no-graph branding. Results from different datasets, answer models, and extraction settings do not form a reliable combined leaderboard.
 

@@ -1,6 +1,6 @@
 # Tunic semantic graph contract
 
-Status: proposed logical contract. No graph implementation, serialized schema, ontology, or storage engine is selected. This document owns durable evidence-state semantics. Research gaps/alternatives live in the [capability index](../research/semantic-graph/index.md); decision dispositions live in [decisions](decisions.md).
+Status: target logical contract. The [W1 reference profile](w1-reference.md) implements a bounded subset with SQLite and Python static-call assertions; it does not implement the entire contract. This document owns durable evidence-state semantics. Research gaps/alternatives live in the [capability index](../research/semantic-graph/index.md); decision dispositions live in [decisions](decisions.md).
 
 ## Responsibility and records
 
@@ -42,6 +42,6 @@ Logical outcomes include complete, partial, stale, unsupported, unauthorized, in
 
 ## Acceptance and remaining choices
 
-Planned checks cover duplicate sources/assertions, alias ambiguity, merge reversal, backdated correction, temporal path mismatch, failed/stale enrichment, alternative support retraction, excluded-source negatives, concurrent snapshot visibility, and revocation after compilation. No checks have been executed against a Tunic engine.
+Planned full-contract checks cover duplicate sources/assertions, alias ambiguity, merge reversal, backdated correction, temporal path mismatch, failed/stale enrichment, alternative support retraction, excluded-source negatives, concurrent snapshot visibility, and revocation after compilation. Executed reference-slice checks cover deterministic snapshots, static resolution ambiguity, edits/deletions, reader isolation, rollback, source integrity, and stale artifact rejection; see the [implementation profile](w1-reference.md). They do not establish the remaining guarantees.
 
-The exact initial types/predicates, supported source languages, storage, transaction/index publication profile, canonical identity encoding, retention rules, and entailment policy remain open. Full recomputation is the reference; optimization must preserve these semantics before demonstrating resource gains.
+The reference profile fixes its initial predicate, Python subset, SQLite transaction publication, and identity encoding. Broader ontology, language support, production storage, retention/erasure, and entailment policies remain open. Full recomputation is the reference; optimization must preserve these semantics before demonstrating resource gains.

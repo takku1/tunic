@@ -1,6 +1,6 @@
 # Tunic typed context IR
 
-Status: proposed logical contract, not an implemented schema, binary format, or proven novelty. This document owns the IR semantics; [architecture](overview.md) owns component boundaries and [workloads](../evaluation/workloads.md) owns the planned comparisons.
+Status: target logical contract, with a bounded versioned JSON implementation in the [W1 reference profile](w1-reference.md). That profile is not the entire contract or a claim of novelty. This document owns the IR semantics; [architecture](overview.md) owns component boundaries and [workloads](../evaluation/workloads.md) owns the planned comparisons.
 
 ## Purpose and choices
 
@@ -57,4 +57,4 @@ Model-independent representation does not mean model-independent selection: plan
 
 ## Planned acceptance checks
 
-Verify excerpt/digest integrity, complete premise closure, labeled lossy transformations, temporal history preservation, revoked-access rejection, and deterministic artifacts under fixed inputs. Compare incremental output against full recompilation after edits, insertions, deletions, and policy changes. Lower one artifact for two pinned models and verify independent input/cache identities. These checks are planned and unexecuted.
+Full-contract checks must verify excerpt/digest integrity, complete premise closure, labeled lossy transformations, temporal history preservation, revoked-access rejection, and deterministic artifacts under fixed inputs. Compare incremental output against full recompilation after edits, insertions, deletions, and policy changes. Lower one artifact for two pinned models and verify independent input/cache identities. The reference slice has executed source/path integrity, deterministic compilation, tamper/staleness rejection, and update/full-rebuild comparisons. Revocation, temporal reasoning, incremental optimization, and model lowering remain untested and unimplemented.

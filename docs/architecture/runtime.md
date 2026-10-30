@@ -2,6 +2,8 @@
 
 Status: proposed contract. No model/runtime/backend has been selected or integrated. This document owns model-specific input and execution-state semantics; [context IR](context-ir.md) owns model-independent evidence semantics.
 
+The optional [runtime memory controller](runtime-memory.md) owns retrieval/attachment scheduling at supported boundaries; the [security contract](security.md) owns authorization, framing, producer and isolation requirements. Neither extension is implemented. Their [research assessment](../research/runtime-memory.md) distinguishes active retrieval, exact reuse, approximate fusion and trained memory.
+
 ## Lowering boundary
 
 Inputs are a validated context IR, current authorization/validity receipt, and a pinned target profile. The profile identifies model/tokenizer/template/renderer versions, context capacity, requested output allowance, attention/position policy, and supported input modalities/capabilities.

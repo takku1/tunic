@@ -1,6 +1,6 @@
 # Tunic documentation
 
-Tunic is a proposed evidence and context substrate: semantic graph, context compiler, and model-specific runtime adapter. Status: research/design only; no engine or benchmark results. GraphGraph is historical reference material with no compatibility requirement.
+Tunic is an evidence and context substrate under development: semantic graph, context compiler, and model-specific runtime adapter. A bounded [Python/SQLite W1 reference slice](architecture/w1-reference.md) now implements ingestion, static impact queries, snapshot history, and deterministic evidence compilation. The full contracts, runtime adapters, and comparative benchmarks remain unfinished. GraphGraph is historical reference material with no compatibility requirement.
 
 ## Start here
 
@@ -14,8 +14,11 @@ Read [architecture overview](architecture/overview.md), [semantic graph contract
 | What do durable claims, evidence, identity, time, and snapshots mean? | [Semantic graph](architecture/semantic-graph.md) |
 | What does compilation produce and validate? | [Context IR](architecture/context-ir.md) |
 | How are inputs lowered and execution/cache compatibility checked? | [Lowering and runtime](architecture/runtime.md) |
+| How might retrieval continue during an inference session? | [Optional runtime memory controller](architecture/runtime-memory.md) |
+| Where are security and authority boundaries enforced? | [Security requirements and limits](architecture/security.md) |
 | What can measurements/hypotheses mean without changing facts? | [Optional measurement contract](architecture/measurements.md) |
 | What is chosen or still unresolved? | [Decision dispositions](architecture/decisions.md) |
+| What actually runs, with which limits and checks? | [W1 implementation profile](architecture/w1-reference.md) and [quickstart](../README.md#run-the-reference-slice) |
 | How will behavior, utility, and costs be assessed? | [Evaluation strategy](evaluation/strategy.md) and [workload definitions](evaluation/workloads.md) |
 
 Architecture contracts describe proposed behavior, not implemented guarantees. Research notes support or challenge choices; references report inspected external artifacts. If they disagree, update the owning contract/decision explicitly rather than treating an older research suggestion as a second requirement.
@@ -24,6 +27,7 @@ Architecture contracts describe proposed behavior, not implemented guarantees. R
 
 - [Capability/gap index](research/semantic-graph/index.md): 26 capabilities linked to representation, acquisition, knowledge state, maintenance, retrieval, trust, and evaluation notes. [Source ledger](research/semantic-graph/sources.md) records dates, maturity, and reading depth.
 - [Research assessment](research/assessment.md): graph/model integration and transport claims.
+- [Runtime memory assessment](research/runtime-memory.md): active retrieval, compatible KV reuse, graph soft-prompt failure modes, prefetch and security; separates viable controller work from speculative model changes.
 - [Candidate mathematical foundations](research/mathematics.md): objectives and assumptions; these are not selected algorithms.
 - [Database/runtime tools](research/tools.md) and [current project landscape](research/project-landscape.md): candidates and comparison questions.
 - [SmartMemory concepts](research/smartmemory-concepts.md): documented memory/retrieval approaches and their limits.
