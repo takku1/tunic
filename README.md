@@ -20,6 +20,8 @@ python -m tunic --db .tunic/example.sqlite mentions core.py::calculate
 python -m tunic --db .tunic/example.sqlite claims core.py::calculate
 python -m tunic --db .tunic/example.sqlite related core.py::calculate
 python -m tunic --db .tunic/example.sqlite timeline core.py::calculate --at 2026-06-01
+python -m tunic note notes/session.md --text "Investigating core.py::calculate."
+python -m tunic --db .tunic/example.sqlite draft notes/session.md
 python -m unittest discover -s tests -v
 ```
 

@@ -2,11 +2,12 @@
 
 import argparse
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 import sqlite3
 import sys
 
-from .compiler import compile_claims, compile_impact, compile_mentions, compile_related, compile_timeline, validate_artifact
+from .compiler import compile_claims, compile_drafts, compile_impact, compile_mentions, compile_related, compile_timeline, validate_artifact
 from .store import GraphStore
 from .render import render_context
 from .ollama import Ollama
@@ -31,6 +32,11 @@ def main(argv=None):
     timeline = commands.add_parser("timeline", help="valid-time evidence view for a symbol key")
     timeline.add_argument("symbol", help="exact path::function key, e.g. core.py::calculate")
     timeline.add_argument("--at", default=None, help="ISO YYYY-MM-DD cutoff; defaults to the snapshot date")
+    note = commands.add_parser("note", help="append a timestamped session note to a document")
+    note.add_argument("path", help="document path to create or append, e.g. notes/session.md")
+    note.add_argument("--text", required=True, help="note text to append")
+    draft = commands.add_parser("draft", help="propose claim blocks for co-mentioned entities (review input only)")
+    draft.add_argument("document", help="repository-relative document path, e.g. notes.md")
     impact.add_argument("--snapshot")
     impact.add_argument("--max-depth", type=int, default=8)
     impact.add_argument("--max-nodes", type=int, default=100)
@@ -79,6 +85,15 @@ def main(argv=None):
             result = {"models": client.models()} if args.command == "models" else client.pin(args.model)
             print(json.dumps(result, ensure_ascii=True, sort_keys=True, indent=2))
             return 0
+        if args.command == "note":
+            target = Path(args.path)
+            if str(target.parent) not in (".", ""):
+                target.parent.mkdir(parents=True, exist_ok=True)
+            stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+            with target.open("a", encoding="utf-8") as handle:
+                handle.write("\n\n## " + stamp + "\n\n" + args.text.rstrip("\n") + "\n")
+            print(json.dumps({"outcome": "appended", "path": str(target)}, ensure_ascii=True, sort_keys=True))
+            return 0
         if not args.db:
             parser.error("--db is required for this command")
         with GraphStore(args.db) as store:
@@ -95,6 +110,9 @@ def main(argv=None):
                 result = compile_related(store, args.symbol)
             elif args.command == "timeline":
                 result = compile_timeline(store, args.symbol, at=args.at)
+            elif args.command == "draft":
+                print(json.dumps(compile_drafts(store, args.document), ensure_ascii=True, sort_keys=True, indent=2))
+                return 0
             elif args.command in {"validate", "render"}:
                 artifact = json.loads(Path(args.artifact).read_text(encoding="utf-8-sig"))
                 if args.command == "render":

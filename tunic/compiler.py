@@ -136,6 +136,58 @@ def compile_mentions(store, symbol, *, snapshot=None):
             "mentions": mentions, "outcome": "complete" if mentions else "empty"}
 
 
+def compile_drafts(store, document, *, snapshot=None):
+    """Propose claim blocks for entity pairs co-mentioned in one document.
+
+    Only exact mentions seed proposals, and pairs already linked by static
+    paths or existing claims are skipped. Direction follows first mention and
+    is always marked unverified: a draft is review input, never an assertion.
+    """
+    snapshot, view = store.view(snapshot)
+    symbols = {s["key"]: s for s in view["symbols"]}
+    mentioner = document + "::document"
+    if mentioner not in symbols:
+        raise ValueError("unknown document: " + document)
+    first_seen = {}
+    for assertion in view["assertions"]:
+        proposition = assertion["proposition"]
+        if proposition.get("relation") != "text_mention" or assertion.get("status") != "syntactic_observation":
+            continue
+        if proposition.get("caller") != mentioner:
+            continue
+        key = proposition.get("callee")
+        excerpt = _evidence(store, assertion, snapshot)["excerpt"]
+        seen = (assertion["start"], excerpt.find(key))
+        if key not in first_seen or seen < first_seen[key]:
+            first_seen[key] = seen
+    linked = set()
+    for assertion in view["assertions"]:
+        proposition = assertion["proposition"]
+        if proposition.get("relation") == "text_mention":
+            continue
+        linked.add((proposition.get("caller"), proposition.get("callee")))
+        linked.add((proposition.get("callee"), proposition.get("caller")))
+    drafts = []
+    ordered = sorted(first_seen, key=lambda key: first_seen[key])
+    for index, subject in enumerate(ordered):
+        try:
+            reachable = {i["symbol"] for i in compile_impact(store, subject, snapshot=snapshot)["impacts"]}
+        except ValueError:
+            continue
+        for other in ordered[index + 1:]:
+            if (subject, other) in linked or other in reachable:
+                continue
+            try:
+                back = {i["symbol"] for i in compile_impact(store, other, snapshot=snapshot)["impacts"]}
+            except ValueError:
+                continue
+            if subject in back:
+                continue
+            drafts.append({"rel": "depends_on", "subject": subject, "object": other,
+                           "note": "direction unverified - confirm before saving"})
+    return drafts
+
+
 def compile_related(store, symbol, *, snapshot=None):
     """Cross-source context: reverse dependencies plus document mentions, claims, and proposals."""
     snapshot, view = store.view(snapshot)

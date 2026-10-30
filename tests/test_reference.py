@@ -1,4 +1,5 @@
 import json
+import re
 from pathlib import Path
 import sqlite3
 import shutil
@@ -384,6 +385,52 @@ class ReferenceTests(unittest.TestCase):
         self.assertEqual(depends[0]["effective"], "2026-10-30")
         line = compile_timeline(self.store, "core.py::calculate", at="2026-12-01")
         self.assertTrue(any(e["relation"] == "depends_on" for e in line["entries"]))
+
+    def test_note_appends_timestamped_session_record(self):
+        def cli(*args):
+            return subprocess.run([sys.executable, "-m", "tunic", *args],
+                                  capture_output=True, text=True, check=False)
+        first = cli("note", str(self.root / "session.md"), "--text", "Investigating `core.py::calculate`.")
+        self.assertEqual(first.returncode, 0, first.stderr)
+        second = cli("note", str(self.root / "session.md"), "--text", "Confirmed the service path.")
+        self.assertEqual(second.returncode, 0, second.stderr)
+        body = (self.root / "session.md").read_text(encoding="utf-8")
+        self.assertEqual(body.count("core.py::calculate"), 1)
+        self.assertEqual(len(re.findall(r"^## \d{4}-\d{2}-\d{2} ", body, re.MULTILINE)), 2)
+        self.store.ingest(self.root)
+        mentions = compile_mentions(self.store, "core.py::calculate")
+        self.assertTrue(any(m["status"] == "syntactic_observation" for m in mentions["mentions"]))
+
+    def test_draft_proposes_only_unlinked_co_mentions(self):
+        self.write("mid.py", "def transform(value):\n    return value * 2\n")
+        self.write("notes.md", "# Design\n\nCompare `mid.py::transform` with `core.py::calculate`.\n")
+        self.store.ingest(self.root)
+        def cli(*args):
+            return subprocess.run([sys.executable, "-m", "tunic", *args],
+                                  capture_output=True, text=True, check=False)
+        proc = cli("--db", str(self.db), "draft", "notes.md")
+        self.assertEqual(proc.returncode, 0, proc.stderr)
+        proposals = json.loads(proc.stdout)
+        self.assertEqual(len(proposals), 1)
+        self.assertEqual(proposals[0]["subject"], "mid.py::transform")
+        self.assertEqual(proposals[0]["object"], "core.py::calculate")
+        self.assertIn("direction", proposals[0]["note"])
+
+    def test_recorded_outcome_repairs_dynamic_gap(self):
+        shutil.copytree(Path(__file__).resolve().parents[1] / "benchmarks" / "w1" / "cases" / "dynamic_gap",
+                        self.root / "gap", ignore=shutil.ignore_patterns("__pycache__"))
+        self.store.ingest(self.root)
+        before = compile_impact(self.store, "gap/dynamic.py::target")
+        self.assertEqual(before["impacts"], [])
+        self.write("gap/outcome.md", "# Verified\n\n```tunic-claims\n"
+                 + '[{"rel": "depends_on", "subject": "gap/dynamic.py::indirect", "object": "gap/dynamic.py::target", "authority": "verified-outcome"}, '
+                 + '{"rel": "depends_on", "subject": "gap/dynamic.py::entry", "object": "gap/dynamic.py::indirect", "authority": "verified-outcome"}]\n```\n')
+        self.store.ingest(self.root)
+        after = compile_impact(self.store, "gap/dynamic.py::target")
+        self.assertEqual([i["symbol"] for i in after["impacts"]],
+                         ["gap/dynamic.py::entry", "gap/dynamic.py::indirect"])
+        self.assertTrue(all(i["derivation"]["rule"] == "asserted_dependency_v1" for i in after["impacts"]))
+        self.assertTrue(validate_artifact(self.store, after)["valid"])
 
     def test_shadowing_dynamic_scopes_and_parse_errors(self):
         self.write("shadow.py", "from core import calculate\ndef wrong(calculate):\n    return calculate(9)\n")
