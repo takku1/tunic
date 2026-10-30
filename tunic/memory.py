@@ -24,6 +24,19 @@ class Memory:
     def close(self):
         self.store.close()
 
+    def _workspace_path(self, document):
+        """Resolve a document against the root; absolute paths, `..` escapes,
+        and symlinks pointing outside are rejected before any write."""
+        candidate = self.root / document
+        try:
+            root = self.root.resolve()
+            resolved = candidate.resolve()
+        except OSError as error:
+            raise ValueError("unresolvable document path: " + str(document)) from error
+        if resolved == root or root not in resolved.parents:
+            raise ValueError("document must stay inside the workspace root: " + str(document))
+        return resolved
+
     def __enter__(self):
         return self
 
@@ -32,9 +45,8 @@ class Memory:
 
     def note(self, text, document="notes/session.md"):
         """Append a timestamped session note; creates parent directories."""
-        target = self.root / document
-        if str(target.parent) not in (".", ""):
-            target.parent.mkdir(parents=True, exist_ok=True)
+        target = self._workspace_path(document)
+        target.parent.mkdir(parents=True, exist_ok=True)
         stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
         with target.open("a", encoding="utf-8") as handle:
             handle.write("\n\n## " + stamp + "\n\n" + text.rstrip("\n") + "\n")
@@ -121,9 +133,8 @@ class Memory:
             claim["note"] = note
         block = ("# Recorded outcome\n\n```tunic-claims\n"
                  + json.dumps([claim], ensure_ascii=True) + "\n```\n")
-        target = self.root / document
-        if str(target.parent) not in (".", ""):
-            target.parent.mkdir(parents=True, exist_ok=True)
+        target = self._workspace_path(document)
+        target.parent.mkdir(parents=True, exist_ok=True)
         with target.open("a", encoding="utf-8") as handle:
             handle.write("\n\n" + block)
         return block

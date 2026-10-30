@@ -93,6 +93,23 @@ class MemoryTests(unittest.TestCase):
         self.assertIn("mid.py::transform",
                       [i["symbol"] for i in memory.impact("core.py::calculate")["impacts"]])
 
+    def test_memory_writes_stay_inside_the_workspace_root(self):
+        memory = Memory(self.db, self.root)
+        self.addCleanup(memory.close)
+        outside = self.tmp / "outside.md"
+        with self.assertRaises(ValueError):
+            memory.note("escape attempt", document=str(outside))
+        with self.assertRaises(ValueError):
+            memory.note("escape attempt", document="../outside.md")
+        with self.assertRaises(ValueError):
+            memory.record_outcome("service.py::process", "core.py::calculate",
+                                  document="/tmp/outside.md")
+        with self.assertRaises(ValueError):
+            memory.record_outcome("service.py::process", "core.py::calculate",
+                                  document="sub/../../outside.md")
+        self.assertFalse(outside.exists())
+        self.assertEqual(list(self.root.rglob("*.md")), [])
+
     def test_note_and_draft_round_trip_through_api(self):
         memory = Memory(self.db, self.root)
         self.addCleanup(memory.close)
