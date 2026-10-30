@@ -6,7 +6,7 @@ from pathlib import Path
 import sqlite3
 import sys
 
-from .compiler import compile_claims, compile_impact, compile_mentions, validate_artifact
+from .compiler import compile_claims, compile_impact, compile_mentions, compile_related, validate_artifact
 from .store import GraphStore
 from .render import render_context
 from .ollama import Ollama
@@ -26,6 +26,8 @@ def main(argv=None):
     mentions.add_argument("symbol", help="exact path::function key, e.g. core.py::calculate")
     claims = commands.add_parser("claims", help="list typed document claims and proposals touching a symbol key")
     claims.add_argument("symbol", help="exact path::function key, e.g. core.py::calculate")
+    related = commands.add_parser("related", help="combine impact, mentions, and claims for a symbol key")
+    related.add_argument("symbol", help="exact path::function key, e.g. core.py::calculate")
     impact.add_argument("--snapshot")
     impact.add_argument("--max-depth", type=int, default=8)
     impact.add_argument("--max-nodes", type=int, default=100)
@@ -86,6 +88,8 @@ def main(argv=None):
                 result = compile_mentions(store, args.symbol)
             elif args.command == "claims":
                 result = compile_claims(store, args.symbol)
+            elif args.command == "related":
+                result = compile_related(store, args.symbol)
             elif args.command in {"validate", "render"}:
                 artifact = json.loads(Path(args.artifact).read_text(encoding="utf-8-sig"))
                 if args.command == "render":

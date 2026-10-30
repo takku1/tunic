@@ -4,12 +4,13 @@ import ast
 import io
 import json
 import os
+import re
 from pathlib import Path
 import tokenize
 
 from .identity import digest, identity
 
-PROFILE = "python-static-v4"
+PROFILE = "python-static-v5"
 EXCLUDED = {".git", ".venv", "venv", "__pycache__", ".tunic", ".research", "node_modules"}
 TEXT_EXTENSIONS = {".md", ".txt", ".rst"}
 CLAIM_RELATIONS = {"depends_on", "implements", "supersedes", "decided_by", "contradicts"}
@@ -303,10 +304,9 @@ def extract(root):
                                         "start": start, "end": end, "kind": "unresolved_call", "expression": expression})
     text_ids = {s["id"] for s in sources if s.get("text")}
     code_keys = sorted(key for key, record in symbols.items() if record["source"] not in text_ids)
-    code_key_set = set(code_keys)
 
     def _resolve_reference(ref):
-        if ref in code_key_set:
+        if ref in symbols:
             return ("exact", [ref])
         matches = sorted(key for key in code_keys
                          if symbols[key]["name"] == ref or key.split("::", 1)[-1].split(".")[-1] == ref)
@@ -446,6 +446,47 @@ def extract(root):
                     assertion = {"proposition": proposition, "source": s["id"], "start": start, "end": end,
                                  "resolution": {"expression": key, "rule": "exact_key_match_v1", "support": []},
                                  "producer": PROFILE, "status": "syntactic_observation"}
+                    assertion["id"] = identity("assertion", assertion)
+                    assertions.append(assertion)
+    leaf_names = {}
+    for key in code_keys:
+        leaf = symbols[key]["name"].split(".")[-1]
+        if len(leaf) >= 2:
+            leaf_names.setdefault(leaf, []).append(key)
+    for s in sources:
+        if not s.get("text"):
+            continue
+        mentioner = s["path"] + "::document"
+        hidden = claim_spans.get(s["id"], [])
+        offset = 0
+        for raw_line in s["data"].splitlines(keepends=True):
+            start, end = offset, offset + len(raw_line)
+            offset = end
+            if any(first <= start < last for first, last in hidden):
+                continue
+            try:
+                line = raw_line.decode("utf-8")
+            except UnicodeError:
+                continue
+            exact_here = {key for key in code_keys if key in line}
+            for leaf in sorted(leaf_names):
+                if not re.search(r"\b" + re.escape(leaf) + r"\b", line):
+                    continue
+                candidates = leaf_names[leaf]
+                for key in candidates:
+                    if key in exact_here or (start, key) in seen_mentions:
+                        continue
+                    seen_mentions.add((start, key))
+                    record = symbols[key]
+                    support = [{"source": record["source"], "start": record["start"],
+                                "end": record["end"]}]
+                    proposition = {"relation": "text_mention", "caller": mentioner, "callee": key,
+                                   "candidate": key}
+                    assertion = {"proposition": proposition, "source": s["id"], "start": start, "end": end,
+                                 "resolution": {"expression": leaf, "rule": "name_match_proposed_v1",
+                                                "support": support},
+                                 "producer": PROFILE,
+                                 "status": "proposed_ambiguous" if len(candidates) > 1 else "proposed"}
                     assertion["id"] = identity("assertion", assertion)
                     assertions.append(assertion)
     return sources, sorted(symbols.values(), key=lambda x:x["key"]), sorted(assertions, key=lambda x:x["id"]), sorted(diagnostics, key=lambda x: (x["path"], x.get("line") or 0, x["kind"], x.get("start", 0)))

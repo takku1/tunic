@@ -59,6 +59,10 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100):
             paths[caller] = path
             queue.append(caller)
     used = {a["id"]: a for path in paths.values() for a in path}
+    # Order units by stable edge coordinates, not by assertion hash, so call
+    # labels survive extractor profile bumps when the edge set is unchanged.
+    used = {aid: used[aid] for aid in sorted(used, key=lambda aid: (used[aid]["proposition"]["caller"],
+            used[aid]["proposition"]["callee"], used[aid]["source"], used[aid]["start"], used[aid]["end"], aid))}
     impacts = []
     for key, path in sorted(paths.items()):
         if key == symbol:
@@ -96,7 +100,11 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100):
 
 
 def compile_mentions(store, symbol, *, snapshot=None):
-    """List document spans that mention a symbol key; mentions are never callers."""
+    """List document spans that mention a symbol key; proposals never traverse.
+
+    A proposal counts as corroborated when the same document carries exact
+    evidence for the same entity: an exact mention or an asserted claim.
+    """
     snapshot, view = store.view(snapshot)
     symbols = {s["key"]: s for s in view["symbols"]}
     if symbol not in symbols:
@@ -107,11 +115,36 @@ def compile_mentions(store, symbol, *, snapshot=None):
         if proposition.get("relation") != "text_mention" or proposition.get("callee") != symbol:
             continue
         mentions.append({"mentioner": proposition["caller"],
+                         "candidate": proposition.get("candidate"),
+                         "status": assertion["status"],
                          "evidence": _evidence(store, assertion, snapshot),
-                         "resolution": assertion["resolution"]})
-    mentions.sort(key=lambda m: (m["evidence"]["path"], m["evidence"]["start"], m["evidence"]["end"]))
+                         "resolution": assertion["resolution"],
+                         "source": assertion["source"]})
+    confirmed = set()
+    for assertion in view["assertions"]:
+        proposition = assertion["proposition"]
+        if proposition.get("relation") == "text_mention" and assertion.get("status") == "syntactic_observation":
+            confirmed.add((assertion["source"], proposition.get("callee")))
+        elif proposition.get("relation") in TRAVERSABLE_CLAIMS and assertion.get("status") == "asserted_in_source":
+            confirmed.add((assertion["source"], proposition.get("caller")))
+            confirmed.add((assertion["source"], proposition.get("callee")))
+    for mention in mentions:
+        mention["corroborated"] = (mention.pop("source"), symbol) in confirmed
+    mentions.sort(key=lambda m: (m["evidence"]["path"], m["evidence"]["start"], m["status"]))
     return {"symbol": symbol, "snapshot": snapshot, "profile": view["profile"],
             "mentions": mentions, "outcome": "complete" if mentions else "empty"}
+
+
+def compile_related(store, symbol, *, snapshot=None):
+    """Cross-source context: reverse dependencies plus document mentions, claims, and proposals."""
+    snapshot, view = store.view(snapshot)
+    if symbol not in {s["key"] for s in view["symbols"]}:
+        raise ValueError("unknown symbol: " + symbol)
+    return {"symbol": symbol, "snapshot": snapshot, "profile": view["profile"],
+            "impact": compile_impact(store, symbol, snapshot=snapshot),
+            "mentions": compile_mentions(store, symbol, snapshot=snapshot),
+            "claims": compile_claims(store, symbol, snapshot=snapshot),
+            "outcome": "complete"}
 
 
 def compile_claims(store, symbol, *, snapshot=None):

@@ -68,11 +68,11 @@ class ProtocolHandler(BaseHTTPRequestHandler):
                  "prompt_eval_duration": 20, "eval_duration": 30,
                  "total_duration": 70, "load_duration": 10}
         if request.get("format") and not state.get("bad_answer"):
-            # C-labels track current extraction output; a profile bump that reorders
-            # assertion identities requires updating these paths (receipts map them).
+            # C-labels follow unit order (caller, callee, coordinates); they only
+            # change when the edge set changes. Receipts map them per render.
             final["response"] = json.dumps({"coverage": "partial", "impacts": [
-                {"symbol": "service.py::process", "kind": "possible_impact", "path": ["C2"], "citations": ["S1", "S2", "S4"]},
-                {"symbol": "test_service.py::test_process", "kind": "possible_impact", "path": ["C1", "C2"],
+                {"symbol": "service.py::process", "kind": "possible_impact", "path": ["C1"], "citations": ["S1", "S2", "S4"]},
+                {"symbol": "test_service.py::test_process", "kind": "possible_impact", "path": ["C2", "C1"],
                  "citations": ["S1", "S2", "S3", "S4", "S5", "S6"]}]})
         if state.get("missing_final"):
             final["done"] = False
@@ -255,12 +255,12 @@ class ContinuationTests(unittest.TestCase):
     def test_answer_gate_rejects_invented_symbols_and_incomplete_support(self):
         rendered = render_context(self.store, self.artifact)
         answer = {"coverage": "partial", "impacts": [{"symbol": "service.py::process", "kind": "possible_impact",
-                    "path": ["C2"], "citations": ["S1", "S2", "S4"]}]}
+                    "path": ["C1"], "citations": ["S1", "S2", "S4"]}]}
         accepted = assess_answer(rendered, json.dumps(answer))
         self.assertTrue(accepted["accepted"])
         self.assertEqual(accepted["missing_candidates"], ["test_service.py::test_process"])
         for key,value in [("symbol", "service.py::compute"), ("kind", "proven_effect"),
-                          ("path", ["C1"]), ("citations", ["S4"]), ("citations", ["S1", "S2", "S4", "S6"])]:
+                          ("path", ["C2"]), ("citations", ["S4"]), ("citations", ["S1", "S2", "S4", "S6"])]:
             bad = copy.deepcopy(answer)
             bad["impacts"][0][key] = value
             self.assertFalse(assess_answer(rendered, json.dumps(bad))["accepted"])

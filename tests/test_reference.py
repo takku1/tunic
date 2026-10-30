@@ -8,7 +8,7 @@ import unittest
 import uuid
 from unittest.mock import patch
 
-from tunic import GraphStore, compile_claims, compile_impact, compile_mentions, validate_artifact
+from tunic import GraphStore, compile_claims, compile_impact, compile_mentions, compile_related, validate_artifact
 from tunic.identity import identity
 
 
@@ -250,6 +250,64 @@ class ReferenceTests(unittest.TestCase):
         claims = compile_claims(self.store, "core.py::calculate")
         self.assertEqual([(c["relation"], c["status"]) for c in claims["claims"]],
                          [("contradicts", "asserted_in_source")])
+
+    def test_bare_names_propose_with_verification_gate(self):
+        self.write("mid.py", "def transform(value):\n    return value * 2\n")
+        self.write("notes.md", "# Design\n\ntransform the input before storing.\n\n`mid.py::transform` is the entry point.\n")
+        self.store.ingest(self.root)
+        mentions = compile_mentions(self.store, "mid.py::transform")
+        by_status = {}
+        for entry in mentions["mentions"]:
+            by_status.setdefault(entry["status"], []).append(entry)
+        self.assertEqual(len(by_status["syntactic_observation"]), 1)
+        self.assertEqual(len(by_status["proposed"]), 1)
+        proposed = by_status["proposed"][0]
+        self.assertEqual(proposed["candidate"], "mid.py::transform")
+        self.assertTrue(proposed["corroborated"])
+        self.assertEqual(compile_impact(self.store, "mid.py::transform")["impacts"], [])
+
+    def test_ambiguous_bare_names_stay_proposals(self):
+        self.write("worker.py", "def process(value):\n    return value\n")
+        self.write("notes.md", "# Design\n\nThe process needs review.\n")
+        self.store.ingest(self.root)
+        mentions = compile_mentions(self.store, "service.py::process")
+        self.assertEqual(len(mentions["mentions"]), 1)
+        proposal = mentions["mentions"][0]
+        self.assertEqual(proposal["status"], "proposed_ambiguous")
+        self.assertEqual(proposal["candidate"], "service.py::process")
+        self.assertFalse(proposal["corroborated"])
+        self.assertNotIn("worker.py::process",
+                         [i["symbol"] for i in compile_impact(self.store, "core.py::calculate")["impacts"]])
+
+    def test_doc_to_doc_claims_record_without_traversal(self):
+        self.write("notes.md", "# Old\n")
+        self.write("notes_v2.md", "# New\n\n```tunic-claims\n"
+                 + '[{"rel": "supersedes", "subject": "notes_v2.md::document", '
+                 + '"object": "notes.md::document"}]\n```\n')
+        self.store.ingest(self.root)
+        claims = compile_claims(self.store, "notes.md::document")
+        self.assertEqual([(c["relation"], c["status"]) for c in claims["claims"]],
+                         [("supersedes", "asserted_in_source")])
+        self.assertEqual([i["symbol"] for i in compile_impact(self.store, "core.py::calculate")["impacts"]],
+                         ["service.py::process", "test_service.py::test_process"])
+
+    def test_related_combines_code_and_doc_evidence(self):
+        self.write("mid.py", "def transform(value):\n    return value * 2\n")
+        self.write("notes.md", "# Design\n\nUse transform for shaping.\n\nThe calculate step is cheap.\n\n```tunic-claims\n"
+                 + '[{"rel": "depends_on", "subject": "mid.py::transform", '
+                 + '"object": "core.py::calculate"}]\n```\n')
+        self.store.ingest(self.root)
+        related = compile_related(self.store, "core.py::calculate")
+        self.assertEqual(related["outcome"], "complete")
+        self.assertIn("mid.py::transform",
+                      [i["symbol"] for i in related["impact"]["impacts"]])
+        self.assertEqual(len(related["mentions"]["mentions"]), 1)
+        mention = related["mentions"]["mentions"][0]
+        self.assertEqual(mention["candidate"], "core.py::calculate")
+        self.assertEqual(mention["status"], "proposed")
+        self.assertTrue(mention["corroborated"])
+        self.assertEqual([(c["relation"], c["status"]) for c in related["claims"]["claims"]],
+                         [("depends_on", "asserted_in_source")])
 
     def test_shadowing_dynamic_scopes_and_parse_errors(self):
         self.write("shadow.py", "from core import calculate\ndef wrong(calculate):\n    return calculate(9)\n")
