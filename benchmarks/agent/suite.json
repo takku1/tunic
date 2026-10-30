@@ -1,52 +1,230 @@
-{"description": "Held-out agent memory tasks. Recorded checkout is the happy path; unseen buyer states, shop edits, handler migration, disputes, and noise are the real test.",
- "id": "agent-heldout-v2",
- "tasks": [{"evidence": [],
-             "forbidden": [],
-             "gold": ["checkout.py::place_order"],
-             "id": "code-task",
-             "question": "Which functions break if total changes?",
-             "repo": "repo",
-             "requires": ["code"]},
-            {"evidence": ["mention"],
-             "forbidden": [],
-             "gold": ["pricing.py::round_total"],
-             "id": "decision-task",
-             "question": "What did we decide about round_total?",
-             "repo": "repo",
-             "requires": ["code", "decision-evidence"]},
-            {"evidence": ["depends_on"],
-             "forbidden": [],
-             "gold": ["checkout.py::place_order"],
-             "id": "outcome-task",
-             "question": "What else must change if round_total changes?",
-             "repo": "repo",
-             "requires": ["code", "memory-edge"]},
-            {"evidence": [],
-             "forbidden": [],
-             "gold": ["checkout.py::place_order"],
-             "id": "lexical-task",
-             "question": "Which checkout step finalizes the order?",
-             "repo": "repo",
-             "requires": ["code", "lexical-recall"]},
-            {"evidence": [],
-             "forbidden": ["api.py::route"],
-             "gold": ["api.py::handle_legacy"],
-             "id": "stale-task",
-             "question": "Which functions break if handle_legacy changes?",
-             "repo": "evolve",
-             "requires": ["code", "staleness"]},
-            {"evidence": ["contradicts"],
-             "forbidden": [],
-             "gold": ["api.py::route"],
-             "id": "conflict-task",
-             "question": "Which functions break if handle_modern changes?",
-             "repo": "evolve",
-             "requires": ["code", "dispute-surfaced"]},
-            {"evidence": [],
-             "forbidden": [],
-             "gold": ["api.py::route"],
-             "id": "irrelevant-task",
-             "question": "Which functions break if route changes?",
-             "repo": "evolve",
-             "requires": ["code", "noise-robustness"]}],
- "version": 2}
+{
+ "description": "Held-out agent memory tasks, v3. Shop, migration, and library fixtures; paraphrase variants; experimental out-of-vocabulary probes that currently abstain and do not gate.",
+ "id": "agent-heldout-v3",
+ "tasks": [
+  {
+   "evidence": [],
+   "experimental": false,
+   "forbidden": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "id": "code-task",
+   "question": "Which functions break if total changes?",
+   "repo": "repo",
+   "requires": [
+    "code"
+   ]
+  },
+  {
+   "evidence": [
+    "mention"
+   ],
+   "experimental": false,
+   "forbidden": [],
+   "gold": [
+    "pricing.py::round_total"
+   ],
+   "id": "decision-task",
+   "question": "What did we decide about round_total?",
+   "repo": "repo",
+   "requires": [
+    "code",
+    "decision-evidence"
+   ]
+  },
+  {
+   "evidence": [
+    "depends_on"
+   ],
+   "experimental": false,
+   "forbidden": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "id": "outcome-task",
+   "question": "What else must change if round_total changes?",
+   "repo": "repo",
+   "requires": [
+    "code",
+    "memory-edge"
+   ]
+  },
+  {
+   "evidence": [],
+   "experimental": false,
+   "forbidden": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "id": "lexical-task",
+   "question": "Which checkout step finalizes the order?",
+   "repo": "repo",
+   "requires": [
+    "code",
+    "lexical-recall"
+   ]
+  },
+  {
+   "evidence": [],
+   "experimental": false,
+   "forbidden": [
+    "api.py::route"
+   ],
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "id": "stale-task",
+   "question": "Which functions break if handle_legacy changes?",
+   "repo": "evolve",
+   "requires": [
+    "code",
+    "staleness"
+   ]
+  },
+  {
+   "evidence": [
+    "contradicts"
+   ],
+   "experimental": false,
+   "forbidden": [],
+   "gold": [
+    "api.py::route"
+   ],
+   "id": "conflict-task",
+   "question": "Which functions break if handle_modern changes?",
+   "repo": "evolve",
+   "requires": [
+    "code",
+    "dispute-surfaced"
+   ]
+  },
+  {
+   "evidence": [],
+   "experimental": false,
+   "forbidden": [],
+   "gold": [
+    "api.py::route"
+   ],
+   "id": "irrelevant-task",
+   "question": "Which functions break if route changes?",
+   "repo": "evolve",
+   "requires": [
+    "code",
+    "noise-robustness"
+   ]
+  },
+  {
+   "evidence": [],
+   "experimental": false,
+   "forbidden": [],
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "id": "lib-impact",
+   "question": "Which functions break if find_book changes?",
+   "repo": "library",
+   "requires": [
+    "code"
+   ]
+  },
+  {
+   "evidence": [
+    "depends_on"
+   ],
+   "experimental": false,
+   "forbidden": [],
+   "gold": [
+    "loans.py::checkout_book"
+   ],
+   "id": "lib-outcome",
+   "question": "What else must change if overdue_fine changes?",
+   "repo": "library",
+   "requires": [
+    "code",
+    "memory-edge"
+   ]
+  },
+  {
+   "evidence": [],
+   "experimental": false,
+   "forbidden": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "id": "shop-para",
+   "question": "If the batch total shifts, what breaks?",
+   "repo": "repo",
+   "requires": [
+    "code",
+    "paraphrase"
+   ]
+  },
+  {
+   "evidence": [],
+   "experimental": false,
+   "forbidden": [
+    "api.py::route"
+   ],
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "id": "evolve-para",
+   "question": "If the legacy handler shifts, what breaks?",
+   "repo": "evolve",
+   "requires": [
+    "code",
+    "paraphrase",
+    "staleness"
+   ]
+  },
+  {
+   "evidence": [],
+   "experimental": false,
+   "forbidden": [],
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "id": "lib-para",
+   "question": "If find_book shifts, which routines fail?",
+   "repo": "library",
+   "requires": [
+    "code",
+    "paraphrase"
+   ]
+  },
+  {
+   "evidence": [],
+   "experimental": true,
+   "forbidden": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "id": "shop-semantic",
+   "question": "Who finalizes the purchase?",
+   "repo": "repo",
+   "requires": [
+    "code",
+    "out-of-vocabulary"
+   ]
+  },
+  {
+   "evidence": [],
+   "experimental": true,
+   "forbidden": [],
+   "gold": [
+    "loans.py::overdue_fine"
+   ],
+   "id": "lib-semantic",
+   "question": "Who computes late fees?",
+   "repo": "library",
+   "requires": [
+    "code",
+    "out-of-vocabulary"
+   ]
+  }
+ ],
+ "version": 3
+}

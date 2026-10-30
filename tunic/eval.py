@@ -23,17 +23,19 @@ CONDITIONS = ("none", "lexical", "tunic")
 def load_agent_suite(path):
     """Load and validate an agent held-out suite file."""
     raw = json.loads(Path(path).read_text(encoding="utf-8-sig"))
-    if raw.get("version") != 2:
+    if raw.get("version") != 3:
         raise ValueError("unsupported agent suite version")
     if not raw.get("tasks"):
         raise ValueError("agent suite has no tasks")
     for task in raw["tasks"]:
         for field in ("id", "repo", "question", "gold", "forbidden",
-                      "evidence", "requires"):
+                      "evidence", "requires", "experimental"):
             if field not in task:
                 raise ValueError("agent task missing %r" % field)
         if not task["gold"]:
             raise ValueError("agent task %r has empty gold" % task["id"])
+        if not isinstance(task["experimental"], bool):
+            raise ValueError("agent task %r experimental flag must be boolean" % task["id"])
     return raw
 
 
@@ -71,7 +73,8 @@ def run_agent_suite(suite_path, *, limit=5):
     suite = load_agent_suite(suite_path)
     base = Path(suite_path).parent
     conditions = {name: {"passed": 0, "exact": 0, "total": 0,
-                         "total_latency_ms": 0.0, "tasks": []}
+                         "total_latency_ms": 0.0, "tasks": [],
+                         "experimental": {"passed": 0, "total": 0, "tasks": []}}
                   for name in CONDITIONS}
     with tempfile.TemporaryDirectory(prefix="tunic-agent-") as work:
         prepared = {}
@@ -111,6 +114,13 @@ def run_agent_suite(suite_path, *, limit=5):
                     record["pass"] = (set(gold) <= set(symbols)
                                       and not (set(forbidden) & set(symbols))
                                       and evidence_ok)
+                    record["experimental"] = bool(task["experimental"])
+                    if record["experimental"]:
+                        bucket = entry["experimental"]
+                        bucket["passed"] += record["pass"]
+                        bucket["total"] += 1
+                        bucket["tasks"].append(record)
+                        continue
                     entry["passed"] += record["pass"]
                     entry["exact"] += record["pass"] and set(symbols) == set(gold)
                     entry["total"] += 1

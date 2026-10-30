@@ -14,13 +14,17 @@ SUITE = Path(__file__).resolve().parents[1] / "benchmarks" / "agent" / "suite.js
 class AgentSuiteTests(unittest.TestCase):
     def test_conditions_beat_abstention_and_graph_beats_lexical(self):
         result = run_agent_suite(SUITE)
-        self.assertEqual(result["suite"], "agent-heldout-v2")
+        self.assertEqual(result["suite"], "agent-heldout-v3")
         self.assertEqual(set(result["conditions"]), set(CONDITIONS))
         scores = {name: (row["passed"], row["total"])
                   for name, row in result["conditions"].items()}
-        self.assertEqual(scores["none"], (0, 7))
-        self.assertEqual(scores["lexical"], (6, 7))
-        self.assertEqual(scores["tunic"], (7, 7))
+        self.assertEqual(scores["none"], (0, 12))
+        self.assertEqual(scores["lexical"], (11, 12))
+        self.assertEqual(scores["tunic"], (12, 12))
+        experimental = {name: (row["experimental"]["passed"],
+                               row["experimental"]["total"])
+                        for name, row in result["conditions"].items()}
+        self.assertEqual(experimental["tunic"], (0, 2))
         by_id = {t["id"]: t for t in result["conditions"]["tunic"]["tasks"]}
         stale = by_id["stale-task"]
         self.assertTrue(stale["pass"])
@@ -31,6 +35,11 @@ class AgentSuiteTests(unittest.TestCase):
                        if t["id"] == "outcome-task")
         self.assertTrue(outcome["pass"])
         self.assertIn("depends_on", outcome["evidence_kinds"])
+        library = by_id["lib-outcome"]
+        self.assertTrue(library["pass"])
+        self.assertIn("depends_on", library["evidence_kinds"])
+        self.assertTrue(by_id["shop-para"]["pass"])
+        self.assertTrue(by_id["lib-para"]["pass"])
         lexical_gap = next(t for t in result["conditions"]["lexical"]["tasks"]
                            if t["id"] == "outcome-task")
         self.assertFalse(lexical_gap["pass"])

@@ -112,37 +112,98 @@ class Memory:
                                    authority=authority, document=document, note=note)
 
     def answer(self, task, *, snapshot=None, limit=3, mode="hybrid",
-               policy="transparent"):
+               policy="transparent", budget=None, threshold=0.0, provider=None):
         """Task-based retrieval without an exact symbol.
 
-        Links bare names in the task to code entities the same way document
-        mentions do, then adds a lexical discovery stage over the indexed
-        chunks for tasks that name no symbol. Exact keys outrank bare names,
-        which outrank lexical candidates; nothing is asserted or traversed
-        beyond what the compiler already proves. Lexical hits are discovery
-        only: they select candidates, never graph edges. The policy selects
-        the traversal set for every candidate, so policy="current" answers
-        from un-superseded evidence while transparent keeps disputes visible.
+        Stages propose candidates: exact keys, bare names, BM25 lexical
+        chunks, and an optional embedding provider. Weighted reciprocal-rank
+        fusion merges the stage rankings with exact outranking name
+        outranking discovery, deterministically. Budgets cap each stage and
+        the fused total; the semantic stage runs only when its provider is
+        available, otherwise it is recorded as skipped. Discovery stages
+        select candidates only and never create graph edges; an empty fusion
+        abstains. The policy selects the traversal set for every candidate.
         """
         import re
+        import time
+        from .retrieval import EmbeddingProvider, fuse
         if mode not in ("graph", "hybrid"):
             raise ValueError("mode must be 'graph' or 'hybrid'")
         if policy not in compiler.POLICIES:
             raise ValueError("unknown policy: " + str(policy))
+        if type(limit) is not int or limit < 0:
+            raise ValueError("limit must be a non-negative integer")
+        caps = {"exact": limit, "name": limit, "lexical": limit, "semantic": limit}
+        if budget is not None:
+            unknown = set(budget) - set(caps)
+            if unknown:
+                raise ValueError("unknown budget stages: " + ", ".join(sorted(unknown)))
+            for stage, cap in budget.items():
+                if type(cap) is not int or cap < 0:
+                    raise ValueError("budget caps must be non-negative integers")
+            caps.update(budget)
+        provider = EmbeddingProvider() if provider is None else provider
         snapshot, view = self.store.view(snapshot)
         code = [(s["key"], s["name"].split(".")[-1])
                 for s in view["symbols"] if not s["key"].endswith("::document")]
-        scored = {}
-        for key, leaf in code:
-            if key in task:
-                scored[key] = (2, "exact")
-            elif len(leaf) >= 2 and re.search(r"\b" + re.escape(leaf) + r"\b", task,
-                                              flags=re.IGNORECASE):
-                scored.setdefault(key, (1, "name"))
-        if mode == "hybrid":
-            for hit in BM25(self.root).search_text(task, top_k=limit):
-                scored.setdefault(hit["symbol"], (0.5, "lexical"))
-        top = sorted(scored, key=lambda key: (-scored[key][0], key))[:max(limit, 0)]
+        rankings, stages = {}, {}
+        started = time.perf_counter()
+        exact = sorted(key for key, _ in code if key in task)[:caps["exact"]]
+        stages["exact"] = {"candidates": len(exact),
+                           "ms": (time.perf_counter() - started) * 1000.0,
+                           "skipped": False}
+        started = time.perf_counter()
+        names = sorted(key for key, leaf in code
+                       if len(leaf) >= 2
+                       and re.search(r"\b" + re.escape(leaf) + r"\b", task,
+                                     flags=re.IGNORECASE))[:caps["name"]]
+        stages["name"] = {"candidates": len(names),
+                          "ms": (time.perf_counter() - started) * 1000.0,
+                          "skipped": False}
+        index = None
+        if mode == "hybrid" and caps["lexical"] > 0:
+            started = time.perf_counter()
+            index = BM25(self.root)
+            lexical = [hit["symbol"] for hit in
+                       index.search_text(task, top_k=caps["lexical"])]
+            stages["lexical"] = {"candidates": len(lexical),
+                                 "ms": (time.perf_counter() - started) * 1000.0,
+                                 "skipped": False}
+        else:
+            lexical = []
+            stages["lexical"] = {"candidates": 0, "ms": 0.0, "skipped": True,
+                                 "reason": ("lexical stage disabled"
+                                            if mode != "hybrid" else "budget cap is zero")}
+        started = time.perf_counter()
+        if mode == "hybrid" and caps["semantic"] > 0 and provider.available():
+            if index is None:
+                index = BM25(self.root)
+            texts, order = [], []
+            for document in index.documents:
+                text = document["symbol"] + " " + " ".join(sorted(document["tokens"]))
+                texts.append(text)
+                order.append(document["symbol"])
+            chosen = provider.rank(task, texts, caps["semantic"])
+            semantic = [order[texts.index(text)] for text in chosen]
+            stages["semantic"] = {"candidates": len(semantic),
+                                  "ms": (time.perf_counter() - started) * 1000.0,
+                                  "skipped": False}
+        else:
+            if mode != "hybrid":
+                reason = "semantic stage disabled"
+            elif caps["semantic"] <= 0:
+                reason = "budget cap is zero"
+            else:
+                reason = "no embedding provider available"
+            semantic = []
+            stages["semantic"] = {"candidates": 0, "ms": 0.0, "skipped": True,
+                                  "reason": reason}
+        rankings = {"exact": exact, "name": names,
+                    "lexical": lexical, "semantic": semantic}
+        fused = fuse(rankings, total=limit, threshold=threshold)
+        top = [key for _, key, _ in fused]
+        origins = {key: ranks for _, key, ranks in fused}
+        order = {"exact": 0, "name": 1, "lexical": 2, "semantic": 3}
         impacts = {}
         mentions = []
         claims = []
@@ -156,8 +217,13 @@ class Memory:
         mentions.sort(key=lambda m: (m["evidence"]["path"], m["evidence"]["start"], m["status"]))
         claims.sort(key=lambda c: (c["relation"], c["caller"], c["callee"] or ""))
         return {"task": task, "snapshot": snapshot, "policy": policy,
-                "candidates": [{"symbol": key, "score": scored[key][0],
-                                "match": scored[key][1]} for key in top],
+                "fusion": "weighted_rrf_k60", "provider": provider.name,
+                "budget": caps, "threshold": threshold, "stages": stages,
+                "candidates": [{"symbol": key,
+                                "score": next(score for score, name, _ in fused
+                                              if name == key),
+                                "match": min(origins[key], key=order.__getitem__),
+                                "origins": origins[key]} for key in top],
                 "impacts": [impacts[key] for key in sorted(impacts)],
                 "mentions": mentions, "claims": claims,
                 "outcome": "complete" if top else "empty"}
