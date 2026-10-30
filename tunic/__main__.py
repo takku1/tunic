@@ -7,7 +7,7 @@ from pathlib import Path
 import sqlite3
 import sys
 
-from .compiler import compile_claims, compile_drafts, compile_impact, compile_mentions, compile_related, compile_timeline, validate_artifact
+from .compiler import compile_claims, compile_drafts, compile_impact, compile_mentions, compile_related, compile_review, compile_timeline, validate_artifact
 from .store import GraphStore
 from .render import render_context
 from .ollama import Ollama
@@ -40,6 +40,8 @@ def main(argv=None):
     note.add_argument("--text", required=True, help="note text to append")
     draft = commands.add_parser("draft", help="propose claim blocks for co-mentioned entities (review input only)")
     draft.add_argument("document", help="repository-relative document path, e.g. notes.md")
+    review = commands.add_parser("review", help="structured acquisition report for one document (read-only)")
+    review.add_argument("document", help="repository-relative document path, e.g. notes/session.md")
     impact.add_argument("--snapshot")
     impact.add_argument("--max-depth", type=int, default=8)
     impact.add_argument("--max-nodes", type=int, default=100)
@@ -126,6 +128,9 @@ def main(argv=None):
                 result = compile_timeline(store, args.symbol, at=args.at)
             elif args.command == "draft":
                 print(json.dumps(compile_drafts(store, args.document), ensure_ascii=True, sort_keys=True, indent=2))
+                return 0
+            elif args.command == "review":
+                print(json.dumps(compile_review(store, args.document), ensure_ascii=True, sort_keys=True, indent=2))
                 return 0
             elif args.command in {"validate", "render"}:
                 artifact = json.loads(Path(args.artifact).read_text(encoding="utf-8-sig"))

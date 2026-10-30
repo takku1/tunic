@@ -128,6 +128,89 @@ class MemoryTests(unittest.TestCase):
         self.assertEqual([(d["subject"], d["object"]) for d in drafts],
                          [("mid.py::transform", "core.py::calculate")])
 
+    def test_review_separates_observations_proposals_and_novel_drafts(self):
+        (self.root / "core.py").write_bytes(b"def calculate(value):\n    return value + 1\n"
+                                            b"\n\ndef validate(value):\n    return value > 0\n")
+        (self.root / "mid.py").write_bytes(b"def transform(value):\n    return value * 2\n")
+        memory = Memory(self.db, self.root)
+        self.addCleanup(memory.close)
+        memory.note("Tracing `core.py::calculate` alongside `mid.py::transform`.",
+                    document="notes/session.md")
+        memory.note("# Ruling\n\n```tunic-claims\n"
+                    '[{"rel": "depends_on", "subject": "core.py::calculate", '
+                    '"object": "validate"}]\n```', document="notes/claims.md")
+        memory.ingest()
+        session = memory.review("notes/session.md")
+        self.assertEqual(session["outcome"], "complete")
+        self.assertEqual({e["symbol"] for e in session["entities"]},
+                         {"core.py::calculate", "mid.py::transform"})
+        self.assertEqual(session["proposals"], [])
+        self.assertEqual(session["conflicts"], [])
+        self.assertEqual(len(session["drafts"]), 1)
+        draft = session["drafts"][0]
+        self.assertEqual((draft["rel"], draft["subject"], draft["object"], draft["status"]),
+                         ("depends_on", "core.py::calculate", "mid.py::transform", "novel"))
+        self.assertEqual(len(draft["support"]), 2)
+        claims = memory.review("notes/claims.md")
+        self.assertEqual(claims["entities"], [])
+        self.assertEqual(claims["asserted"], [])
+        self.assertEqual(len(claims["proposals"]), 1)
+        proposal = claims["proposals"][0]
+        self.assertEqual(proposal["candidate"], "core.py::validate")
+        self.assertEqual(proposal["status"], "proposed")
+        with self.assertRaises(ValueError):
+            memory.review("notes/missing.md")
+
+    def test_review_flags_contradicted_pairs_as_conflicts(self):
+        (self.root / "core.py").write_bytes(b"def calculate(value):\n    return value + 1\n")
+        (self.root / "mid.py").write_bytes(b"def transform(value):\n    return value * 2\n")
+        memory = Memory(self.db, self.root)
+        self.addCleanup(memory.close)
+        memory.record_outcome("core.py::calculate", "mid.py::transform",
+                              rel="contradicts", authority="reviewer",
+                              document="notes/ruling.md")
+        memory.note("Re-examine `core.py::calculate` and `mid.py::transform`.",
+                    document="notes/session.md")
+        memory.ingest()
+        report = memory.review("notes/session.md")
+        self.assertEqual(report["drafts"], [])
+        self.assertEqual(len(report["conflicts"]), 1)
+        conflict = report["conflicts"][0]
+        self.assertEqual({conflict["subject"], conflict["object"]},
+                         {"core.py::calculate", "mid.py::transform"})
+        self.assertEqual(conflict["claim"]["relation"], "contradicts")
+
+    def test_promote_records_novel_and_refuses_duplicates_and_conflicts(self):
+        (self.root / "core.py").write_bytes(b"def calculate(value):\n    return value + 1\n")
+        (self.root / "mid.py").write_bytes(b"def transform(value):\n    return value * 2\n")
+        memory = Memory(self.db, self.root)
+        self.addCleanup(memory.close)
+        memory.note("Tracing `core.py::calculate` alongside `mid.py::transform`.",
+                    document="notes/session.md")
+        memory.ingest()
+        block = memory.promote("core.py::calculate", "mid.py::transform",
+                               authority="reviewer")
+        self.assertIn("depends_on", block)
+        memory.ingest()
+        with self.assertRaises(ValueError):
+            memory.promote("core.py::calculate", "mid.py::transform",
+                           authority="reviewer")
+        with self.assertRaises(ValueError):
+            memory.promote("core.py::calculate", "transform", authority="reviewer")
+        second = Memory(self.db, self.root)
+        self.addCleanup(second.close)
+        claims = second.claims("mid.py::transform")["claims"]
+        self.assertTrue(any(c["relation"] == "depends_on" and c["authority"] == "reviewer"
+                            for c in claims))
+        memory.record_outcome("mid.py::transform", "core.py::calculate",
+                              rel="contradicts", authority="reviewer",
+                              document="notes/ruling.md")
+        memory.ingest()
+        with self.assertRaises(ValueError) as caught:
+            memory.promote("mid.py::transform", "core.py::calculate",
+                           authority="reviewer")
+        self.assertIn("contradicts", str(caught.exception))
+
 
     def test_memory_repair_beats_static_and_lexical_baselines(self):
         shutil.copytree(Path(__file__).resolve().parents[1] / "benchmarks" / "w1" / "cases" / "dynamic_gap",

@@ -206,6 +206,69 @@ def compile_drafts(store, document, *, snapshot=None):
     return drafts
 
 
+def compile_review(store, document, *, snapshot=None):
+    """Structured acquisition report for one document; read-only.
+
+    Separates observed facts (exact mentions with spans), agent assertions
+    already recorded in the document, bare-name proposals awaiting identity
+    resolution, novel co-mention drafts with supporting excerpts, and entity
+    pairs blocked by an existing contradicts claim. Returns review input and
+    asserts nothing; promotion is an explicit separate step.
+    """
+    snapshot, view = store.view(snapshot)
+    symbols = {s["key"]: s for s in view["symbols"]}
+    mentioner = document + "::document"
+    if mentioner not in symbols:
+        raise ValueError("unknown document: " + document)
+    entities, asserted, proposals = [], [], []
+    for assertion in view["assertions"]:
+        proposition = assertion["proposition"]
+        evidence = _evidence(store, assertion, snapshot)
+        if evidence["path"] != document:
+            continue
+        relation = proposition.get("relation")
+        if relation == "text_mention" and assertion.get("status") == "syntactic_observation":
+            entities.append({"symbol": proposition.get("callee"),
+                             "status": assertion["status"], "evidence": evidence})
+        elif relation not in ("static_call", "text_mention") and assertion.get("status") == "asserted_in_source":
+            asserted.append({"relation": relation, "caller": proposition.get("caller"),
+                             "callee": proposition.get("callee"),
+                             "authority": proposition.get("authority"),
+                             "effective": proposition.get("effective"),
+                             "status": assertion["status"], "evidence": evidence})
+        elif assertion.get("status") in ("proposed", "proposed_ambiguous"):
+            proposals.append({"relation": relation, "caller": proposition.get("caller"),
+                              "callee": proposition.get("callee"),
+                              "candidate": proposition.get("candidate"),
+                              "expression": assertion["resolution"].get("expression"),
+                              "status": assertion["status"], "evidence": evidence})
+    entities.sort(key=lambda e: (e["evidence"]["start"], e["symbol"]))
+    spans = {entity["symbol"]: entity["evidence"].get("excerpt", "") for entity in entities}
+    drafts = []
+    for draft in compile_drafts(store, document, snapshot=snapshot):
+        drafts.append({**draft, "status": "novel",
+                       "support": [spans.get(draft["subject"], ""),
+                                   spans.get(draft["object"], "")]})
+    mentioned = sorted({entity["symbol"] for entity in entities})
+    conflicts = []
+    for assertion in view["assertions"]:
+        proposition = assertion["proposition"]
+        if proposition.get("relation") != "contradicts":
+            continue
+        pair = sorted([proposition.get("caller"), proposition.get("callee")])
+        if len(pair) == 2 and pair[0] in mentioned and pair[1] in mentioned:
+            conflicts.append({"subject": pair[0], "object": pair[1],
+                              "claim": {"relation": "contradicts",
+                                        "caller": proposition.get("caller"),
+                                        "callee": proposition.get("callee"),
+                                        "authority": proposition.get("authority"),
+                                        "status": assertion.get("status")}})
+    conflicts.sort(key=lambda c: (c["subject"], c["object"]))
+    return {"document": document, "snapshot": snapshot, "profile": view["profile"],
+            "entities": entities, "asserted": asserted, "proposals": proposals,
+            "drafts": drafts, "conflicts": conflicts, "outcome": "complete"}
+
+
 def compile_related(store, symbol, *, snapshot=None, policy="transparent"):
     """Cross-source context: reverse dependencies plus document mentions, claims, and proposals."""
     snapshot, view = store.view(snapshot)

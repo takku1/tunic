@@ -74,6 +74,40 @@ class Memory:
     def draft(self, document, **kwargs):
         return compiler.compile_drafts(self.store, document, **kwargs)
 
+    def review(self, document, **kwargs):
+        return compiler.compile_review(self.store, document, **kwargs)
+
+    def promote(self, subject, object, rel="depends_on", effective=None,
+                authority="agent-outcome", document="notes/outcomes.md", note=None):
+        """Explicitly approve one candidate relationship and record it.
+
+        Refuses exact duplicates already asserted in the graph and pairs an
+        existing contradicts claim blocks; corrections go through an explicit
+        contradicts/supersedes claim first. Bare names are rejected, so
+        identity can only narrow, never guess. Writes the claim block;
+        a later ingest publishes it.
+        """
+        if rel not in CLAIM_RELATIONS:
+            raise ValueError("unknown relation: " + str(rel))
+        for ref in (subject, object):
+            if not isinstance(ref, str) or "::" not in ref:
+                raise ValueError("outcome endpoints must be exact path::symbol keys: " + repr(ref))
+        _, view = self.store.view()
+        for assertion in view["assertions"]:
+            proposition = assertion["proposition"]
+            if assertion.get("status") != "asserted_in_source":
+                continue
+            if (proposition.get("relation") == rel
+                    and proposition.get("caller") == subject
+                    and proposition.get("callee") == object):
+                raise ValueError("duplicate of asserted %s %s %s" % (subject, rel, object))
+            if (proposition.get("relation") == "contradicts"
+                    and {proposition.get("caller"), proposition.get("callee")} == {subject, object}):
+                raise ValueError("contradicts claim blocks %s %s %s; record a correction first"
+                                 % (subject, rel, object))
+        return self.record_outcome(subject, object, rel=rel, effective=effective,
+                                   authority=authority, document=document, note=note)
+
     def answer(self, task, *, snapshot=None, limit=3, mode="hybrid"):
         """Task-based retrieval without an exact symbol.
 
