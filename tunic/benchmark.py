@@ -162,7 +162,8 @@ def run_benchmark(suite_path, *, top_k=5, backend=None, profile=None, model_case
                              "model_cases": sorted(chosen) if backend is not None else []},
               "model_profile": profile, "tasks": [], "scope": "public_regression_not_held_out_or_competitor_ranking",
               "baselines": {"bm25": "function chunks + module imports; k1=1.2 b=0.75; query target name/file stem",
-                            "direct": "one-hop caller control sharing Tunic extraction", "graph": "full current Tunic compiler"},
+                            "direct": "one-hop caller control sharing Tunic extraction", "graph": "full current Tunic compiler",
+                            "hybrid": "diagnostic union: exact graph callers first, then BM25 rank fill; untuned, not dense"},
               "cache_policy": "model-free not applicable; optional Ollama managed cache/probes uncontrolled",
               "limitations": ["Manually authored labels are not independent human review.",
                               "No dense/vector RAG, W2/W3 or external-product arm is executed.",
@@ -227,11 +228,22 @@ def run_benchmark(suite_path, *, top_k=5, backend=None, profile=None, model_case
                         row["bm25_ranking"] = ranking
                         row["bm25_diagnostics"] = lexical.diagnostics
                         row["bm25"] = set_scores([d["symbol"] for d in ranking], stage["expected_impacts"])
+                        graph_syms = [i["symbol"] for i in artifact["impacts"]]
+                        seen = set(graph_syms)
+                        hybrid_ranking = list(graph_syms)
+                        for candidate in ranking:
+                            if candidate["symbol"] not in seen:
+                                seen.add(candidate["symbol"])
+                                hybrid_ranking.append(candidate["symbol"])
+                            if len(hybrid_ranking) >= max(top_k, len(graph_syms)):
+                                break
+                        row["hybrid_ranking"] = hybrid_ranking
+                        row["hybrid"] = set_scores(hybrid_ranking, stage["expected_impacts"])
                         row["outcome"] = "complete"
                     except (ValueError, OSError) as error:
                         row["outcome"] = "failed"
                         row["error"] = str(error)
-                        for arm in ("graph", "direct", "bm25"):
+                        for arm in ("graph", "direct", "bm25", "hybrid"):
                             row[arm] = set_scores([], stage["expected_impacts"], available=False)
                         row["graph_tests"] = set_scores([], stage["expected_tests"], available=False)
                         row["edges"] = set_scores([], [tuple(e) for e in stage["expected_edges"]], available=False)
@@ -261,7 +273,7 @@ def run_benchmark(suite_path, *, top_k=5, backend=None, profile=None, model_case
                                 row["model"] = {"outcome": "failed", "error": str(error), "scores": []}
                                 model_stopped = True
         tasks = result["tasks"]
-        result["summary"] = {arm:aggregate([r[arm] for r in tasks]) for arm in ("bm25", "direct", "graph")}
+        result["summary"] = {arm:aggregate([r[arm] for r in tasks]) for arm in ("bm25", "direct", "graph", "hybrid")}
         result["summary"]["graph_tests"] = aggregate([r["graph_tests"] for r in tasks])
         result["summary"]["edges"] = aggregate([r["edges"] for r in tasks])
         result["core_regression_pass"] = all(r["outcome"] == "complete" and r["graph"]["exact_match"]

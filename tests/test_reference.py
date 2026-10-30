@@ -178,6 +178,20 @@ class ReferenceTests(unittest.TestCase):
                 self.store.ingest(self.root)
         self.assertEqual(self.store.current(), before["snapshot"])
 
+    def test_methods_resolve_self_and_constructor_calls(self):
+        self.write("worker.py", "from core import calculate\n\nclass Worker:\n    def run(self):\n        return calculate(2)\n\ndef entry():\n    return Worker().run()\n")
+        self.store.ingest(self.root)
+        a = self.artifact()
+        self.assertEqual([i["symbol"] for i in a["impacts"]],
+                         ["service.py::process", "test_service.py::test_process",
+                          "worker.py::Worker.run", "worker.py::entry"])
+        observations = {u["id"]: u["assertion"]["proposition"] for u in a["units"]}
+        paths = {i["symbol"]: i["derivation"]["premises"] for i in a["impacts"]}
+        self.assertEqual([observations[p] for p in paths["worker.py::entry"]], [
+            {"relation": "static_call", "caller": "worker.py::entry", "callee": "worker.py::Worker.run"},
+            {"relation": "static_call", "caller": "worker.py::Worker.run", "callee": "core.py::calculate"}])
+        self.assertTrue(validate_artifact(self.store, a)["valid"])
+
     def test_shadowing_dynamic_scopes_and_parse_errors(self):
         self.write("shadow.py", "from core import calculate\ndef wrong(calculate):\n    return calculate(9)\n")
         self.write("broken.py", "def bad(:\n")

@@ -233,14 +233,14 @@
     {
       "id": "method_gap",
       "root": "cases/method_gap",
-      "category": "known_gap",
+      "category": "core",
       "target": "core.py::target",
       "expected_impacts": [
         "worker.py::Worker.run",
         "worker.py::entry"
       ],
       "expected_tests": [],
-      "rationale": "Worker.run directly calls target and entry instantiates Worker and calls run. Current extractor lacks method resolution.",
+      "rationale": "Worker.run directly calls target and entry instantiates Worker and calls run. Method resolution supported since python-static-v2.",
       "expected_edges": [
         [
           "worker.py::Worker.run",

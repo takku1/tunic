@@ -8,7 +8,7 @@ import tokenize
 
 from .identity import digest, identity
 
-PROFILE = "python-static-v1"
+PROFILE = "python-static-v2"
 EXCLUDED = {".git", ".venv", "venv", "__pycache__", ".tunic", ".research", "node_modules"}
 
 
@@ -131,7 +131,47 @@ def extract(root):
                                 "is_test": node.name.startswith("test_") or Path(s["path"]).name.startswith("test_")}
                 if any(isinstance(n, ast.Call) for n in ast.walk(node.args)):
                     diagnostics.append({"path": s["path"], "line": node.lineno, "kind": "signature_execution"})
-        if any(isinstance(n, (ast.ClassDef, ast.Lambda)) for n in ast.walk(tree)):
+        s["classes"] = {}
+        for node in tree.body:
+            if not isinstance(node, ast.ClassDef) or node.name in s["bindings"]:
+                continue
+            if node.decorator_list:
+                diagnostics.append({"path": s["path"], "line": node.lineno, "kind": "unsupported_class"})
+                continue
+            methods = {}
+            duplicate = False
+            for item in node.body:
+                if not isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                    if isinstance(item, ast.ClassDef):
+                        diagnostics.append({"path": s["path"], "line": item.lineno, "kind": "unsupported_scope"})
+                    continue
+                if item.name in methods:
+                    duplicate = True
+                    continue
+                if item.decorator_list:
+                    diagnostics.append({"path": s["path"], "line": item.lineno, "kind": "decorated_function"})
+                    continue
+                if any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda))
+                       for statement in item.body for n in ast.walk(statement)):
+                    diagnostics.append({"path": s["path"], "line": item.lineno, "kind": "nested_scope"})
+                    continue
+                key = s["path"] + "::" + node.name + "." + item.name
+                start, end = _span(s["data"], item)
+                symbols[key] = {"key": key, "path": s["path"], "name": node.name + "." + item.name,
+                                "source": s["id"], "line": item.lineno,
+                                "start": start, "end": end,
+                                "is_test": item.name.startswith("test_") or Path(s["path"]).name.startswith("test_")}
+                methods[item.name] = key
+            if duplicate:
+                diagnostics.append({"path": s["path"], "line": node.lineno, "kind": "duplicate_method"})
+                for key in methods.values():
+                    del symbols[key]
+                continue
+            s["classes"][node.name] = methods
+        if (any(isinstance(n, ast.Lambda) for n in ast.walk(tree))
+                or any(isinstance(n, ast.ClassDef) for statement in tree.body
+                       if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef))
+                       for n in ast.walk(statement))):
             diagnostics.append({"path": s["path"], "kind": "unsupported_scope"})
         # Module-level execution/defaults are outside the call graph profile.
         if any(isinstance(n, ast.Call) for statement in tree.body
@@ -170,14 +210,22 @@ def extract(root):
                         start, end = _span(s["data"], node)
                         import_evidence[binding] = {"source": s["id"], "start": start, "end": end}
         star = any(isinstance(n, ast.ImportFrom) and any(a.name == "*" for a in n.names) for n in tree.body)
+        targets = []
         for node in tree.body:
-            if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) or node.name not in s["functions"]:
-                continue
-            caller = s["functions"][node.name]
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name in s["functions"]:
+                targets.append((s["functions"][node.name], node, None))
+            elif isinstance(node, ast.ClassDef) and node.name in s["classes"]:
+                for item in node.body:
+                    if (isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef))
+                            and item.name in s["classes"][node.name]):
+                        targets.append((s["classes"][node.name][item.name], item, node.name))
+        for caller, node, self_class in targets:
             local = set(_bound_names(ast.Module(body=node.body, type_ignores=[])))
             # A recursive function name can itself be shadowed by a parameter/local.
-            local.update(a.arg for a in ast.walk(node.args) if isinstance(a, ast.arg))
-            if any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda))
+            argnames = {a.arg for a in ast.walk(node.args) if isinstance(a, ast.arg)}
+            local.update(argnames)
+            rebound = local - argnames
+            if self_class is None and any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda))
                    for statement in node.body for n in ast.walk(statement)):
                 diagnostics.append({"path": s["path"], "line": node.lineno, "kind": "nested_scope"})
                 continue
@@ -185,29 +233,58 @@ def extract(root):
             for call in (n for n in ast.walk(body) if isinstance(n, ast.Call)):
                 name = _dotted(call.func)
                 target = None
+                expression = name
                 head = name.split(".")[0] if name else None
+                constructor = None
+                if isinstance(call.func, ast.Attribute) and isinstance(call.func.value, ast.Call):
+                    base = call.func.value.func
+                    if isinstance(base, ast.Name):
+                        constructor = base.id
+                        expression = constructor + "()." + call.func.attr
                 if name and head not in local and head not in s["bindings"] and not star:
                     if "." not in name and name in s["functions"]:
                         target = s["functions"][name]
+                    elif (self_class is not None and head in ("self", "cls") and head not in rebound
+                            and name.count(".") == 1):
+                        target = s["classes"][self_class].get(name.split(".")[1])
+                    elif head in s["classes"] and name.count(".") == 1:
+                        target = s["classes"][head].get(name.split(".")[1])
                     elif head in imports:
                         full = imports[head] + name[len(head):]
                         module, _, function = full.rpartition(".")
                         candidates = modules.get(module, [])
                         if len(candidates) == 1:
                             target = candidates[0].get("functions", {}).get(function)
+                        if target is None and len(full.split(".")) >= 3:
+                            parts = full.split(".")
+                            candidates = modules.get(".".join(parts[:-2]), [])
+                            if len(candidates) == 1:
+                                target = candidates[0].get("classes", {}).get(parts[-2], {}).get(parts[-1])
+                if target is None and constructor is not None and constructor not in local \
+                        and constructor not in s["bindings"] and not star:
+                    method = call.func.attr
+                    if constructor in s["classes"]:
+                        target = s["classes"][constructor].get(method)
+                    elif constructor in imports:
+                        parts = imports[constructor].split(".")
+                        if len(parts) >= 2:
+                            candidates = modules.get(".".join(parts[:-1]), [])
+                            if len(candidates) == 1:
+                                target = candidates[0].get("classes", {}).get(parts[-1], {}).get(method)
                 start, end = _span(s["data"], call)
                 if target:
                     proposition = {"relation": "static_call", "caller": caller, "callee": target}
                     definition = symbols[target]
                     support = [{k:definition[k] for k in ("source", "start", "end")}]
-                    if head in import_evidence:
-                        support.insert(0, import_evidence[head])
+                    owner = head if name else constructor
+                    if owner in import_evidence:
+                        support.insert(0, import_evidence[owner])
                     assertion = {"proposition": proposition, "source": s["id"], "start": start, "end": end,
-                                 "resolution": {"expression": name, "rule": "unshadowed_static_binding_v1", "support": support},
+                                 "resolution": {"expression": expression, "rule": "unshadowed_static_binding_v1", "support": support},
                                  "producer": PROFILE, "status": "syntactic_observation"}
                     assertion["id"] = identity("assertion", assertion)
                     assertions.append(assertion)
                 else:
                     diagnostics.append({"path": s["path"], "caller": caller, "line": call.lineno,
-                                        "start": start, "end": end, "kind": "unresolved_call", "expression": name})
+                                        "start": start, "end": end, "kind": "unresolved_call", "expression": expression})
     return sources, sorted(symbols.values(), key=lambda x:x["key"]), sorted(assertions, key=lambda x:x["id"]), sorted(diagnostics, key=lambda x: (x["path"], x.get("line") or 0, x["kind"], x.get("start", 0)))
