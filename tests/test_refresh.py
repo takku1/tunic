@@ -71,9 +71,10 @@ class RefreshTests(unittest.TestCase):
                BASE_CODE + "\n\ndef validate(value):\n    return value > 0\n")
         report = self.store.refresh(str(self.root))
         expected, expected_manifest = self._fresh_snapshot()
-        self.assertEqual(report["path"], "full")
+        self.assertEqual(report["path"], "code")
         self.assertEqual(report["snapshot"], expected)
         self.assertEqual(self._current_manifest(), expected_manifest)
+        self.assertGreaterEqual(report["work"].get("parse_skipped", 0), 0)
 
     def test_refresh_added_and_deleted_docs(self):
         _write(self.root, "notes/extra.md", "Nothing to link here.\n")

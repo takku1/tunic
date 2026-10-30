@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import sqlite3
 
-from .extract import DOC_PHASE_KINDS, STRUCTURE_KINDS, TEXT_EXTENSIONS, _build_docs, _scan, extract, PROFILE
+from .extract import DOC_PHASE_KINDS, STRUCTURE_KINDS, TEXT_EXTENSIONS, _build_bare_mentions, _build_claims, _build_docs, _build_exact_mentions, _build_mentions, _collect_code, _resolve_code, _scan, extract, module_of, parse_source, PROFILE
 from .identity import canonical, digest, identity
 
 SCHEMA = """
@@ -30,6 +30,27 @@ CREATE TABLE IF NOT EXISTS snapshot_assertions(
     snapshot TEXT REFERENCES snapshots(id), assertion TEXT REFERENCES assertions(id),
     PRIMARY KEY(snapshot,assertion));
 """
+
+
+def _referenced_sources(value, found):
+    """Collect every source-row id referenced anywhere inside a record.
+
+    Assertion resolution supports embed source ids of definition spans.
+    A kept document assertion referencing a row that is no longer a member
+    of the current snapshot cites superseded content, so its document must
+    be reprocessed. Extra reprocessing only costs work; it cannot change
+    results, since reprocessing reproduces full-rebuild output exactly.
+    """
+    if isinstance(value, dict):
+        for key, item in value.items():
+            if key == "source" and isinstance(item, str):
+                found.add(item)
+            else:
+                _referenced_sources(item, found)
+    elif isinstance(value, list):
+        for item in value:
+            _referenced_sources(item, found)
+    return found
 
 
 class GraphStore:
@@ -99,11 +120,11 @@ class GraphStore:
         Change detection walks and digests files without parsing. An
         unchanged tree returns the current snapshot with no parsing. When
         only text documents changed, stored code rows are reused and only the
-        document phase reruns: code assertions provably depend on code bytes
-        alone, while mentions and claims resolve against the reused symbol
-        table. Any code change falls back to a full extract, since global
-        name resolution can shift everywhere. Reports the path taken and
-        per-phase work counters.
+        document phase reruns. When Python files changed, only the affected
+        subset is re-parsed and re-resolved: changed files plus importers,
+        same-module members, star importers, and module referrers, with
+        documents reprocessed against the merged symbol table. Reports the
+        path taken and per-phase work counters.
         """
         root = str(Path(root).resolve(strict=True))
         binding = self.connection.execute("SELECT value FROM metadata WHERE key='root'").fetchone()
@@ -145,8 +166,11 @@ class GraphStore:
         touched = added + deleted + changed
         code_touched = [p for p in touched
                         if Path(p).suffix not in TEXT_EXTENSIONS]
-        if code_touched or structure_now != structure_then:
+        if structure_now != structure_then:
             return self._refresh_full(root, work, dict(fresh))
+        if code_touched:
+            return self._refresh_code(root, work, manifest, stored, dict(fresh),
+                                      current, touched, code_touched)
         return self._refresh_documents(root, work, manifest, stored, dict(fresh),
                                        current, touched)
 
@@ -167,6 +191,275 @@ class GraphStore:
         result = dict(result, path="full", reused=False, previous=previous,
                       published_new=result["snapshot"] != previous, work=work)
         return result
+
+    @staticmethod
+    def _imports_touched(text, path, touched_modules):
+        """Whether file text imports any touched module.
+
+        Over-approximates the extractor's own top-level import recognition:
+        extra matches only cause extra re-parsing, never wrong results.
+        Relative imports resolve against the importing file's package.
+        """
+        import re
+        for module in touched_modules:
+            if re.search(r"(?m)^\s*(?:import|from)\s+[\w.]*"
+                         + re.escape(module) + r"\b", text):
+                return True
+        own = module_of(path).split(".")
+        package = own if Path(path).name == "__init__.py" else own[:-1]
+        for match in re.finditer(r"(?m)^\s*from\s+(\.+)([\w.]*)\s+import\b", text):
+            level = len(match.group(1))
+            if level > len(package):
+                continue
+            base = package[:len(package) - level + 1]
+            remainder = match.group(2)
+            referenced = ".".join(base + ([remainder] if remainder else []))
+            if referenced in touched_modules:
+                return True
+        return False
+
+    def _doc_subset(self, text_sources, symbols, code_assertions, manifest,
+                      reprocess):
+        """Recompute claims and mentions for reprocessed docs only.
+
+        Runs the exact pass over every document before the bare-leaf pass
+        starts, seeding the shared dedup set from stored assertions of
+        untouched documents at their scan positions and dropping stored
+        mentions that an earlier document now shadows. This replicates full
+        rebuild first-wins order exactly. Stored claims of untouched
+        documents are reused; reprocessed documents regenerate both. Returns
+        (assertions, claim_diagnostics, mention_diagnostics).
+        """
+        order = [s["path"] for s in text_sources]
+        by_path = {s["path"]: s for s in text_sources}
+        reprocess = set(reprocess)
+        repro = [by_path[p] for p in order if p in reprocess]
+        all_text_ids = {s["id"] for s in text_sources}
+        claim_assertions, claim_diags = [], []
+        claim_spans = _build_claims(repro, symbols, claim_assertions,
+                                    claim_diags, all_text_ids)
+        stored_mentions = {}
+        for record in manifest["assertions"]:
+            proposition = record.get("proposition", {})
+            if proposition.get("relation") == "text_mention":
+                stored_mentions.setdefault(record.get("source"), []).append(record)
+        src_id = {s["path"]: s["id"] for s in text_sources}
+        seen = set()
+        fresh_mentions, mention_diags = [], []
+        kept_mentions = []
+        for exact in (True, False):
+            for path in order:
+                if path in reprocess:
+                    if exact:
+                        _build_exact_mentions([by_path[path]], symbols,
+                                              fresh_mentions, claim_spans,
+                                              seen, all_text_ids)
+                    else:
+                        _build_bare_mentions([by_path[path]], symbols,
+                                             fresh_mentions, claim_spans,
+                                             seen, all_text_ids)
+                else:
+                    for record in stored_mentions.get(src_id[path], []):
+                        is_exact = (record.get("resolution", {}).get("rule")
+                                    == "exact_key_match_v1")
+                        if is_exact != exact:
+                            continue
+                        key = (record.get("start"),
+                               record["proposition"].get("callee"))
+                        if key in seen:
+                            continue
+                        seen.add(key)
+                        kept_mentions.append(record)
+        valid_ids = {s["id"] for s in text_sources if s["path"] not in reprocess}
+        kept_claims = [a for a in manifest["assertions"]
+                       if a.get("proposition", {}).get("relation")
+                       not in ("static_call", "text_mention")
+                       and a.get("source") in valid_ids]
+        assertions = (list(code_assertions) + kept_mentions + kept_claims
+                      + claim_assertions + fresh_mentions)
+        return assertions, claim_diags, mention_diags
+
+    def _refresh_code(self, root, work, manifest, stored, fresh, current,
+                      touched, code_touched):
+        """Re-parse and re-resolve only the affected code subset.
+
+        Affected files are the changed or added files, stored importers of
+        touched code paths, members of touched modules, files with star
+        imports, and referrers of added or removed modules. Everything else
+        reuses stored rows verbatim. Documents rerun fully against the
+        merged symbol table to preserve mention-dedup order.
+        """
+        touched_set = set(code_touched)
+        touched_modules = {module_of(p) for p in code_touched}
+        stored_code_paths = [p for p in stored
+                             if Path(p).suffix not in TEXT_EXTENSIONS]
+        affected = set(p for p in code_touched if p in fresh)
+        for path in stored_code_paths:
+            if path in touched_set:
+                affected.add(path)
+                continue
+            if module_of(path) in {module_of(p) for p in touched_set}:
+                affected.add(path)
+                continue
+        for assertion in manifest["assertions"]:
+            proposition = assertion.get("proposition", {})
+            callee = proposition.get("callee", "")
+            callee_path = callee.split("::")[0]
+            if callee_path in touched_set or module_of(callee_path) in touched_modules:
+                caller = proposition.get("caller", "").split("::")[0]
+                if (caller in stored and caller not in touched_set
+                        and Path(caller).suffix not in TEXT_EXTENSIONS):
+                    affected.add(caller)
+        for diagnostic in manifest["diagnostics"]:
+            if diagnostic.get("kind") == "star_import":
+                path = diagnostic.get("path")
+                if path in stored and path not in touched_set:
+                    affected.add(path)
+        unresolved_paths = {d.get("path") for d in manifest["diagnostics"]
+                            if d.get("kind") == "unresolved_call"}
+        for path in sorted(unresolved_paths):
+            if (path not in stored or path in affected
+                    or Path(path).suffix in TEXT_EXTENSIONS
+                    or path not in fresh):
+                continue
+            try:
+                text = fresh[path]["data"].decode("utf-8")
+            except UnicodeError:
+                continue
+            if self._imports_touched(text, path, touched_modules):
+                affected.add(path)
+        parse_paths = sorted(p for p in affected if p in fresh)
+        records, parse_diagnostics, unparsed = {}, [], []
+        for path in parse_paths:
+            record, diagnostic = parse_source(path, fresh[path]["data"])
+            if diagnostic is not None:
+                parse_diagnostics.append(diagnostic)
+                unparsed.append(path)
+            else:
+                records[path] = record
+        work["files_parsed"] = len(parse_paths)
+        work["code_files_parsed"] = len(parse_paths)
+        work["parse_skipped"] = (sum(1 for entry in fresh.values() if not entry["text"])
+                                 - len(parse_paths))
+        modules = {}
+        for path in stored_code_paths:
+            if path in affected:
+                continue
+            module = module_of(path)
+            members = modules.setdefault(module, [])
+            functions, classes = {}, {}
+            for symbol in manifest["symbols"]:
+                if symbol.get("path") != path:
+                    continue
+                name = symbol.get("name", "")
+                if "." not in name:
+                    functions[name] = symbol["key"]
+                else:
+                    head, _, leaf = name.partition(".")
+                    classes.setdefault(head, {})[leaf] = symbol["key"]
+            members.append({"module": module, "functions": functions,
+                            "classes": classes})
+        for record in records.values():
+            modules.setdefault(record["module"], []).append(record)
+        for path in unparsed:
+            module = module_of(path)
+            members = modules.setdefault(module, [])
+            members.append({"module": module, "functions": {}, "classes": {}})
+        symbols = {s["key"]: s for s in manifest["symbols"]
+                   if s.get("path") not in affected
+                   and not s["key"].endswith("::document")}
+        text_sources = [{"id": info["id"], "path": path, "digest": info["digest"],
+                         "data": info["data"], "tree": None, "text": True}
+                        for path, info in sorted(fresh.items()) if info["text"]]
+        failed_sources = [{"id": fresh[path]["id"], "path": path,
+                           "digest": fresh[path]["digest"],
+                           "data": fresh[path]["data"], "tree": None,
+                           "text": False, "module": module_of(path)}
+                          for path in unparsed]
+        collect_sources = list(records.values()) + failed_sources + text_sources
+        collect_diags = list(parse_diagnostics)
+        _collect_code(collect_sources, symbols,
+                      [], collect_diags)
+        code_sources = [r for r in collect_sources if not r.get("text")]
+        resolve_assertions, resolve_diags = [], []
+        _resolve_code(code_sources, modules, symbols,
+                      resolve_assertions, resolve_diags)
+        rows = {row[0]: row[1] for row in self.connection.execute(
+            """SELECT s.id, s.path FROM sources s
+               JOIN members m ON m.source=s.id WHERE m.snapshot=?""", (current,))}
+        old_keys = {s["key"] for s in manifest["symbols"]
+                      if s.get("path") in touched_set}
+        new_keys = set()
+        for path, record in list(records.items()):
+            if path not in touched_set:
+                continue
+            for key in record.get("functions", {}).values():
+                new_keys.add(key)
+            for methods in record.get("classes", {}).values():
+                new_keys.update(methods.values())
+        changed_terms = set(old_keys) | set(new_keys)
+        for key in old_keys | new_keys:
+            changed_terms.add(key.split("::")[-1].split(".")[-1])
+        reprocess = {p for p in touched if p in fresh
+                     and Path(p).suffix in TEXT_EXTENSIONS}
+        for info in text_sources:
+            if info["path"] not in stored:
+                reprocess.add(info["path"])
+                continue
+            try:
+                text = info["data"].decode("utf-8")
+            except UnicodeError:
+                continue
+            if any(term in text for term in changed_terms):
+                reprocess.add(info["path"])
+        member_ids = set(rows)
+        doc_of_source = {info["id"]: info["path"] for info in text_sources}
+        for record in manifest["assertions"]:
+            path = doc_of_source.get(record.get("source"))
+            if (path is None or path in reprocess or path not in stored
+                    or Path(path).suffix not in TEXT_EXTENSIONS):
+                continue
+            if _referenced_sources(record, set()) - member_ids:
+                reprocess.add(path)
+        drop = set(affected) | {p for p in touched if p not in fresh}
+        code_assertions = [a for a in manifest["assertions"]
+                           if rows.get(a.get("source")) not in drop
+                           and rows.get(a.get("source")) not in {s["path"] for s in text_sources}]
+        code_assertions.extend(resolve_assertions)
+        assertions, claim_diags, mention_diags = self._doc_subset(
+            text_sources, symbols, code_assertions, manifest, reprocess)
+        doc_diags = claim_diags + mention_diags
+        deleted_paths = {p for p in touched if p not in fresh}
+        kept = [d for d in manifest["diagnostics"]
+                if not (d["path"] in drop
+                        or (d["kind"] in DOC_PHASE_KINDS
+                            and (d["path"] in reprocess or d["path"] in deleted_paths)))]
+        merged = kept + collect_diags + resolve_diags + doc_diags
+        merged.sort(key=lambda x: (x["path"], x.get("line") or 0, x["kind"], x.get("start", 0)))
+        work["doc_files_processed"] = len(text_sources)
+        work["docs_reprocessed"] = len(reprocess)
+        code_reused = [a for a in manifest["assertions"]
+                       if rows.get(a.get("source")) not in drop
+                       and rows.get(a.get("source")) not in {s["path"] for s in text_sources}]
+        work["assertions_reused"] = len(code_reused)
+        work["assertions_built"] = len(assertions) - len(code_reused)
+        work["diagnostics_reused"] = len(kept)
+        work["diagnostics_built"] = len(collect_diags) + len(resolve_diags) + len(doc_diags)
+        member_rows = self.connection.execute(
+            """SELECT s.id, s.path, s.digest, s.data FROM sources s
+               JOIN members m ON m.source=s.id WHERE m.snapshot=?""", (current,)).fetchall()
+        unaffected_sources = [{"id": row[0], "path": row[1], "digest": row[2],
+                               "data": bytes(row[3]), "tree": None, "text": False}
+                              for row in member_rows
+                              if row[1] not in affected and row[1] in fresh
+                              and Path(row[1]).suffix not in TEXT_EXTENSIONS]
+        sources_out = unaffected_sources + code_sources + text_sources
+        result = self._publish(root, sources_out,
+                               sorted(symbols.values(), key=lambda x: x["key"]),
+                               sorted(assertions, key=lambda x: x["id"]), merged)
+        return dict(result, path="code", reused=True, previous=current,
+                    published_new=result["snapshot"] != current, work=work,
+                    affected_files=sorted(affected))
 
     def _refresh_documents(self, root, work, manifest, stored, fresh, current, touched):
         """Reuse stored code rows; rerun the document phase over text files."""
@@ -193,19 +486,21 @@ class GraphStore:
                                     "start": 0, "end": len(source["data"]), "is_test": False}
         symbols = {s["key"]: s for s in code_symbols}
         symbols.update(doc_symbols)
-        assertions = list(code_assertions)
-        doc_diagnostics = []
-        _build_docs(text_sources, symbols, assertions, doc_diagnostics)
-        fresh_text_paths = {s["path"] for s in text_sources}
+        reprocess = {path for path in touched if path in fresh
+                     and Path(path).suffix in TEXT_EXTENSIONS}
+        assertions, claim_diags, mention_diags = self._doc_subset(
+            text_sources, symbols, code_assertions, manifest, reprocess)
+        doc_diagnostics = claim_diags + mention_diags
         deleted_paths = {p for p in touched if p not in fresh}
         kept = [d for d in manifest["diagnostics"]
                 if not (d["kind"] in DOC_PHASE_KINDS
-                        and (d["path"] in fresh_text_paths or d["path"] in deleted_paths))]
+                        and (d["path"] in reprocess or d["path"] in deleted_paths))]
         merged = kept + doc_diagnostics
         merged.sort(key=lambda x: (x["path"], x.get("line") or 0, x["kind"], x.get("start", 0)))
         symbols_out = sorted(symbols.values(), key=lambda x: x["key"])
         assertions_out = sorted(assertions, key=lambda x: x["id"])
         work["doc_files_processed"] = len(text_sources)
+        work["docs_reprocessed"] = len(reprocess)
         work["assertions_reused"] = len(code_assertions)
         work["assertions_built"] = len(assertions_out) - len(code_assertions)
         work["diagnostics_reused"] = len(kept)

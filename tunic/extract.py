@@ -128,12 +128,43 @@ def capture(root):
     return sources, diagnostics, modules
 
 
-def _build_code(sources, modules, symbols, assertions, diagnostics):
-    """Populate symbols and static-call assertions from parsed Python sources.
+def module_of(path):
+    """Map a repository-relative path to its module, mirroring capture."""
+    parts = list(Path(path).with_suffix("").parts)
+    if parts[-1] == "__init__":
+        parts.pop()
+    return ".".join(parts)
 
-    Reads only code bytes and the module table: document sources are skipped,
-    so rerunning this phase is unnecessary when solely text files changed.
-    Mutates the passed-in containers; see extract for the full pipeline.
+
+def parse_source(path, data):
+    """Build a capture-style source record for one file, or a diagnostic.
+
+    Returns (record, diagnostic): exactly one is None. Mirrors the per-file
+    parse step of capture so incremental refresh reuses identical records.
+    """
+    file_digest = digest(data)
+    record = {"path": path, "digest": file_digest, "data": data,
+              "id": identity("source", [path, file_digest]), "tree": None,
+              "text": False, "module": module_of(path)}
+    try:
+        encoding, _ = tokenize.detect_encoding(io.BytesIO(data).readline)
+        if encoding not in {"utf-8", "utf-8-sig"}:
+            return None, {"path": path, "kind": "unsupported_encoding",
+                          "encoding": encoding}
+        record["tree"] = ast.parse(data.decode("utf-8-sig"), filename=path)
+    except (SyntaxError, UnicodeError, ValueError) as error:
+        return None, {"path": path, "kind": "parse_error",
+                      "line": getattr(error, "lineno", None)}
+    return record, None
+
+
+def _collect_code(sources, symbols, assertions, diagnostics):
+    """Populate symbols and per-file tables from parsed Python sources.
+
+    Reads only code bytes; document sources yield document symbols. The
+    module table is assembled by the caller from these records plus stored
+    rows, so collection accepts any file subset. Mutates the passed-in
+    containers; see extract for the full pipeline.
     """
     for s in sources:
         tree = s["tree"]
@@ -226,6 +257,14 @@ def _build_code(sources, modules, symbols, assertions, diagnostics):
                for n in ast.walk(statement)):
             diagnostics.append({"path": s["path"], "kind": "module_execution"})
 
+
+def _resolve_code(sources, modules, symbols, assertions, diagnostics):
+    """Resolve imports and static calls for parsed code sources.
+
+    Reads the module table and the accumulated symbol table; appends call
+    assertions and resolution diagnostics. Accepts any source subset: files
+    without trees are skipped, so callers pass only the files to resolve.
+    """
     for s in sources:
         tree = s["tree"]
         if tree is None:
@@ -346,7 +385,20 @@ def _build_docs(sources, symbols, assertions, diagnostics):
     by always processing every text source.
     Mutates the passed-in containers; see extract for the full pipeline.
     """
-    text_ids = {s["id"] for s in sources if s.get("text")}
+    return _build_mentions(sources, symbols, assertions, diagnostics,
+                             _build_claims(sources, symbols, assertions, diagnostics))
+
+
+def _build_claims(sources, symbols, assertions, diagnostics, text_ids=None):
+    """Populate typed-claim assertions from document claim blocks.
+
+    Returns the per-source claim spans that hide claimed text from mention
+    extraction. Order-independent: claims never deduplicate across sources.
+    Pass the full-build text ids when running over a subset of sources so
+    other documents' symbols are not mistaken for code.
+    """
+    if text_ids is None:
+        text_ids = {s["id"] for s in sources if s.get("text")}
     code_keys = sorted(key for key, record in symbols.items() if record["source"] not in text_ids)
 
     def _resolve_reference(ref):
@@ -478,7 +530,30 @@ def _build_docs(sources, symbols, assertions, diagnostics):
                 continue
         if in_fence:
             diagnostics.append({"path": s["path"], "line": fence_line, "kind": "unclosed_claims"})
-    seen_mentions = set()
+    return claim_spans
+
+
+def _build_mentions(sources, symbols, assertions, diagnostics, claim_spans, seen=None):
+    """Populate document mention assertions in source order.
+
+    Exact key matches across every document take priority over bare leaf
+    matches anywhere: the exact pass runs to completion before the bare
+    pass starts. Takes an optional seen set of (start, key) pairs so
+    incremental refresh can seed mentions from unchanged documents and
+    preserve full-rebuild first-wins dedup order. Returns the seen set.
+    """
+    seen_mentions = set() if seen is None else seen
+    _build_exact_mentions(sources, symbols, assertions, claim_spans, seen_mentions)
+    _build_bare_mentions(sources, symbols, assertions, claim_spans, seen_mentions)
+    return seen_mentions
+
+
+def _build_exact_mentions(sources, symbols, assertions, claim_spans, seen, text_ids=None):
+    """Populate exact `path::symbol` mention assertions in source order."""
+    if text_ids is None:
+        text_ids = {s["id"] for s in sources if s.get("text")}
+    code_keys = sorted(key for key, record in symbols.items() if record["source"] not in text_ids)
+    seen_mentions = seen
     for s in sources:
         if not s.get("text"):
             continue
@@ -503,11 +578,30 @@ def _build_docs(sources, symbols, assertions, diagnostics):
                                  "producer": PROFILE, "status": "syntactic_observation"}
                     assertion["id"] = identity("assertion", assertion)
                     assertions.append(assertion)
+    return seen_mentions
+
+
+def _build_bare_mentions(sources, symbols, assertions, claim_spans, seen, text_ids=None):
+    """Populate bare leaf-name mention assertions in source order.
+
+    Must run after the exact pass over every document: a bare match is
+    suppressed when its (start, key) pair was already claimed by an exact
+    match, even in a different document.
+    """
+    if text_ids is None:
+        text_ids = {s["id"] for s in sources if s.get("text")}
+    code_keys = sorted(key for key, record in symbols.items() if record["source"] not in text_ids)
+    seen_mentions = seen
     leaf_names = {}
     for key in code_keys:
         leaf = symbols[key]["name"].split(".")[-1]
         if len(leaf) >= 2:
             leaf_names.setdefault(leaf, []).append(key)
+    leaf_pattern = None
+    if leaf_names:
+        leaf_pattern = re.compile("|".join(
+            r"\b" + re.escape(leaf) + r"\b"
+            for leaf in sorted(leaf_names, key=len, reverse=True)))
     for s in sources:
         if not s.get("text"):
             continue
@@ -524,9 +618,10 @@ def _build_docs(sources, symbols, assertions, diagnostics):
             except UnicodeError:
                 continue
             exact_here = {key for key in code_keys if key in line}
-            for leaf in sorted(leaf_names):
-                if not re.search(r"\b" + re.escape(leaf) + r"\b", line):
-                    continue
+            if leaf_pattern is None:
+                continue
+            present = {match.group(0) for match in leaf_pattern.finditer(line)}
+            for leaf in sorted(present):
                 candidates = leaf_names[leaf]
                 for key in candidates:
                     if key in exact_here or (start, key) in seen_mentions:
@@ -544,12 +639,14 @@ def _build_docs(sources, symbols, assertions, diagnostics):
                                  "status": "proposed_ambiguous" if len(candidates) > 1 else "proposed"}
                     assertion["id"] = identity("assertion", assertion)
                     assertions.append(assertion)
+    return seen_mentions
 
 
 def extract(root):
     """Full rebuild: capture, code resolution, then document extraction."""
     sources, diagnostics, modules = capture(root)
     symbols, assertions = {}, []
-    _build_code(sources, modules, symbols, assertions, diagnostics)
+    _collect_code(sources, symbols, assertions, diagnostics)
+    _resolve_code(sources, modules, symbols, assertions, diagnostics)
     _build_docs(sources, symbols, assertions, diagnostics)
     return sources, sorted(symbols.values(), key=lambda x:x["key"]), sorted(assertions, key=lambda x:x["id"]), sorted(diagnostics, key=lambda x: (x["path"], x.get("line") or 0, x["kind"], x.get("start", 0)))
