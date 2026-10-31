@@ -72,14 +72,19 @@ def _live_claim_maps(view):
     return superseded_by, contradicted
 
 
-def candidate_evidence(view, symbol):
+def candidate_evidence(view, symbol, anchors=None):
     """Structural evidence touching one candidate symbol.
 
     Asserted ties use supports-minus-retractions, mirroring the compiler:
     a fully retracted edge contributes no corroboration, so selection
     cannot resurrect through ranking what traversal correctly removed.
+
+    When `anchors` (subject keys the query names) is given, `anchored_ties`
+    counts only edges shared with an anchor: raw connectivity says a
+    symbol is busy, anchored ties say it is busy *with this question*.
     """
     from .extract import TRAVERSABLE_CLAIMS
+    subjects = set(anchors or ())
     supports, retractions = {}, {}
     for assertion in view["assertions"]:
         proposition = assertion["proposition"]
@@ -94,6 +99,7 @@ def candidate_evidence(view, symbol):
                    proposition.get("callee"))
             retractions[key] = retractions.get(key, 0) + 1
     observed, asserted, mentions, proposals = 0, 0, 0, 0
+    anchored = 0
     ambiguous = False
     for assertion in view["assertions"]:
         proposition = assertion["proposition"]
@@ -101,6 +107,8 @@ def candidate_evidence(view, symbol):
             continue
         relation = proposition.get("relation")
         status = assertion.get("status")
+        other = proposition.get("callee") if proposition.get("caller") == symbol else proposition.get("caller")
+        counts = True
         if relation == "static_call":
             observed += 1
         elif (relation in TRAVERSABLE_CLAIMS and status == "asserted_in_source"
@@ -115,16 +123,27 @@ def candidate_evidence(view, symbol):
             proposals += 1
             if status == "proposed_ambiguous":
                 ambiguous = True
+        else:
+            counts = False
+        if counts and other in subjects and relation in (
+                "static_call", "text_mention", *TRAVERSABLE_CLAIMS):
+            anchored += 1
     return {"observed_edges": observed, "asserted_ties": asserted,
             "qualified_mentions": mentions, "proposals": proposals,
             "ambiguous": ambiguous,
             "graph_ties": observed + asserted + mentions + proposals,
+            "anchored_ties": anchored,
             "retracted_ties": sum(1 for key, count in supports.items()
                                   if count <= retractions.get(key, 0)
                                   and symbol in key[1:])}
 
 
-def select(task, fused, *, view, policy, limit):
+OUTCOME_ORDER = {"supported": 0, "proposed": 1, "ambiguous": 2,
+                 "contradicted": 3, "insufficient_evidence": 4,
+                 "out_of_scope": 5}
+
+
+def select(task, fused, *, view, policy, limit, anchors=None):
     """Filter fused [(score, key, origins)] into kept keys plus a trace.
 
     Structural rules, no tuned cutoffs:
@@ -135,8 +154,14 @@ def select(task, fused, *, view, policy, limit):
     - otherwise a candidate needs at least one graph tie to be more
       than discovery noise; impact queries additionally require
       observed edges for `supported` (asserted-only is `proposed`).
+    - for impact queries with `anchors` (subject keys the query names),
+      discovery-only candidates need a graph path to a named subject:
+      raw connectivity without it is hub noise, not query evidence,
+      so unanchored discovery is insufficient_evidence even when the
+      candidate is busy elsewhere.
     """
     intent = classify_intent(task)
+    subjects = set(anchors or ())
     superseded_by, contradicted = _live_claim_maps(view)
     code_keys = [s["key"] for s in view["symbols"]
                  if not s["key"].endswith("::document")]
@@ -146,10 +171,11 @@ def select(task, fused, *, view, policy, limit):
     order = {"exact": 0, "name": 1, "lexical": 2, "semantic": 3}
     decisions, kept = [], []
     for score, key, origins in fused:
-        evidence = candidate_evidence(view, key)
+        evidence = candidate_evidence(view, key, anchors=subjects)
         best = min(origins, key=order.__getitem__)
         reasons = ["best stage: " + best,
-                   "graph ties: %d" % evidence["graph_ties"]]
+                   "graph ties: %d" % evidence["graph_ties"],
+                   "anchored ties: %d" % evidence["anchored_ties"]]
         if policy == "current" and key in superseded_by:
             outcome = "out_of_scope"
             reasons.append("superseded by " + ", ".join(sorted(superseded_by[key]))
@@ -167,6 +193,11 @@ def select(task, fused, *, view, policy, limit):
             outcome = "supported"
             reasons.append("entity named in the query; identity established")
             kept.append(key)
+        elif (intent["intent"] == "impact" and subjects
+                and evidence["anchored_ties"] == 0):
+            outcome = "insufficient_evidence"
+            reasons.append("no graph path to the named subject; "
+                           "discovery noise for this impact query")
         elif evidence["graph_ties"] == 0:
             outcome = "insufficient_evidence"
             reasons.append("discovery-only candidate with no graph ties")

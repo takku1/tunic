@@ -7,12 +7,12 @@
   "seed": 0
  },
  "context_cap": 4000,
- "tunic_commit": "ee9162bcf6ca09a942c09f96adda1d847e946371",
+ "tunic_commit": "65236c3a59b2f333edc80cecab995ba38df8319f",
  "sources": {
   "tunic": {
    "path": "Z:\\tunic",
-   "commit": "ee9162bcf6ca09a942c09f96adda1d847e946371",
-   "status": "M tests/test_render_answer.py\n M tunic/render.py",
+   "commit": "65236c3a59b2f333edc80cecab995ba38df8319f",
+   "status": "M tests/test_selection.py\n M tunic/memory.py\n M tunic/selection.py",
    "error": null
   }
  },
@@ -22,28 +22,28 @@
    "n": 4,
    "stale_tasks": 0,
    "hallucinated_tasks": 0,
-   "mean_latency_ms": 6590.1
+   "mean_latency_ms": 6041.5
   },
   "lexical": {
    "passed": 3,
    "n": 4,
    "stale_tasks": 1,
    "hallucinated_tasks": 0,
-   "mean_latency_ms": 6390.3
+   "mean_latency_ms": 6340.8
   },
   "tunic": {
    "passed": 4,
    "n": 4,
    "stale_tasks": 0,
    "hallucinated_tasks": 0,
-   "mean_latency_ms": 10225.4
+   "mean_latency_ms": 10177.0
   },
   "tunic-select": {
    "passed": 4,
    "n": 4,
    "stale_tasks": 0,
    "hallucinated_tasks": 0,
-   "mean_latency_ms": 10492.6
+   "mean_latency_ms": 10362.3
   }
  },
  "tasks": [
@@ -67,7 +67,7 @@
      "response": "```symbols\n\n```",
      "prompt_tokens": 79,
      "completion_tokens": 1081,
-     "latency_ms": 7362.4
+     "latency_ms": 5319.7
     },
     "lexical": {
      "context_chars": 436,
@@ -82,7 +82,7 @@
      "response": "```symbols\ncheckout.py::place_order\n```",
      "prompt_tokens": 206,
      "completion_tokens": 697,
-     "latency_ms": 3303.0
+     "latency_ms": 3236.3
     },
     "tunic": {
      "context_chars": 1290,
@@ -97,7 +97,7 @@
      "response": "```symbols\ncheckout.py::place_order\n```",
      "prompt_tokens": 374,
      "completion_tokens": 1532,
-     "latency_ms": 7226.3
+     "latency_ms": 7133.0
     },
     "tunic-select": {
      "context_chars": 1290,
@@ -112,7 +112,7 @@
      "response": "```symbols\ncheckout.py::place_order\n```",
      "prompt_tokens": 374,
      "completion_tokens": 1617,
-     "latency_ms": 7606.1
+     "latency_ms": 7571.4
     }
    }
   },
@@ -136,7 +136,7 @@
      "response": "```symbols\n\n```",
      "prompt_tokens": 78,
      "completion_tokens": 1382,
-     "latency_ms": 6493.3
+     "latency_ms": 6389.7
     },
     "lexical": {
      "context_chars": 436,
@@ -151,7 +151,7 @@
      "response": "```symbols\npricing.py::round_total\n```",
      "prompt_tokens": 205,
      "completion_tokens": 1549,
-     "latency_ms": 7273.8
+     "latency_ms": 7172.8
     },
     "tunic": {
      "context_chars": 1290,
@@ -166,7 +166,7 @@
      "response": "```symbols\npricing.py::round_total\n```",
      "prompt_tokens": 373,
      "completion_tokens": 2036,
-     "latency_ms": 9674.9
+     "latency_ms": 9659.2
     },
     "tunic-select": {
      "context_chars": 1290,
@@ -181,7 +181,7 @@
      "response": "```symbols\npricing.py::round_total\n```",
      "prompt_tokens": 373,
      "completion_tokens": 1983,
-     "latency_ms": 9493.1
+     "latency_ms": 9461.9
     }
    }
   },
@@ -205,7 +205,7 @@
      "response": "```symbols\n\n```",
      "prompt_tokens": 79,
      "completion_tokens": 1081,
-     "latency_ms": 5123.7
+     "latency_ms": 5056.7
     },
     "lexical": {
      "context_chars": 753,
@@ -222,7 +222,7 @@
      "response": "```symbols\ncheckout.py::place_order\n```",
      "prompt_tokens": 301,
      "completion_tokens": 1561,
-     "latency_ms": 7340.0
+     "latency_ms": 7358.5
     },
     "tunic": {
      "context_chars": 1453,
@@ -235,7 +235,7 @@
      "response": "```\n```",
      "prompt_tokens": 411,
      "completion_tokens": 3211,
-     "latency_ms": 15584.1
+     "latency_ms": 15578.3
     },
     "tunic-select": {
      "context_chars": 1453,
@@ -248,7 +248,7 @@
      "response": "```\n\n```",
      "prompt_tokens": 411,
      "completion_tokens": 2402,
-     "latency_ms": 11506.5
+     "latency_ms": 11500.8
     }
    }
   },
@@ -270,7 +270,7 @@
      "response": "```\n\n```",
      "prompt_tokens": 77,
      "completion_tokens": 1571,
-     "latency_ms": 7381.0
+     "latency_ms": 7399.9
     },
     "lexical": {
      "context_chars": 21,
@@ -283,7 +283,7 @@
      "response": "```\n\n```",
      "prompt_tokens": 77,
      "completion_tokens": 1623,
-     "latency_ms": 7644.3
+     "latency_ms": 7595.7
     },
     "tunic": {
      "context_chars": 1039,
@@ -296,7 +296,7 @@
      "response": "```\n\n```",
      "prompt_tokens": 316,
      "completion_tokens": 1763,
-     "latency_ms": 8416.2
+     "latency_ms": 8337.3
     },
     "tunic-select": {
      "context_chars": 1039,
@@ -309,7 +309,7 @@
      "response": "```\n\n```",
      "prompt_tokens": 316,
      "completion_tokens": 2744,
-     "latency_ms": 13364.8
+     "latency_ms": 12915.1
     }
    }
   }

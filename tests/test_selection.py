@@ -157,6 +157,56 @@ class SelectTests(unittest.TestCase):
         self.assertEqual(first, second)
 
 
+class AnchoringTests(unittest.TestCase):
+    def anchored_view(self):
+        return view_for(
+            ["s.py::subject", "s.py::caller", "hub.py::hub", "s.py::other"],
+            [assertion("s.py::caller", "s.py::subject"),
+             assertion("hub.py::hub", "s.py::other")])
+
+    def test_unanchored_hub_is_insufficient_for_impact(self):
+        view = self.anchored_view()
+        fused = [(0.9, "s.py::subject", {"name": 1}),
+                 (0.5, "s.py::caller", {"lexical": 1}),
+                 (0.4, "hub.py::hub", {"lexical": 1})]
+        result = select("Which functions break if subject changes?", fused,
+                        view=view, policy="current", limit=5,
+                        anchors={"s.py::subject": {"s.py::caller"}})
+        decisions = {d["symbol"]: d["outcome"] for d in result["trace"]["decisions"]}
+        self.assertEqual(decisions["s.py::subject"], "supported")
+        self.assertEqual(decisions["s.py::caller"], "supported")
+        self.assertEqual(decisions["hub.py::hub"], "insufficient_evidence")
+        self.assertNotIn("hub.py::hub", result["kept"])
+        self.assertIn("s.py::caller", result["kept"])
+
+    def test_no_anchors_preserves_old_behavior(self):
+        view = self.anchored_view()
+        fused = [(0.4, "hub.py::hub", {"lexical": 1})]
+        result = select("Which functions break if subject changes?", fused,
+                        view=view, policy="current", limit=5)
+        decisions = {d["symbol"]: d["outcome"] for d in result["trace"]["decisions"]}
+        self.assertEqual(decisions["hub.py::hub"], "supported")
+
+    def test_anchoring_only_applies_to_impact(self):
+        view = self.anchored_view()
+        fused = [(0.4, "hub.py::hub", {"lexical": 1})]
+        result = select("Who computes the hubs?", fused,
+                        view=view, policy="current", limit=5,
+                        anchors={"s.py::subject": {"s.py::caller"}})
+        decisions = {d["symbol"]: d["outcome"] for d in result["trace"]["decisions"]}
+        self.assertEqual(decisions["hub.py::hub"], "supported")
+
+    def test_anchored_ties_count_shared_edges(self):
+        view = self.anchored_view()
+        caller = candidate_evidence(view, "s.py::caller",
+                                    anchors={"s.py::subject"})
+        self.assertEqual(caller["anchored_ties"], 1)
+        hub = candidate_evidence(view, "hub.py::hub",
+                                 anchors={"s.py::subject"})
+        self.assertEqual(hub["anchored_ties"], 0)
+        self.assertGreater(hub["graph_ties"], 0)
+
+
 class RetractionTests(unittest.TestCase):
     def test_retracted_tie_gives_no_corroboration(self):
         view = view_for(
@@ -181,6 +231,40 @@ class RetractionTests(unittest.TestCase):
         evidence = candidate_evidence(view, "a.py::x")
         self.assertEqual(evidence["asserted_ties"], 1)
         self.assertEqual(evidence["retracted_ties"], 0)
+
+
+class AnchoredAnswerTests(unittest.TestCase):
+    def test_impact_answer_drops_unanchored_hub(self):
+        import shutil
+        import tempfile
+        from pathlib import Path
+        from tunic.memory import Memory
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp, True)
+        root = tmp / "repo"
+        root.mkdir()
+        (root / "m.py").write_text(
+            "def subject():\n    return 1\n\n\n"
+            "def caller():\n    return subject()\n\n\n"
+            "def unrelated():\n    return 0\n\n\n"
+            "def hub():\n"
+            "    \"\"\"Handles subject-adjacent bookkeeping.\"\"\"\n"
+            "    return unrelated()\n")
+        memory = Memory(str(tmp / "g.sqlite"), root)
+        self.addCleanup(memory.close)
+        memory.ingest()
+        result = memory.answer("Which functions break if subject changes?",
+                               limit=5, select=True)
+        symbols = [c["symbol"] for c in result["candidates"]]
+        # hub lexically matches ("subject" in its docstring) and has a real
+        # static edge, but no path to the named subject: excluded.
+        self.assertNotIn("m.py::hub", symbols)
+        self.assertIn("m.py::subject", symbols)
+        self.assertIn("m.py::caller", symbols)
+        decisions = {d["symbol"]: d["outcome"]
+                     for d in result["selection"]["trace"]["decisions"]}
+        self.assertEqual(decisions.get("m.py::hub"), "insufficient_evidence")
+        self.assertEqual(decisions.get("m.py::caller"), "supported")
 
 
 class AnswerGuardTests(unittest.TestCase):

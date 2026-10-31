@@ -271,10 +271,30 @@ class Memory:
         fused = fuse(rankings, total=limit, threshold=threshold)
         selection = None
         if select:
-            from .selection import select as run_selection
-            selection = run_selection(task, fused, view=view,
-                                      policy=policy, limit=limit)
-            top = selection["kept"]
+            from .selection import (OUTCOME_ORDER, classify_intent,
+                                    select as run_selection)
+            anchors = None
+            if classify_intent(task)["intent"] == "impact":
+                subjects = [key for _, key, ranks in fused
+                            if "exact" in ranks or "name" in ranks]
+                if subjects:
+                    anchors = {}
+                    for subject in subjects:
+                        try:
+                            impact = compiler.compile_impact(
+                                self.store, subject, snapshot=snapshot,
+                                policy=policy)
+                        except ValueError:
+                            continue
+                        anchors[subject] = {entry["symbol"]
+                                            for entry in impact["impacts"]}
+                    anchors = anchors or None
+            selection = run_selection(task, fused, view=view, policy=policy,
+                                      limit=limit, anchors=anchors)
+            outcomes = {d["symbol"]: d["outcome"]
+                        for d in selection["trace"]["decisions"]}
+            top = sorted(selection["kept"],
+                         key=lambda k: OUTCOME_ORDER[outcomes.get(k, "proposed")])
         else:
             top = [key for _, key, _ in fused]
         origins = {key: ranks for _, key, ranks in fused}

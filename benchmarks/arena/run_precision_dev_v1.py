@@ -38,11 +38,28 @@ ARMS = {
 }
 
 
+def caller_ranked(task, ranked):
+    """Ranked list minus the query-named subject (gold-free rule).
+
+    For impact questions the named leaf is the referent, never an
+    answer; measuring caller ranking separately keeps a rank-1 subject
+    from masking whether true callers surface early. Exclusion uses only
+    the question text (whole-word leaf match), never the gold set.
+    """
+    import re
+    words = set(re.findall(r"[a-z_][a-z_0-9]*", task["question"].lower()))
+    return [s for s in ranked
+            if s.split("::")[-1].split(".")[-1].lower() not in words]
+
+
 def summarize(rows, arms):
     out = {}
     for arm in arms:
         scored = [r["arms"][arm]["scores"] for r in rows]
         mets = [r["arms"][arm]["ranked_metrics"] for r in rows]
+        caller_mets = [ranked_metrics(caller_ranked(r, r["arms"][arm]["ranked"]),
+                                      r["gold"])
+                       for r in rows]
         agg = aggregate([{"tp": s["tp"], "fp": s["fp"], "fn": s["fn"],
                           "exact_match": s["exact_match"], "available": True}
                          for s in scored])
@@ -58,6 +75,9 @@ def summarize(rows, arms):
             "mean_recall_at_1": sum(m["recall_at_1"] for m in mets) / len(mets),
             "mean_recall_at_3": sum(m["recall_at_3"] for m in mets) / len(mets),
             "mrr": sum(m["mrr"] for m in mets) / len(mets),
+            "caller_recall_at_1": sum(m["recall_at_1"] for m in caller_mets) / len(caller_mets),
+            "caller_recall_at_3": sum(m["recall_at_3"] for m in caller_mets) / len(caller_mets),
+            "caller_mrr": sum(m["mrr"] for m in caller_mets) / len(caller_mets),
             "mean_ndcg_at_5": sum(m["ndcg_at_5"] for m in mets
                                   if m["ndcg_at_5"] is not None) / len(mets),
             "latency_ms": latency_stats(lat)}
@@ -135,10 +155,11 @@ def main():
     out.write_text(json.dumps(record, ensure_ascii=True, sort_keys=True, indent=2),
                    encoding="utf-8")
     for arm, s in record["dev_summary"].items():
-        print("  %-14s P=%.3f R=%.3f F1=%.3f exact=%d junk=%d R@1=%.2f R@3=%.2f p50=%sms" % (
+        print("  %-14s P=%.3f R=%.3f F1=%.3f exact=%d junk=%d R@1=%.2f R@3=%.2f cR@1=%.2f cMRR=%.2f p50=%sms" % (
             arm, s["micro_precision"] or 0, s["micro_recall"] or 0,
             s["micro_f1"] or 0, s["exact_tasks"], len(s["junk_symbols"]),
             s["mean_recall_at_1"], s["mean_recall_at_3"],
+            s["caller_recall_at_1"], s["caller_mrr"],
             s["latency_ms"]["p50"]))
         if s["junk_symbols"]:
             print("    junk: %s" % s["junk_symbols"][:5])
