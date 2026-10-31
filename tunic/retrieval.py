@@ -24,8 +24,23 @@ class EmbeddingProvider:
     def available(self):
         return False
 
-    def rank(self, query, candidates, top_k):
+    def embed_texts(self, texts):
         raise NotImplementedError("no embedding provider configured")
+
+    def rank(self, query, candidates, top_k):
+        """Cosine rank over embed_texts; identical for cached or live vectors."""
+        vectors = self.embed_texts([query, *candidates])
+        query_vector = vectors[0]
+        query_norm = sum(a * a for a in query_vector) ** 0.5
+        scored = []
+        for text, vector in zip(candidates, vectors[1:]):
+            dot = sum(a * b for a, b in zip(query_vector, vector))
+            text_norm = sum(b * b for b in vector) ** 0.5
+            score = (dot / (query_norm * text_norm)
+                     if query_norm and text_norm else 0.0)
+            scored.append((score, text))
+        scored.sort(key=lambda row: (-row[0], row[1]))
+        return [text for _, text in scored[:max(top_k, 0)]]
 
 
 class OllamaEmbeddingProvider(EmbeddingProvider):
@@ -61,26 +76,17 @@ class OllamaEmbeddingProvider(EmbeddingProvider):
                     names.add(entry)
         return self.model in names or any(name.startswith(self.model + ":") for name in names)
 
-    def rank(self, query, candidates, top_k):
+    def embed_texts(self, texts):
         import json
         import urllib.request
-        vectors = {}
-        for text in [query, *candidates]:
+        vectors = []
+        for text in texts:
             body = json.dumps({"model": self.model, "prompt": text}).encode("utf-8")
             request = urllib.request.Request(self.endpoint.rstrip("/") + "/api/embeddings",
                                              data=body, headers={"Content-Type": "application/json"})
             with urllib.request.urlopen(request, timeout=120) as response:
-                vectors[text] = json.loads(response.read().decode("utf-8"))["embedding"]
-        query_vector = vectors.pop(query)
-        scored = []
-        for text in candidates:
-            vector = vectors[text]
-            dot = sum(a * b for a, b in zip(query_vector, vector))
-            query_norm = sum(a * a for a in query_vector) ** 0.5
-            text_norm = sum(b * b for b in vector) ** 0.5
-            scored.append((dot / (query_norm * text_norm) if query_norm and text_norm else 0.0, text))
-        scored.sort(key=lambda row: (-row[0], row[1]))
-        return [text for _, text in scored[:max(top_k, 0)]]
+                vectors.append(json.loads(response.read().decode("utf-8"))["embedding"])
+        return vectors
 
 
 def fuse(rankings, *, weights=None, total=None, threshold=0.0):
