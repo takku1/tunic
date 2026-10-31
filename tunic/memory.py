@@ -35,6 +35,87 @@ def authorize(principal, action):
     raise PermissionError("denied: unknown principal %r for %s" % (principal, action))
 
 
+def _dispatch_covering(view, table, as_of):
+    """Split registry candidates for one table into covered/uncovered.
+
+    Returns (candidates, covering) where candidates are the proposed
+    registry_dispatch assertions for the table and covering is the subset
+    backed by a live asserted_in_source depends_on edge with the same
+    (caller, callee). Liveness uses the compiler's current-policy
+    arithmetic: asserted supports minus asserted retractions must be at
+    least one, honoring effective dates. Shared by live replay and
+    regression replay so the two paths cannot disagree on what counts as
+    resolved — a resolved-then-retracted edge must fail, not pass.
+    """
+    assertions = view.get("assertions", [])
+    candidates = [a for a in assertions
+                  if (a.get("proposition", {}).get("via") == "registry_dispatch"
+                      and (a.get("derivation") or {}).get("table") == table)]
+    supports, support_ids, retracted = {}, {}, {}
+    for a in assertions:
+        if a.get("status") != "asserted_in_source":
+            continue
+        proposition = a.get("proposition", {})
+        if (proposition.get("effective") or as_of) > as_of:
+            continue
+        if proposition.get("relation") == "depends_on":
+            key = (proposition.get("caller"), proposition.get("callee"))
+            supports[key] = supports.get(key, 0) + 1
+            support_ids.setdefault(key, []).append(a.get("id"))
+        elif proposition.get("relation") == "retracts":
+            key = (proposition.get("retract"), proposition.get("caller"),
+                   proposition.get("callee"))
+            retracted[key] = retracted.get(key, 0) + 1
+    covering = []
+    for c in candidates:
+        proposition = c.get("proposition", {})
+        pair = (proposition.get("caller"), proposition.get("callee"))
+        if supports.get(pair, 0) - retracted.get(("depends_on",) + pair, 0) >= 1:
+            covering.append(dict(c, covering_assertion=support_ids[pair]))
+    return candidates, covering
+
+
+PROOF_FIELDS = ("snapshot", "assertions", "spans", "tests", "reviewer", "note")
+
+
+def replay_regression_case(memory, case):
+    """Re-evaluate an exported frontier regression case against live state.
+
+    Returns (passed, detail). Predicates mirror frontier_replay rules:
+    answer_nonempty re-runs the recorded question, dispatch_covered
+    requires an asserted edge over a registry candidate for the table,
+    symbols_present requires symbols at the recorded path. Unknown
+    predicate types and malformed cases raise; a resolved-then-retracted
+    evidence set must fail, not pass vacuously.
+    """
+    predicate = (case or {}).get("predicate") or {}
+    kind = predicate.get("type")
+    if kind == "answer_nonempty":
+        question = predicate.get("question")
+        if not question:
+            raise ValueError("answer_nonempty predicate needs a question")
+        outcome = memory.answer(question).get("outcome")
+        return outcome != "empty", "question %r -> %s" % (question, outcome)
+    snapshot, view = memory.store.view()
+    if kind == "dispatch_covered":
+        table = predicate.get("table")
+        if not table:
+            raise ValueError("dispatch_covered predicate needs a table")
+        as_of = memory.store.committed_on(snapshot)
+        _candidates, covering = _dispatch_covering(view, table, as_of)
+        pairs = sorted({(c.get("proposition", {}).get("caller"),
+                         c.get("proposition", {}).get("callee")) for c in covering})
+        return bool(covering), "table %s covered by %s" % (table, pairs)
+    if kind == "symbols_present":
+        path = predicate.get("path")
+        if not path:
+            raise ValueError("symbols_present predicate needs a path")
+        found = sorted({s.get("key") for s in view.get("symbols", [])
+                        if s.get("path") == path})
+        return bool(found), "path %s symbols %s" % (path, found)
+    raise ValueError("unknown regression predicate: %r" % (kind,))
+
+
 class Memory:
     def __init__(self, db, root=".", principal="local"):
         self.root = Path(root)
@@ -234,7 +315,9 @@ class Memory:
 
         Diagnostic write, not a claim: entries never traverse, corroborate,
         or render as evidence. Dedupe key is (kind, task, source_refs); a
-        repeat bumps recurrence and priority instead of inserting.
+        repeat bumps recurrence and priority instead of inserting, unless
+        the prior entry is terminal (resolved/dismissed) — then a new
+        entry is filed so history is preserved and ids stay unique.
         """
         if kind not in FRONTIER_KINDS:
             raise ValueError("unknown frontier kind: " + str(kind))
@@ -263,8 +346,15 @@ class Memory:
                   "promotion_policy": "review_required",
                   "created_at": now, "updated_at": now, "dedupe": dedupe,
                   "resolution": None}
-        record["id"] = "frontier-" + _digest(
+        base = "frontier-" + _digest(
             json.dumps([kind, task, refs, now], sort_keys=True).encode("utf-8"))[:12]
+        taken = {r[0] for r in self.store.connection.execute(
+            "SELECT id FROM frontier").fetchall()}
+        entry_id, suffix = base, 1
+        while entry_id in taken:
+            suffix += 1
+            entry_id = "%s-r%d" % (base, suffix)
+        record["id"] = entry_id
         self.store.connection.execute(
             "INSERT INTO frontier(id, record) VALUES(?, ?)",
             (record["id"], json.dumps(record, sort_keys=True)))
@@ -296,11 +386,98 @@ class Memory:
         entries.sort(key=lambda e: (-e.get("priority", 0.0), e.get("created_at", "")))
         return entries
 
+    def _validate_proof(self, proof):
+        """Validate a structured resolution proof against the store.
+
+        A proof pins the snapshot where the evidence held plus at least
+        one evidence section: asserted assertion ids (members of that
+        snapshot), source spans (members of that snapshot, sane offsets),
+        or passing test receipts (shape-checked attestations, not
+        re-executed). Unknown fields, dangling references, and
+        evidence-free proofs raise. Returns the normalized proof with a
+        computed current marker: True when the snapshot is still live.
+        """
+        if not isinstance(proof, dict):
+            raise ValueError("resolution must be a structured proof dict, "
+                             "not %s" % type(proof).__name__)
+        for field in proof:
+            if field not in PROOF_FIELDS:
+                raise ValueError("unknown proof field: %r" % (field,))
+        snapshot = proof.get("snapshot")
+        known = {s["id"] for s in self.store.snapshots()}
+        if snapshot not in known:
+            raise ValueError("proof cites unknown snapshot: %r" % (snapshot,))
+        assertion_ids = proof.get("assertions", [])
+        spans = proof.get("spans", [])
+        tests = proof.get("tests", [])
+        if not (assertion_ids or spans or tests):
+            raise ValueError("proof carries no evidence: need assertions, "
+                             "spans, or test receipts")
+        if not isinstance(assertion_ids, list) or not isinstance(spans, list) \
+                or not isinstance(tests, list):
+            raise ValueError("proof assertions/spans/tests must be lists")
+        for aid in assertion_ids:
+            row = self.store.connection.execute(
+                "SELECT id FROM assertions WHERE id=?", (aid,)).fetchone()
+            if row is None:
+                raise ValueError("proof cites unknown assertion: %r" % (aid,))
+            member = self.store.connection.execute(
+                "SELECT 1 FROM snapshot_assertions WHERE snapshot=? AND assertion=?",
+                (snapshot, aid)).fetchone()
+            if member is None:
+                raise ValueError("assertion %r is not a member of proof "
+                                 "snapshot" % (aid,))
+        for span in spans:
+            if not isinstance(span, dict):
+                raise ValueError("malformed proof span: %r" % (span,))
+            source = span.get("source")
+            member = self.store.connection.execute(
+                "SELECT 1 FROM members WHERE snapshot=? AND source=?",
+                (snapshot, source)).fetchone()
+            if member is None:
+                raise ValueError("proof span cites unknown source: %r" % (source,))
+            start, end = span.get("start"), span.get("end")
+            if not isinstance(start, int) or not isinstance(end, int) \
+                    or not (0 <= start <= end):
+                raise ValueError("malformed proof span offsets: %r" % (span,))
+        for receipt in tests:
+            if not isinstance(receipt, dict) or not receipt.get("id") \
+                    or receipt.get("result") != "pass":
+                raise ValueError("malformed test receipt (need id + result pass): "
+                                 "%r" % (receipt,))
+        reviewer = proof.get("reviewer")
+        if reviewer is not None and (
+                not isinstance(reviewer, dict) or not reviewer.get("principal")):
+            raise ValueError("malformed proof reviewer: %r" % (reviewer,))
+        note = proof.get("note", "")
+        if not isinstance(note, str):
+            raise ValueError("proof note must be a string")
+        normalized = {"snapshot": snapshot, "assertions": list(assertion_ids),
+                      "spans": [{"source": s.get("source"), "start": s.get("start"),
+                                 "end": s.get("end")} for s in spans],
+                      "tests": [{"id": t.get("id"), "result": t.get("result")}
+                                for t in tests],
+                      "reviewer": reviewer, "note": note,
+                      "current": snapshot == self.store.current()}
+        return normalized
+
+    def frontier_resolve(self, entry_id, proof, resolved_by=None):
+        """Resolve an entry against a validated structured proof receipt.
+
+        Fail-closed wrapper over the resolved transition: dangling
+        snapshots, assertions, or sources, evidence-free proofs, and
+        free-text resolutions all raise and leave the entry open.
+        """
+        return self.frontier_transition(entry_id, "resolved", resolution=proof,
+                                        resolved_by=resolved_by)
+
     def frontier_transition(self, entry_id, status, resolution=None, resolved_by=None):
         """Move an entry open -> investigating -> resolved | dismissed.
 
         Terminal states are sticky: resolving or dismissing twice raises.
-        History is preserved either way.
+        History is preserved either way. Resolving requires a validated
+        structured proof dict (see _validate_proof); free-text notes are
+        accepted only for investigating/dismissed moves.
         """
         authorize(self.principal, "review")
         if status not in ("investigating", "resolved", "dismissed"):
@@ -312,14 +489,17 @@ class Memory:
         record = json.loads(row[0])
         if record.get("status") in ("resolved", "dismissed"):
             raise ValueError("entry %s is terminal (%s)" % (entry_id, record.get("status")))
-        if status == "resolved" and not resolution:
-            raise ValueError("resolving %s requires verification evidence, "
-                             "not just a status flip" % entry_id)
+        if status == "resolved":
+            proof = self._validate_proof(resolution)
         record["status"] = status
         record["updated_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         if resolution is not None:
-            record["resolution"] = {"note": resolution, "by": resolved_by,
-                                    "at": record["updated_at"]}
+            if status == "resolved":
+                record["resolution"] = {"proof": proof, "by": resolved_by,
+                                        "at": record["updated_at"]}
+            else:
+                record["resolution"] = {"note": resolution, "by": resolved_by,
+                                        "at": record["updated_at"]}
         self.store.connection.execute(
             "UPDATE frontier SET record=? WHERE id=?",
             (json.dumps(record, sort_keys=True), entry_id))
@@ -347,48 +527,57 @@ class Memory:
         record = json.loads(row[0])
         if record.get("status") in ("resolved", "dismissed"):
             resolution = record.get("resolution") or {}
-            return record["status"], resolution.get("note", "")
+            proof = resolution.get("proof") or {}
+            return record["status"], proof.get("note", "") or resolution.get("note", "")
         failure, target = record.get("failure", ""), record.get("target")
         snapshot, view = self.store.view()
-        assertions = view["assertions"]
-
-        def table_candidates():
-            return [a for a in assertions
-                    if (a.get("proposition", {}).get("via") == "registry_dispatch"
-                        and (a.get("derivation") or {}).get("table") == target)]
+        as_of = self.store.committed_on(snapshot)
 
         def table_diagnostics():
             return [d for d in view.get("diagnostics", [])
                     if d.get("kind") == "dispatch_unresolved"
                     and d.get("table") == target]
 
+        def proof_for(note, assertion_ids=(), spans=()):
+            return {"snapshot": snapshot, "assertions": list(assertion_ids),
+                    "spans": list(spans), "note": note}
+
         if failure == "retrieval_abstention":
             found = self.answer(record.get("task", ""))
             if found["outcome"] != "empty":
+                by_key = {s.get("key"): s for s in view.get("symbols", [])}
+                spans = [{"source": by_key[sym].get("source"),
+                          "start": by_key[sym].get("start", 0),
+                          "end": by_key[sym].get("end", 0)}
+                         for sym in [c["symbol"] for c in found["candidates"][:5]]
+                         if sym in by_key][:5]
+                if not spans:
+                    return "investigating", \
+                        "retrieves candidates without pinned evidence"
                 top = [c["symbol"] for c in found["candidates"][:3]]
-                return self.frontier_transition(
+                note = "task now retrieves: %s" % ", ".join(top)
+                self.frontier_transition(
                     entry_id, "resolved",
-                    resolution="task now retrieves: %s" % ", ".join(top),
-                    resolved_by="frontier_replay")["status"], \
-                    "task now retrieves: %s" % ", ".join(top)
+                    resolution=proof_for(note, spans=spans),
+                    resolved_by="frontier_replay")
+                return "resolved", note
             return record["status"], "task still abstains"
         if failure in ("static_edge_unresolved", "ingest_dispatch_unresolved"):
             if not target:
                 return record["status"], "no replayable target recorded"
-            covered = {(a.get("proposition", {}).get("caller"),
-                        a.get("proposition", {}).get("callee"))
-                       for a in assertions
-                       if a.get("status") == "asserted_in_source"
-                       and a.get("proposition", {}).get("relation") == "depends_on"}
-            for candidate in table_candidates():
-                proposition = candidate.get("proposition", {})
-                if (proposition.get("caller"), proposition.get("callee")) in covered:
-                    note = "asserted edge covers %s -> %s" % (
-                        proposition.get("caller"), proposition.get("callee"))
-                    self.frontier_transition(entry_id, "resolved", resolution=note,
-                                             resolved_by="frontier_replay")
-                    return "resolved", note
-            if table_candidates():
+            candidates, covering = _dispatch_covering(view, target, as_of)
+            if covering:
+                first = covering[0].get("proposition", {})
+                note = "asserted edge covers %s -> %s" % (
+                    first.get("caller"), first.get("callee"))
+                cited = sorted({aid for c in covering
+                                for aid in c.get("covering_assertion", [])})
+                self.frontier_transition(
+                    entry_id, "resolved",
+                    resolution=proof_for(note, assertion_ids=cited),
+                    resolved_by="frontier_replay")
+                return "resolved", note
+            if candidates:
                 self.frontier_transition(entry_id, "investigating",
                                          resolution="candidate present, awaiting verification",
                                          resolved_by="frontier_replay")
@@ -403,8 +592,12 @@ class Memory:
             symbols = [s for s in view["symbols"] if s.get("path") == target]
             if symbols:
                 note = "file parses with %d symbols" % len(symbols)
-                self.frontier_transition(entry_id, "resolved", resolution=note,
-                                         resolved_by="frontier_replay")
+                self.frontier_transition(
+                    entry_id, "resolved",
+                    resolution=proof_for(note, spans=[{
+                        "source": s.get("source"), "start": s.get("start", 0),
+                        "end": s.get("end", 0)} for s in symbols[:5]]),
+                    resolved_by="frontier_replay")
                 return "resolved", note
             return "investigating", "parse error gone but no symbols yet"
         if failure == "ingest_unresolved_call":
@@ -413,6 +606,52 @@ class Memory:
                 return record["status"], "call still unresolved"
             return "investigating", "diagnostic gone; resolving edge not confirmed"
         return record["status"], "no replay rule for this failure kind"
+
+    def frontier_export_regression(self, entry_id, path):
+        """Export a resolved entry as a durable regression case file.
+
+        The case pins the entry, its validated proof, and a replayable
+        predicate mirroring the replay rule that resolved it. Only
+        resolved entries export: an open gap is not a regression test.
+        replay_regression_case(memory, case) re-checks the predicate
+        against any later graph state, so extractor or policy changes
+        cannot silently reintroduce the original failure.
+        """
+        authorize(self.principal, "review")
+        row = self.store.connection.execute(
+            "SELECT record FROM frontier WHERE id=?", (entry_id,)).fetchone()
+        if row is None:
+            raise ValueError("unknown frontier entry: " + entry_id)
+        record = json.loads(row[0])
+        if record.get("status") != "resolved":
+            raise ValueError("only resolved entries export as regressions "
+                             "(%s is %s)" % (entry_id, record.get("status")))
+        proof = (record.get("resolution") or {}).get("proof")
+        if not proof:
+            raise ValueError("entry %s resolved without a proof receipt" % entry_id)
+        failure, target, task = (record.get("failure"), record.get("target"),
+                                 record.get("task"))
+        if failure == "retrieval_abstention":
+            predicate = {"type": "answer_nonempty", "question": task}
+        elif failure in ("static_edge_unresolved", "ingest_dispatch_unresolved"):
+            if not target:
+                raise ValueError("dispatch entry %s has no replayable table" % entry_id)
+            predicate = {"type": "dispatch_covered", "table": target}
+        elif failure == "ingest_parse_error":
+            if not target:
+                raise ValueError("parse entry %s has no replayable path" % entry_id)
+            predicate = {"type": "symbols_present", "path": target}
+        else:
+            raise ValueError("no exportable predicate for failure kind: %r" % (failure,))
+        case = {"version": 1,
+                "entry": {"id": record.get("id"), "kind": record.get("kind"),
+                          "failure": failure, "task": task, "target": target},
+                "proof": proof, "predicate": predicate,
+                "snapshot": proof.get("snapshot"),
+                "exported_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
+        out = Path(path)
+        out.write_text(json.dumps(case, indent=1, sort_keys=True), encoding="utf-8")
+        return case
 
     def promote(self, subject, object, rel="depends_on", effective=None,
                 authority="agent-outcome", document="notes/outcomes.md", note=None):

@@ -534,8 +534,13 @@ class FrontierTests(unittest.TestCase):
             required_evidence=("registry assignment",))
         self.assertEqual((again_id, created), (entry_id, False))
         self.assertEqual(self.memory.frontier_list()[0]["recurrence"], 2)
+        _, view = self.memory.store.view()
+        source = view["symbols"][0]["source"]
         resolved = self.memory.frontier_transition(
-            entry_id, "resolved", resolution="dispatch candidate verified",
+            entry_id, "resolved",
+            resolution={"snapshot": self.memory.store.current(),
+                        "spans": [{"source": source, "start": 0, "end": 10}],
+                        "note": "dispatch candidate verified"},
             resolved_by="reviewer")
         self.assertEqual(resolved["status"], "resolved")
         self.assertEqual(self.memory.frontier_list(status="open"), [])
@@ -584,6 +589,37 @@ class CLITests(unittest.TestCase):
         result = self._run("frontier")
         self.assertEqual([e["id"] for e in result["entries"]], [entry_id])
         self.assertEqual(self._run("frontier", "--status", "resolved")["entries"], [])
+
+    def test_frontier_replay_and_export_regression_cli(self):
+        memory = Memory(self.db, self.root)
+        memory.ingest()
+        question = "Zebra xylophone quark jigsaw zephyr quandary?"
+        self.assertEqual(memory.answer(question)["outcome"], "empty")
+        memory.close()
+        listed = self._run("frontier", "--root", str(self.root),
+                           "--status", "open")
+        self.assertEqual(len(listed["entries"]), 1)
+        entry_id = listed["entries"][0]["id"]
+        (self.root / "zebra.py").write_bytes(
+            b"def xylophone(quark):\n    return quark\n")
+        memory = Memory(self.db, self.root)
+        memory.ingest()
+        memory.close()
+        replayed = self._run("frontier", "--root", str(self.root),
+                             "--replay", entry_id)
+        self.assertEqual(replayed["status"], "resolved")
+        self.assertIn("zebra.py::xylophone", replayed["verification"])
+        case_path = str(self.tmp / "abstention-case.json")
+        exported = self._run("frontier", "--root", str(self.root),
+                             "--export-regression", entry_id,
+                             "--out", case_path)
+        self.assertEqual(exported["predicate"]["type"], "answer_nonempty")
+        from tunic.memory import replay_regression_case
+        case = json.loads(Path(case_path).read_text(encoding="utf-8"))
+        memory = Memory(self.db, self.root)
+        self.addCleanup(memory.close)
+        passed, _ = replay_regression_case(memory, case)
+        self.assertTrue(passed)
 
     def test_candidates_lists_dispatch_proposals(self):
         (self.root / "pricing.py").write_bytes(b"def round_total(cart):\n    return cart\n")
@@ -763,6 +799,195 @@ class UnicodeWindowTests(unittest.TestCase):
         for excerpt, window in windows:
             self.assertIsInstance(window, str)
             self.assertIn(excerpt, window)
+
+
+class FrontierProofTests(unittest.TestCase):
+    """Resolution requires a validated structured proof receipt, not prose."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.root = self.tmp / "repo"
+        self.root.mkdir()
+        (self.root / "core.py").write_bytes(b"def calculate(x):\n    return x + 1\n")
+        self.memory = Memory(str(self.tmp / "memory.sqlite"), self.root)
+        self.addCleanup(self.memory.close)
+        self.memory.ingest()
+
+    def _span_proof(self, snapshot=None):
+        snap, view = self.memory.store.view(snapshot)
+        source = view["symbols"][0]["source"]
+        return {"snapshot": snap,
+                "spans": [{"source": source, "start": 0, "end": 10}],
+                "note": "core.py parses with symbols"}
+
+    def test_string_resolution_is_rejected_fail_closed(self):
+        entry_id, _ = self.memory.frontier_record(
+            "unsupported", "resolve dispatch", "static_edge_unresolved")
+        with self.assertRaises(ValueError):
+            self.memory.frontier_transition(
+                entry_id, "resolved", resolution="dispatch candidate verified")
+        self.assertEqual(self.memory.frontier_list(status="open")[0]["id"], entry_id)
+
+    def test_resolve_requires_snapshot_plus_evidence(self):
+        entry_id, _ = self.memory.frontier_record(
+            "unsupported", "resolve dispatch", "static_edge_unresolved")
+        with self.assertRaises(ValueError):
+            self.memory.frontier_resolve(entry_id, {})
+        with self.assertRaises(ValueError):
+            self.memory.frontier_resolve(entry_id, {"snapshot": "snapshot:missing"})
+        current = self.memory.store.current()
+        with self.assertRaises(ValueError):
+            self.memory.frontier_resolve(entry_id, {"snapshot": current})
+        self.assertEqual(self.memory.frontier_list(status="open")[0]["id"], entry_id)
+
+    def test_resolve_rejects_dangling_assertion_source_and_receipt(self):
+        entry_id, _ = self.memory.frontier_record(
+            "unsupported", "resolve dispatch", "static_edge_unresolved")
+        current = self.memory.store.current()
+        with self.assertRaises(ValueError):
+            self.memory.frontier_resolve(
+                entry_id, {"snapshot": current, "assertions": ["assertion:missing"]})
+        with self.assertRaises(ValueError):
+            self.memory.frontier_resolve(
+                entry_id, {"snapshot": current, "spans": [
+                    {"source": "source:missing", "start": 0, "end": 1}]})
+        with self.assertRaises(ValueError):
+            self.memory.frontier_resolve(
+                entry_id, {"snapshot": current,
+                           "tests": [{"id": "tests/test_memory.py::X"}]})
+        with self.assertRaises(ValueError):
+            self.memory.frontier_resolve(
+                entry_id, {"snapshot": current, "tests": [
+                    {"id": "tests/test_memory.py::X", "result": "fail"}]})
+        self.assertEqual(self.memory.frontier_list(status="open")[0]["id"], entry_id)
+
+    def test_valid_span_proof_resolves_with_current_marker(self):
+        entry_id, _ = self.memory.frontier_record(
+            "unsupported", "resolve dispatch", "static_edge_unresolved")
+        record = self.memory.frontier_resolve(
+            entry_id, self._span_proof(), resolved_by="reviewer")
+        self.assertEqual(record["status"], "resolved")
+        proof = record["resolution"]["proof"]
+        self.assertEqual(proof["snapshot"], self.memory.store.current())
+        self.assertTrue(proof["current"])
+        self.assertEqual(record["resolution"]["by"], "reviewer")
+
+    def test_stale_snapshot_proof_marks_current_false(self):
+        snap1 = self.memory.store.current()
+        _, view1 = self.memory.store.view(snap1)
+        source1 = view1["symbols"][0]["source"]
+        (self.root / "extra.py").write_bytes(b"def helper():\n    return 1\n")
+        self.memory.ingest()
+        self.assertNotEqual(self.memory.store.current(), snap1)
+        entry_id, _ = self.memory.frontier_record(
+            "unsupported", "resolve dispatch", "static_edge_unresolved")
+        record = self.memory.frontier_resolve(entry_id, {
+            "snapshot": snap1,
+            "spans": [{"source": source1, "start": 0, "end": 10}],
+            "note": "evidence held at an earlier snapshot"})
+        self.assertEqual(record["status"], "resolved")
+        self.assertFalse(record["resolution"]["proof"]["current"])
+
+    def test_replay_stores_structured_proof_not_prose(self):
+        question = "Zebra xylophone quark jigsaw zephyr quandary?"
+        self.assertEqual(self.memory.answer(question)["outcome"], "empty")
+        entry_id = self.memory.frontier_list(status="open")[0]["id"]
+        (self.root / "zebra.py").write_bytes(
+            b"def xylophone(quark):\n    return quark\n")
+        self.memory.ingest()
+        status, verification = self.memory.frontier_replay(entry_id)
+        self.assertEqual(status, "resolved")
+        self.assertIn("zebra.py::xylophone", verification)
+        record = self.memory.frontier_list(status="resolved")[0]
+        proof = record["resolution"]["proof"]
+        self.assertEqual(proof["snapshot"], self.memory.store.current())
+        self.assertTrue(proof["spans"])
+
+
+class FrontierRegressionTests(unittest.TestCase):
+    """Resolved entries export to durable regression cases that re-check."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.root = self.tmp / "repo"
+        self.root.mkdir()
+        (self.root / "pricing.py").write_bytes(b"def round_total(cart):\n    return cart\n")
+        (self.root / "dispatch.py").write_bytes(
+            b"from pricing import round_total\n\nSTRATEGIES = {\"standard\": round_total}\n\n\n"
+            b"def apply(strategy, cart):\n    return STRATEGIES[strategy](cart)\n")
+        (self.root / "checkout.py").write_bytes(
+            b"from dispatch import apply\n\n\ndef place_order(cart):\n"
+            b"    return apply(\"standard\", cart)\n")
+
+    def _memory(self):
+        memory = Memory(str(self.tmp / "memory.sqlite"), self.root)
+        self.addCleanup(memory.close)
+        return memory
+
+    def _resolved_dispatch_entry(self, memory):
+        memory.ingest()
+        entries = [e for e in memory.frontier_list(status="open")
+                   if e["failure"] == "ingest_dispatch_unresolved"
+                   and e["target"] == "dispatch.py::STRATEGIES"]
+        self.assertEqual(len(entries), 1)
+        committed, action, _ = memory.commit_proposal(
+            "checkout.py::place_order", "pricing.py::round_total")
+        self.assertEqual((committed, action), (True, "add"))
+        memory.ingest()
+        status, _ = memory.frontier_replay(entries[0]["id"])
+        self.assertEqual(status, "resolved")
+        return entries[0]["id"]
+
+    def test_export_requires_a_resolved_entry(self):
+        from tunic.memory import replay_regression_case
+        memory = self._memory()
+        memory.ingest()
+        entry_id = [e for e in memory.frontier_list(status="open")
+                    if e["failure"] == "ingest_dispatch_unresolved"][0]["id"]
+        with self.assertRaises(ValueError):
+            memory.frontier_export_regression(
+                entry_id, str(self.tmp / "case.json"))
+        with self.assertRaises(ValueError):
+            replay_regression_case(memory, {"predicate": {"type": "nope"}})
+
+    def test_exported_case_passes_on_fixed_graph_and_fails_without_it(self):
+        from tunic.memory import replay_regression_case
+        memory = self._memory()
+        entry_id = self._resolved_dispatch_entry(memory)
+        case_path = str(self.tmp / "case.json")
+        case = memory.frontier_export_regression(entry_id, case_path)
+        self.assertEqual(case["predicate"]["type"], "dispatch_covered")
+        passed, _ = replay_regression_case(memory, case)
+        self.assertTrue(passed)
+        reloaded = json.loads(Path(case_path).read_text(encoding="utf-8"))
+        passed, _ = replay_regression_case(memory, reloaded)
+        self.assertTrue(passed)
+        bare = self.tmp / "bare"
+        (bare / "repo").mkdir(parents=True)
+        (bare / "repo" / "unrelated.py").write_bytes(b"def other():\n    return 0\n")
+        empty = Memory(str(bare / "memory.sqlite"), bare / "repo")
+        self.addCleanup(empty.close)
+        empty.ingest()
+        passed, detail = replay_regression_case(empty, case)
+        self.assertFalse(passed)
+        self.assertIn("STRATEGIES", detail)
+
+    def test_regression_fails_after_evidence_retraction(self):
+        from tunic.memory import replay_regression_case
+        memory = self._memory()
+        entry_id = self._resolved_dispatch_entry(memory)
+        case = memory.frontier_export_regression(
+            entry_id, str(self.tmp / "case.json"))
+        passed, _ = replay_regression_case(memory, case)
+        self.assertTrue(passed)
+        memory.record_outcome("checkout.py::place_order", "pricing.py::round_total",
+                              rel="retracts", retract="depends_on",
+                              document="notes/review.md", authority="reviewer")
+        memory.ingest()
+        passed, _ = replay_regression_case(memory, case)
+        self.assertFalse(passed)
 
 
 if __name__ == "__main__":

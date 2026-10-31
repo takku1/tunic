@@ -137,8 +137,15 @@ required evidence (read path for the future investigation scheduler).
 - v0: ledger + three instrumentation sources + CLI summary. Acceptance:
   a previously silent failure (unresolved dispatch, abstained query,
   refused proposal) is retrievable with its reason and required evidence.
-- v1: investigation replay — resolving an entry and re-running the
-  originating failure without new false claims or regressions.
+- v1 (implemented): structured proof receipts + regression export.
+  Resolution requires a validated proof dict — pinned snapshot plus
+  assertion ids, source spans, and/or passing test receipts, all
+  referentially checked; free-text resolves fail closed. Resolved
+  entries export to durable regression cases (`answer_nonempty`,
+  `dispatch_covered` with support-minus-retraction arithmetic,
+  `symbols_present`) re-checkable via `replay_regression_case`.
+  Acceptance: resolve → export → replay passes; retract evidence →
+  replay fails; `frontier --replay` / `--export-regression` on the CLI.
 - Later: MochiOS-scheduled investigation, procedural learning records,
   sandboxed system-improvement proposals.
 

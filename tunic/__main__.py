@@ -41,9 +41,16 @@ def main(argv=None):
     note.add_argument("path", help="document path to create or append, e.g. notes/session.md")
     note.add_argument("--text", required=True, help="note text to append")
     candidates = commands.add_parser("candidates", help="list proposed-but-unverified relationship candidates")
+    candidates.add_argument("--root", default=".", help="workspace root the database was ingested from")
     frontier = commands.add_parser("frontier", help="list frontier ledger entries (unresolved observations)")
+    frontier.add_argument("--root", default=".", help="workspace root the database was ingested from")
     frontier.add_argument("--status", default=None, choices=["open", "investigating", "resolved", "dismissed"],
                           help="filter by entry status; default lists all")
+    frontier.add_argument("--replay", default=None, metavar="ENTRY_ID",
+                          help="re-check one entry against current graph state")
+    frontier.add_argument("--export-regression", default=None, metavar="ENTRY_ID",
+                          help="export a resolved entry as a durable regression case")
+    frontier.add_argument("--out", default=None, help="output path for --export-regression")
     draft = commands.add_parser("draft", help="propose claim blocks for co-mentioned entities (review input only)")
     draft.add_argument("document", help="repository-relative document path, e.g. notes.md")
     review = commands.add_parser("review", help="structured acquisition report for one document (read-only)")
@@ -125,10 +132,21 @@ def main(argv=None):
             return serve(args.db, args.root)
         if args.command in {"candidates", "frontier"}:
             from .memory import Memory
-            memory = Memory(args.db)
+            memory = Memory(args.db, args.root)
             try:
                 if args.command == "candidates":
                     result = memory.candidates()
+                elif args.replay:
+                    status, verification = memory.frontier_replay(args.replay)
+                    result = {"entry": args.replay, "status": status,
+                              "verification": verification}
+                elif args.export_regression:
+                    if not args.out:
+                        parser.error("--export-regression requires --out")
+                    case = memory.frontier_export_regression(
+                        args.export_regression, args.out)
+                    result = {"exported": args.out,
+                              "predicate": case["predicate"]}
                 else:
                     result = {"status": args.status or "all",
                               "entries": memory.frontier_list(status=args.status)}

@@ -53,7 +53,12 @@ python -m tunic --db .tunic/example.sqlite frontier
 python -m tunic --db .tunic/example.sqlite frontier --status open
 ```
 
-Extractor failures (unresolved calls, dispatch gaps, parse errors) and retrieval abstentions are filed automatically in the frontier ledger with digest-anchored dedupe: re-ingesting an unchanged tree bumps recurrence instead of duplicating. Entries move `open -> investigating -> resolved | dismissed` with sticky terminal states; see [docs/architecture/frontier-ledger.md](docs/architecture/frontier-ledger.md).
+Extractor failures (unresolved calls, dispatch gaps, parse errors) and retrieval abstentions are filed automatically in the frontier ledger with digest-anchored dedupe: re-ingesting an unchanged tree bumps recurrence instead of duplicating. Entries move `open -> investigating -> resolved | dismissed` with sticky terminal states; resolving requires a validated structured proof receipt (pinned snapshot plus assertion ids, source spans, and/or passing test receipts — free-text notes fail closed), and resolved entries export to durable regression cases re-checked by `replay_regression_case`; see [docs/architecture/frontier-ledger.md](docs/architecture/frontier-ledger.md).
+
+```powershell
+python -m tunic --db .tunic/example.sqlite frontier --replay <entry-id>
+python -m tunic --db .tunic/example.sqlite frontier --export-regression <entry-id> --out case.json
+```
 
 Two promotion paths, deliberately distinct: `Memory.commit_proposal()` reconciles first and promotes clean ADDs, but the caller invoking it is the approver — pair it with tests, a human, or a reviewer gate before autonomous use. Independently reviewed promotion (`promote`/`record_outcome` plus reviewer acceptance) is what the acquisition benchmarks measure. Deterministic reconciliation checks consistency and validity; it does not establish truth.
 
