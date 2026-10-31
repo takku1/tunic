@@ -12,7 +12,7 @@ import json
 from pathlib import Path
 
 from . import compiler
-from .baselines import BM25
+from .baselines import BM25, TextNotes
 from .extract import CLAIM_RELATIONS, is_iso_date
 from .store import GraphStore
 
@@ -35,17 +35,19 @@ class Memory:
         self.root = Path(root)
         self.store = GraphStore(db)
         self.principal = principal
-        self._bm25 = None
-        self._bm25_key = None
+        self._discovery = None
+        self._discovery_key = None
 
-    def _lexical_index(self, snapshot):
-        """Cached BM25 over the worktree; rebuilt only when the snapshot or
-        any Python file changes. A stat walk is far cheaper than re-parsing
+    def _ensure_discovery(self, snapshot):
+        """Cached code + notes indexes; rebuilt only when the snapshot or
+        any source file changes. A stat walk is far cheaper than re-parsing
         1600+ files per answer() call, and the key guarantees the cached
-        index reflects exactly what a fresh build would see."""
+        indexes reflect exactly what fresh builds would see."""
         newest, count = 0, 0
-        for path in self.root.rglob("*.py"):
-            if "__pycache__" in path.parts or path.is_symlink():
+        for path in self.root.rglob("*"):
+            if ("__pycache__" in path.parts or path.is_symlink()
+                    or not path.is_file()
+                    or path.suffix.lower() not in (".py", ".md", ".txt")):
                 continue
             try:
                 newest = max(newest, path.stat().st_mtime_ns)
@@ -53,10 +55,18 @@ class Memory:
                 continue
             count += 1
         key = (snapshot, newest, count)
-        if self._bm25 is None or self._bm25_key != key:
-            self._bm25 = BM25(self.root)
-            self._bm25_key = key
-        return self._bm25
+        if self._discovery is None or self._discovery_key != key:
+            self._discovery = (BM25(self.root), TextNotes(self.root))
+            self._discovery_key = key
+        return self._discovery
+
+    def _lexical_index(self, snapshot):
+        """Cached BM25 over code; see _ensure_discovery."""
+        return self._ensure_discovery(snapshot)[0]
+
+    def _notes_index(self, snapshot):
+        """Cached lexical index over prose notes; see _ensure_discovery."""
+        return self._ensure_discovery(snapshot)[1]
 
     def close(self):
         self.store.close()
@@ -158,6 +168,62 @@ class Memory:
         return self.record_outcome(subject, object, rel=rel, effective=effective,
                                    authority=authority, document=document, note=note)
 
+    def reconcile_proposal(self, subject, object, rel="depends_on"):
+        """Classify a candidate memory write without mutating the graph.
+
+        Deterministic first pass for acquisition pipelines: returns an
+        (action, reason) pair where action is one of "add", "duplicate",
+        "conflict", or "invalid". "duplicate" is the explicit NOOP path --
+        callers must not write when the triple is already asserted.
+        "conflict" names the blocking evidence and routes to a reviewer
+        (human, tests, or -- only for genuine ambiguity -- a second model
+        call); the classifier itself never resolves it. "invalid" covers
+        unknown relations, non-exact endpoints, and endpoints naming
+        symbols or documents the workspace does not know.
+        """
+        if rel not in CLAIM_RELATIONS:
+            return ("invalid", "unknown relation: " + str(rel))
+        for ref in (subject, object):
+            if not isinstance(ref, str) or "::" not in ref:
+                return ("invalid", "endpoint is not an exact path::symbol key: "
+                        + repr(ref))
+        _, view = self.store.view()
+        known = {entry.get("key") for entry in view["symbols"]}
+        for assertion in view["assertions"]:
+            proposition = assertion.get("proposition", {})
+            known.add(proposition.get("caller"))
+            known.add(proposition.get("callee"))
+        for ref in (subject, object):
+            if ref in known:
+                continue
+            if ref.endswith("::document"):
+                candidate = self.root / ref.split("::", 1)[0]
+                try:
+                    inside = candidate.resolve().is_relative_to(self.root.resolve())
+                except (OSError, ValueError):
+                    inside = False
+                if inside and candidate.is_file():
+                    continue
+            return ("invalid", "unknown endpoint: " + ref)
+        for assertion in view["assertions"]:
+            if assertion.get("status") != "asserted_in_source":
+                continue
+            proposition = assertion.get("proposition", {})
+            if (proposition.get("relation") == rel
+                    and proposition.get("caller") == subject
+                    and proposition.get("callee") == object):
+                return ("duplicate", "already asserted: %s %s %s"
+                        % (subject, rel, object))
+            pair = {proposition.get("caller"), proposition.get("callee")}
+            if proposition.get("relation") == "contradicts" and pair == {subject, object}:
+                return ("conflict", "contradicts claim blocks %s %s %s; "
+                        "record a correction first" % (subject, rel, object))
+            if (proposition.get("relation") == "retracts"
+                    and proposition.get("retract") == rel and pair == {subject, object}):
+                return ("conflict", "retraction stands against %s %s %s; "
+                        "re-assert only with new evidence" % (subject, rel, object))
+        return ("add", "no duplicate, conflict, or endpoint problem found")
+
     def answer(self, task, *, snapshot=None, limit=3, mode="hybrid",
                policy="transparent", budget=None, threshold=0.0, provider=None,
                select=False):
@@ -217,11 +283,28 @@ class Memory:
                           "ms": (time.perf_counter() - started) * 1000.0,
                           "skipped": False}
         index = None
+        note_mentions = []
         if mode == "hybrid" and caps["lexical"] > 0:
             started = time.perf_counter()
             index = self._lexical_index(snapshot)
             lexical = [hit["symbol"] for hit in
                        index.search_text(task, top_k=caps["lexical"])]
+            notes = self._notes_index(snapshot)
+            note_mentions = []
+            for hit in notes.search_text(task, top_k=caps["lexical"]):
+                mentioner = hit["symbol"] + "::document"
+                for assertion in view["assertions"]:
+                    proposition = assertion.get("proposition", {})
+                    if (proposition.get("relation") == "text_mention"
+                            and proposition.get("caller") == mentioner
+                            and proposition.get("callee") is not None):
+                        note_mentions.append(
+                            {"mentioner": mentioner,
+                             "candidate": proposition.get("callee"),
+                             "status": "lexical_discovery",
+                             "evidence": {"path": hit["symbol"],
+                                          "start": 0,
+                                          "window": hit.get("text", "")[:1200]}})
             stages["lexical"] = {"candidates": len(lexical),
                                  "ms": (time.perf_counter() - started) * 1000.0,
                                  "skipped": False}
@@ -337,6 +420,12 @@ class Memory:
                 impacts.setdefault(entry["symbol"], entry)
             mentions.extend(related["mentions"]["mentions"])
             claims.extend(related["claims"]["claims"])
+        seen = {(m.get("mentioner"), m.get("candidate")) for m in mentions}
+        for mention in note_mentions:
+            key = (mention.get("mentioner"), mention.get("candidate"))
+            if key not in seen:
+                seen.add(key)
+                mentions.append(mention)
         mentions.sort(key=lambda m: (m["evidence"]["path"], m["evidence"]["start"], m["status"]))
         claims.sort(key=lambda c: (c["relation"], c["caller"], c["callee"] or ""))
         return {"task": task, "snapshot": snapshot, "policy": policy,

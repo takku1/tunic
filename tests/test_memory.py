@@ -265,5 +265,150 @@ class MemoryTests(unittest.TestCase):
         self.assertTrue(validate_artifact(memory.store, repaired)["valid"])
 
 
+class UnrelatedNoteTests(unittest.TestCase):
+    """An unrelated note is discoverable but gains no authority."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.root = self.tmp / "repo"
+        (self.root / "notes").mkdir(parents=True)
+        (self.root / "core.py").write_bytes(b"def calculate(x):\n    return x + 1\n")
+        (self.root / "service.py").write_bytes(
+            b"from core import calculate as compute\n\ndef process(value):\n    return compute(value)\n")
+
+    def _memory(self, name):
+        db = str(self.tmp / (name + ".sqlite"))
+        memory = Memory(db, self.root)
+        self.addCleanup(memory.close)
+        memory.ingest()
+        return memory
+
+    def test_unrelated_note_changes_neither_impacts_nor_claims(self):
+        question = "What else must change if calculate changes?"
+        before = self._memory("before")
+        impacts_before = before.impact("core.py::calculate")
+        claims_before = before.claims("core.py::calculate")
+        # Exact-key mention proves the note is ingested, but its tokens share
+        # nothing with the question, so it must not influence this query.
+        (self.root / "notes" / "deployment.md").write_text(
+            "Zebra xylophone quark jigsaw Zephyr.\n\nSee service.py::process.\n",
+            encoding="utf-8")
+        after = self._memory("after")
+        self.assertEqual(after.impact("core.py::calculate")["impacts"],
+                         impacts_before["impacts"])
+        self.assertEqual(after.claims("core.py::calculate")["claims"],
+                         claims_before["claims"])
+        found = after.answer(question)
+        hits = [m for m in found["mentions"]
+                if m["mentioner"] == "notes/deployment.md::document"]
+        # Discovered as attributed text evidence ...
+        self.assertTrue(hits)
+        self.assertTrue(all(m["status"] == "syntactic_observation" for m in hits))
+        # ... but granted no authority: no claims, no new impacts.
+        self.assertEqual(found["claims"], [])
+        self.assertEqual(found["impacts"], impacts_before["impacts"])
+
+    def test_code_query_candidates_unchanged_by_unrelated_note(self):
+        question = "What else must change if calculate changes?"
+        before = self._memory("before").answer(question)
+        (self.root / "notes" / "deployment.md").write_text(
+            "Zebra xylophone quark jigsaw Zephyr.\n\nSee service.py::process.\n",
+            encoding="utf-8")
+        after = self._memory("after").answer(question)
+        self.assertEqual([c["symbol"] for c in after["candidates"]],
+                         [c["symbol"] for c in before["candidates"]])
+
+
+class ReconcileTests(unittest.TestCase):
+    """Deterministic acquisition gate: ADD / DUPLICATE / CONFLICT / ABSTAIN."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.root = self.tmp / "repo"
+        self.root.mkdir()
+        (self.root / "core.py").write_bytes(b"def calculate(x):\n    return x + 1\n")
+        (self.root / "service.py").write_bytes(
+            b"from core import calculate as compute\n\ndef process(value):\n    return compute(value)\n")
+        self.memory = Memory(str(self.tmp / "memory.sqlite"), self.root)
+        self.addCleanup(self.memory.close)
+        self.memory.ingest()
+
+    def _assertion_count(self):
+        _, view = self.memory.store.view()
+        return len(view["assertions"])
+
+    def test_clean_proposal_is_add_and_writes_nothing(self):
+        before = self._assertion_count()
+        action, reason = self.memory.reconcile_proposal(
+            "service.py::process", "core.py::calculate")
+        self.assertEqual(action, "add")
+        self.assertTrue(reason)
+        self.assertEqual(self._assertion_count(), before)
+
+    def test_asserted_triple_is_duplicate_noop(self):
+        self.memory.record_outcome("service.py::process", "core.py::calculate",
+                                   authority="session-a")
+        self.memory.ingest()
+        before = self._assertion_count()
+        action, reason = self.memory.reconcile_proposal(
+            "service.py::process", "core.py::calculate")
+        self.assertEqual(action, "duplicate")
+        self.assertIn("already asserted", reason)
+        self.assertEqual(self._assertion_count(), before)
+
+    def test_contradicted_pair_is_conflict(self):
+        self.memory.record_outcome("service.py::process", "core.py::calculate",
+                                   authority="session-a")
+        self.memory.record_outcome("core.py::calculate", "service.py::process",
+                                   rel="contradicts", authority="session-b")
+        self.memory.ingest()
+        action, reason = self.memory.reconcile_proposal(
+            "service.py::process", "core.py::calculate")
+        self.assertEqual(action, "conflict")
+        self.assertIn("contradicts", reason)
+
+    def test_retracted_triple_is_conflict(self):
+        self.memory.record_outcome("service.py::process", "core.py::calculate",
+                                   authority="session-a")
+        self.memory.record_outcome("service.py::process", "core.py::calculate",
+                                   rel="retracts", retract="depends_on",
+                                   authority="session-b")
+        self.memory.ingest()
+        action, reason = self.memory.reconcile_proposal(
+            "service.py::process", "core.py::calculate")
+        self.assertEqual(action, "conflict")
+        self.assertIn("retraction", reason)
+
+    def test_unknown_relation_bare_name_and_ghost_endpoints_are_invalid(self):
+        action, _ = self.memory.reconcile_proposal(
+            "service.py::process", "core.py::calculate", rel="blames")
+        self.assertEqual(action, "invalid")
+        action, _ = self.memory.reconcile_proposal("process", "core.py::calculate")
+        self.assertEqual(action, "invalid")
+        action, reason = self.memory.reconcile_proposal(
+            "ghost.py::phantom", "core.py::calculate")
+        self.assertEqual(action, "invalid")
+        self.assertIn("ghost.py::phantom", reason)
+
+    def test_existing_note_document_is_a_known_endpoint(self):
+        (self.root / "notes").mkdir(exist_ok=True)
+        (self.root / "notes" / "decisions.md").write_text(
+            "We round at order time.\n", encoding="utf-8")
+        self.memory.ingest()
+        action, _ = self.memory.reconcile_proposal(
+            "service.py::process", "notes/decisions.md::document",
+            rel="decided_by")
+        self.assertEqual(action, "add")
+
+    def test_missing_note_document_is_invalid(self):
+        action, reason = self.memory.reconcile_proposal(
+            "service.py::process", "notes/missing.md::document",
+            rel="decided_by")
+        self.assertEqual(action, "invalid")
+        self.assertIn("notes/missing.md::document", reason)
+
+
 if __name__ == "__main__":
     unittest.main()

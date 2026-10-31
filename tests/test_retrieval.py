@@ -156,6 +156,27 @@ class LexicalCacheTest(unittest.TestCase):
             sorted(d["symbol"] for d in fresh.documents))
 
 
+class NotesDiscoveryTest(unittest.TestCase):
+    def test_lexical_stage_finds_note_mentioned_symbols(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        (root / "a.py").write_text("def alpha():\n    return 1\n", encoding="utf-8")
+        (root / "notes.md").write_text(
+            "# plan\n\nWe will extend `a.py::alpha` for rounding.\n", encoding="utf-8")
+        memory = Memory(str(root / "c.sqlite"), root)
+        self.addCleanup(memory.close)
+        memory.ingest()
+        result = memory.answer("what are the rounding plans", limit=5,
+                              budget={"exact": 0, "name": 0, "semantic": 0})
+        mentions = [m for m in result["mentions"]
+                    if m.get("candidate") == "a.py::alpha"]
+        self.assertTrue(mentions)
+        self.assertEqual(mentions[0]["mentioner"], "notes.md::document")
+        self.assertEqual(mentions[0]["status"], "lexical_discovery")
+        self.assertIn("rounding", mentions[0]["evidence"]["window"])
+
+
 class TextNotesTest(unittest.TestCase):
     def test_notes_are_retrievable_and_code_is_not(self):
         tmp = tempfile.TemporaryDirectory()
