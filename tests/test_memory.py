@@ -578,6 +578,54 @@ class CLITests(unittest.TestCase):
         self.assertEqual(dispatch[0]["derivation"]["table"], "dispatch.py::STRATEGIES")
 
 
+class FrontierIngestTests(unittest.TestCase):
+    """Ingest-diagnostic auto-filing: extractor failures enter the ledger."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.root = self.tmp / "repo"
+        self.root.mkdir()
+        (self.root / "core.py").write_bytes(b"def calculate(x):\n    return x + 1\n")
+        (self.root / "dynamic.py").write_bytes(
+            b"def run(handler, value):\n    return handler(value)\n")
+        (self.root / "broken.py").write_bytes(b"def oops(:\n    pass\n")
+
+    def test_ingest_files_failures_and_reingest_bumps(self):
+        memory = Memory(str(self.tmp / "memory.sqlite"), self.root)
+        self.addCleanup(memory.close)
+        result = memory.ingest()
+        self.assertGreater(result["frontier_filed"], 0)
+        entries = memory.frontier_list(status="open")
+        kinds = {(e["kind"], e["failure"]) for e in entries}
+        self.assertIn(("unresolved", "ingest_unresolved_call"), kinds)
+        self.assertIn(("unsupported", "ingest_parse_error"), kinds)
+        by_kind = {e["failure"]: e for e in entries}
+        self.assertTrue(by_kind["ingest_unresolved_call"]["source_refs"])
+        first = {e["id"]: e["recurrence"] for e in entries}
+        again = memory.ingest()
+        self.assertGreater(again["frontier_filed"], 0)
+        second = memory.frontier_list(status="open")
+        self.assertEqual({e["id"] for e in second}, set(first))
+        self.assertTrue(all(e["recurrence"] == first[e["id"]] + 1 for e in second))
+
+    def test_dispatch_diagnostic_maps_to_unsupported(self):
+        (self.root / "pricing.py").write_bytes(b"def round_total(cart):\n    return cart\n")
+        (self.root / "dispatch.py").write_bytes(
+            b"from pricing import round_total\n\nSTRATEGIES = {\"standard\": round_total}\n")
+        (self.root / "user.py").write_bytes(
+            b"from dispatch import STRATEGIES\n\n\ndef dynamic(cart, name):\n"
+            b"    return STRATEGIES[name](cart)\n")
+        memory = Memory(str(self.tmp / "memory.sqlite"), self.root)
+        self.addCleanup(memory.close)
+        memory.ingest()
+        entries = [e for e in memory.frontier_list(status="open")
+                   if e["failure"] == "ingest_dispatch_unresolved"]
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(entries[0]["kind"], "unsupported")
+        self.assertIn("STRATEGIES", entries[0]["task"])
+
+
 class UnicodeWindowTests(unittest.TestCase):
     """Evidence windows must not split multibyte characters."""
 

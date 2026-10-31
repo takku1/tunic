@@ -84,6 +84,31 @@ class DispatchTests(unittest.TestCase):
         self.assertNotIn("checkout.py::place_order",
                          [i["symbol"] for i in impacts])
 
+    def test_unknown_key_yields_diagnostic_not_candidate(self):
+        self.write("pricing.py", PRICING)
+        self.write("dispatch.py", DISPATCH)
+        self.write("checkout.py",
+                   "from dispatch import STRATEGIES\n\n\ndef other(cart):\n"
+                   "    return STRATEGIES[\"express\"](cart)\n")
+        self.ingest()
+        self.assertEqual(self.candidates(), [])
+        kinds = {(d.get("kind"), d.get("reason")) for d in self.view.get("diagnostics", [])}
+        self.assertIn(("dispatch_unresolved", "unknown_key"), kinds)
+
+    def test_same_named_tables_resolve_per_module(self):
+        self.write("alpha.py", "def run(cart):\n    return cart\n\nTABLE = {\"fast\": run}\n")
+        self.write("beta.py", "def run(cart):\n    return cart\n\nTABLE = {\"fast\": run}\n")
+        self.write("use_alpha.py", "from alpha import TABLE\n\n\ndef go(cart):\n"
+                   "    return TABLE[\"fast\"](cart)\n")
+        self.write("use_beta.py", "from beta import TABLE\n\n\ndef go(cart):\n"
+                   "    return TABLE[\"fast\"](cart)\n")
+        self.ingest()
+        found = self.candidates()
+        self.assertEqual(len(found), 2)
+        pairs = {(c["proposition"]["caller"], c["proposition"]["callee"]) for c in found}
+        self.assertEqual(pairs, {("use_alpha.py::go", "alpha.py::run"),
+                                 ("use_beta.py::go", "beta.py::run")})
+
     def test_dynamic_dispatch_patterns_yield_no_candidates(self):
         self.write("pricing.py", PRICING)
         self.write("dispatch.py", DISPATCH + "\nTABLE2 = {}\n")

@@ -4,7 +4,7 @@ Tunic is an evidence compiler for AI context. It separates source-grounded graph
 
 The compiler emits a bounded W1 **typed context IR**. A faithful renderer preserves its evidence and source mappings; a local Ollama adapter supports a two-segment continuation experiment with pinned models.
 
-Status: Python/SQLite ingestion with methods and self/cls receivers, static impact queries, document mentions with an evidence-precision gate, temporal claims with retrieval policies, retraction-aware evidence selection (opt-in), trust-labeled model context rendering (observed/asserted/corrections/disputed/withheld with truncation receipts), deterministic evidence rendering, local segment continuation, a persistent agent-memory API with a multi-session record/apply/correct benchmark, an MCP stdio boundary, and local-embedding hybrid retrieval with a persistent vector cache are implemented and benchmarked. See [benchmarks/precision](benchmarks/precision) (frozen mention-precision split), [benchmarks/arena](benchmarks/arena) (semantic baseline runs and audit notes), and the [architecture overview](docs/architecture/overview.md). Prefetch, custom KV integration, multi-user authorization, and distributed operation remain unfinished. [Recorded smoke results](docs/evaluation/continuation-results.md) include failed model answers as well as a successful mechanically supported example; they establish no general quality or speed advantage.
+Status: Python/SQLite ingestion with methods and self/cls receivers, static impact queries, document mentions with an evidence-precision gate, temporal claims with retrieval policies, retraction-aware evidence selection (opt-in), trust-labeled model context rendering (observed/asserted/corrections/disputed/withheld with truncation receipts), deterministic evidence rendering, local segment continuation, a persistent agent-memory API with a multi-session record/apply/correct benchmark, an MCP stdio boundary, local-embedding hybrid retrieval with a persistent vector cache, registry-dispatch candidate proposals, and a frontier ledger for unresolved observations are implemented and benchmarked. See [benchmarks/precision](benchmarks/precision) (frozen mention-precision split), [benchmarks/arena](benchmarks/arena) (semantic baseline runs and audit notes), and the [architecture overview](docs/architecture/overview.md). Prefetch, custom KV integration, multi-user authorization, and distributed operation remain unfinished. [Recorded smoke results](docs/evaluation/continuation-results.md) include failed model answers as well as a successful mechanically supported example; they establish no general quality or speed advantage.
 
 ## Run the reference slice
 
@@ -41,7 +41,21 @@ The controller compares evidence supplied before planning with evidence supplied
 
 Offline `render --max-bytes` is an evidence-byte budget, not a token count. Exact complete-prompt counts require a charged one-token inference probe on this backend. Probe work and cache effects are included in traces; over-budget input may consume probe work before explicit rejection. See the [continuation profile](docs/architecture/continuation-reference.md) for supported templates, budgets and security limits.
 
-For another repository, pass its Python source root (for example `repository/src`) and a separate database. Symbols use exact `relative/path.py::function` keys. `impact --max-depth 8 --max-nodes 100` bounds traversal and reports reached limits. The [W1 implementation profile](docs/architecture/w1-reference.md) defines supported syntax, storage/identity semantics, and tested limits. Dynamic dispatch, nested scopes, non-UTF-8 source, and multi-user authorization remain outside the profile; classes/methods and temporal valid-time queries are supported. Output always reports partial static coverage; mechanical validation does not prove runtime impact.
+For another repository, pass its Python source root (for example `repository/src`) and a separate database. Symbols use exact `relative/path.py::function` keys. `impact --max-depth 8 --max-nodes 100` bounds traversal and reports reached limits. The [W1 implementation profile](docs/architecture/w1-reference.md) defines supported syntax, storage/identity semantics, and tested limits. General dynamic dispatch, nested scopes, non-UTF-8 source, and multi-user authorization remain outside the profile; classes/methods and temporal valid-time queries are supported. Closed registry/dict dispatch yields proposed candidates, not assertions (see below). Output always reports partial static coverage; mechanical validation does not prove runtime impact.
+
+## Proposed candidates and the frontier ledger
+
+Closed registry tables (`STRATEGIES = {"standard": func}` with one static assignment, indexed by literals) produce `proposed` dependency candidates with derivation chains. Candidates never traverse, corroborate, or render as evidence:
+
+```powershell
+python -m tunic --db .tunic/example.sqlite candidates
+python -m tunic --db .tunic/example.sqlite frontier
+python -m tunic --db .tunic/example.sqlite frontier --status open
+```
+
+Extractor failures (unresolved calls, dispatch gaps, parse errors) and retrieval abstentions are filed automatically in the frontier ledger with digest-anchored dedupe: re-ingesting an unchanged tree bumps recurrence instead of duplicating. Entries move `open -> investigating -> resolved | dismissed` with sticky terminal states; see [docs/architecture/frontier-ledger.md](docs/architecture/frontier-ledger.md).
+
+Two promotion paths, deliberately distinct: `Memory.commit_proposal()` reconciles first and promotes clean ADDs, but the caller invoking it is the approver — pair it with tests, a human, or a reviewer gate before autonomous use. Independently reviewed promotion (`promote`/`record_outcome` plus reviewer acceptance) is what the acquisition benchmarks measure. Deterministic reconciliation checks consistency and validity; it does not establish truth.
 
 ## Agent memory boundary and semantic retrieval
 

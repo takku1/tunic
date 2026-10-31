@@ -107,11 +107,55 @@ class Memory:
 
     def ingest(self):
         authorize(self.principal, "ingest")
-        return self.store.ingest(str(self.root))
+        result = self.store.ingest(str(self.root))
+        result["frontier_filed"] = self._file_ingest_diagnostics(
+            result.get("diagnostics", []))
+        return result
 
     def refresh(self):
         authorize(self.principal, "refresh")
-        return self.store.refresh(str(self.root))
+        result = self.store.refresh(str(self.root))
+        result["frontier_filed"] = self._file_ingest_diagnostics(
+            result.get("diagnostics", []))
+        return result
+
+    def _file_ingest_diagnostics(self, diagnostics):
+        """File extractor failures in the frontier ledger (v0 wiring).
+
+        dispatch_unresolved and parse errors are capability gaps
+        (unsupported); unresolved calls may resolve with more evidence.
+        Dedupe keys anchor on source digest + line, so re-ingesting an
+        unchanged tree bumps recurrence instead of duplicating.
+        """
+        wired = {"dispatch_unresolved": ("unsupported", "dispatch %s at %s:%s"),
+                 "unresolved_call": ("unresolved", "resolve call %s at %s:%s"),
+                 "parse_error": ("unsupported", "parse %s at %s:%s")}
+        snapshot, view = self.store.view()
+        digests = {}
+        for source_id in view.get("sources", []):
+            try:
+                info = self.store.source(source_id, snapshot)
+            except ValueError:
+                continue
+            digests[info["path"]] = info["digest"][:16]
+        filed = 0
+        for diagnostic in diagnostics:
+            mapping = wired.get(diagnostic.get("kind"))
+            if mapping is None:
+                continue
+            kind, template = mapping
+            path = diagnostic.get("path", "")
+            line = diagnostic.get("line")
+            detail = (diagnostic.get("table") or diagnostic.get("reason")
+                      or diagnostic.get("expression") or diagnostic.get("path", ""))
+            task = template % (detail, path, line)
+            ref = "%s:%s" % (digests.get(path, path), line)
+            self._frontier_upsert(
+                kind, task, "ingest_%s" % diagnostic.get("kind"),
+                source_refs=(ref,),
+                required_evidence=("supporting evidence",))
+            filed += 1
+        return filed
 
     def impact(self, symbol, **kwargs):
         authorize(self.principal, "impact")
