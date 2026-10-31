@@ -18,11 +18,11 @@
         "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
       ],
       "latency_ms": {
-        "max": 28591.2,
-        "mean": 22499.325,
-        "min": 10850.2,
+        "max": 37877.0,
+        "mean": 26408.45,
+        "min": 17042.9,
         "n": 20,
-        "p50": 23720.449999999997
+        "p50": 26699.699999999997
       },
       "mean_ndcg_at_5": 0.5004561803550784,
       "mean_recall_at_1": 0.29166666666666663,
@@ -45,11 +45,11 @@
         "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
       ],
       "latency_ms": {
-        "max": 88100.3,
-        "mean": 27597.05,
-        "min": 14756.2,
+        "max": 94553.5,
+        "mean": 31545.025,
+        "min": 18205.2,
         "n": 20,
-        "p50": 25966.65
+        "p50": 30310.85
       },
       "mean_ndcg_at_5": 0.38680916466051396,
       "mean_recall_at_1": 0.0,
@@ -66,11 +66,11 @@
       "exact_tasks": 0,
       "junk_symbols": [],
       "latency_ms": {
-        "max": 37802.9,
-        "mean": 18376.405,
-        "min": 6303.4,
+        "max": 41852.1,
+        "mean": 23451.425,
+        "min": 9631.8,
         "n": 20,
-        "p50": 16517.550000000003
+        "p50": 21982.85
       },
       "mean_ndcg_at_5": 0.49428421972513165,
       "mean_recall_at_1": 0.0,
@@ -85,7 +85,7 @@
     {
       "arms": {
         "bm25-only": {
-          "latency_ms": 28591.2,
+          "latency_ms": 37877.0,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
@@ -142,7 +142,7 @@
           }
         },
         "full-hybrid": {
-          "latency_ms": 88100.3,
+          "latency_ms": 94553.5,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.generate",
@@ -202,7 +202,7 @@
           }
         },
         "hybrid-select": {
-          "latency_ms": 11225.5,
+          "latency_ms": 9631.8,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.generate",
@@ -250,7 +250,7 @@
     {
       "arms": {
         "bm25-only": {
-          "latency_ms": 24380.7,
+          "latency_ms": 17132.4,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire._unconstrained_repertoire",
@@ -313,7 +313,7 @@
           }
         },
         "full-hybrid": {
-          "latency_ms": 25799.9,
+          "latency_ms": 18242.2,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire._unconstrained_repertoire",
@@ -376,7 +376,7 @@
           }
         },
         "hybrid-select": {
-          "latency_ms": 11312.8,
+          "latency_ms": 9817.5,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire._unconstrained_repertoire",
@@ -428,7 +428,7 @@
     {
       "arms": {
         "bm25-only": {
-          "latency_ms": 24025.3,
+          "latency_ms": 17042.9,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.compute_fitness",
@@ -488,7 +488,7 @@
           }
         },
         "full-hybrid": {
-          "latency_ms": 25983.4,
+          "latency_ms": 18205.2,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.compute_fitness",
@@ -548,7 +548,7 @@
           }
         },
         "hybrid-select": {
-          "latency_ms": 18653.7,
+          "latency_ms": 13931.5,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.compute_fitness",
@@ -599,7 +599,7 @@
     {
       "arms": {
         "bm25-only": {
-          "latency_ms": 24164.1,
+          "latency_ms": 28018.4,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/learning/continual.py::MESU.apply_modulation",
@@ -653,7 +653,7 @@
           }
         },
         "full-hybrid": {
-          "latency_ms": 26177.5,
+          "latency_ms": 29922.7,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/learning/continual.py::MESU.get_learning_rates",
@@ -707,7 +707,7 @@
           }
         },
         "hybrid-select": {
-          "latency_ms": 14277.4,
+          "latency_ms": 22251.0,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/learning/continual.py::MESU.get_learning_rates",
@@ -752,7 +752,7 @@
     {
       "arms": {
         "bm25-only": {
-          "latency_ms": 21574.3,
+          "latency_ms": 29456.0,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.get_frequencies",
@@ -806,7 +806,7 @@
           }
         },
         "full-hybrid": {
-          "latency_ms": 22887.3,
+          "latency_ms": 30927.5,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/dynamics/oscillators/spherical.py::_params_to_skew_symmetric",
@@ -860,7 +860,7 @@
           }
         },
         "hybrid-select": {
-          "latency_ms": 19632.8,
+          "latency_ms": 27471.4,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/dynamics/oscillators/spherical.py::_params_to_skew_symmetric",
@@ -909,7 +909,7 @@
     {
       "arms": {
         "bm25-only": {
-          "latency_ms": 10850.2,
+          "latency_ms": 18240.2,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/memory/perturbation.py::PerlinNoise.noise2d",
@@ -945,7 +945,7 @@
           }
         },
         "full-hybrid": {
-          "latency_ms": 14756.2,
+          "latency_ms": 20208.4,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/memory/perturbation.py::PerlinNoise._lerp",
@@ -981,7 +981,7 @@
           }
         },
         "hybrid-select": {
-          "latency_ms": 16560.7,
+          "latency_ms": 21949.1,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/memory/perturbation.py::PerlinNoise._lerp",
@@ -1026,7 +1026,7 @@
     {
       "arms": {
         "bm25-only": {
-          "latency_ms": 23820.8,
+          "latency_ms": 28956.8,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward",
@@ -1089,7 +1089,7 @@
           }
         },
         "full-hybrid": {
-          "latency_ms": 25949.9,
+          "latency_ms": 31366.9,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.probabilities",
@@ -1140,7 +1140,7 @@
           }
         },
         "hybrid-select": {
-          "latency_ms": 29519.5,
+          "latency_ms": 35151.5,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.probabilities",
@@ -1200,7 +1200,7 @@
     {
       "arms": {
         "bm25-only": {
-          "latency_ms": 23325.9,
+          "latency_ms": 29322.5,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/experimental/quantum.py::QuantumInterference.select_context",
@@ -1257,7 +1257,7 @@
           }
         },
         "full-hybrid": {
-          "latency_ms": 19803.4,
+          "latency_ms": 30699.0,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/experimental/quantum.py::QuantumInterference.select_context",
@@ -1314,7 +1314,7 @@
           }
         },
         "hybrid-select": {
-          "latency_ms": 7123.3,
+          "latency_ms": 16351.7,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/experimental/quantum.py::QuantumInterference.select_context",
@@ -1359,7 +1359,7 @@
     {
       "arms": {
         "bm25-only": {
-          "latency_ms": 21566.9,
+          "latency_ms": 29218.1,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
@@ -1413,7 +1413,7 @@
           }
         },
         "full-hybrid": {
-          "latency_ms": 26126.5,
+          "latency_ms": 31280.9,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.generate_neighbor",
@@ -1467,7 +1467,7 @@
           }
         },
         "hybrid-select": {
-          "latency_ms": 16833.2,
+          "latency_ms": 21883.4,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.generate_neighbor",
@@ -1512,7 +1512,7 @@
     {
       "arms": {
         "bm25-only": {
-          "latency_ms": 24113.9,
+          "latency_ms": 29352.1,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/experimental/quantum.py::UnitaryTransform.forward",
@@ -1566,7 +1566,7 @@
           }
         },
         "full-hybrid": {
-          "latency_ms": 26088.8,
+          "latency_ms": 30853.2,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/experimental/quantum.py::UnitaryTransform.get_unitary",
@@ -1620,7 +1620,7 @@
           }
         },
         "hybrid-select": {
-          "latency_ms": 15123.6,
+          "latency_ms": 22016.6,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/experimental/quantum.py::UnitaryTransform.get_unitary",
@@ -1665,7 +1665,7 @@
     {
       "arms": {
         "bm25-only": {
-          "latency_ms": 23620.1,
+          "latency_ms": 29084.8,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/embodiment/safety.py::ReflexToStrategy._get_stage",
@@ -1719,7 +1719,7 @@
           }
         },
         "full-hybrid": {
-          "latency_ms": 25654.9,
+          "latency_ms": 30965.0,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/embodiment/safety.py::ReflexToStrategy._get_stage",
@@ -1773,7 +1773,7 @@
           }
         },
         "hybrid-select": {
-          "latency_ms": 13551.9,
+          "latency_ms": 21933.7,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/embodiment/safety.py::ReflexToStrategy._get_stage",
@@ -1818,7 +1818,7 @@
     {
       "arms": {
         "bm25-only": {
-          "latency_ms": 20051.6,
+          "latency_ms": 26627.6,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/learning/continual.py::ExperienceReplay.add",
@@ -1872,7 +1872,7 @@
           }
         },
         "full-hybrid": {
-          "latency_ms": 24786.0,
+          "latency_ms": 27682.1,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/learning/continual.py::ExperienceReplay._add_single",
@@ -1926,7 +1926,7 @@
           }
         },
         "hybrid-select": {
-          "latency_ms": 16643.5,
+          "latency_ms": 19949.1,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/learning/continual.py::ExperienceReplay._add_single",
@@ -1971,7 +1971,7 @@
     {
       "arms": {
         "bm25-only": {
-          "latency_ms": 24107.7,
+          "latency_ms": 26189.9,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/memory/cls.py::ForgettingCurve.retention",
@@ -2025,7 +2025,7 @@
           }
         },
         "full-hybrid": {
-          "latency_ms": 23554.4,
+          "latency_ms": 27371.7,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/memory/cls.py::ForgettingCurve.retention",
@@ -2079,7 +2079,7 @@
           }
         },
         "hybrid-select": {
-          "latency_ms": 11312.4,
+          "latency_ms": 19230.8,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/memory/cls.py::ForgettingCurve.retention",
@@ -2124,7 +2124,7 @@
     {
       "arms": {
         "bm25-only": {
-          "latency_ms": 23830.6,
+          "latency_ms": 25176.9,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/cognition/binding/visual.py::_reshape_to_groups",
@@ -2181,7 +2181,7 @@
           }
         },
         "full-hybrid": {
-          "latency_ms": 26500.9,
+          "latency_ms": 27794.0,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/cognition/binding/visual.py::_reshape_to_groups",
@@ -2238,7 +2238,7 @@
           }
         },
         "hybrid-select": {
-          "latency_ms": 21975.4,
+          "latency_ms": 23799.3,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/cognition/binding/visual.py::_reshape_to_groups",
@@ -2290,7 +2290,7 @@
     {
       "arms": {
         "bm25-only": {
-          "latency_ms": 22596.0,
+          "latency_ms": 26065.9,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/experimental/hyperdimensional.py::HypervectorMemory.retrieve",
@@ -2347,7 +2347,7 @@
           }
         },
         "full-hybrid": {
-          "latency_ms": 14768.1,
+          "latency_ms": 27923.9,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/experimental/hyperdimensional.py::circular_correlation",
@@ -2404,7 +2404,7 @@
           }
         },
         "hybrid-select": {
-          "latency_ms": 12789.9,
+          "latency_ms": 24381.2,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/experimental/hyperdimensional.py::circular_correlation",
@@ -2457,7 +2457,7 @@
     {
       "arms": {
         "bm25-only": {
-          "latency_ms": 18523.0,
+          "latency_ms": 24253.5,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/dynamics/continuous/ode_solvers.py::BaseSolver.solve",
@@ -2509,7 +2509,7 @@
           }
         },
         "full-hybrid": {
-          "latency_ms": 30567.9,
+          "latency_ms": 31864.2,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/api/bridge.py::PyQuiferBridge.step",
@@ -2569,7 +2569,7 @@
           }
         },
         "hybrid-select": {
-          "latency_ms": 35743.2,
+          "latency_ms": 39798.8,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/api/bridge.py::PyQuiferBridge.step",
@@ -2640,7 +2640,7 @@
     {
       "arms": {
         "bm25-only": {
-          "latency_ms": 20041.9,
+          "latency_ms": 26771.8,
           "outcome": "complete",
           "ranked": [
             "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -2701,7 +2701,7 @@
           }
         },
         "full-hybrid": {
-          "latency_ms": 26538.7,
+          "latency_ms": 33168.2,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/cognition/predictive/deep_active_inference.py::DeepAIF.encode",
@@ -2758,7 +2758,7 @@
           }
         },
         "hybrid-select": {
-          "latency_ms": 37802.9,
+          "latency_ms": 41852.1,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/cognition/predictive/deep_active_inference.py::DeepAIF.encode",
@@ -2826,7 +2826,7 @@
     {
       "arms": {
         "bm25-only": {
-          "latency_ms": 24081.4,
+          "latency_ms": 25283.1,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/dynamics/oscillators/spherical.py::reshape_from_groups",
@@ -2886,7 +2886,7 @@
           }
         },
         "full-hybrid": {
-          "latency_ms": 26278.3,
+          "latency_ms": 27804.1,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/dynamics/oscillators/spherical.py::reshape_to_groups",
@@ -2946,7 +2946,7 @@
           }
         },
         "hybrid-select": {
-          "latency_ms": 16474.4,
+          "latency_ms": 25069.8,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/dynamics/oscillators/spherical.py::reshape_to_groups",
@@ -3016,7 +3016,7 @@
     {
       "arms": {
         "bm25-only": {
-          "latency_ms": 22878.8,
+          "latency_ms": 29982.1,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.decode",
@@ -3070,7 +3070,7 @@
           }
         },
         "full-hybrid": {
-          "latency_ms": 26614.7,
+          "latency_ms": 31981.9,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.decode",
@@ -3124,7 +3124,7 @@
           }
         },
         "hybrid-select": {
-          "latency_ms": 34668.6,
+          "latency_ms": 38511.9,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss",
@@ -3189,7 +3189,7 @@
     {
       "arms": {
         "bm25-only": {
-          "latency_ms": 23842.1,
+          "latency_ms": 24117.0,
           "outcome": "complete",
           "ranked": [
             "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -3250,7 +3250,7 @@
           }
         },
         "full-hybrid": {
-          "latency_ms": 25003.9,
+          "latency_ms": 28085.9,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/cognition/predictive/active_inference.py::reparameterize",
@@ -3316,7 +3316,7 @@
           }
         },
         "hybrid-select": {
-          "latency_ms": 6303.4,
+          "latency_ms": 14046.3,
           "outcome": "complete",
           "ranked": [
             "src/pyquifer/cognition/predictive/active_inference.py::reparameterize",
@@ -3399,12 +3399,12 @@
       "version": "pre-v1"
     },
     "python": "3.12.10",
-    "tunic_commit": "65236c3a59b2f333edc80cecab995ba38df8319f"
+    "tunic_commit": "c6ced9639a7330662cd097a5ed34f796734397bc"
   },
   "limitations": [
     "20 dev tasks, 1-hop impact phrasing; retrieval only, no model loop.",
     "Server-side embedding time and RAM not instrumented."
   ],
   "protocol": "dev-only retrieval scoring; tune freely; held-out stays untouched",
-  "tracemalloc_peak_mb": 171.7
+  "tracemalloc_peak_mb": 175.3
 }
