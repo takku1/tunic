@@ -160,7 +160,9 @@ required evidence (read path for the future investigation scheduler).
   stage now matches snake_case against spaced prose; break-tested by
   zeroing the name budget). `frontier --record-miss` files;
   `frontier_miss_summary` reports counts plus the false-confidence rate
-  over audited misses.
+  over audited misses. The `authority` field is an attested string, not
+  proof a human performed the audit — keep that distinction explicit
+  before introducing autonomous investigators.
 - Later: MochiOS-scheduled investigation, procedural learning records,
   sandboxed system-improvement proposals.
 

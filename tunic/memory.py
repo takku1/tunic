@@ -9,6 +9,8 @@ timestamped file append or an explicit claim block awaiting ingest.
 
 from datetime import datetime, timezone
 import json
+import platform
+import subprocess
 from pathlib import Path
 
 from . import compiler
@@ -76,6 +78,27 @@ def _dispatch_covering(view, table, as_of):
 
 
 PROOF_FIELDS = ("snapshot", "assertions", "spans", "tests", "reviewer", "note")
+
+
+def _export_environment():
+    """Best-effort provenance for regression cases: interpreter plus repo.
+
+    Returns {"python": ..., "tunic_commit": ...}; unknown values are None
+    rather than errors, so export works from installed copies and scratch
+    checkouts alike. This records where the case was produced, not a
+    reproducibility guarantee — rerunning needs the same corpus revision
+    (see the closures README).
+    """
+    commit = None
+    try:
+        here = Path(__file__).resolve().parents[1]
+        out = subprocess.run(
+            ["git", "rev-parse", "HEAD"], capture_output=True, text=True,
+            cwd=str(here), timeout=10)
+        commit = out.stdout.strip() or None
+    except Exception:
+        commit = None
+    return {"python": platform.python_version(), "tunic_commit": commit}
 
 
 def replay_regression_case(memory, case, config_override=None):
@@ -815,6 +838,7 @@ class Memory:
                 "proof": proof, "predicate": predicate,
                 "config": (record.get("retrieval") or {}).get("config"),
                 "snapshot": proof.get("snapshot"),
+                "environment": _export_environment(),
                 "exported_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
         out = Path(path)
         out.write_text(json.dumps(case, indent=1, sort_keys=True), encoding="utf-8")
@@ -977,12 +1001,13 @@ class Memory:
                           "skipped": False}
         index = None
         note_mentions = []
+        discovery = None
         if mode == "hybrid" and caps["lexical"] > 0:
             started = time.perf_counter()
-            index = self._lexical_index(snapshot)
+            discovery = self._ensure_discovery(snapshot)
+            index, notes = discovery
             lexical = [hit["symbol"] for hit in
                        index.search_text(task, top_k=caps["lexical"])]
-            notes = self._notes_index(snapshot)
             note_mentions = []
             for hit in notes.search_text(task, top_k=caps["lexical"]):
                 mentioner = hit["symbol"] + "::document"
@@ -1009,8 +1034,9 @@ class Memory:
         started = time.perf_counter()
         if mode == "hybrid" and caps["semantic"] > 0 and provider.available():
             try:
-                if index is None:
-                    index = self._lexical_index(snapshot)
+                if discovery is None:
+                    discovery = self._ensure_discovery(snapshot)
+                index = discovery[0]
                 texts, order = [], []
                 for document in index.documents:
                     text = document["symbol"] + " " + " ".join(sorted(document["tokens"]))
@@ -1059,7 +1085,7 @@ class Memory:
                         try:
                             impact = compiler.compile_impact(
                                 self.store, subject, snapshot=snapshot,
-                                policy=policy)
+                                policy=policy, view=view)
                         except ValueError:
                             continue
                         anchors[subject] = {entry["symbol"]
@@ -1108,7 +1134,7 @@ class Memory:
             if symbol in followed:
                 continue
             related = compiler.compile_related(self.store, symbol, snapshot=snapshot,
-                                               policy=policy)
+                                               policy=policy, view=view)
             for entry in related["impact"]["impacts"]:
                 impacts.setdefault(entry["symbol"], entry)
             mentions.extend(related["mentions"]["mentions"])

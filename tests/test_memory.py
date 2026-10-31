@@ -1087,6 +1087,9 @@ class FrontierMissTests(unittest.TestCase):
         case_path = str(self.tmp / "miss-case.json")
         case = memory.frontier_export_regression(entry_id, case_path)
         self.assertEqual(case["predicate"]["type"], "target_rank_1")
+        import platform as _platform
+        self.assertEqual(case["environment"]["python"],
+                         _platform.python_version())
         passed, _ = replay_regression_case(memory, case)
         self.assertTrue(passed)
         broken = dict(case, config=dict(

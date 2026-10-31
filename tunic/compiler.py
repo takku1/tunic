@@ -35,10 +35,12 @@ def _evidence(store, record, snapshot):
             "window": _char_window(source["data"], start, end)}
 
 
-def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100, policy="transparent"):
+def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100, policy="transparent",
+                   view=None):
     if type(max_depth) is not int or max_depth < 1 or type(max_nodes) is not int or max_nodes < 1:
         raise ValueError("max_depth and max_nodes must be positive integers")
-    snapshot, view = store.view(snapshot)
+    if view is None:
+        snapshot, view = store.view(snapshot)
     symbols = {s["key"]: s for s in view["symbols"]}
     if symbol not in symbols:
         raise ValueError("unknown or unsupported symbol: " + symbol)
@@ -152,13 +154,14 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100, 
     return artifact
 
 
-def compile_mentions(store, symbol, *, snapshot=None):
+def compile_mentions(store, symbol, *, snapshot=None, view=None):
     """List document spans that mention a symbol key; proposals never traverse.
 
     A proposal counts as corroborated when the same document carries exact
     evidence for the same entity: an exact mention or an asserted claim.
     """
-    snapshot, view = store.view(snapshot)
+    if view is None:
+        snapshot, view = store.view(snapshot)
     symbols = {s["key"]: s for s in view["symbols"]}
     if symbol not in symbols:
         raise ValueError("unknown symbol: " + symbol)
@@ -346,21 +349,24 @@ def compile_review(store, document, *, snapshot=None):
             "drafts": drafts, "conflicts": conflicts, "outcome": "complete"}
 
 
-def compile_related(store, symbol, *, snapshot=None, policy="transparent"):
+def compile_related(store, symbol, *, snapshot=None, policy="transparent", view=None):
     """Cross-source context: reverse dependencies plus document mentions, claims, and proposals."""
-    snapshot, view = store.view(snapshot)
+    if view is None:
+        snapshot, view = store.view(snapshot)
     if symbol not in {s["key"] for s in view["symbols"]}:
         raise ValueError("unknown symbol: " + symbol)
     return {"symbol": symbol, "snapshot": snapshot, "profile": view["profile"],
-            "impact": compile_impact(store, symbol, snapshot=snapshot, policy=policy),
-            "mentions": compile_mentions(store, symbol, snapshot=snapshot),
-            "claims": compile_claims(store, symbol, snapshot=snapshot),
+            "impact": compile_impact(store, symbol, snapshot=snapshot, policy=policy,
+                                     view=view),
+            "mentions": compile_mentions(store, symbol, snapshot=snapshot, view=view),
+            "claims": compile_claims(store, symbol, snapshot=snapshot, view=view),
             "outcome": "complete"}
 
 
-def compile_claims(store, symbol, *, snapshot=None):
+def compile_claims(store, symbol, *, snapshot=None, view=None):
     """List typed document claims and proposals touching a symbol; never traversed here."""
-    snapshot, view = store.view(snapshot)
+    if view is None:
+        snapshot, view = store.view(snapshot)
     symbols = {s["key"]: s for s in view["symbols"]}
     if symbol not in symbols:
         raise ValueError("unknown symbol: " + symbol)
