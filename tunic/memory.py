@@ -913,6 +913,8 @@ class Memory:
                 if inside and candidate.is_file():
                     continue
             return ("invalid", "unknown endpoint: " + ref)
+        duplicate = None
+        conflict = None
         for assertion in view["assertions"]:
             if assertion.get("status") != "asserted_in_source":
                 continue
@@ -920,16 +922,25 @@ class Memory:
             if (proposition.get("relation") == rel
                     and proposition.get("caller") == subject
                     and proposition.get("callee") == object):
-                return ("duplicate", "already asserted: %s %s %s"
-                        % (subject, rel, object))
+                duplicate = ("duplicate", "already asserted: %s %s %s"
+                             % (subject, rel, object))
+                continue
             pair = {proposition.get("caller"), proposition.get("callee")}
             if proposition.get("relation") == "contradicts" and pair == {subject, object}:
-                return ("conflict", "contradicts claim blocks %s %s %s; "
-                        "record a correction first" % (subject, rel, object))
+                conflict = ("conflict", "contradicts claim blocks %s %s %s; "
+                            "record a correction first" % (subject, rel, object))
             if (proposition.get("relation") == "retracts"
                     and proposition.get("retract") == rel and pair == {subject, object}):
-                return ("conflict", "retraction stands against %s %s %s; "
-                        "re-assert only with new evidence" % (subject, rel, object))
+                conflict = ("conflict", "retraction stands against %s %s %s; "
+                            "re-assert only with new evidence" % (subject, rel, object))
+        # A disputed triple is never a clean no-op: a blocking contradicts
+        # or retracts claim outranks an exact-triple match. Scanning every
+        # row (instead of returning on the first id-ordered match) keeps
+        # the verdict independent of assertion row order.
+        if conflict is not None:
+            return conflict
+        if duplicate is not None:
+            return duplicate
         return ("add", "no duplicate, conflict, or endpoint problem found")
 
     def answer(self, task, *, snapshot=None, limit=3, mode="hybrid",

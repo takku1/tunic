@@ -141,6 +141,24 @@ class RetractionTests(TemporalFixture):
         impact = compile_impact(self.store, "svc.py::pay", policy="current")
         self.assertEqual(self.asserted_depends(impact), [])
 
+    def test_multisupport_visible_regardless_of_row_order(self):
+        # Byte-exact LF fixtures reproduce the Linux assertion row order,
+        # where the static edge sorts before both supports. Every
+        # surviving support must appear in units no matter which row the
+        # witness path meets first.
+        files = {
+            "notes/outcomes.md": self.support("a"),
+            "notes/second.md": self.support("b"),
+            "notes/retract.md": self.retract(),
+        }
+        for name, text in files.items():
+            path = self.root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(text.encode("utf-8"))
+        self.store.ingest(str(self.root))
+        impact = compile_impact(self.store, "svc.py::pay", policy="current")
+        self.assertEqual(len(self.asserted_depends(impact)), 2)
+
     def test_retracting_observation_is_rejected(self):
         report = self.ingest_notes(self.claim_block(
             "retracts", "svc.py::checkout", "svc.py::pay", extra={"retract": "static_call"}))

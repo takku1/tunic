@@ -70,22 +70,30 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100, 
             key = (proposition.get("relation"), proposition.get("caller"),
                    proposition.get("callee"))
             supports[key] = supports.get(key, 0) + 1
+    def _survives(assertion):
+        proposition = assertion["proposition"]
+        relation = proposition.get("relation")
+        if relation != "static_call" and not (
+                relation in TRAVERSABLE_CLAIMS
+                and assertion.get("status") == "asserted_in_source"):
+            return False
+        if policy == "evidence_only" and relation != "static_call":
+            return False
+        if policy == "current" and relation in TRAVERSABLE_CLAIMS:
+            key = (relation, proposition.get("caller"), proposition.get("callee"))
+            if supports.get(key, 0) - retracted.get(key, 0) < 1:
+                return False
+        if policy == "current" and (proposition.get("caller") in blocked
+                                    or proposition.get("callee") in blocked):
+            return False
+        return True
+
     incoming = defaultdict(list)
     for assertion in view["assertions"]:
-        relation = assertion["proposition"].get("relation")
-        if relation != "static_call" and not (relation in TRAVERSABLE_CLAIMS
-                                              and assertion.get("status") == "asserted_in_source"):
+        if not _survives(assertion):
             continue
         caller_key = assertion["proposition"]["caller"]
         callee_key = assertion["proposition"]["callee"]
-        if policy == "evidence_only" and assertion["proposition"].get("relation") != "static_call":
-            continue
-        if policy == "current" and relation in TRAVERSABLE_CLAIMS:
-            key = (relation, caller_key, callee_key)
-            if supports.get(key, 0) - retracted.get(key, 0) < 1:
-                continue
-        if policy == "current" and (caller_key in blocked or callee_key in blocked):
-            continue
         incoming[callee_key].append(assertion)
     for edges in incoming.values():
         edges.sort(key=lambda a:(a["proposition"]["caller"], a["id"]))
@@ -113,6 +121,20 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100, 
             paths[caller] = path
             queue.append(caller)
     used = {a["id"]: a for path in paths.values() for a in path}
+    # A witness path keeps one edge per caller, but every surviving
+    # assertion behind a reached caller is evidence too (multi-support
+    # after independent reviews, repeated static callsites, parallel
+    # static and asserted edges). Without this, which support rows appear
+    # in units depends on assertion row order — which is content-hash
+    # order and shifts with byte offsets. Impacts keep the single witness
+    # premises; units carry the full surviving evidence set.
+    reached = set(paths)
+    for assertion in view["assertions"]:
+        if assertion["proposition"].get("caller") not in reached:
+            continue
+        if not _survives(assertion):
+            continue
+        used[assertion["id"]] = assertion
     # Order units by stable edge coordinates, not by assertion hash, so call
     # labels survive extractor profile bumps when the edge set is unchanged.
     used = {aid: used[aid] for aid in sorted(used, key=lambda aid: (used[aid]["proposition"]["caller"],

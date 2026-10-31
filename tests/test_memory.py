@@ -368,6 +368,30 @@ class ReconcileTests(unittest.TestCase):
         action, reason = self.memory.reconcile_proposal(
             "service.py::process", "core.py::calculate")
         self.assertEqual(action, "conflict")
+
+    def test_conflict_wins_regardless_of_row_order(self):
+        # Byte-exact LF fixtures reproduce the Linux assertion row order,
+        # where the depends_on row sorts before the contradicts row. The
+        # verdict must not depend on which row the scan meets first.
+        import json as _json
+        notes = self.root / "notes"
+        notes.mkdir()
+        depends = {"rel": "depends_on", "subject": "service.py::process",
+                   "object": "core.py::calculate", "effective": "2026-10-31",
+                   "authority": "session-a"}
+        contradicts = {"rel": "contradicts", "subject": "core.py::calculate",
+                       "object": "service.py::process",
+                       "effective": "2026-10-31", "authority": "session-b"}
+        body = ("\n\n# Recorded outcome\n\n```tunic-claims\n%s\n```\n"
+                % _json.dumps([depends], ensure_ascii=True))
+        body += ("\n\n# Recorded outcome\n\n```tunic-claims\n%s\n```\n"
+                 % _json.dumps([contradicts], ensure_ascii=True))
+        (notes / "outcomes.md").write_bytes(body.encode("utf-8"))
+        self.memory.ingest()
+        action, reason = self.memory.reconcile_proposal(
+            "service.py::process", "core.py::calculate")
+        self.assertEqual(action, "conflict")
+        self.assertIn("contradicts", reason)
         self.assertIn("contradicts", reason)
 
     def test_retracted_triple_is_conflict(self):
