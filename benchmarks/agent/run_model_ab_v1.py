@@ -7,7 +7,8 @@ context cap. The model lists exact path::symbol keys in a ```symbols
 fence; scoring is mechanical. Memory setup is fixture docs (prior
 session records); the model under test only reads.
 
-Requires Ollama. Writes: benchmarks/agent/runs/model-ab-v1.json
+Requires Ollama. Writes: benchmarks/agent/runs/model-ab-v2.json
+(v1 artifact frozen; v2 adds the tunic-select arm.)
 """
 import json
 import re
@@ -66,8 +67,8 @@ def bundle_lexical(index, question, limit=5):
     return "\n---\n".join(lines)[:CONTEXT_CAP]
 
 
-def bundle_tunic(memory, question, limit=5):
-    result = memory.answer(question, limit=limit, policy="current")
+def bundle_tunic(memory, question, limit=5, select=False):
+    result = memory.answer(question, limit=limit, policy="current", select=select)
     lines = ["candidates: " + ", ".join(c["symbol"] for c in result["candidates"])]
     for entry in result["impacts"]:
         lines.append("impact %s" % entry["symbol"])
@@ -108,7 +109,8 @@ def main():
         known = {s["key"] for s in view["symbols"]}
         bundles = {"none": "(no context provided)",
                    "lexical": bundle_lexical(index, task["question"]) or "(no context provided)",
-                   "tunic": bundle_tunic(memory, task["question"]) or "(no context provided)"}
+                   "tunic": bundle_tunic(memory, task["question"]) or "(no context provided)",
+                   "tunic-select": bundle_tunic(memory, task["question"], select=True) or "(no context provided)"}
         row = {"id": task["id"], "repo": task["repo"], "question": task["question"],
                "gold": task["gold"], "forbidden": task.get("forbidden", []), "arms": {}}
         for arm, context in bundles.items():
@@ -137,14 +139,14 @@ def main():
     for memory, _ in prepared.values():
         memory.close()
     summary = {}
-    for arm in ("none", "lexical", "tunic"):
+    for arm in ("none", "lexical", "tunic", "tunic-select"):
         passed = [r for r in rows if r["arms"][arm]["pass"]]
         summary[arm] = {"passed": len(passed), "n": len(rows),
                         "hallucinated_tasks": sum(1 for r in rows
                                                   if r["arms"][arm]["hallucinated"]),
                         "mean_latency_ms": round(sum(r["arms"][arm]["latency_ms"]
                                                      for r in rows) / len(rows), 1)}
-    record = {"benchmark": "model-ab-v1",
+    record = {"benchmark": "model-ab-v2",
               "protocol": "same model/prompt/budget; mechanical fence parsing; "
                           "paired arms within one run; reruns may vary (sampled decoding)",
               "model": MODEL, "decoding": {"temperature": 0, "seed": 0},
@@ -153,7 +155,7 @@ def main():
               "limitations": ["14 small synthetic tasks; not a general agent claim.",
                               "single-turn answers; the model never writes memory (read-only A/B).",
                               "temperature 0 but GPU sampling may vary across runs; raw responses committed."]}
-    out = REPO / "benchmarks/agent/runs/model-ab-v1.json"
+    out = REPO / "benchmarks/agent/runs/model-ab-v2.json"
     out.parent.mkdir(exist_ok=True)
     out.write_text(json.dumps(record, indent=1), encoding="utf-8")
     print("summary:", json.dumps(summary))

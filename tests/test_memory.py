@@ -39,6 +39,36 @@ class MemoryTests(unittest.TestCase):
         self.assertTrue(any(c["relation"] == "depends_on" and c["authority"] == "agent-outcome"
                             for c in related["claims"]["claims"]))
 
+    def test_recorded_outcome_survives_sessions_and_can_be_corrected(self):
+        (self.root / "service.py").write_bytes(
+            b"from core import calculate as compute\n\ndef process(value):\n    return compute(value)\n")
+        first = Memory(self.db, self.root)
+        self.addCleanup(first.close)
+        first.record_outcome("service.py::process", "core.py::calculate",
+                             authority="session-a")
+        first.ingest()
+        first.close()
+        second = Memory(self.db, self.root)
+        self.addCleanup(second.close)
+        claims = [c for c in second.related("core.py::calculate")["claims"]["claims"]
+                  if c["relation"] == "depends_on"]
+        self.assertTrue(claims)
+        self.assertTrue(all(c["authority"] == "session-a" for c in claims))
+        found = second.answer("What else must change if calculate changes?")
+        self.assertTrue(any(c["symbol"] == "service.py::process"
+                            for c in found["candidates"]))
+        second.record_outcome("service.py::process", "core.py::calculate",
+                              rel="corrects", authority="session-b")
+        second.ingest()
+        second.close()
+        third = Memory(self.db, self.root)
+        self.addCleanup(third.close)
+        timeline = third.timeline("core.py::calculate")
+        self.assertTrue(timeline["corrected_by"])
+        self.assertTrue(all(e.get("authority") in ("session-a", "session-b")
+                            or e["kind"] != "claim"
+                            for e in timeline["entries"]))
+
     def test_record_outcome_validates_and_defaults(self):
         memory = Memory(self.db, self.root)
         self.addCleanup(memory.close)

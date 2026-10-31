@@ -115,9 +115,16 @@ def tool_schemas():
 
 
 def handle_call(memory, name, args):
-    """Dispatch one validated tool call; raises ValueError on bad arguments."""
+    """Dispatch one validated tool call; raises ValueError on bad arguments.
+
+    Callers may pass an envelope-level "principal" argument. It defaults
+    to the server's own principal; anything else is denied loudly by
+    tunic.memory.authorize before any tool logic runs.
+    """
     if not isinstance(args, dict):
         _fail("tool arguments must be an object")
+    from .memory import authorize
+    authorize(args.get("principal", memory.principal), name)
     if name == "retrieve":
         task = _need(args, "task", str)
         limit = _optional(args, "limit", int, 5)
@@ -200,6 +207,13 @@ def handle_request(memory, message):
             return _error(request_id, -32602, "tool name must be a string")
         try:
             result = handle_call(memory, name, params.get("arguments", {}))
+        except PermissionError as error:
+            return {"jsonrpc": "2.0", "id": request_id,
+                    "result": {"content": [{"type": "text",
+                                            "text": json.dumps({"error": str(error)},
+                                                               ensure_ascii=True,
+                                                               sort_keys=True)}],
+                               "isError": True}}
         except (ValueError, KeyError, TypeError) as error:
             return {"jsonrpc": "2.0", "id": request_id,
                     "result": {"content": [{"type": "text",

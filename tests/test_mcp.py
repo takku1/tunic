@@ -110,6 +110,55 @@ class McpProtocolTests(unittest.TestCase):
         self.assertTrue(bad["result"]["isError"])
 
 
+class McpAuthorizationTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.root = self.tmp / "repo"
+        self.root.mkdir()
+        _seed(self.root)
+        self.memory = Memory(str(self.tmp / "memory.sqlite"), self.root)
+        self.addCleanup(self.memory.close)
+        self.memory.ingest()
+
+    def _call(self, name, arguments):
+        return handle_request(self.memory, _rpc("tools/call", {
+            "name": name, "arguments": arguments}))
+
+    def test_unknown_principal_denied_on_read_and_write(self):
+        for name, arguments in (
+                ("retrieve", {"task": "x", "principal": "mallory"}),
+                ("note", {"text": "x", "principal": "mallory"}),
+                ("refresh", {"principal": "mallory"}),
+                ("promote", {"subject": "a.py::b", "object": "c.py::d",
+                             "principal": "mallory"})):
+            denied = self._call(name, arguments)
+            self.assertTrue(denied["result"]["isError"], name)
+            self.assertIn("denied", _text(denied)["error"], name)
+
+    def test_local_and_default_principals_allowed(self):
+        ok = self._call("retrieve", {"task": "what breaks if calculate changes?",
+                                     "principal": "local"})
+        self.assertFalse(ok["result"]["isError"])
+        also_ok = self._call("retrieve", {"task": "what breaks if calculate changes?"})
+        self.assertFalse(also_ok["result"]["isError"])
+
+    def test_memory_gate_rejects_unknown_principal(self):
+        from tunic.memory import authorize
+        receipt = authorize(None, "answer")
+        self.assertEqual(receipt, {"principal": "local", "action": "answer",
+                                  "decision": "allow"})
+        with self.assertRaises(PermissionError):
+            authorize("mallory", "answer")
+        foreign = Memory(str(self.tmp / "foreign.sqlite"), self.root,
+                         principal="mallory")
+        self.addCleanup(foreign.close)
+        with self.assertRaises(PermissionError):
+            foreign.answer("x")
+        with self.assertRaises(PermissionError):
+            foreign.note("x")
+
+
 class McpServerTests(unittest.TestCase):
     def test_stdio_session_end_to_end(self):
         tmp = Path(tempfile.mkdtemp())

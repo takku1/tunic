@@ -17,10 +17,24 @@ from .extract import CLAIM_RELATIONS, is_iso_date
 from .store import GraphStore
 
 
+def authorize(principal, action):
+    """Single-principal gate: the explicit authorization boundary.
+
+    Only the local principal (or an unset one, which defaults to local)
+    may act. Anything else is denied loudly instead of silently scoped.
+    Multi-principal operation stays out of scope; this interface is the
+    seam it would plug into.
+    """
+    if principal in (None, "local"):
+        return {"principal": "local", "action": action, "decision": "allow"}
+    raise PermissionError("denied: unknown principal %r for %s" % (principal, action))
+
+
 class Memory:
-    def __init__(self, db, root="."):
+    def __init__(self, db, root=".", principal="local"):
         self.root = Path(root)
         self.store = GraphStore(db)
+        self.principal = principal
 
     def close(self):
         self.store.close()
@@ -46,6 +60,7 @@ class Memory:
 
     def note(self, text, document="notes/session.md"):
         """Append a timestamped session note; creates parent directories."""
+        authorize(self.principal, "note")
         target = self._workspace_path(document)
         target.parent.mkdir(parents=True, exist_ok=True)
         stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
@@ -54,30 +69,39 @@ class Memory:
         return str(target)
 
     def ingest(self):
+        authorize(self.principal, "ingest")
         return self.store.ingest(str(self.root))
 
     def refresh(self):
+        authorize(self.principal, "refresh")
         return self.store.refresh(str(self.root))
 
     def impact(self, symbol, **kwargs):
+        authorize(self.principal, "impact")
         return compiler.compile_impact(self.store, symbol, **kwargs)
 
     def mentions(self, symbol, **kwargs):
+        authorize(self.principal, "mentions")
         return compiler.compile_mentions(self.store, symbol, **kwargs)
 
     def claims(self, symbol, **kwargs):
+        authorize(self.principal, "claims")
         return compiler.compile_claims(self.store, symbol, **kwargs)
 
     def related(self, symbol, **kwargs):
+        authorize(self.principal, "related")
         return compiler.compile_related(self.store, symbol, **kwargs)
 
     def timeline(self, symbol, **kwargs):
+        authorize(self.principal, "timeline")
         return compiler.compile_timeline(self.store, symbol, **kwargs)
 
     def draft(self, document, **kwargs):
+        authorize(self.principal, "draft")
         return compiler.compile_drafts(self.store, document, **kwargs)
 
     def review(self, document, **kwargs):
+        authorize(self.principal, "review")
         return compiler.compile_review(self.store, document, **kwargs)
 
     def promote(self, subject, object, rel="depends_on", effective=None,
@@ -90,6 +114,7 @@ class Memory:
         identity can only narrow, never guess. Writes the claim block;
         a later ingest publishes it.
         """
+        authorize(self.principal, "promote")
         if rel not in CLAIM_RELATIONS:
             raise ValueError("unknown relation: " + str(rel))
         for ref in (subject, object):
@@ -132,6 +157,7 @@ class Memory:
         fusion-only behavior until the selection contract acceptance
         is met on frozen suites.
         """
+        authorize(self.principal, "answer")
         import re
         import time
         from .retrieval import EmbeddingProvider, fuse
@@ -270,6 +296,7 @@ class Memory:
         A `retracts` claim must name its target relation via `retract`;
         any other relation carrying `retract` is rejected.
         """
+        authorize(self.principal, "record_outcome")
         if rel not in CLAIM_RELATIONS:
             raise ValueError("unknown relation: " + str(rel))
         for ref in (subject, object):
