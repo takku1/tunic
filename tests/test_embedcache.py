@@ -139,6 +139,31 @@ class CacheTests(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             provider.rank("q", ["a"], 1)
 
+    def test_poisonous_text_does_not_nuke_batch(self):
+        class Flaky(CountingProvider):
+            def embed_texts(self, texts):
+                if len(texts) > 1 and any(t == "poison" for t in texts):
+                    raise RuntimeError("batch exploded")
+                if texts == ["poison"]:
+                    raise RuntimeError("poison exploded")
+                self.calls += 1
+                return [[1.0 if i == len(t) % 8 else 0.0 for i in range(8)]
+                        for t in texts]
+
+        inner = Flaky()
+        cache = EmbeddingCache(str(self.tmp / "v.sqlite"), model_digest="sha256:t",
+                               chunking_version="chunk-v1",
+                               preprocessing_version="pre-v1")
+        self.addCleanup(cache.close)
+        provider = CachedEmbeddingProvider(inner, cache)
+        vectors = provider.embed_texts(["alpha", "beta"])
+        self.assertEqual(len(vectors), 2)
+        self.assertEqual(provider.cache.get_many(["alpha", "beta"])[1], [])
+        with self.assertRaises(RuntimeError):
+            provider.embed_texts(["alpha", "poison"])
+        found, missing = provider.cache.get_many(["poison"])
+        self.assertEqual((found, missing), ({}, ["poison"]))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -112,7 +112,8 @@ class Memory:
                                    authority=authority, document=document, note=note)
 
     def answer(self, task, *, snapshot=None, limit=3, mode="hybrid",
-               policy="transparent", budget=None, threshold=0.0, provider=None):
+               policy="transparent", budget=None, threshold=0.0, provider=None,
+               select=False):
         """Task-based retrieval without an exact symbol.
 
         Stages propose candidates: exact keys, bare names, BM25 lexical
@@ -123,6 +124,13 @@ class Memory:
         available, otherwise it is recorded as skipped. Discovery stages
         select candidates only and never create graph edges; an empty fusion
         abstains. The policy selects the traversal set for every candidate.
+        With select=True, the evidence-aware selection layer
+        (tunic.selection) filters fused candidates into supported /
+        proposed / ambiguous / contradicted / insufficient_evidence /
+        out_of_scope with a trace; only kept candidates expand into
+        impacts, mentions, and claims. The default (False) preserves the
+        fusion-only behavior until the selection contract acceptance
+        is met on frozen suites.
         """
         import re
         import time
@@ -176,18 +184,30 @@ class Memory:
                                             if mode != "hybrid" else "budget cap is zero")}
         started = time.perf_counter()
         if mode == "hybrid" and caps["semantic"] > 0 and provider.available():
-            if index is None:
-                index = BM25(self.root)
-            texts, order = [], []
-            for document in index.documents:
-                text = document["symbol"] + " " + " ".join(sorted(document["tokens"]))
-                texts.append(text)
-                order.append(document["symbol"])
-            chosen = provider.rank(task, texts, caps["semantic"])
-            semantic = [order[texts.index(text)] for text in chosen]
-            stages["semantic"] = {"candidates": len(semantic),
-                                  "ms": (time.perf_counter() - started) * 1000.0,
-                                  "skipped": False}
+            try:
+                if index is None:
+                    index = BM25(self.root)
+                texts, order = [], []
+                for document in index.documents:
+                    text = document["symbol"] + " " + " ".join(sorted(document["tokens"]))
+                    texts.append(text)
+                    order.append(document["symbol"])
+                chosen = provider.rank(task, texts, caps["semantic"])
+                semantic = [order[texts.index(text)] for text in chosen]
+                stages["semantic"] = {"candidates": len(semantic),
+                                      "ms": (time.perf_counter() - started) * 1000.0,
+                                      "skipped": False}
+            except Exception as error:
+                # A failing discovery stage degrades to the stages that
+                # work; it never takes down the whole answer. The reason
+                # is recorded so benchmarks can see the gap.
+                semantic = []
+                stages["semantic"] = {
+                    "candidates": 0,
+                    "ms": (time.perf_counter() - started) * 1000.0,
+                    "skipped": True,
+                    "reason": "semantic stage error: %s: %s" % (
+                        type(error).__name__, str(error)[:200])}
         else:
             if mode != "hybrid":
                 reason = "semantic stage disabled"
@@ -201,9 +221,19 @@ class Memory:
         rankings = {"exact": exact, "name": names,
                     "lexical": lexical, "semantic": semantic}
         fused = fuse(rankings, total=limit, threshold=threshold)
-        top = [key for _, key, _ in fused]
+        selection = None
+        if select:
+            from .selection import select as run_selection
+            selection = run_selection(task, fused, view=view,
+                                      policy=policy, limit=limit)
+            top = selection["kept"]
+        else:
+            top = [key for _, key, _ in fused]
         origins = {key: ranks for _, key, ranks in fused}
         order = {"exact": 0, "name": 1, "lexical": 2, "semantic": 3}
+        known = {row["key"] for row in view["symbols"]}
+        unknown_symbols = [key for key in top if key not in known]
+        top = [key for key in top if key in known]
         impacts = {}
         mentions = []
         claims = []
@@ -226,6 +256,8 @@ class Memory:
                                 "origins": origins[key]} for key in top],
                 "impacts": [impacts[key] for key in sorted(impacts)],
                 "mentions": mentions, "claims": claims,
+                "selection": selection,
+                "unknown_symbols": unknown_symbols,
                 "outcome": "complete" if top else "empty"}
 
     def record_outcome(self, subject, object, rel="depends_on", effective=None,

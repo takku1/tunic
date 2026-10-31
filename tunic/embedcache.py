@@ -133,7 +133,19 @@ class CachedEmbeddingProvider(EmbeddingProvider):
     def embed_texts(self, texts):
         found, missing = self.cache.get_many(list(texts))
         if missing:
-            fresh = self.inner.embed_texts(missing)
+            try:
+                fresh = self.inner.embed_texts(missing)
+            except Exception:
+                # One poisonous text (e.g. over the server's input limit)
+                # must not nuke the whole batch: embed one by one, keep
+                # every success, and re-raise the first failure fast so
+                # the caller degrades explicitly instead of retrying the
+                # full batch. Rankings stay identical: same vectors.
+                for text in missing:
+                    vector = self.inner.embed_texts([text])[0]
+                    self.cache.put_many({text: vector})
+                    found[text] = vector
+                return [found[text] for text in texts]
             self.cache.put_many(dict(zip(missing, fresh)))
             found.update(zip(missing, fresh))
         return [found[text] for text in texts]

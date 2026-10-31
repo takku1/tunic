@@ -1,0 +1,174 @@
+{
+ "benchmark": "pyquifer-impact-v1",
+ "protocol": "held-out retrieval set: query names the changed leaf (same protocol as the agent suite); gold is the exact 1-hop reverse static_call set. Never tune against it; score only.",
+ "split": "held-out",
+ "n": 20,
+ "tasks": [
+  {
+   "id": "pyq-impact-01",
+   "question": "Which functions break if smoke_test changes?",
+   "callee": "src/pyquifer/__main__.py::smoke_test",
+   "gold": [
+    "src/pyquifer/__main__.py::main"
+   ]
+  },
+  {
+   "id": "pyq-impact-02",
+   "question": "Which functions break if synchronize changes?",
+   "callee": "src/pyquifer/cognition/attention/phase_attention.py::PhaseAttention.synchronize",
+   "gold": [
+    "src/pyquifer/cognition/attention/phase_attention.py::PhaseAttention.forward"
+   ]
+  },
+  {
+   "id": "pyq-impact-03",
+   "question": "Which functions break if _update_control_signals changes?",
+   "callee": "src/pyquifer/cognition/control/metacognitive.py::MetacognitiveLoop._update_control_signals",
+   "gold": [
+    "src/pyquifer/cognition/control/metacognitive.py::MetacognitiveLoop.observe_step"
+   ]
+  },
+  {
+   "id": "pyq-impact-04",
+   "question": "Which functions break if perceive changes?",
+   "callee": "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.perceive",
+   "gold": [
+    "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
+    "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward",
+    "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.select_action"
+   ]
+  },
+  {
+   "id": "pyq-impact-05",
+   "question": "Which functions break if compute_flow changes?",
+   "callee": "src/pyquifer/cognition/reasoning/causal_flow.py::CausalFlowMap.compute_flow",
+   "gold": [
+    "src/pyquifer/cognition/reasoning/causal_flow.py::CausalFlowMap.forward"
+   ]
+  },
+  {
+   "id": "pyq-impact-06",
+   "question": "Which functions break if _compute_hysteresis changes?",
+   "callee": "src/pyquifer/dynamics/basal_ganglia.py::BasalGangliaLoop._compute_hysteresis",
+   "gold": [
+    "src/pyquifer/dynamics/basal_ganglia.py::BasalGangliaLoop.step"
+   ]
+  },
+  {
+   "id": "pyq-impact-07",
+   "question": "Which functions break if _update_noise_scale changes?",
+   "callee": "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics._update_noise_scale",
+   "gold": [
+    "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.__init__",
+    "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.set_temperature"
+   ]
+  },
+  {
+   "id": "pyq-impact-08",
+   "question": "Which functions break if compute_gain changes?",
+   "callee": "src/pyquifer/dynamics/neuromodulation.py::ThreeTimescaleNetwork.compute_gain",
+   "gold": [
+    "src/pyquifer/dynamics/neuromodulation.py::ThreeTimescaleNetwork.forward"
+   ]
+  },
+  {
+   "id": "pyq-impact-09",
+   "question": "Which functions break if _create_scale_free changes?",
+   "callee": "src/pyquifer/dynamics/oscillators/kuramoto.py::LearnableKuramotoBank._create_scale_free",
+   "gold": [
+    "src/pyquifer/dynamics/oscillators/kuramoto.py::LearnableKuramotoBank._init_adjacency"
+   ]
+  },
+  {
+   "id": "pyq-impact-10",
+   "question": "Which functions break if _coupling_term changes?",
+   "callee": "src/pyquifer/dynamics/oscillators/stuart_landau.py::StuartLandauOscillator._coupling_term",
+   "gold": [
+    "src/pyquifer/dynamics/oscillators/stuart_landau.py::StuartLandauOscillator._sl_rhs"
+   ]
+  },
+  {
+   "id": "pyq-impact-11",
+   "question": "Which functions break if compute_plasticity changes?",
+   "callee": "src/pyquifer/embodiment/developmental.py::DynamicalSignatureDetector.compute_plasticity",
+   "gold": [
+    "src/pyquifer/embodiment/developmental.py::DynamicalSignatureDetector.compute_branching_factor",
+    "src/pyquifer/embodiment/developmental.py::DynamicalSignatureDetector.forward"
+   ]
+  },
+  {
+   "id": "pyq-impact-12",
+   "question": "Which functions break if should_self_repair changes?",
+   "callee": "src/pyquifer/embodiment/somatic.py::SomaticManifold.should_self_repair",
+   "gold": [
+    "src/pyquifer/embodiment/somatic.py::SomaticManifold.forward"
+   ]
+  },
+  {
+   "id": "pyq-impact-13",
+   "question": "Which functions break if encode_beliefs changes?",
+   "callee": "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.encode_beliefs",
+   "gold": [
+    "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward"
+   ]
+  },
+  {
+   "id": "pyq-impact-14",
+   "question": "Which functions break if _update_switch changes?",
+   "callee": "src/pyquifer/identity/adapter_manager.py::AdapterManager._update_switch",
+   "gold": [
+    "src/pyquifer/identity/adapter_manager.py::AdapterManager.update"
+   ]
+  },
+  {
+   "id": "pyq-impact-15",
+   "question": "Which functions break if hamming_distance_matrix changes?",
+   "callee": "src/pyquifer/identity/iit_metrics.py::hamming_distance_matrix",
+   "gold": [
+    "src/pyquifer/identity/iit_metrics.py::EarthMoverDistance.__init__"
+   ]
+  },
+  {
+   "id": "pyq-impact-16",
+   "question": "Which functions break if _update_lyapunov changes?",
+   "callee": "src/pyquifer/identity/strange_attractor.py::PersonalityAttractor._update_lyapunov",
+   "gold": [
+    "src/pyquifer/identity/strange_attractor.py::PersonalityAttractor.step"
+   ]
+  },
+  {
+   "id": "pyq-impact-17",
+   "question": "Which functions break if forward changes?",
+   "callee": "src/pyquifer/learning/prospective.py::InferThenModify.forward",
+   "gold": [
+    "src/pyquifer/learning/prospective.py::InferThenModify.learn"
+   ]
+  },
+  {
+   "id": "pyq-impact-18",
+   "question": "Which functions break if step changes?",
+   "callee": "src/pyquifer/memory/latent_world_model.py::NeuralODEDynamics.step",
+   "gold": [
+    "src/pyquifer/memory/latent_world_model.py::NeuralODEDynamics.integrate"
+   ]
+  },
+  {
+   "id": "pyq-impact-19",
+   "question": "Which functions break if encode changes?",
+   "callee": "src/pyquifer/workspace/organ_base.py::PreGWAdapter.encode",
+   "gold": [
+    "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss"
+   ]
+  },
+  {
+   "id": "pyq-impact-20",
+   "question": "Which functions break if is_dark_square changes?",
+   "callee": "tests/benchmarks/bench_penrose_chess.py::is_dark_square",
+   "gold": [
+    "tests/benchmarks/bench_penrose_chess.py::_board_to_interaction_features",
+    "tests/benchmarks/bench_penrose_chess.py::analyze_bishop_colors",
+    "tests/benchmarks/bench_penrose_chess.py::analyze_king_safety"
+   ]
+  }
+ ]
+}
