@@ -1,0 +1,1395 @@
+{
+ "benchmark": "model-ab-pyq-v1",
+ "protocol": "same model/prompt/budget; mechanical fence parsing; paired arms within one run; trust-labeled tunic context; held-out retrieval set, never tuned against",
+ "suite_digest": "held-out",
+ "model": "qwen3:4b",
+ "decoding": {
+  "temperature": 0,
+  "seed": 0
+ },
+ "context_cap": 4000,
+ "tunic_commit": "8851cdf00740ed07e101ffd7b0bfd90b3a20b33a",
+ "summary": {
+  "none": {
+   "passed": 0,
+   "n": 20,
+   "exact": 0,
+   "hallucinated_tasks": 0,
+   "mean_latency_ms": 8445.2
+  },
+  "lexical": {
+   "passed": 10,
+   "n": 20,
+   "exact": 7,
+   "hallucinated_tasks": 6,
+   "mean_latency_ms": 13912.7
+  },
+  "tunic": {
+   "passed": 15,
+   "n": 20,
+   "exact": 3,
+   "hallucinated_tasks": 0,
+   "mean_latency_ms": 18982.6
+  },
+  "tunic-select": {
+   "passed": 17,
+   "n": 20,
+   "exact": 2,
+   "hallucinated_tasks": 0,
+   "mean_latency_ms": 17410.0
+  }
+ },
+ "tasks": [
+  {
+   "id": "pyq-impact-01",
+   "question": "Which functions break if smoke_test changes?",
+   "gold": [
+    "src/pyquifer/__main__.py::main"
+   ],
+   "callee": "src/pyquifer/__main__.py::smoke_test",
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 78,
+     "completion_tokens": 1744,
+     "latency_ms": 8645.0,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 283,
+     "parsed": [
+      "src/pyquifer/__main__.py::main",
+      "src/pyquifer/runtime/cycle.py::CognitiveCycle._detect_compile_backend",
+      "tests/benchmarks/bench_penrose_chess.py::minimax",
+      "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+      "src/pyquifer/__main__.py::smoke_test"
+     ],
+     "hallucinated": [
+      "src/pyquifer/runtime/cycle.py::CognitiveCycle._detect_compile_backend"
+     ],
+     "response": "```symbols\nsrc/pyquifer/__main__.py::main\nsrc/pyquifer/runtime/cycle.py::CognitiveCycle._detect_compile_backend\ntests/benchmarks/bench_penrose_chess.py::minimax\nsrc/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after\nsrc/pyquifer/__main__.py::smoke_test\n```",
+     "prompt_tokens": 153,
+     "completion_tokens": 3180,
+     "latency_ms": 15746.7,
+     "pass": true,
+     "exact": false
+    },
+    "tunic": {
+     "context_chars": 1457,
+     "parsed": [
+      "src/pyquifer/__main__.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/__main__.py::main\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 460,
+     "completion_tokens": 4948,
+     "latency_ms": 25395.5,
+     "pass": true,
+     "exact": false
+    },
+    "tunic-select": {
+     "context_chars": 1481,
+     "parsed": [
+      "src/pyquifer/__main__.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/__main__.py::main\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 465,
+     "completion_tokens": 3375,
+     "latency_ms": 17038.3,
+     "pass": true,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "pyq-impact-02",
+   "question": "Which functions break if synchronize changes?",
+   "gold": [
+    "src/pyquifer/cognition/attention/phase_attention.py::PhaseAttention.forward"
+   ],
+   "callee": "src/pyquifer/cognition/attention/phase_attention.py::PhaseAttention.synchronize",
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\n\n```",
+     "prompt_tokens": 77,
+     "completion_tokens": 1616,
+     "latency_ms": 7902.8,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 371,
+     "parsed": [
+      "src/pyquifer/cognition/attention/phase_attention.py::PhaseAttention.forward"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/cognition/attention/phase_attention.py::PhaseAttention.forward\n```",
+     "prompt_tokens": 162,
+     "completion_tokens": 2594,
+     "latency_ms": 12401.1,
+     "pass": true,
+     "exact": true
+    },
+    "tunic": {
+     "context_chars": 1238,
+     "parsed": [
+      "src/pyquifer/cognition/attention/phase_attention.py::PhaseAttention.forward"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/cognition/attention/phase_attention.py::PhaseAttention.forward\n```",
+     "prompt_tokens": 377,
+     "completion_tokens": 2487,
+     "latency_ms": 11993.9,
+     "pass": true,
+     "exact": true
+    },
+    "tunic-select": {
+     "context_chars": 1223,
+     "parsed": [
+      "src/pyquifer/cognition/attention/phase_attention.py::PhaseAttention.forward"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/cognition/attention/phase_attention.py::PhaseAttention.forward\n```",
+     "prompt_tokens": 373,
+     "completion_tokens": 1772,
+     "latency_ms": 8618.9,
+     "pass": true,
+     "exact": true
+    }
+   }
+  },
+  {
+   "id": "pyq-impact-03",
+   "question": "Which functions break if _update_control_signals changes?",
+   "gold": [
+    "src/pyquifer/cognition/control/metacognitive.py::MetacognitiveLoop.observe_step"
+   ],
+   "callee": "src/pyquifer/cognition/control/metacognitive.py::MetacognitiveLoop._update_control_signals",
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 80,
+     "completion_tokens": 1509,
+     "latency_ms": 7615.4,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 386,
+     "parsed": [
+      "src/pyquifer/cognition/control/metacognitive.py::MetacognitiveLoop.observe_step"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/cognition/control/metacognitive.py::MetacognitiveLoop.observe_step\n```",
+     "prompt_tokens": 171,
+     "completion_tokens": 2376,
+     "latency_ms": 11635.6,
+     "pass": true,
+     "exact": true
+    },
+    "tunic": {
+     "context_chars": 1604,
+     "parsed": [
+      "src/pyquifer/cognition/control/metacognitive.py::MetacognitiveLoop.forward",
+      "src/pyquifer/cognition/control/metacognitive.py::MetacognitiveLoop.observe_step"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/cognition/control/metacognitive.py::MetacognitiveLoop.forward\nsrc/pyquifer/cognition/control/metacognitive.py::MetacognitiveLoop.observe_step\n```",
+     "prompt_tokens": 484,
+     "completion_tokens": 2942,
+     "latency_ms": 14742.3,
+     "pass": true,
+     "exact": false
+    },
+    "tunic-select": {
+     "context_chars": 1628,
+     "parsed": [
+      "src/pyquifer/cognition/control/metacognitive.py::MetacognitiveLoop.forward",
+      "src/pyquifer/cognition/control/metacognitive.py::MetacognitiveLoop.observe_step"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/cognition/control/metacognitive.py::MetacognitiveLoop.forward\nsrc/pyquifer/cognition/control/metacognitive.py::MetacognitiveLoop.observe_step\n```",
+     "prompt_tokens": 489,
+     "completion_tokens": 3693,
+     "latency_ms": 18560.1,
+     "pass": true,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "pyq-impact-04",
+   "question": "Which functions break if perceive changes?",
+   "gold": [
+    "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
+    "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward",
+    "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.select_action"
+   ],
+   "callee": "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.perceive",
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 77,
+     "completion_tokens": 1664,
+     "latency_ms": 8348.2,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 366,
+     "parsed": [
+      "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward\n```",
+     "prompt_tokens": 169,
+     "completion_tokens": 2519,
+     "latency_ms": 12558.5,
+     "pass": false,
+     "exact": false
+    },
+    "tunic": {
+     "context_chars": 1421,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\n\n```",
+     "prompt_tokens": 437,
+     "completion_tokens": 4448,
+     "latency_ms": 22541.5,
+     "pass": false,
+     "exact": false
+    },
+    "tunic-select": {
+     "context_chars": 1484,
+     "parsed": [
+      "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward\n```",
+     "prompt_tokens": 451,
+     "completion_tokens": 4097,
+     "latency_ms": 20883.9,
+     "pass": false,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "pyq-impact-05",
+   "question": "Which functions break if compute_flow changes?",
+   "gold": [
+    "src/pyquifer/cognition/reasoning/causal_flow.py::CausalFlowMap.forward"
+   ],
+   "callee": "src/pyquifer/cognition/reasoning/causal_flow.py::CausalFlowMap.compute_flow",
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 78,
+     "completion_tokens": 1707,
+     "latency_ms": 8816.4,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 363,
+     "parsed": [
+      "src/pyquifer/cognition/reasoning/causal_flow.py::CausalFlowMap.forward",
+      "src/pyquifer/runtime/cycle.py::CognitiveCycle._detect_compile_backend",
+      "tests/benchmarks/bench_penrose_chess.py::minimax",
+      "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+      "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before"
+     ],
+     "hallucinated": [
+      "src/pyquifer/runtime/cycle.py::CognitiveCycle._detect_compile_backend"
+     ],
+     "response": "```symbols\nsrc/pyquifer/cognition/reasoning/causal_flow.py::CausalFlowMap.forward\nsrc/pyquifer/runtime/cycle.py::CognitiveCycle._detect_compile_backend\ntests/benchmarks/bench_penrose_chess.py::minimax\nsrc/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after\nsrc/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before\n```",
+     "prompt_tokens": 168,
+     "completion_tokens": 2857,
+     "latency_ms": 14274.3,
+     "pass": true,
+     "exact": false
+    },
+    "tunic": {
+     "context_chars": 1486,
+     "parsed": [
+      "src/pyquifer/cognition/reasoning/causal_flow.py::CausalFlowMap.forward",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/cognition/reasoning/causal_flow.py::CausalFlowMap.forward\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 463,
+     "completion_tokens": 5090,
+     "latency_ms": 26207.5,
+     "pass": true,
+     "exact": false
+    },
+    "tunic-select": {
+     "context_chars": 1510,
+     "parsed": [
+      "src/pyquifer/cognition/reasoning/causal_flow.py::CausalFlowMap.forward",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/cognition/reasoning/causal_flow.py::CausalFlowMap.forward\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 468,
+     "completion_tokens": 4095,
+     "latency_ms": 20881.9,
+     "pass": true,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "pyq-impact-06",
+   "question": "Which functions break if _compute_hysteresis changes?",
+   "gold": [
+    "src/pyquifer/dynamics/basal_ganglia.py::BasalGangliaLoop.step"
+   ],
+   "callee": "src/pyquifer/dynamics/basal_ganglia.py::BasalGangliaLoop._compute_hysteresis",
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 82,
+     "completion_tokens": 2034,
+     "latency_ms": 10261.6,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 369,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 179,
+     "completion_tokens": 2984,
+     "latency_ms": 14841.0,
+     "pass": false,
+     "exact": false
+    },
+    "tunic": {
+     "context_chars": 1492,
+     "parsed": [
+      "src/pyquifer/dynamics/basal_ganglia.py::BasalGangliaLoop.step"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/dynamics/basal_ganglia.py::BasalGangliaLoop.step\n```",
+     "prompt_tokens": 476,
+     "completion_tokens": 2947,
+     "latency_ms": 14956.9,
+     "pass": true,
+     "exact": true
+    },
+    "tunic-select": {
+     "context_chars": 1477,
+     "parsed": [
+      "src/pyquifer/dynamics/basal_ganglia.py::BasalGangliaLoop.step",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/dynamics/basal_ganglia.py::BasalGangliaLoop.step\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 472,
+     "completion_tokens": 2072,
+     "latency_ms": 10293.7,
+     "pass": true,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "pyq-impact-07",
+   "question": "Which functions break if _update_noise_scale changes?",
+   "gold": [
+    "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.__init__",
+    "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.set_temperature"
+   ],
+   "callee": "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics._update_noise_scale",
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 80,
+     "completion_tokens": 1539,
+     "latency_ms": 7647.8,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 388,
+     "parsed": [
+      "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.set_temperature",
+      "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.__init__"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.set_temperature\nsrc/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.__init__\n```",
+     "prompt_tokens": 180,
+     "completion_tokens": 1998,
+     "latency_ms": 9479.5,
+     "pass": true,
+     "exact": true
+    },
+    "tunic": {
+     "context_chars": 1612,
+     "parsed": [
+      "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.__init__",
+      "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.set_temperature",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.__init__\nsrc/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.set_temperature\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 501,
+     "completion_tokens": 3649,
+     "latency_ms": 17684.1,
+     "pass": true,
+     "exact": false
+    },
+    "tunic-select": {
+     "context_chars": 1675,
+     "parsed": [
+      "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.__init__",
+      "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.set_temperature",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.__init__\nsrc/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.set_temperature\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 515,
+     "completion_tokens": 6237,
+     "latency_ms": 31577.1,
+     "pass": true,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "pyq-impact-08",
+   "question": "Which functions break if compute_gain changes?",
+   "gold": [
+    "src/pyquifer/dynamics/neuromodulation.py::ThreeTimescaleNetwork.forward"
+   ],
+   "callee": "src/pyquifer/dynamics/neuromodulation.py::ThreeTimescaleNetwork.compute_gain",
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\n\n```",
+     "prompt_tokens": 78,
+     "completion_tokens": 1493,
+     "latency_ms": 7489.1,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 369,
+     "parsed": [
+      "src/pyquifer/runtime/cycle.py::CognitiveCycle._detect_compile_backend",
+      "tests/benchmarks/bench_penrose_chess.py::minimax",
+      "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+      "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before"
+     ],
+     "hallucinated": [
+      "src/pyquifer/runtime/cycle.py::CognitiveCycle._detect_compile_backend"
+     ],
+     "response": "```symbols\nsrc/pyquifer/runtime/cycle.py::CognitiveCycle._detect_compile_backend\ntests/benchmarks/bench_penrose_chess.py::minimax\nsrc/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after\nsrc/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before\n```",
+     "prompt_tokens": 168,
+     "completion_tokens": 4230,
+     "latency_ms": 21513.1,
+     "pass": false,
+     "exact": false
+    },
+    "tunic": {
+     "context_chars": 1502,
+     "parsed": [
+      "src/pyquifer/dynamics/neuromodulation.py::ThreeTimescaleNetwork.forward",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/dynamics/neuromodulation.py::ThreeTimescaleNetwork.forward\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 462,
+     "completion_tokens": 4923,
+     "latency_ms": 25002.2,
+     "pass": true,
+     "exact": false
+    },
+    "tunic-select": {
+     "context_chars": 1487,
+     "parsed": [
+      "src/pyquifer/dynamics/neuromodulation.py::ThreeTimescaleNetwork.forward",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/dynamics/neuromodulation.py::ThreeTimescaleNetwork.forward\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 458,
+     "completion_tokens": 2748,
+     "latency_ms": 13584.8,
+     "pass": true,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "pyq-impact-09",
+   "question": "Which functions break if _create_scale_free changes?",
+   "gold": [
+    "src/pyquifer/dynamics/oscillators/kuramoto.py::LearnableKuramotoBank._init_adjacency"
+   ],
+   "callee": "src/pyquifer/dynamics/oscillators/kuramoto.py::LearnableKuramotoBank._create_scale_free",
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 80,
+     "completion_tokens": 2162,
+     "latency_ms": 11002.5,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 377,
+     "parsed": [
+      "src/pyquifer/dynamics/oscillators/kuramoto.py::LearnableKuramotoBank._init_adjacency",
+      "src/pyquifer/runtime/cycle.py::CognitiveCycle._detect_compile_backend",
+      "tests/benchmarks/bench_penrose_chess.py::minimax",
+      "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+      "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before"
+     ],
+     "hallucinated": [
+      "src/pyquifer/runtime/cycle.py::CognitiveCycle._detect_compile_backend"
+     ],
+     "response": "```symbols\nsrc/pyquifer/dynamics/oscillators/kuramoto.py::LearnableKuramotoBank._init_adjacency\nsrc/pyquifer/runtime/cycle.py::CognitiveCycle._detect_compile_backend\ntests/benchmarks/bench_penrose_chess.py::minimax\nsrc/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after\nsrc/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before\n```",
+     "prompt_tokens": 176,
+     "completion_tokens": 2657,
+     "latency_ms": 13430.3,
+     "pass": true,
+     "exact": false
+    },
+    "tunic": {
+     "context_chars": 1913,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\nsrc/pyquifer/dynamics/oscillators/kuramoto.py::LearnableKuramotoBank.__init__\nsrc/pyquifer/dynamics/oscillators/kuramoto.py::LearnableKuramotoBank._init_adjacency\n```",
+     "prompt_tokens": 593,
+     "completion_tokens": 6692,
+     "latency_ms": 36245.0,
+     "pass": false,
+     "exact": false
+    },
+    "tunic-select": {
+     "context_chars": 1937,
+     "parsed": [
+      "src/pyquifer/dynamics/oscillators/kuramoto.py::LearnableKuramotoBank._init_adjacency"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/dynamics/oscillators/kuramoto.py::LearnableKuramotoBank._init_adjacency\n```",
+     "prompt_tokens": 598,
+     "completion_tokens": 6376,
+     "latency_ms": 33912.6,
+     "pass": true,
+     "exact": true
+    }
+   }
+  },
+  {
+   "id": "pyq-impact-10",
+   "question": "Which functions break if _coupling_term changes?",
+   "gold": [
+    "src/pyquifer/dynamics/oscillators/stuart_landau.py::StuartLandauOscillator._sl_rhs"
+   ],
+   "callee": "src/pyquifer/dynamics/oscillators/stuart_landau.py::StuartLandauOscillator._coupling_term",
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\n\n```",
+     "prompt_tokens": 80,
+     "completion_tokens": 1871,
+     "latency_ms": 9613.4,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 388,
+     "parsed": [
+      "src/pyquifer/dynamics/oscillators/stuart_landau.py::StuartLandauOscillator._sl_rhs"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/dynamics/oscillators/stuart_landau.py::StuartLandauOscillator._sl_rhs\n```",
+     "prompt_tokens": 186,
+     "completion_tokens": 2032,
+     "latency_ms": 10036.6,
+     "pass": true,
+     "exact": true
+    },
+    "tunic": {
+     "context_chars": 1532,
+     "parsed": [
+      "src/pyquifer/dynamics/oscillators/stuart_landau.py::StuartLandauOscillator._sl_rhs",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/dynamics/oscillators/stuart_landau.py::StuartLandauOscillator._sl_rhs\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 488,
+     "completion_tokens": 3330,
+     "latency_ms": 16848.7,
+     "pass": true,
+     "exact": false
+    },
+    "tunic-select": {
+     "context_chars": 1556,
+     "parsed": [
+      "src/pyquifer/dynamics/oscillators/stuart_landau.py::StuartLandauOscillator._sl_rhs",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/dynamics/oscillators/stuart_landau.py::StuartLandauOscillator._sl_rhs\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 493,
+     "completion_tokens": 4263,
+     "latency_ms": 22156.8,
+     "pass": true,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "pyq-impact-11",
+   "question": "Which functions break if compute_plasticity changes?",
+   "gold": [
+    "src/pyquifer/embodiment/developmental.py::DynamicalSignatureDetector.compute_branching_factor",
+    "src/pyquifer/embodiment/developmental.py::DynamicalSignatureDetector.forward"
+   ],
+   "callee": "src/pyquifer/embodiment/developmental.py::DynamicalSignatureDetector.compute_plasticity",
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 80,
+     "completion_tokens": 1720,
+     "latency_ms": 8316.3,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 398,
+     "parsed": [
+      "src/pyquifer/embodiment/developmental.py::DynamicalSignatureDetector.forward",
+      "src/pyquifer/embodiment/developmental.py::DynamicalSignatureDetector.compute_branching_factor"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/embodiment/developmental.py::DynamicalSignatureDetector.forward\nsrc/pyquifer/embodiment/developmental.py::DynamicalSignatureDetector.compute_branching_factor\n```",
+     "prompt_tokens": 178,
+     "completion_tokens": 2345,
+     "latency_ms": 11408.2,
+     "pass": true,
+     "exact": true
+    },
+    "tunic": {
+     "context_chars": 1632,
+     "parsed": [
+      "src/pyquifer/embodiment/developmental.py::DynamicalSignatureDetector.compute_branching_factor",
+      "src/pyquifer/embodiment/developmental.py::DynamicalSignatureDetector.forward",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/embodiment/developmental.py::DynamicalSignatureDetector.compute_branching_factor\nsrc/pyquifer/embodiment/developmental.py::DynamicalSignatureDetector.forward\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 497,
+     "completion_tokens": 2963,
+     "latency_ms": 14923.3,
+     "pass": true,
+     "exact": false
+    },
+    "tunic-select": {
+     "context_chars": 1695,
+     "parsed": [
+      "src/pyquifer/embodiment/developmental.py::DynamicalSignatureDetector.compute_branching_factor",
+      "src/pyquifer/embodiment/developmental.py::DynamicalSignatureDetector.forward",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/embodiment/developmental.py::DynamicalSignatureDetector.compute_branching_factor\nsrc/pyquifer/embodiment/developmental.py::DynamicalSignatureDetector.forward\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 511,
+     "completion_tokens": 4370,
+     "latency_ms": 22835.3,
+     "pass": true,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "pyq-impact-12",
+   "question": "Which functions break if should_self_repair changes?",
+   "gold": [
+    "src/pyquifer/embodiment/somatic.py::SomaticManifold.forward"
+   ],
+   "callee": "src/pyquifer/embodiment/somatic.py::SomaticManifold.should_self_repair",
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 80,
+     "completion_tokens": 1696,
+     "latency_ms": 8586.1,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 346,
+     "parsed": [
+      "src/pyquifer/embodiment/somatic.py::SomaticManifold.forward"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/embodiment/somatic.py::SomaticManifold.forward\n```",
+     "prompt_tokens": 170,
+     "completion_tokens": 2303,
+     "latency_ms": 11275.3,
+     "pass": true,
+     "exact": true
+    },
+    "tunic": {
+     "context_chars": 1467,
+     "parsed": [
+      "src/pyquifer/embodiment/somatic.py::SomaticManifold.forward",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/embodiment/somatic.py::SomaticManifold.forward\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 463,
+     "completion_tokens": 4208,
+     "latency_ms": 21355.1,
+     "pass": true,
+     "exact": false
+    },
+    "tunic-select": {
+     "context_chars": 1491,
+     "parsed": [
+      "src/pyquifer/embodiment/somatic.py::SomaticManifold.forward",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/embodiment/somatic.py::SomaticManifold.forward\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 468,
+     "completion_tokens": 2367,
+     "latency_ms": 11810.4,
+     "pass": true,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "pyq-impact-13",
+   "question": "Which functions break if encode_beliefs changes?",
+   "gold": [
+    "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward"
+   ],
+   "callee": "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.encode_beliefs",
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 79,
+     "completion_tokens": 1732,
+     "latency_ms": 8489.6,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 366,
+     "parsed": [
+      "src/pyquifer/runtime/cycle.py::CognitiveCycle._detect_compile_backend",
+      "tests/benchmarks/bench_penrose_chess.py::minimax",
+      "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+      "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before"
+     ],
+     "hallucinated": [
+      "src/pyquifer/runtime/cycle.py::CognitiveCycle._detect_compile_backend"
+     ],
+     "response": "```symbols\nsrc/pyquifer/runtime/cycle.py::CognitiveCycle._detect_compile_backend\ntests/benchmarks/bench_penrose_chess.py::minimax\nsrc/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after\nsrc/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before\n```",
+     "prompt_tokens": 168,
+     "completion_tokens": 3508,
+     "latency_ms": 17262.0,
+     "pass": false,
+     "exact": false
+    },
+    "tunic": {
+     "context_chars": 1494,
+     "parsed": [
+      "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 460,
+     "completion_tokens": 2371,
+     "latency_ms": 11790.3,
+     "pass": true,
+     "exact": false
+    },
+    "tunic-select": {
+     "context_chars": 1479,
+     "parsed": [
+      "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 456,
+     "completion_tokens": 1960,
+     "latency_ms": 9665.4,
+     "pass": true,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "pyq-impact-14",
+   "question": "Which functions break if _update_switch changes?",
+   "gold": [
+    "src/pyquifer/identity/adapter_manager.py::AdapterManager.update"
+   ],
+   "callee": "src/pyquifer/identity/adapter_manager.py::AdapterManager._update_switch",
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 79,
+     "completion_tokens": 1463,
+     "latency_ms": 7412.4,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 351,
+     "parsed": [
+      "src/pyquifer/identity/adapter_manager.py::AdapterManager.update"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/identity/adapter_manager.py::AdapterManager.update\n```",
+     "prompt_tokens": 160,
+     "completion_tokens": 2229,
+     "latency_ms": 10844.4,
+     "pass": true,
+     "exact": true
+    },
+    "tunic": {
+     "context_chars": 1476,
+     "parsed": [
+      "src/pyquifer/identity/adapter_manager.py::AdapterManager.update",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/identity/adapter_manager.py::AdapterManager.update\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 449,
+     "completion_tokens": 2508,
+     "latency_ms": 12349.4,
+     "pass": true,
+     "exact": false
+    },
+    "tunic-select": {
+     "context_chars": 1500,
+     "parsed": [
+      "src/pyquifer/identity/adapter_manager.py::AdapterManager.update",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/identity/adapter_manager.py::AdapterManager.update\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 454,
+     "completion_tokens": 2462,
+     "latency_ms": 12185.8,
+     "pass": true,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "pyq-impact-15",
+   "question": "Which functions break if hamming_distance_matrix changes?",
+   "gold": [
+    "src/pyquifer/identity/iit_metrics.py::EarthMoverDistance.__init__"
+   ],
+   "callee": "src/pyquifer/identity/iit_metrics.py::hamming_distance_matrix",
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 80,
+     "completion_tokens": 1633,
+     "latency_ms": 8220.5,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 358,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 168,
+     "completion_tokens": 2375,
+     "latency_ms": 11615.5,
+     "pass": false,
+     "exact": false
+    },
+    "tunic": {
+     "context_chars": 1569,
+     "parsed": [
+      "src/pyquifer/identity/iit_metrics.py::EarthMoverDistance.__init__",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/identity/iit_metrics.py::EarthMoverDistance.__init__\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 481,
+     "completion_tokens": 3547,
+     "latency_ms": 17952.9,
+     "pass": true,
+     "exact": false
+    },
+    "tunic-select": {
+     "context_chars": 1593,
+     "parsed": [
+      "src/pyquifer/identity/iit_metrics.py::EarthMoverDistance.__init__",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/identity/iit_metrics.py::EarthMoverDistance.__init__\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 486,
+     "completion_tokens": 2599,
+     "latency_ms": 13044.7,
+     "pass": true,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "pyq-impact-16",
+   "question": "Which functions break if _update_lyapunov changes?",
+   "gold": [
+    "src/pyquifer/identity/strange_attractor.py::PersonalityAttractor.step"
+   ],
+   "callee": "src/pyquifer/identity/strange_attractor.py::PersonalityAttractor._update_lyapunov",
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 82,
+     "completion_tokens": 1879,
+     "latency_ms": 9488.2,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 374,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\n\n```",
+     "prompt_tokens": 176,
+     "completion_tokens": 3906,
+     "latency_ms": 19963.7,
+     "pass": false,
+     "exact": false
+    },
+    "tunic": {
+     "context_chars": 1505,
+     "parsed": [
+      "src/pyquifer/identity/strange_attractor.py::PersonalityAttractor.step"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/identity/strange_attractor.py::PersonalityAttractor.step\n```",
+     "prompt_tokens": 470,
+     "completion_tokens": 2541,
+     "latency_ms": 13261.4,
+     "pass": true,
+     "exact": true
+    },
+    "tunic-select": {
+     "context_chars": 1490,
+     "parsed": [
+      "src/pyquifer/identity/strange_attractor.py::PersonalityAttractor.step",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/identity/strange_attractor.py::PersonalityAttractor.step\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 466,
+     "completion_tokens": 1979,
+     "latency_ms": 9809.2,
+     "pass": true,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "pyq-impact-17",
+   "question": "Which functions break if forward changes?",
+   "gold": [
+    "src/pyquifer/learning/prospective.py::InferThenModify.learn"
+   ],
+   "callee": "src/pyquifer/learning/prospective.py::InferThenModify.forward",
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\n\n```",
+     "prompt_tokens": 77,
+     "completion_tokens": 1474,
+     "latency_ms": 7452.7,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 364,
+     "parsed": [
+      "src/pyquifer/dynamics/continuous/linoss.py::LinOSSLayer.forward"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/dynamics/continuous/linoss.py::LinOSSLayer.forward\n```",
+     "prompt_tokens": 170,
+     "completion_tokens": 3210,
+     "latency_ms": 15908.3,
+     "pass": false,
+     "exact": false
+    },
+    "tunic": {
+     "context_chars": 1306,
+     "parsed": [
+      "src/pyquifer/cognition/attention/phase_attention.py::HybridPhaseAttention.forward",
+      "src/pyquifer/cognition/attention/phase_attention.py::OscillatorGatedFFN.forward",
+      "src/pyquifer/cognition/attention/phase_attention.py::PhaseAttention.forward",
+      "src/pyquifer/cognition/attention/phase_attention.py::PhaseMultiHeadAttention.forward",
+      "src/pyquifer/cognition/attention/precision_weighting.py::AttentionAsPrecision.forward"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/cognition/attention/phase_attention.py::HybridPhaseAttention.forward\nsrc/pyquifer/cognition/attention/phase_attention.py::OscillatorGatedFFN.forward\nsrc/pyquifer/cognition/attention/phase_attention.py::PhaseAttention.forward\nsrc/pyquifer/cognition/attention/phase_attention.py::PhaseMultiHeadAttention.forward\nsrc/pyquifer/cognition/attention/precision_weighting.py::AttentionAsPrecision.forward\n```",
+     "prompt_tokens": 399,
+     "completion_tokens": 3274,
+     "latency_ms": 16344.6,
+     "pass": false,
+     "exact": false
+    },
+    "tunic-select": {
+     "context_chars": 1306,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 399,
+     "completion_tokens": 2173,
+     "latency_ms": 10673.7,
+     "pass": false,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "pyq-impact-18",
+   "question": "Which functions break if step changes?",
+   "gold": [
+    "src/pyquifer/memory/latent_world_model.py::NeuralODEDynamics.integrate"
+   ],
+   "callee": "src/pyquifer/memory/latent_world_model.py::NeuralODEDynamics.step",
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\n\n```",
+     "prompt_tokens": 77,
+     "completion_tokens": 1183,
+     "latency_ms": 5989.7,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 381,
+     "parsed": [
+      "src/pyquifer/dynamics/continuous/ode_solvers.py::BaseSolver._integrate"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/dynamics/continuous/ode_solvers.py::BaseSolver._integrate\n```",
+     "prompt_tokens": 170,
+     "completion_tokens": 2808,
+     "latency_ms": 13845.3,
+     "pass": false,
+     "exact": false
+    },
+    "tunic": {
+     "context_chars": 2092,
+     "parsed": [
+      "src/pyquifer/api/bridge.py::PyQuiferBridge.profile_step",
+      "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.forward",
+      "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.anneal",
+      "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.find_synchronized_state",
+      "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.forward"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/api/bridge.py::PyQuiferBridge.profile_step\nsrc/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.forward\nsrc/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.anneal\nsrc/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.find_synchronized_state\nsrc/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.forward\n```",
+     "prompt_tokens": 644,
+     "completion_tokens": 3850,
+     "latency_ms": 19531.7,
+     "pass": false,
+     "exact": false
+    },
+    "tunic-select": {
+     "context_chars": 2092,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\n\n```",
+     "prompt_tokens": 644,
+     "completion_tokens": 4893,
+     "latency_ms": 25122.9,
+     "pass": false,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "pyq-impact-19",
+   "question": "Which functions break if encode changes?",
+   "gold": [
+    "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss"
+   ],
+   "callee": "src/pyquifer/workspace/organ_base.py::PreGWAdapter.encode",
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\n\n```",
+     "prompt_tokens": 77,
+     "completion_tokens": 1415,
+     "latency_ms": 6989.0,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 363,
+     "parsed": [
+      "src/pyquifer/runtime/cycle.py::CognitiveCycle._detect_compile_backend",
+      "tests/benchmarks/bench_penrose_chess.py::minimax",
+      "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+      "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+      "src/pyquifer/cognition/control/motivation.py::CoherenceReward.__init__"
+     ],
+     "hallucinated": [
+      "src/pyquifer/runtime/cycle.py::CognitiveCycle._detect_compile_backend"
+     ],
+     "response": "```symbols\nsrc/pyquifer/runtime/cycle.py::CognitiveCycle._detect_compile_backend\ntests/benchmarks/bench_penrose_chess.py::minimax\nsrc/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after\nsrc/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before\nsrc/pyquifer/cognition/control/motivation.py::CoherenceReward.__init__\n```",
+     "prompt_tokens": 165,
+     "completion_tokens": 3598,
+     "latency_ms": 17234.0,
+     "pass": false,
+     "exact": false
+    },
+    "tunic": {
+     "context_chars": 1516,
+     "parsed": [
+      "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+      "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+      "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind",
+      "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind\nsrc/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose\nsrc/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind\nsrc/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss\n```",
+     "prompt_tokens": 468,
+     "completion_tokens": 3562,
+     "latency_ms": 17139.0,
+     "pass": true,
+     "exact": false
+    },
+    "tunic-select": {
+     "context_chars": 1516,
+     "parsed": [
+      "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+      "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+      "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind",
+      "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nsrc/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind\nsrc/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose\nsrc/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind\nsrc/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss\n```",
+     "prompt_tokens": 468,
+     "completion_tokens": 3909,
+     "latency_ms": 18926.9,
+     "pass": true,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "pyq-impact-20",
+   "question": "Which functions break if is_dark_square changes?",
+   "gold": [
+    "tests/benchmarks/bench_penrose_chess.py::_board_to_interaction_features",
+    "tests/benchmarks/bench_penrose_chess.py::analyze_bishop_colors",
+    "tests/benchmarks/bench_penrose_chess.py::analyze_king_safety"
+   ],
+   "callee": "tests/benchmarks/bench_penrose_chess.py::is_dark_square",
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 79,
+     "completion_tokens": 2181,
+     "latency_ms": 10617.7,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 334,
+     "parsed": [
+      "tests/benchmarks/bench_penrose_chess.py::analyze_bishop_colors",
+      "tests/benchmarks/bench_penrose_chess.py::minimax"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\ntests/benchmarks/bench_penrose_chess.py::analyze_bishop_colors\ntests/benchmarks/bench_penrose_chess.py::minimax\n```",
+     "prompt_tokens": 163,
+     "completion_tokens": 2745,
+     "latency_ms": 12981.1,
+     "pass": false,
+     "exact": false
+    },
+    "tunic": {
+     "context_chars": 1749,
+     "parsed": [
+      "tests/benchmarks/bench_penrose_chess.py::analyze_bishop_colors",
+      "tests/benchmarks/bench_penrose_chess.py::analyze_king_safety"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\ntests/benchmarks/bench_penrose_chess.py::analyze_bishop_colors\ntests/benchmarks/bench_penrose_chess.py::analyze_king_safety\n```",
+     "prompt_tokens": 534,
+     "completion_tokens": 4681,
+     "latency_ms": 23386.1,
+     "pass": false,
+     "exact": false
+    },
+    "tunic-select": {
+     "context_chars": 1773,
+     "parsed": [
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+      "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_pyquifer_overrides_engine",
+      "tests/benchmarks/bench_penrose_chess.py::_board_to_interaction_features",
+      "tests/benchmarks/bench_penrose_chess.py::analyze_bishop_colors",
+      "tests/benchmarks/bench_penrose_chess.py::analyze_king_safety",
+      "tests/benchmarks/bench_penrose_chess.py::main",
+      "tests/benchmarks/bench_penrose_chess.py::run_engine_override",
+      "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+      "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw\ntests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_pyquifer_overrides_engine\ntests/benchmarks/bench_penrose_chess.py::_board_to_interaction_features\ntests/benchmarks/bench_penrose_chess.py::analyze_bishop_colors\ntests/benchmarks/bench_penrose_chess.py::analyze_king_safety\ntests/benchmarks/bench_penrose_chess.py::main\ntests/benchmarks/bench_penrose_chess.py::run_engine_override\ntests/benchmarks/bench_penrose_chess.py::run_minimax_baseline\ntests/benchmarks/bench_penrose_chess.py::run_three_column_suite\n```",
+     "prompt_tokens": 539,
+     "completion_tokens": 3388,
+     "latency_ms": 16617.5,
+     "pass": true,
+     "exact": false
+    }
+   }
+  }
+ ],
+ "limitations": [
+  "20 real-repo tasks but still single-hop impact phrasing.",
+  "single-turn answers; the model never writes memory.",
+  "temperature 0 but GPU sampling may vary; raw responses committed."
+ ]
+}
