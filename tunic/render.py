@@ -148,7 +148,13 @@ def render_answer_text(result, *, cap=4000):
         else:
             claims.append(text)
     lines.append("ASSERTED CLAIMS (source text; do not present as verified fact):")
-    lines.extend("  " + text for text in claims or ["(none)"])
+    seen = set()
+    unique = []
+    for text in claims:
+        if text not in seen:
+            seen.add(text)
+            unique.append(text)
+    lines.extend("  " + text for text in unique or ["(none)"])
     selection = result.get("selection") or {}
     trace = selection.get("trace") or {}
     withheld = [d.get("symbol", "?") for d in trace.get("decisions") or []
@@ -158,7 +164,13 @@ def render_answer_text(result, *, cap=4000):
             disputed.append(decision.get("symbol", "?")
                             + " [selection: contradicted, kept but flagged]")
     lines.append("DISPUTED (contested; do not treat as settled either way):")
-    lines.extend("  " + text for text in disputed or ["(none)"])
+    seen_disputed = set()
+    unique_disputed = []
+    for text in disputed:
+        if text not in seen_disputed:
+            seen_disputed.add(text)
+            unique_disputed.append(text)
+    lines.extend("  " + text for text in unique_disputed or ["(none)"])
     lines.append("WITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):")
     lines.extend("  " + symbol for symbol in withheld or ["(none)"])
     lines.append("TEXT MENTIONS (lexical co-occurrence, not a code relationship):")

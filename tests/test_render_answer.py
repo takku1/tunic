@@ -82,6 +82,28 @@ class RenderAnswerTrustTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             render_answer_text([("x", 1.0, ["exact"])])
 
+    def test_contradicted_kept_is_surfaced_not_hidden(self):
+        result = {"candidates": [{"symbol": "a.py::x", "score": 0.9,
+                                  "match": "lexical", "origins": ["lexical"]}],
+                  "impacts": [], "mentions": [], "claims": [],
+                  "selection": {"kept": ["a.py::x"],
+                                "trace": {"decisions": [{"symbol": "a.py::x",
+                                                         "outcome": "contradicted",
+                                                         "reasons": []}]}}}
+        text = render_answer_text(result)
+        self.assertIn("a.py::x", text.split("CANDIDATES")[1].split("OBSERVED")[0])
+        disputed = text.split("DISPUTED")[1].split("WITHHELD")[0]
+        self.assertIn("a.py::x", disputed)
+
+    def test_duplicate_claim_lines_deduped(self):
+        claim = {"relation": "depends_on", "caller": "a.py::x",
+                 "callee": "a.py::y", "authority": "n",
+                 "status": "asserted_in_source", "supports": 1, "retractions": 0}
+        result = {"candidates": [], "impacts": [], "mentions": [],
+                  "claims": [dict(claim), dict(claim)],
+                  "selection": None}
+        text = render_answer_text(result)
+        self.assertEqual(text.count("depends_on a.py::x a.py::y"), 1)
 
 if __name__ == "__main__":
     unittest.main()

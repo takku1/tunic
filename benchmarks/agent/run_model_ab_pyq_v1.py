@@ -30,11 +30,15 @@ PYQ = "Z:/PyQuifer"
 
 
 def main():
+    out_name = sys.argv[1] if len(sys.argv) > 1 else "model-ab-pyq-v1.json"
     heldout = json.loads((REPO / "benchmarks/arena/pyquifer-impact-v1.json")
                          .read_text(encoding="utf-8"))
     tunic_commit = subprocess.run(
         ["git", "rev-parse", "HEAD"], capture_output=True, text=True,
         cwd=str(REPO)).stdout.strip()
+    pyq_commit = subprocess.run(
+        ["git", "rev-parse", "HEAD"], capture_output=True, text=True,
+        cwd=PYQ).stdout.strip()
     work = Path(tempfile.mkdtemp(prefix="tunic-model-ab-pyq-"))
     dst = work / "pyquifer"
     shutil.copytree(PYQ, dst, ignore=shutil.ignore_patterns("__pycache__", ".git"))
@@ -83,18 +87,19 @@ def main():
                                                  if r["arms"][arm]["hallucinated"]),
                         "mean_latency_ms": round(sum(r["arms"][arm]["latency_ms"]
                                                      for r in rows) / len(rows), 1)}
-    record = {"benchmark": "model-ab-pyq-v1",
+    record = {"benchmark": out_name.replace(".json", ""),
               "protocol": "same model/prompt/budget; mechanical fence parsing; "
                           "paired arms within one run; trust-labeled tunic context; "
                           "held-out retrieval set, never tuned against",
               "suite_digest": heldout.get("split"),
               "model": MODEL, "decoding": {"temperature": 0, "seed": 0},
               "context_cap": 4000, "tunic_commit": tunic_commit,
+              "pyquifer_commit": pyq_commit,
               "summary": summary, "tasks": rows,
               "limitations": ["20 real-repo tasks but still single-hop impact phrasing.",
                               "single-turn answers; the model never writes memory.",
                               "temperature 0 but GPU sampling may vary; raw responses committed."]}
-    out = REPO / "benchmarks/agent/runs/model-ab-pyq-v1.json"
+    out = REPO / "benchmarks/agent/runs" / out_name
     out.write_text(json.dumps(record, indent=1), encoding="utf-8")
     print("summary:", json.dumps(summary))
     print("wrote", out)
