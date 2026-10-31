@@ -1,0 +1,2701 @@
+{
+ "benchmark": "model-ab-acq-v1-dry",
+ "protocol": "frozen ACQ v1: 10 seeded scenarios x 5 reps x 3 arms; product commit_proposal path, exact-triple scorer; abstain scenarios pass on no-commit plus frontier entry; reps are robustness probes, not independent tasks; held-out PyQuifer tasks untouched",
+ "model": "qwen3:4b",
+ "decoding": {
+  "temperature": 0,
+  "seed": 0
+ },
+ "context_cap": 4000,
+ "tunic_commit": "010592fff10dac1c924398aa2f693db5ab8d269b",
+ "dry_run": true,
+ "scenarios": [
+  "direct",
+  "dict",
+  "registry",
+  "callback",
+  "alias",
+  "reassign",
+  "dynkey",
+  "contra",
+  "correct",
+  "irrelevant"
+ ],
+ "summary": {
+  "direct/lexical": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "direct/select": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "direct/select-a3": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dict/lexical": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dict/select": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dict/select-a3": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "registry/lexical": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "registry/select": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "registry/select-a3": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "callback/lexical": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "callback/select": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "callback/select-a3": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "alias/lexical": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "alias/select": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "alias/select-a3": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "reassign/lexical": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "reassign/select": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "reassign/select-a3": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dynkey/lexical": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dynkey/select": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dynkey/select-a3": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "contra/lexical": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "contra/select": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "contra/select-a3": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "correct/lexical": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "correct/select": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "correct/select-a3": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "irrelevant/lexical": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "irrelevant/select": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "irrelevant/select-a3": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  }
+ },
+ "tasks": [
+  {
+   "id": "direct-rep0-propose",
+   "arm": "lexical",
+   "scenario": "direct",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "f5db07180c07",
+   "dry": true
+  },
+  {
+   "id": "direct-rep0-propose",
+   "arm": "select",
+   "scenario": "direct",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "f5db07180c07",
+   "dry": true
+  },
+  {
+   "id": "direct-rep0-propose",
+   "arm": "select-a3",
+   "scenario": "direct",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "f5db07180c07",
+   "dry": true
+  },
+  {
+   "id": "direct-rep1-propose",
+   "arm": "lexical",
+   "scenario": "direct",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "65153b182fd6",
+   "dry": true
+  },
+  {
+   "id": "direct-rep1-propose",
+   "arm": "select",
+   "scenario": "direct",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "65153b182fd6",
+   "dry": true
+  },
+  {
+   "id": "direct-rep1-propose",
+   "arm": "select-a3",
+   "scenario": "direct",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "65153b182fd6",
+   "dry": true
+  },
+  {
+   "id": "direct-rep2-propose",
+   "arm": "lexical",
+   "scenario": "direct",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "0ae458a7db49",
+   "dry": true
+  },
+  {
+   "id": "direct-rep2-propose",
+   "arm": "select",
+   "scenario": "direct",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "0ae458a7db49",
+   "dry": true
+  },
+  {
+   "id": "direct-rep2-propose",
+   "arm": "select-a3",
+   "scenario": "direct",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "0ae458a7db49",
+   "dry": true
+  },
+  {
+   "id": "direct-rep3-propose",
+   "arm": "lexical",
+   "scenario": "direct",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "3e20566b355c",
+   "dry": true
+  },
+  {
+   "id": "direct-rep3-propose",
+   "arm": "select",
+   "scenario": "direct",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "3e20566b355c",
+   "dry": true
+  },
+  {
+   "id": "direct-rep3-propose",
+   "arm": "select-a3",
+   "scenario": "direct",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "3e20566b355c",
+   "dry": true
+  },
+  {
+   "id": "direct-rep4-propose",
+   "arm": "lexical",
+   "scenario": "direct",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "20371ebb0451",
+   "dry": true
+  },
+  {
+   "id": "direct-rep4-propose",
+   "arm": "select",
+   "scenario": "direct",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "20371ebb0451",
+   "dry": true
+  },
+  {
+   "id": "direct-rep4-propose",
+   "arm": "select-a3",
+   "scenario": "direct",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "20371ebb0451",
+   "dry": true
+  },
+  {
+   "id": "dict-rep0-propose",
+   "arm": "lexical",
+   "scenario": "dict",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "reg.py::run",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "3ff8a1729229",
+   "dry": true
+  },
+  {
+   "id": "dict-rep0-propose",
+   "arm": "select",
+   "scenario": "dict",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "reg.py::run",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "3ff8a1729229",
+   "dry": true
+  },
+  {
+   "id": "dict-rep0-propose",
+   "arm": "select-a3",
+   "scenario": "dict",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "reg.py::run",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "3ff8a1729229",
+   "dry": true
+  },
+  {
+   "id": "dict-rep1-propose",
+   "arm": "lexical",
+   "scenario": "dict",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::run",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "088ad04ff87c",
+   "dry": true
+  },
+  {
+   "id": "dict-rep1-propose",
+   "arm": "select",
+   "scenario": "dict",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::run",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "088ad04ff87c",
+   "dry": true
+  },
+  {
+   "id": "dict-rep1-propose",
+   "arm": "select-a3",
+   "scenario": "dict",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::run",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "088ad04ff87c",
+   "dry": true
+  },
+  {
+   "id": "dict-rep2-propose",
+   "arm": "lexical",
+   "scenario": "dict",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "reg.py::run",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "cd9418445ff6",
+   "dry": true
+  },
+  {
+   "id": "dict-rep2-propose",
+   "arm": "select",
+   "scenario": "dict",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "reg.py::run",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "cd9418445ff6",
+   "dry": true
+  },
+  {
+   "id": "dict-rep2-propose",
+   "arm": "select-a3",
+   "scenario": "dict",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "reg.py::run",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "cd9418445ff6",
+   "dry": true
+  },
+  {
+   "id": "dict-rep3-propose",
+   "arm": "lexical",
+   "scenario": "dict",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::run",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "a1b266124578",
+   "dry": true
+  },
+  {
+   "id": "dict-rep3-propose",
+   "arm": "select",
+   "scenario": "dict",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::run",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "a1b266124578",
+   "dry": true
+  },
+  {
+   "id": "dict-rep3-propose",
+   "arm": "select-a3",
+   "scenario": "dict",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::run",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "a1b266124578",
+   "dry": true
+  },
+  {
+   "id": "dict-rep4-propose",
+   "arm": "lexical",
+   "scenario": "dict",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "reg.py::run",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "42ebea927140",
+   "dry": true
+  },
+  {
+   "id": "dict-rep4-propose",
+   "arm": "select",
+   "scenario": "dict",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "reg.py::run",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "42ebea927140",
+   "dry": true
+  },
+  {
+   "id": "dict-rep4-propose",
+   "arm": "select-a3",
+   "scenario": "dict",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "reg.py::run",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "42ebea927140",
+   "dry": true
+  },
+  {
+   "id": "registry-rep0-propose",
+   "arm": "lexical",
+   "scenario": "registry",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "5d8a30b57703",
+   "dry": true
+  },
+  {
+   "id": "registry-rep0-propose",
+   "arm": "select",
+   "scenario": "registry",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "5d8a30b57703",
+   "dry": true
+  },
+  {
+   "id": "registry-rep0-propose",
+   "arm": "select-a3",
+   "scenario": "registry",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "5d8a30b57703",
+   "dry": true
+  },
+  {
+   "id": "registry-rep1-propose",
+   "arm": "lexical",
+   "scenario": "registry",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "de3078d58e1e",
+   "dry": true
+  },
+  {
+   "id": "registry-rep1-propose",
+   "arm": "select",
+   "scenario": "registry",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "de3078d58e1e",
+   "dry": true
+  },
+  {
+   "id": "registry-rep1-propose",
+   "arm": "select-a3",
+   "scenario": "registry",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "de3078d58e1e",
+   "dry": true
+  },
+  {
+   "id": "registry-rep2-propose",
+   "arm": "lexical",
+   "scenario": "registry",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "7aa6496e576c",
+   "dry": true
+  },
+  {
+   "id": "registry-rep2-propose",
+   "arm": "select",
+   "scenario": "registry",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "7aa6496e576c",
+   "dry": true
+  },
+  {
+   "id": "registry-rep2-propose",
+   "arm": "select-a3",
+   "scenario": "registry",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "7aa6496e576c",
+   "dry": true
+  },
+  {
+   "id": "registry-rep3-propose",
+   "arm": "lexical",
+   "scenario": "registry",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "b6ce5c700fa6",
+   "dry": true
+  },
+  {
+   "id": "registry-rep3-propose",
+   "arm": "select",
+   "scenario": "registry",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "b6ce5c700fa6",
+   "dry": true
+  },
+  {
+   "id": "registry-rep3-propose",
+   "arm": "select-a3",
+   "scenario": "registry",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "b6ce5c700fa6",
+   "dry": true
+  },
+  {
+   "id": "registry-rep4-propose",
+   "arm": "lexical",
+   "scenario": "registry",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "76573b4d3030",
+   "dry": true
+  },
+  {
+   "id": "registry-rep4-propose",
+   "arm": "select",
+   "scenario": "registry",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "76573b4d3030",
+   "dry": true
+  },
+  {
+   "id": "registry-rep4-propose",
+   "arm": "select-a3",
+   "scenario": "registry",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "76573b4d3030",
+   "dry": true
+  },
+  {
+   "id": "callback-rep0-propose",
+   "arm": "lexical",
+   "scenario": "callback",
+   "rep": 0,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "dcacdc4d3aff",
+   "dry": true
+  },
+  {
+   "id": "callback-rep0-propose",
+   "arm": "select",
+   "scenario": "callback",
+   "rep": 0,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "dcacdc4d3aff",
+   "dry": true
+  },
+  {
+   "id": "callback-rep0-propose",
+   "arm": "select-a3",
+   "scenario": "callback",
+   "rep": 0,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "dcacdc4d3aff",
+   "dry": true
+  },
+  {
+   "id": "callback-rep1-propose",
+   "arm": "lexical",
+   "scenario": "callback",
+   "rep": 1,
+   "question": "What must change if process changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::entry",
+    "shop.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "c5fd3d4e6713",
+   "dry": true
+  },
+  {
+   "id": "callback-rep1-propose",
+   "arm": "select",
+   "scenario": "callback",
+   "rep": 1,
+   "question": "What must change if process changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::entry",
+    "shop.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "c5fd3d4e6713",
+   "dry": true
+  },
+  {
+   "id": "callback-rep1-propose",
+   "arm": "select-a3",
+   "scenario": "callback",
+   "rep": 1,
+   "question": "What must change if process changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::entry",
+    "shop.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "c5fd3d4e6713",
+   "dry": true
+  },
+  {
+   "id": "callback-rep2-propose",
+   "arm": "lexical",
+   "scenario": "callback",
+   "rep": 2,
+   "question": "If process changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "82a113ab11df",
+   "dry": true
+  },
+  {
+   "id": "callback-rep2-propose",
+   "arm": "select",
+   "scenario": "callback",
+   "rep": 2,
+   "question": "If process changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "82a113ab11df",
+   "dry": true
+  },
+  {
+   "id": "callback-rep2-propose",
+   "arm": "select-a3",
+   "scenario": "callback",
+   "rep": 2,
+   "question": "If process changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "82a113ab11df",
+   "dry": true
+  },
+  {
+   "id": "callback-rep3-propose",
+   "arm": "lexical",
+   "scenario": "callback",
+   "rep": 3,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::entry",
+    "shop.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "99ec46be65ab",
+   "dry": true
+  },
+  {
+   "id": "callback-rep3-propose",
+   "arm": "select",
+   "scenario": "callback",
+   "rep": 3,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::entry",
+    "shop.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "99ec46be65ab",
+   "dry": true
+  },
+  {
+   "id": "callback-rep3-propose",
+   "arm": "select-a3",
+   "scenario": "callback",
+   "rep": 3,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::entry",
+    "shop.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "99ec46be65ab",
+   "dry": true
+  },
+  {
+   "id": "callback-rep4-propose",
+   "arm": "lexical",
+   "scenario": "callback",
+   "rep": 4,
+   "question": "What must change if process changes, and why?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "8f815cab3e5f",
+   "dry": true
+  },
+  {
+   "id": "callback-rep4-propose",
+   "arm": "select",
+   "scenario": "callback",
+   "rep": 4,
+   "question": "What must change if process changes, and why?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "8f815cab3e5f",
+   "dry": true
+  },
+  {
+   "id": "callback-rep4-propose",
+   "arm": "select-a3",
+   "scenario": "callback",
+   "rep": 4,
+   "question": "What must change if process changes, and why?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "8f815cab3e5f",
+   "dry": true
+  },
+  {
+   "id": "alias-rep0-propose",
+   "arm": "lexical",
+   "scenario": "alias",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "76d89030b334",
+   "dry": true
+  },
+  {
+   "id": "alias-rep0-propose",
+   "arm": "select",
+   "scenario": "alias",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "76d89030b334",
+   "dry": true
+  },
+  {
+   "id": "alias-rep0-propose",
+   "arm": "select-a3",
+   "scenario": "alias",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "76d89030b334",
+   "dry": true
+  },
+  {
+   "id": "alias-rep1-propose",
+   "arm": "lexical",
+   "scenario": "alias",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::checkout",
+    "target.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "2cedf1f7e0a6",
+   "dry": true
+  },
+  {
+   "id": "alias-rep1-propose",
+   "arm": "select",
+   "scenario": "alias",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::checkout",
+    "target.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "2cedf1f7e0a6",
+   "dry": true
+  },
+  {
+   "id": "alias-rep1-propose",
+   "arm": "select-a3",
+   "scenario": "alias",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::checkout",
+    "target.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "2cedf1f7e0a6",
+   "dry": true
+  },
+  {
+   "id": "alias-rep2-propose",
+   "arm": "lexical",
+   "scenario": "alias",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "cde11c19b057",
+   "dry": true
+  },
+  {
+   "id": "alias-rep2-propose",
+   "arm": "select",
+   "scenario": "alias",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "cde11c19b057",
+   "dry": true
+  },
+  {
+   "id": "alias-rep2-propose",
+   "arm": "select-a3",
+   "scenario": "alias",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "cde11c19b057",
+   "dry": true
+  },
+  {
+   "id": "alias-rep3-propose",
+   "arm": "lexical",
+   "scenario": "alias",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::confirm_buy",
+    "target.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "f9e45a164a96",
+   "dry": true
+  },
+  {
+   "id": "alias-rep3-propose",
+   "arm": "select",
+   "scenario": "alias",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::confirm_buy",
+    "target.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "f9e45a164a96",
+   "dry": true
+  },
+  {
+   "id": "alias-rep3-propose",
+   "arm": "select-a3",
+   "scenario": "alias",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::confirm_buy",
+    "target.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "f9e45a164a96",
+   "dry": true
+  },
+  {
+   "id": "alias-rep4-propose",
+   "arm": "lexical",
+   "scenario": "alias",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "2b617cc4552b",
+   "dry": true
+  },
+  {
+   "id": "alias-rep4-propose",
+   "arm": "select",
+   "scenario": "alias",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "2b617cc4552b",
+   "dry": true
+  },
+  {
+   "id": "alias-rep4-propose",
+   "arm": "select-a3",
+   "scenario": "alias",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "2b617cc4552b",
+   "dry": true
+  },
+  {
+   "id": "reassign-rep0-propose",
+   "arm": "lexical",
+   "scenario": "reassign",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "61c569ae2314",
+   "dry": true
+  },
+  {
+   "id": "reassign-rep0-propose",
+   "arm": "select",
+   "scenario": "reassign",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "61c569ae2314",
+   "dry": true
+  },
+  {
+   "id": "reassign-rep0-propose",
+   "arm": "select-a3",
+   "scenario": "reassign",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "61c569ae2314",
+   "dry": true
+  },
+  {
+   "id": "reassign-rep1-propose",
+   "arm": "lexical",
+   "scenario": "reassign",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "d8e2684d50b3",
+   "dry": true
+  },
+  {
+   "id": "reassign-rep1-propose",
+   "arm": "select",
+   "scenario": "reassign",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "d8e2684d50b3",
+   "dry": true
+  },
+  {
+   "id": "reassign-rep1-propose",
+   "arm": "select-a3",
+   "scenario": "reassign",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "d8e2684d50b3",
+   "dry": true
+  },
+  {
+   "id": "reassign-rep2-propose",
+   "arm": "lexical",
+   "scenario": "reassign",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "159bc17a9712",
+   "dry": true
+  },
+  {
+   "id": "reassign-rep2-propose",
+   "arm": "select",
+   "scenario": "reassign",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "159bc17a9712",
+   "dry": true
+  },
+  {
+   "id": "reassign-rep2-propose",
+   "arm": "select-a3",
+   "scenario": "reassign",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "159bc17a9712",
+   "dry": true
+  },
+  {
+   "id": "reassign-rep3-propose",
+   "arm": "lexical",
+   "scenario": "reassign",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "533f646673e9",
+   "dry": true
+  },
+  {
+   "id": "reassign-rep3-propose",
+   "arm": "select",
+   "scenario": "reassign",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "533f646673e9",
+   "dry": true
+  },
+  {
+   "id": "reassign-rep3-propose",
+   "arm": "select-a3",
+   "scenario": "reassign",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "533f646673e9",
+   "dry": true
+  },
+  {
+   "id": "reassign-rep4-propose",
+   "arm": "lexical",
+   "scenario": "reassign",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "bb2a3d926c8d",
+   "dry": true
+  },
+  {
+   "id": "reassign-rep4-propose",
+   "arm": "select",
+   "scenario": "reassign",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "bb2a3d926c8d",
+   "dry": true
+  },
+  {
+   "id": "reassign-rep4-propose",
+   "arm": "select-a3",
+   "scenario": "reassign",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "bb2a3d926c8d",
+   "dry": true
+  },
+  {
+   "id": "dynkey-rep0-propose",
+   "arm": "lexical",
+   "scenario": "dynkey",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "3164842610df",
+   "dry": true
+  },
+  {
+   "id": "dynkey-rep0-propose",
+   "arm": "select",
+   "scenario": "dynkey",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "3164842610df",
+   "dry": true
+  },
+  {
+   "id": "dynkey-rep0-propose",
+   "arm": "select-a3",
+   "scenario": "dynkey",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "3164842610df",
+   "dry": true
+  },
+  {
+   "id": "dynkey-rep1-propose",
+   "arm": "lexical",
+   "scenario": "dynkey",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "1ebe5b23d673",
+   "dry": true
+  },
+  {
+   "id": "dynkey-rep1-propose",
+   "arm": "select",
+   "scenario": "dynkey",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "1ebe5b23d673",
+   "dry": true
+  },
+  {
+   "id": "dynkey-rep1-propose",
+   "arm": "select-a3",
+   "scenario": "dynkey",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "1ebe5b23d673",
+   "dry": true
+  },
+  {
+   "id": "dynkey-rep2-propose",
+   "arm": "lexical",
+   "scenario": "dynkey",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "010fd0d6ce67",
+   "dry": true
+  },
+  {
+   "id": "dynkey-rep2-propose",
+   "arm": "select",
+   "scenario": "dynkey",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "010fd0d6ce67",
+   "dry": true
+  },
+  {
+   "id": "dynkey-rep2-propose",
+   "arm": "select-a3",
+   "scenario": "dynkey",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "010fd0d6ce67",
+   "dry": true
+  },
+  {
+   "id": "dynkey-rep3-propose",
+   "arm": "lexical",
+   "scenario": "dynkey",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "581e14fbb9c8",
+   "dry": true
+  },
+  {
+   "id": "dynkey-rep3-propose",
+   "arm": "select",
+   "scenario": "dynkey",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "581e14fbb9c8",
+   "dry": true
+  },
+  {
+   "id": "dynkey-rep3-propose",
+   "arm": "select-a3",
+   "scenario": "dynkey",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "581e14fbb9c8",
+   "dry": true
+  },
+  {
+   "id": "dynkey-rep4-propose",
+   "arm": "lexical",
+   "scenario": "dynkey",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "fb94e36b0942",
+   "dry": true
+  },
+  {
+   "id": "dynkey-rep4-propose",
+   "arm": "select",
+   "scenario": "dynkey",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "fb94e36b0942",
+   "dry": true
+  },
+  {
+   "id": "dynkey-rep4-propose",
+   "arm": "select-a3",
+   "scenario": "dynkey",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "fb94e36b0942",
+   "dry": true
+  },
+  {
+   "id": "contra-rep0-propose",
+   "arm": "lexical",
+   "scenario": "contra",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "5d8a30b57703",
+   "dry": true
+  },
+  {
+   "id": "contra-rep0-propose",
+   "arm": "select",
+   "scenario": "contra",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "5d8a30b57703",
+   "dry": true
+  },
+  {
+   "id": "contra-rep0-propose",
+   "arm": "select-a3",
+   "scenario": "contra",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "5d8a30b57703",
+   "dry": true
+  },
+  {
+   "id": "contra-rep1-propose",
+   "arm": "lexical",
+   "scenario": "contra",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "de3078d58e1e",
+   "dry": true
+  },
+  {
+   "id": "contra-rep1-propose",
+   "arm": "select",
+   "scenario": "contra",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "de3078d58e1e",
+   "dry": true
+  },
+  {
+   "id": "contra-rep1-propose",
+   "arm": "select-a3",
+   "scenario": "contra",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "de3078d58e1e",
+   "dry": true
+  },
+  {
+   "id": "contra-rep2-propose",
+   "arm": "lexical",
+   "scenario": "contra",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "7aa6496e576c",
+   "dry": true
+  },
+  {
+   "id": "contra-rep2-propose",
+   "arm": "select",
+   "scenario": "contra",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "7aa6496e576c",
+   "dry": true
+  },
+  {
+   "id": "contra-rep2-propose",
+   "arm": "select-a3",
+   "scenario": "contra",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "7aa6496e576c",
+   "dry": true
+  },
+  {
+   "id": "contra-rep3-propose",
+   "arm": "lexical",
+   "scenario": "contra",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "b6ce5c700fa6",
+   "dry": true
+  },
+  {
+   "id": "contra-rep3-propose",
+   "arm": "select",
+   "scenario": "contra",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "b6ce5c700fa6",
+   "dry": true
+  },
+  {
+   "id": "contra-rep3-propose",
+   "arm": "select-a3",
+   "scenario": "contra",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "b6ce5c700fa6",
+   "dry": true
+  },
+  {
+   "id": "contra-rep4-propose",
+   "arm": "lexical",
+   "scenario": "contra",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "76573b4d3030",
+   "dry": true
+  },
+  {
+   "id": "contra-rep4-propose",
+   "arm": "select",
+   "scenario": "contra",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "76573b4d3030",
+   "dry": true
+  },
+  {
+   "id": "contra-rep4-propose",
+   "arm": "select-a3",
+   "scenario": "contra",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": true,
+   "fixture_digest": "76573b4d3030",
+   "dry": true
+  },
+  {
+   "id": "correct-rep0-propose",
+   "arm": "lexical",
+   "scenario": "correct",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "t2.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "162ffe0f4d34",
+   "dry": true
+  },
+  {
+   "id": "correct-rep0-propose",
+   "arm": "select",
+   "scenario": "correct",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "t2.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "162ffe0f4d34",
+   "dry": true
+  },
+  {
+   "id": "correct-rep0-propose",
+   "arm": "select-a3",
+   "scenario": "correct",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "t2.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "162ffe0f4d34",
+   "dry": true
+  },
+  {
+   "id": "correct-rep1-propose",
+   "arm": "lexical",
+   "scenario": "correct",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "9107ccda34d3",
+   "dry": true
+  },
+  {
+   "id": "correct-rep1-propose",
+   "arm": "select",
+   "scenario": "correct",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "9107ccda34d3",
+   "dry": true
+  },
+  {
+   "id": "correct-rep1-propose",
+   "arm": "select-a3",
+   "scenario": "correct",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "9107ccda34d3",
+   "dry": true
+  },
+  {
+   "id": "correct-rep2-propose",
+   "arm": "lexical",
+   "scenario": "correct",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "t2.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "83fd04263411",
+   "dry": true
+  },
+  {
+   "id": "correct-rep2-propose",
+   "arm": "select",
+   "scenario": "correct",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "t2.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "83fd04263411",
+   "dry": true
+  },
+  {
+   "id": "correct-rep2-propose",
+   "arm": "select-a3",
+   "scenario": "correct",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "t2.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "83fd04263411",
+   "dry": true
+  },
+  {
+   "id": "correct-rep3-propose",
+   "arm": "lexical",
+   "scenario": "correct",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "6fe732db0af5",
+   "dry": true
+  },
+  {
+   "id": "correct-rep3-propose",
+   "arm": "select",
+   "scenario": "correct",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "6fe732db0af5",
+   "dry": true
+  },
+  {
+   "id": "correct-rep3-propose",
+   "arm": "select-a3",
+   "scenario": "correct",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "6fe732db0af5",
+   "dry": true
+  },
+  {
+   "id": "correct-rep4-propose",
+   "arm": "lexical",
+   "scenario": "correct",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "t2.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "05eebd2a14e0",
+   "dry": true
+  },
+  {
+   "id": "correct-rep4-propose",
+   "arm": "select",
+   "scenario": "correct",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "t2.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "05eebd2a14e0",
+   "dry": true
+  },
+  {
+   "id": "correct-rep4-propose",
+   "arm": "select-a3",
+   "scenario": "correct",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "t2.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "05eebd2a14e0",
+   "dry": true
+  },
+  {
+   "id": "irrelevant-rep0-propose",
+   "arm": "lexical",
+   "scenario": "irrelevant",
+   "rep": 0,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "a11ce306df1a",
+   "dry": true
+  },
+  {
+   "id": "irrelevant-rep0-propose",
+   "arm": "select",
+   "scenario": "irrelevant",
+   "rep": 0,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "a11ce306df1a",
+   "dry": true
+  },
+  {
+   "id": "irrelevant-rep0-propose",
+   "arm": "select-a3",
+   "scenario": "irrelevant",
+   "rep": 0,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "a11ce306df1a",
+   "dry": true
+  },
+  {
+   "id": "irrelevant-rep1-propose",
+   "arm": "lexical",
+   "scenario": "irrelevant",
+   "rep": 1,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "7b89eabe8e2f",
+   "dry": true
+  },
+  {
+   "id": "irrelevant-rep1-propose",
+   "arm": "select",
+   "scenario": "irrelevant",
+   "rep": 1,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "7b89eabe8e2f",
+   "dry": true
+  },
+  {
+   "id": "irrelevant-rep1-propose",
+   "arm": "select-a3",
+   "scenario": "irrelevant",
+   "rep": 1,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "7b89eabe8e2f",
+   "dry": true
+  },
+  {
+   "id": "irrelevant-rep2-propose",
+   "arm": "lexical",
+   "scenario": "irrelevant",
+   "rep": 2,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "744f75980689",
+   "dry": true
+  },
+  {
+   "id": "irrelevant-rep2-propose",
+   "arm": "select",
+   "scenario": "irrelevant",
+   "rep": 2,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "744f75980689",
+   "dry": true
+  },
+  {
+   "id": "irrelevant-rep2-propose",
+   "arm": "select-a3",
+   "scenario": "irrelevant",
+   "rep": 2,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "744f75980689",
+   "dry": true
+  },
+  {
+   "id": "irrelevant-rep3-propose",
+   "arm": "lexical",
+   "scenario": "irrelevant",
+   "rep": 3,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "253abc7bda29",
+   "dry": true
+  },
+  {
+   "id": "irrelevant-rep3-propose",
+   "arm": "select",
+   "scenario": "irrelevant",
+   "rep": 3,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "253abc7bda29",
+   "dry": true
+  },
+  {
+   "id": "irrelevant-rep3-propose",
+   "arm": "select-a3",
+   "scenario": "irrelevant",
+   "rep": 3,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "253abc7bda29",
+   "dry": true
+  },
+  {
+   "id": "irrelevant-rep4-propose",
+   "arm": "lexical",
+   "scenario": "irrelevant",
+   "rep": 4,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "38b062d22a08",
+   "dry": true
+  },
+  {
+   "id": "irrelevant-rep4-propose",
+   "arm": "select",
+   "scenario": "irrelevant",
+   "rep": 4,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "38b062d22a08",
+   "dry": true
+  },
+  {
+   "id": "irrelevant-rep4-propose",
+   "arm": "select-a3",
+   "scenario": "irrelevant",
+   "rep": 4,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "a3_present": false,
+   "fixture_digest": "38b062d22a08",
+   "dry": true
+  }
+ ],
+ "limitations": [
+  "n=5 reps per cell; temperature 0; directional evidence only."
+ ]
+}

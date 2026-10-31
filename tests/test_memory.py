@@ -411,6 +411,30 @@ class ReconcileTests(unittest.TestCase):
         self.assertIn("notes/missing.md::document", reason)
 
 
+class CommitAbstainTests(unittest.TestCase):
+    def test_abstention_files_entry_without_writing(self):
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp, True)
+        root = tmp / "repo"
+        root.mkdir()
+        (root / "core.py").write_bytes(b"def calculate(x):\n    return x + 1\n")
+        memory = Memory(str(tmp / "memory.sqlite"), root)
+        self.addCleanup(memory.close)
+        memory.ingest()
+        _, view = memory.store.view()
+        before = len(view["assertions"])
+        committed, action, reason = memory.commit_proposal(
+            None, None, task="Which functions break if calculate changes?")
+        self.assertEqual((committed, action), (False, "abstain"))
+        self.assertTrue(reason)
+        _, view = memory.store.view()
+        self.assertEqual(len(view["assertions"]), before)
+        entries = memory.frontier_list(status="open")
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(entries[0]["failure"], "proposal_abstained")
+        self.assertEqual(entries[0]["target"], "Which functions break if calculate changes?")
+
+
 class CommitProposalTests(unittest.TestCase):
     """commit_proposal: reconcile first, promote only clean ADDs."""
 

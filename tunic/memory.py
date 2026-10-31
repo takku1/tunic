@@ -198,7 +198,7 @@ class Memory:
         return compiler.compile_candidates(self.store, **kwargs)
 
     def commit_proposal(self, subject, object, rel="depends_on", document="notes/proposed.md",
-                        authority="agent-proposal", note=None):
+                        authority="agent-proposal", note=None, task=None):
         """One-shot propose, deterministic reconcile, explicit promote.
 
         Product form of the v4 condition-C path: reconcile first, promote
@@ -208,6 +208,12 @@ class Memory:
         this is the approver; pair with tests, a human, or a reviewer
         gate before autonomous use.
         """
+        if subject is None or object is None:
+            self._frontier_upsert(
+                "unresolved", task or "acquisition abstained", "proposal_abstained",
+                target=task or None,
+                required_evidence=("supporting evidence", "re-run acquisition"))
+            return False, "abstain", "model abstained; filed for future acquisition"
         action, reason = self.reconcile_proposal(subject, object, rel=rel)
         if action != "add":
             if action in ("conflict", "invalid"):
