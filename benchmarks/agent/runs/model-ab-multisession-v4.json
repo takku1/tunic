@@ -1,0 +1,888 @@
+{
+ "benchmark": "model-ab-multisession-v4",
+ "protocol": "frozen v4: A one-stage vs B two-stage (advisory) vs C hybrid (deterministic reconcile first); same stage-0 context per arm+scenario (context_sha); oracle reviewer; S2 replaced with registry-indirection edge invisible to static extraction; DUP/GATE/CORR guards",
+ "model": "qwen3:4b",
+ "decoding": {
+  "temperature": 0,
+  "seed": 0
+ },
+ "context_cap": 4000,
+ "tunic_commit": "d3e674909c5cd55ef7d5843b84badbbfe71a0dc4",
+ "sources": {
+  "tunic": {
+   "path": "Z:\\tunic",
+   "commit": "d3e674909c5cd55ef7d5843b84badbbfe71a0dc4",
+   "status": "clean",
+   "error": null
+  }
+ },
+ "summary": {
+  "lexical/S1/same-evidence": [
+   "837170508caa2717"
+  ],
+  "lexical/S2/same-evidence": [
+   "93ec0e865c314f2f"
+  ],
+  "lexical/A": {
+   "commits": 1,
+   "apply_pass_given_commit": [
+    true,
+    true
+   ],
+   "duplicate_rows_added": 0,
+   "model_calls": 4,
+   "prompt_tokens": 910,
+   "completion_tokens": 9928,
+   "mean_latency_ms": 12182.2
+  },
+  "lexical/B": {
+   "commits": 1,
+   "apply_pass_given_commit": [
+    true,
+    true
+   ],
+   "duplicate_rows_added": 0,
+   "model_calls": 4,
+   "prompt_tokens": 815,
+   "completion_tokens": 13261,
+   "mean_latency_ms": 18490.0
+  },
+  "lexical/C": {
+   "commits": 1,
+   "apply_pass_given_commit": [
+    true,
+    true
+   ],
+   "duplicate_rows_added": 0,
+   "model_calls": 4,
+   "prompt_tokens": 910,
+   "completion_tokens": 14400,
+   "mean_latency_ms": 19126.0
+  },
+  "lexical/guards": {
+   "dup_prevented": true,
+   "gate_held": true,
+   "correction_applied": false,
+   "hallucinated_applies": 0
+  },
+  "tunic-select/S1/same-evidence": [
+   "aa3d80c8fe3fb798"
+  ],
+  "tunic-select/S2/same-evidence": [
+   "b544d25f3dcef646"
+  ],
+  "tunic-select/A": {
+   "commits": 1,
+   "apply_pass_given_commit": [
+    true,
+    true
+   ],
+   "duplicate_rows_added": 0,
+   "model_calls": 4,
+   "prompt_tokens": 2408,
+   "completion_tokens": 12593,
+   "mean_latency_ms": 15605.5
+  },
+  "tunic-select/B": {
+   "commits": 0,
+   "apply_pass_given_commit": [],
+   "duplicate_rows_added": 0,
+   "model_calls": 4,
+   "prompt_tokens": 2313,
+   "completion_tokens": 15934,
+   "mean_latency_ms": 23440.0
+  },
+  "tunic-select/C": {
+   "commits": 1,
+   "apply_pass_given_commit": [
+    true,
+    true
+   ],
+   "duplicate_rows_added": 0,
+   "model_calls": 4,
+   "prompt_tokens": 2408,
+   "completion_tokens": 12268,
+   "mean_latency_ms": 16535.2
+  },
+  "tunic-select/guards": {
+   "dup_prevented": true,
+   "gate_held": true,
+   "correction_applied": true,
+   "hallucinated_applies": 0
+  }
+ },
+ "tasks": [
+  {
+   "id": "S1-propose-A",
+   "session": 1,
+   "arm": "lexical",
+   "condition": "A",
+   "question": "What decision did we record about round_total?",
+   "gold_triple": [
+    "decided_by",
+    "pricing.py::round_total",
+    "notes/decisions.md::document"
+   ],
+   "context_sha": "837170508caa2717",
+   "advisory_identified": [],
+   "proposal": {
+    "rel": "decided_by",
+    "subject": "pricing.py::round_total",
+    "object": "notes/decisions.md::document"
+   },
+   "proposal_error": null,
+   "reconcile_action": null,
+   "committed": true,
+   "commit_reason": "committed",
+   "assertions_before": 5,
+   "assertions_after": 6,
+   "duplicate_rows_added": 0,
+   "pass": true,
+   "model_calls": 2,
+   "prompt_tokens": 411,
+   "completion_tokens": 3995,
+   "latency_ms": 11764.2,
+   "db": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\lexical\\S1-A\\sessions.sqlite",
+   "root": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\lexical\\S1-A\\repo"
+  },
+  {
+   "id": "S1-apply-A",
+   "session": 2,
+   "arm": "lexical",
+   "condition": "A",
+   "question": "What did we decide about round_total?",
+   "gold": [
+    "pricing.py::round_total"
+   ],
+   "obsolete": [],
+   "had_commit": true,
+   "parsed": [
+    "pricing.py::round_total"
+   ],
+   "hallucinated": [],
+   "stale": [],
+   "pass": true,
+   "model_calls": 1,
+   "prompt_tokens": 129,
+   "completion_tokens": 1663,
+   "latency_ms": 7665.6
+  },
+  {
+   "id": "S1-propose-A",
+   "session": 1,
+   "arm": "tunic-select",
+   "condition": "A",
+   "question": "What decision did we record about round_total?",
+   "gold_triple": [
+    "decided_by",
+    "pricing.py::round_total",
+    "notes/decisions.md::document"
+   ],
+   "context_sha": "aa3d80c8fe3fb798",
+   "advisory_identified": [],
+   "proposal": {
+    "rel": "decided_by",
+    "subject": "pricing.py::round_total",
+    "object": "notes/decisions.md::document"
+   },
+   "proposal_error": null,
+   "reconcile_action": null,
+   "committed": true,
+   "commit_reason": "committed",
+   "assertions_before": 5,
+   "assertions_after": 6,
+   "duplicate_rows_added": 0,
+   "pass": true,
+   "model_calls": 2,
+   "prompt_tokens": 1051,
+   "completion_tokens": 5759,
+   "latency_ms": 13729.0,
+   "db": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\tunic-select\\S1-A\\sessions.sqlite",
+   "root": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\tunic-select\\S1-A\\repo"
+  },
+  {
+   "id": "S1-apply-A",
+   "session": 2,
+   "arm": "tunic-select",
+   "condition": "A",
+   "question": "What did we decide about round_total?",
+   "gold": [
+    "pricing.py::round_total"
+   ],
+   "obsolete": [],
+   "had_commit": true,
+   "parsed": [
+    "pricing.py::round_total"
+   ],
+   "hallucinated": [],
+   "stale": [],
+   "pass": true,
+   "model_calls": 1,
+   "prompt_tokens": 479,
+   "completion_tokens": 2120,
+   "latency_ms": 10012.7
+  },
+  {
+   "id": "S1-propose-B",
+   "session": 1,
+   "arm": "lexical",
+   "condition": "B",
+   "question": "What decision did we record about round_total?",
+   "gold_triple": [
+    "decided_by",
+    "pricing.py::round_total",
+    "notes/decisions.md::document"
+   ],
+   "context_sha": "837170508caa2717",
+   "advisory_identified": [
+    "pricing.py::round_total"
+   ],
+   "proposal": {
+    "rel": "decided_by",
+    "subject": "pricing.py::round_total",
+    "object": "notes/decisions.md::document"
+   },
+   "proposal_error": null,
+   "reconcile_action": null,
+   "committed": true,
+   "commit_reason": "committed",
+   "assertions_before": 5,
+   "assertions_after": 6,
+   "duplicate_rows_added": 0,
+   "pass": true,
+   "model_calls": 2,
+   "prompt_tokens": 365,
+   "completion_tokens": 5583,
+   "latency_ms": 16369.3,
+   "db": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\lexical\\S1-B\\sessions.sqlite",
+   "root": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\lexical\\S1-B\\repo"
+  },
+  {
+   "id": "S1-apply-B",
+   "session": 2,
+   "arm": "lexical",
+   "condition": "B",
+   "question": "What did we decide about round_total?",
+   "gold": [
+    "pricing.py::round_total"
+   ],
+   "obsolete": [],
+   "had_commit": true,
+   "parsed": [
+    "pricing.py::round_total"
+   ],
+   "hallucinated": [],
+   "stale": [],
+   "pass": true,
+   "model_calls": 1,
+   "prompt_tokens": 129,
+   "completion_tokens": 1804,
+   "latency_ms": 8357.6
+  },
+  {
+   "id": "S1-propose-B",
+   "session": 1,
+   "arm": "tunic-select",
+   "condition": "B",
+   "question": "What decision did we record about round_total?",
+   "gold_triple": [
+    "decided_by",
+    "pricing.py::round_total",
+    "notes/decisions.md::document"
+   ],
+   "context_sha": "aa3d80c8fe3fb798",
+   "advisory_identified": [
+    "pricing.py::round_total"
+   ],
+   "proposal": null,
+   "proposal_error": "no tunic-claims fence",
+   "reconcile_action": null,
+   "committed": false,
+   "commit_reason": "no tunic-claims fence",
+   "assertions_before": 5,
+   "assertions_after": 5,
+   "duplicate_rows_added": 0,
+   "pass": false,
+   "model_calls": 2,
+   "prompt_tokens": 1005,
+   "completion_tokens": 7989,
+   "latency_ms": 25524.9,
+   "db": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\tunic-select\\S1-B\\sessions.sqlite",
+   "root": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\tunic-select\\S1-B\\repo"
+  },
+  {
+   "id": "S1-apply-B",
+   "session": 2,
+   "arm": "tunic-select",
+   "condition": "B",
+   "question": "What did we decide about round_total?",
+   "gold": [
+    "pricing.py::round_total"
+   ],
+   "obsolete": [],
+   "had_commit": false,
+   "parsed": [
+    "pricing.py::round_total"
+   ],
+   "hallucinated": [],
+   "stale": [],
+   "pass": true,
+   "model_calls": 1,
+   "prompt_tokens": 449,
+   "completion_tokens": 2356,
+   "latency_ms": 11154.2
+  },
+  {
+   "id": "S1-propose-C",
+   "session": 1,
+   "arm": "lexical",
+   "condition": "C",
+   "question": "What decision did we record about round_total?",
+   "gold_triple": [
+    "decided_by",
+    "pricing.py::round_total",
+    "notes/decisions.md::document"
+   ],
+   "context_sha": "837170508caa2717",
+   "advisory_identified": [],
+   "proposal": {
+    "rel": "decided_by",
+    "subject": "pricing.py::round_total",
+    "object": "notes/decisions.md::document"
+   },
+   "proposal_error": null,
+   "reconcile_action": "add",
+   "committed": true,
+   "commit_reason": "reconcile=add; committed",
+   "assertions_before": 5,
+   "assertions_after": 6,
+   "duplicate_rows_added": 0,
+   "pass": true,
+   "model_calls": 2,
+   "prompt_tokens": 411,
+   "completion_tokens": 4641,
+   "latency_ms": 11758.7,
+   "db": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\lexical\\S1-C\\sessions.sqlite",
+   "root": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\lexical\\S1-C\\repo"
+  },
+  {
+   "id": "S1-apply-C",
+   "session": 2,
+   "arm": "lexical",
+   "condition": "C",
+   "question": "What did we decide about round_total?",
+   "gold": [
+    "pricing.py::round_total"
+   ],
+   "obsolete": [],
+   "had_commit": true,
+   "parsed": [
+    "pricing.py::round_total"
+   ],
+   "hallucinated": [],
+   "stale": [],
+   "pass": true,
+   "model_calls": 1,
+   "prompt_tokens": 129,
+   "completion_tokens": 1663,
+   "latency_ms": 7727.9
+  },
+  {
+   "id": "S1-propose-C",
+   "session": 1,
+   "arm": "tunic-select",
+   "condition": "C",
+   "question": "What decision did we record about round_total?",
+   "gold_triple": [
+    "decided_by",
+    "pricing.py::round_total",
+    "notes/decisions.md::document"
+   ],
+   "context_sha": "aa3d80c8fe3fb798",
+   "advisory_identified": [],
+   "proposal": {
+    "rel": "decided_by",
+    "subject": "pricing.py::round_total",
+    "object": "notes/decisions.md::document"
+   },
+   "proposal_error": null,
+   "reconcile_action": "add",
+   "committed": true,
+   "commit_reason": "reconcile=add; committed",
+   "assertions_before": 5,
+   "assertions_after": 6,
+   "duplicate_rows_added": 0,
+   "pass": true,
+   "model_calls": 2,
+   "prompt_tokens": 1051,
+   "completion_tokens": 5759,
+   "latency_ms": 13653.3,
+   "db": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\tunic-select\\S1-C\\sessions.sqlite",
+   "root": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\tunic-select\\S1-C\\repo"
+  },
+  {
+   "id": "S1-apply-C",
+   "session": 2,
+   "arm": "tunic-select",
+   "condition": "C",
+   "question": "What did we decide about round_total?",
+   "gold": [
+    "pricing.py::round_total"
+   ],
+   "obsolete": [],
+   "had_commit": true,
+   "parsed": [
+    "pricing.py::round_total"
+   ],
+   "hallucinated": [],
+   "stale": [],
+   "pass": true,
+   "model_calls": 1,
+   "prompt_tokens": 479,
+   "completion_tokens": 2120,
+   "latency_ms": 9920.6
+  },
+  {
+   "id": "S2-propose-A",
+   "session": 1,
+   "arm": "lexical",
+   "condition": "A",
+   "question": "What must change if round_total changes, and why?",
+   "gold_triple": [
+    "depends_on",
+    "checkout.py::place_order",
+    "pricing.py::round_total"
+   ],
+   "context_sha": "93ec0e865c314f2f",
+   "advisory_identified": [],
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "dispatch.py::apply",
+    "object": "pricing.py::round_total"
+   },
+   "proposal_error": null,
+   "reconcile_action": null,
+   "committed": false,
+   "commit_reason": "reviewer rejected: does not match verified outcome",
+   "assertions_before": 5,
+   "assertions_after": 5,
+   "duplicate_rows_added": 0,
+   "pass": false,
+   "model_calls": 2,
+   "prompt_tokens": 499,
+   "completion_tokens": 5933,
+   "latency_ms": 12600.2,
+   "db": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\lexical\\S2-A\\sessions.sqlite",
+   "root": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\lexical\\S2-A\\repo"
+  },
+  {
+   "id": "S2-apply-A",
+   "session": 2,
+   "arm": "lexical",
+   "condition": "A",
+   "question": "What else must change if round_total changes?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "obsolete": [],
+   "had_commit": false,
+   "parsed": [
+    "dispatch.py::apply"
+   ],
+   "hallucinated": [],
+   "stale": [],
+   "pass": false,
+   "model_calls": 1,
+   "prompt_tokens": 172,
+   "completion_tokens": 2219,
+   "latency_ms": 10341.7
+  },
+  {
+   "id": "S2-propose-A",
+   "session": 1,
+   "arm": "tunic-select",
+   "condition": "A",
+   "question": "What must change if round_total changes, and why?",
+   "gold_triple": [
+    "depends_on",
+    "checkout.py::place_order",
+    "pricing.py::round_total"
+   ],
+   "context_sha": "b544d25f3dcef646",
+   "advisory_identified": [],
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "reconcile_action": null,
+   "committed": false,
+   "commit_reason": "claims fence is empty",
+   "assertions_before": 5,
+   "assertions_after": 5,
+   "duplicate_rows_added": 0,
+   "pass": false,
+   "model_calls": 2,
+   "prompt_tokens": 1357,
+   "completion_tokens": 6834,
+   "latency_ms": 17482.1,
+   "db": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\tunic-select\\S2-A\\sessions.sqlite",
+   "root": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\tunic-select\\S2-A\\repo"
+  },
+  {
+   "id": "S2-apply-A",
+   "session": 2,
+   "arm": "tunic-select",
+   "condition": "A",
+   "question": "What else must change if round_total changes?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "obsolete": [],
+   "had_commit": false,
+   "parsed": [],
+   "hallucinated": [],
+   "stale": [],
+   "pass": false,
+   "model_calls": 1,
+   "prompt_tokens": 601,
+   "completion_tokens": 3023,
+   "latency_ms": 14438.1
+  },
+  {
+   "id": "S2-propose-B",
+   "session": 1,
+   "arm": "lexical",
+   "condition": "B",
+   "question": "What must change if round_total changes, and why?",
+   "gold_triple": [
+    "depends_on",
+    "checkout.py::place_order",
+    "pricing.py::round_total"
+   ],
+   "context_sha": "93ec0e865c314f2f",
+   "advisory_identified": [],
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "dispatch.py::apply",
+    "object": "pricing.py::round_total"
+   },
+   "proposal_error": null,
+   "reconcile_action": null,
+   "committed": false,
+   "commit_reason": "reviewer rejected: does not match verified outcome",
+   "assertions_before": 5,
+   "assertions_after": 5,
+   "duplicate_rows_added": 0,
+   "pass": false,
+   "model_calls": 2,
+   "prompt_tokens": 450,
+   "completion_tokens": 7678,
+   "latency_ms": 20610.7,
+   "db": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\lexical\\S2-B\\sessions.sqlite",
+   "root": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\lexical\\S2-B\\repo"
+  },
+  {
+   "id": "S2-apply-B",
+   "session": 2,
+   "arm": "lexical",
+   "condition": "B",
+   "question": "What else must change if round_total changes?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "obsolete": [],
+   "had_commit": false,
+   "parsed": [],
+   "hallucinated": [],
+   "stale": [],
+   "pass": false,
+   "model_calls": 1,
+   "prompt_tokens": 172,
+   "completion_tokens": 1990,
+   "latency_ms": 9537.6
+  },
+  {
+   "id": "S2-propose-B",
+   "session": 1,
+   "arm": "tunic-select",
+   "condition": "B",
+   "question": "What must change if round_total changes, and why?",
+   "gold_triple": [
+    "depends_on",
+    "checkout.py::place_order",
+    "pricing.py::round_total"
+   ],
+   "context_sha": "b544d25f3dcef646",
+   "advisory_identified": [],
+   "proposal": null,
+   "proposal_error": "no tunic-claims fence",
+   "reconcile_action": null,
+   "committed": false,
+   "commit_reason": "no tunic-claims fence",
+   "assertions_before": 5,
+   "assertions_after": 5,
+   "duplicate_rows_added": 0,
+   "pass": false,
+   "model_calls": 2,
+   "prompt_tokens": 1308,
+   "completion_tokens": 7945,
+   "latency_ms": 21355.1,
+   "db": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\tunic-select\\S2-B\\sessions.sqlite",
+   "root": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\tunic-select\\S2-B\\repo"
+  },
+  {
+   "id": "S2-apply-B",
+   "session": 2,
+   "arm": "tunic-select",
+   "condition": "B",
+   "question": "What else must change if round_total changes?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "obsolete": [],
+   "had_commit": false,
+   "parsed": [],
+   "hallucinated": [],
+   "stale": [],
+   "pass": false,
+   "model_calls": 1,
+   "prompt_tokens": 601,
+   "completion_tokens": 2662,
+   "latency_ms": 12739.1
+  },
+  {
+   "id": "S2-propose-C",
+   "session": 1,
+   "arm": "lexical",
+   "condition": "C",
+   "question": "What must change if round_total changes, and why?",
+   "gold_triple": [
+    "depends_on",
+    "checkout.py::place_order",
+    "pricing.py::round_total"
+   ],
+   "context_sha": "93ec0e865c314f2f",
+   "advisory_identified": [],
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "dispatch.py::apply",
+    "object": "pricing.py::round_total"
+   },
+   "proposal_error": null,
+   "reconcile_action": "add",
+   "committed": false,
+   "commit_reason": "reconcile=add; reviewer rejected: does not match verified outcome",
+   "assertions_before": 5,
+   "assertions_after": 5,
+   "duplicate_rows_added": 0,
+   "pass": false,
+   "model_calls": 2,
+   "prompt_tokens": 499,
+   "completion_tokens": 9759,
+   "latency_ms": 26493.2,
+   "db": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\lexical\\S2-C\\sessions.sqlite",
+   "root": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\lexical\\S2-C\\repo"
+  },
+  {
+   "id": "S2-apply-C",
+   "session": 2,
+   "arm": "lexical",
+   "condition": "C",
+   "question": "What else must change if round_total changes?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "obsolete": [],
+   "had_commit": false,
+   "parsed": [],
+   "hallucinated": [],
+   "stale": [],
+   "pass": false,
+   "model_calls": 1,
+   "prompt_tokens": 172,
+   "completion_tokens": 1819,
+   "latency_ms": 8630.9
+  },
+  {
+   "id": "S2-propose-C",
+   "session": 1,
+   "arm": "tunic-select",
+   "condition": "C",
+   "question": "What must change if round_total changes, and why?",
+   "gold_triple": [
+    "depends_on",
+    "checkout.py::place_order",
+    "pricing.py::round_total"
+   ],
+   "context_sha": "b544d25f3dcef646",
+   "advisory_identified": [],
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "reconcile_action": null,
+   "committed": false,
+   "commit_reason": "claims fence is empty",
+   "assertions_before": 5,
+   "assertions_after": 5,
+   "duplicate_rows_added": 0,
+   "pass": false,
+   "model_calls": 2,
+   "prompt_tokens": 1357,
+   "completion_tokens": 6509,
+   "latency_ms": 19417.2,
+   "db": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\tunic-select\\S2-C\\sessions.sqlite",
+   "root": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tunic-multisession-v4-0783th8f\\tunic-select\\S2-C\\repo"
+  },
+  {
+   "id": "S2-apply-C",
+   "session": 2,
+   "arm": "tunic-select",
+   "condition": "C",
+   "question": "What else must change if round_total changes?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "obsolete": [],
+   "had_commit": false,
+   "parsed": [],
+   "hallucinated": [],
+   "stale": [],
+   "pass": false,
+   "model_calls": 1,
+   "prompt_tokens": 601,
+   "completion_tokens": 2694,
+   "latency_ms": 13387.7
+  },
+  {
+   "id": "DUP",
+   "session": 3,
+   "arm": "lexical",
+   "condition": "C",
+   "question": "What decision did we record about round_total?",
+   "proposal": {
+    "rel": "decided_by",
+    "subject": "pricing.py::round_total",
+    "object": "notes/decisions.md::document",
+    "effective": "2026-10-31",
+    "authority": "prior-session"
+   },
+   "proposal_error": null,
+   "reconcile_action": "duplicate",
+   "reconcile_reason": "already asserted: pricing.py::round_total decided_by notes/decisions.md::document",
+   "reproposed_gold": true,
+   "gate_would_commit_without_reconcile": true,
+   "assertions_before": 6,
+   "assertions_after": 6,
+   "pass": true,
+   "model_calls": 1,
+   "prompt_tokens": 354,
+   "completion_tokens": 3915,
+   "latency_ms": 19457.9
+  },
+  {
+   "id": "GATE",
+   "session": 3,
+   "arm": "lexical",
+   "condition": "C",
+   "question": "What must change if add_item changes?",
+   "proposal": {
+    "rel": "decided_by",
+    "subject": "pricing.py::round_total",
+    "object": "notes/decisions.md::document"
+   },
+   "proposal_error": null,
+   "committed": false,
+   "pass": true,
+   "model_calls": 1,
+   "prompt_tokens": 287,
+   "completion_tokens": 4813,
+   "context": "cart.py::add_item\n\n---\ncheckout.py::place_order\n\n---\nnotes/decisions.md\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n",
+   "response": "```symbols\npricing.py::round_total\n```\n\n```tunic-claims\n[{\"rel\": \"decided_by\", \"subject\": \"pricing.py::round_total\", \"object\": \"notes/decisions.md::document\"}]\n```",
+   "latency_ms": 24077.2
+  },
+  {
+   "id": "CORR",
+   "session": 4,
+   "arm": "lexical",
+   "condition": "-",
+   "question": "What else must change if round_total changes?",
+   "parsed": [
+    "dispatch.py::apply",
+    "checkout.py::place_order"
+   ],
+   "stale": [
+    "checkout.py::place_order"
+   ],
+   "pass": false,
+   "model_calls": 1,
+   "prompt_tokens": 306,
+   "completion_tokens": 1787,
+   "context": "pricing.py::round_total\n\n---\ndispatch.py::apply\n\n---\nnotes/decisions.md\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n\r\nDECISION 2026-10-27: checkout totals resolve through dispatch.apply with the standard strategy, which names `pricing.py::round_total`.\r\n\n---\nnotes/proposed.md\n\r\n\r\n# Recorded outcome\r\n\r\n```tunic-claims\r\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\", \"object\": \"pricing.py::round_total\", \"effective\": \"2026-10-31\", \"authority\": \"reviewer\"}]\r\n```\r\n\r\n\r\n# Recorded outcome\r\n\r\n```tunic-claims\r\n[{\"rel\": \"retracts\", \"subject\": \"checkout.py::place_order\", \"object\": \"pricing.py::round_total\", \"effective\": \"2026-10-31\", \"authority\": \"reviewer\", \"retrac",
+   "response": "```symbols\ndispatch.py::apply\ncheckout.py::place_order\n```",
+   "latency_ms": 8579.2
+  },
+  {
+   "id": "DUP",
+   "session": 3,
+   "arm": "tunic-select",
+   "condition": "C",
+   "question": "What decision did we record about round_total?",
+   "proposal": {
+    "rel": "decided_by",
+    "subject": "pricing.py::round_total",
+    "object": "notes/decisions.md::document"
+   },
+   "proposal_error": null,
+   "reconcile_action": "duplicate",
+   "reconcile_reason": "already asserted: pricing.py::round_total decided_by notes/decisions.md::document",
+   "reproposed_gold": true,
+   "gate_would_commit_without_reconcile": true,
+   "assertions_before": 6,
+   "assertions_after": 6,
+   "pass": true,
+   "model_calls": 1,
+   "prompt_tokens": 631,
+   "completion_tokens": 3607,
+   "latency_ms": 17577.9
+  },
+  {
+   "id": "GATE",
+   "session": 3,
+   "arm": "tunic-select",
+   "condition": "C",
+   "question": "What must change if add_item changes?",
+   "proposal": {
+    "rel": "decided_by",
+    "subject": "pricing.py::round_total",
+    "object": "notes/decisions.md::document"
+   },
+   "proposal_error": null,
+   "committed": false,
+   "pass": true,
+   "model_calls": 1,
+   "prompt_tokens": 575,
+   "completion_tokens": 5424,
+   "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  cart.py::add_item [best match: name; stages: name,lexical]\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  (none)\nASSERTED CLAIMS (source text; do not present as verified fact):\n  (none)\nCORRECTIONS (graph operations; the named knowledge was removed):\n  (none)\nDISPUTED (contested; do not treat as settled either way):\n  (none)\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  checkout.py::place_order [best stage: lexical; graph ties: 2; anchored ties: 0; no graph path to the named subject; discovery noise for this impact query]\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  notes/decisions.md::document -> pricing.py::round_total [lexical_discovery] says: \"# Rounding decision DECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`. Display prices must never exceed the computed charge.\"\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. CORRECTIONS describe removed or replaced knowledge; never list a corrected, retracted, or superseded symbol as an answer. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
+   "response": "```symbols\npricing.py::round_total\n```\n\n```tunic-claims\n[{\"rel\": \"decided_by\", \"subject\": \"pricing.py::round_total\", \"object\": \"notes/decisions.md::document\"}]\n```",
+   "latency_ms": 26804.3
+  },
+  {
+   "id": "CORR",
+   "session": 4,
+   "arm": "tunic-select",
+   "condition": "-",
+   "question": "What else must change if round_total changes?",
+   "parsed": [],
+   "stale": [],
+   "pass": true,
+   "model_calls": 1,
+   "prompt_tokens": 668,
+   "completion_tokens": 3253,
+   "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  pricing.py::round_total [best match: name; stages: name,lexical]\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  (none)\nASSERTED CLAIMS (source text; do not present as verified fact):\n  (none)\nCORRECTIONS (graph operations; the named knowledge was removed):\n  retracts checkout.py::place_order pricing.py::round_total [authority=reviewer status=asserted_in_source supports=0 retractions=0] [obsolete depends_on; neither endpoint is an answer]\nDISPUTED (contested; do not treat as settled either way):\n  depends_on checkout.py::place_order pricing.py::round_total [authority=reviewer status=asserted_in_source supports=1 retractions=1]\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  dispatch.py::apply [best stage: lexical; graph ties: 1; anchored ties: 0; no graph path to the named subject; discovery noise for this impact query]\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  notes/decisions.md::document -> pricing.py::round_total [lexical_discovery] says: \"# Rounding decision DECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`. Display prices must never exceed the computed charge. DECISION 2026-10-27: checkout totals resolve thro\"\n  notes/decisions.md::document -> None [syntactic_observation] says: \"# Rounding decision DECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`. Display prices must never exceed the computed charge. DECISION 2026-10-27: checkout totals resolve thro\"\n  notes/decisions.md::document -> None [syntactic_observation] says: \"# Rounding decision DECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`. Display prices must never exceed the computed charge. DECISION 2026-10-27: checkout totals resolve thro\"\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. CORRECTIONS describe removed or replaced knowledge; never list a corrected, retracted, or superseded symbol as an answer. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
+   "response": "```\n\n```",
+   "latency_ms": 15800.0
+  }
+ ],
+ "limitations": [
+  "n=1 per cell, temperature 0; directional evidence only.",
+  "Oracle reviewer stands in for tests/human review.",
+  "S2 gold asserts place_order->round_total directly though code indirection runs via dispatch.apply."
+ ]
+}
