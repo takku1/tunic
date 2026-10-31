@@ -1,0 +1,67 @@
+{
+ "benchmark": "model-ab-conflict-live-rep2",
+ "protocol": "reviewer-accepted contradicts against the S2 edge, no oracle; model proposes with A3 candidates; product commit_proposal must refuse via conflict, file frontier, write nothing; disambiguation runs live",
+ "model": "qwen3:4b",
+ "decoding": {
+  "temperature": 0,
+  "seed": 0
+ },
+ "context_cap": 4000,
+ "tunic_commit": "3594d0e087047e9cc3542ecebdc9f600c9aa2177",
+ "summary": {
+  "lexical": true,
+  "tunic-select": false
+ },
+ "tasks": [
+  {
+   "id": "CONFLICT-live",
+   "session": 1,
+   "arm": "lexical",
+   "question": "What must change if round_total changes, and why?",
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "checkout.py::place_order",
+    "object": "pricing.py::round_total"
+   },
+   "proposal_error": null,
+   "committed": false,
+   "reconcile_action": "conflict",
+   "reconcile_reason": "contradicts claim blocks checkout.py::place_order depends_on pricing.py::round_total; record a correction first; disambiguation abstained (no tunic-claims fence)",
+   "disambiguated_proposal": null,
+   "frontier_entries": 1,
+   "assertions_before": 7,
+   "assertions_after": 7,
+   "pass": true,
+   "model_calls": 2,
+   "prompt_tokens": 457,
+   "completion_tokens": 4031,
+   "latency_ms": 19310.4,
+   "response": "```symbols\ndispatch.py::apply\ncheckout.py::place_order\n```\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\", \"object\": \"pricing.py::round_total\"}]\n```"
+  },
+  {
+   "id": "CONFLICT-live",
+   "session": 1,
+   "arm": "tunic-select",
+   "question": "What must change if round_total changes, and why?",
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "claims fence is empty",
+   "reconcile_reason": null,
+   "disambiguated_proposal": null,
+   "frontier_entries": 0,
+   "assertions_before": 7,
+   "assertions_after": 7,
+   "pass": false,
+   "model_calls": 2,
+   "prompt_tokens": 882,
+   "completion_tokens": 3483,
+   "latency_ms": 16725.6,
+   "response": "```symbols\n\n```\n\n```tunic-claims\n[]\n```"
+  }
+ ],
+ "limitations": [
+  "n=1 per arm, temperature 0; directional evidence only.",
+  "Contradicts claim stands in for reviewer-accepted correction."
+ ]
+}

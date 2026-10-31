@@ -626,6 +626,83 @@ class FrontierIngestTests(unittest.TestCase):
         self.assertIn("STRATEGIES", entries[0]["task"])
 
 
+class FrontierReplayTests(unittest.TestCase):
+    """Resolution requires proof: manual resolve needs evidence, replay re-checks."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.root = self.tmp / "repo"
+        self.root.mkdir()
+        (self.root / "core.py").write_bytes(b"def calculate(x):\n    return x + 1\n")
+
+    def _memory(self):
+        memory = Memory(str(self.tmp / "memory.sqlite"), self.root)
+        self.addCleanup(memory.close)
+        return memory
+
+    def test_resolve_without_evidence_is_refused(self):
+        memory = self._memory()
+        memory.ingest()
+        entry_id, _ = memory.frontier_record(
+            "unsupported", "resolve dispatch", "static_edge_unresolved")
+        with self.assertRaises(ValueError):
+            memory.frontier_transition(entry_id, "resolved")
+        self.assertEqual(memory.frontier_list(status="open")[0]["id"], entry_id)
+
+    def test_abstention_replay_resolves_when_evidence_arrives(self):
+        memory = self._memory()
+        memory.ingest()
+        question = "Zebra xylophone quark jigsaw zephyr quandary?"
+        self.assertEqual(memory.answer(question)["outcome"], "empty")
+        entry_id = memory.frontier_list(status="open")[0]["id"]
+        self.assertEqual(memory.frontier_replay(entry_id)[0], "open")
+        (self.root / "zebra.py").write_bytes(
+            b"def xylophone(quark):\n    return quark\n")
+        memory.ingest()
+        status, verification = memory.frontier_replay(entry_id)
+        self.assertEqual(status, "resolved")
+        self.assertIn("zebra.py::xylophone", verification)
+        self.assertEqual(memory.frontier_list(status="resolved")[0]["id"], entry_id)
+
+    def test_dispatch_replay_tracks_candidate_then_commit(self):
+        (self.root / "pricing.py").write_bytes(b"def round_total(cart):\n    return cart\n")
+        (self.root / "dispatch.py").write_bytes(
+            b"from pricing import round_total\n\nSTRATEGIES = {\"standard\": round_total}\n\n\n"
+            b"def apply(strategy, cart):\n    return STRATEGIES[strategy](cart)\n")
+        (self.root / "checkout.py").write_bytes(
+            b"from dispatch import apply\n\n\ndef place_order(cart):\n"
+            b"    return apply(\"standard\", cart)\n")
+        memory = self._memory()
+        memory.ingest()
+        entries = [e for e in memory.frontier_list(status="open")
+                   if e["failure"] == "ingest_dispatch_unresolved"
+                   and e["target"] == "dispatch.py::STRATEGIES"]
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(memory.frontier_replay(entries[0]["id"])[0], "investigating")
+        committed, action, _ = memory.commit_proposal(
+            "checkout.py::place_order", "pricing.py::round_total")
+        self.assertEqual((committed, action), (True, "add"))
+        memory.ingest()
+        status, verification = memory.frontier_replay(entries[0]["id"])
+        self.assertEqual(status, "resolved")
+        self.assertIn("checkout.py::place_order", verification)
+
+    def test_parse_error_replay(self):
+        (self.root / "broken.py").write_bytes(b"def oops(:\n    pass\n")
+        memory = self._memory()
+        memory.ingest()
+        entries = [e for e in memory.frontier_list(status="open")
+                   if e["failure"] == "ingest_parse_error"]
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(memory.frontier_replay(entries[0]["id"])[0], "open")
+        (self.root / "broken.py").write_bytes(b"def oops():\n    pass\n")
+        memory.ingest()
+        status, verification = memory.frontier_replay(entries[0]["id"])
+        self.assertEqual(status, "resolved")
+        self.assertIn("symbols", verification)
+
+
 class UnicodeWindowTests(unittest.TestCase):
     """Evidence windows must not split multibyte characters."""
 

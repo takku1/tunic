@@ -150,9 +150,11 @@ class Memory:
                       or diagnostic.get("expression") or diagnostic.get("path", ""))
             task = template % (detail, path, line)
             ref = "%s:%s" % (digests.get(path, path), line)
+            target = (diagnostic.get("table") or diagnostic.get("expression")
+                      or path or None)
             self._frontier_upsert(
                 kind, task, "ingest_%s" % diagnostic.get("kind"),
-                source_refs=(ref,),
+                source_refs=(ref,), target=target,
                 required_evidence=("supporting evidence",))
             filed += 1
         return filed
@@ -220,7 +222,8 @@ class Memory:
         return True, action, reason
 
     def _frontier_upsert(self, kind, task, failure, source_refs=(),
-                         required_evidence=(), candidate_explanations=()):
+                         required_evidence=(), candidate_explanations=(),
+                         target=None):
         """Record an unresolved observation, or bump recurrence of the open one.
 
         Diagnostic write, not a claim: entries never traverse, corroborate,
@@ -246,7 +249,7 @@ class Memory:
                 self.store.connection.commit()
                 return record["id"], False
         record = {"kind": kind, "status": "open", "task": task,
-                  "failure": failure, "source_refs": refs,
+                  "failure": failure, "target": target, "source_refs": refs,
                   "candidate_explanations": list(candidate_explanations),
                   "required_evidence": list(required_evidence),
                   "attempts": 0, "recurrence": 1,
@@ -263,12 +266,19 @@ class Memory:
         return record["id"], True
 
     def frontier_record(self, kind, task, failure, source_refs=(),
-                        required_evidence=(), candidate_explanations=()):
-        """Record an unresolved observation in the frontier ledger."""
+                        required_evidence=(), candidate_explanations=(),
+                        target=None):
+        """Record an unresolved observation in the frontier ledger.
+
+        target names the replayable subject: a registry table
+        (path::TABLE), a call expression, or a file path, depending on
+        the failure kind. Entries without a target cannot auto-replay.
+        """
         authorize(self.principal, "review")
         return self._frontier_upsert(kind, task, failure, source_refs=source_refs,
                                      required_evidence=required_evidence,
-                                     candidate_explanations=candidate_explanations)
+                                     candidate_explanations=candidate_explanations,
+                                     target=target)
 
     def frontier_list(self, status=None):
         """List ledger entries, highest priority first."""
@@ -296,6 +306,9 @@ class Memory:
         record = json.loads(row[0])
         if record.get("status") in ("resolved", "dismissed"):
             raise ValueError("entry %s is terminal (%s)" % (entry_id, record.get("status")))
+        if status == "resolved" and not resolution:
+            raise ValueError("resolving %s requires verification evidence, "
+                             "not just a status flip" % entry_id)
         record["status"] = status
         record["updated_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         if resolution is not None:
@@ -306,6 +319,94 @@ class Memory:
             (json.dumps(record, sort_keys=True), entry_id))
         self.store.connection.commit()
         return record
+
+    def frontier_replay(self, entry_id):
+        """Re-check an entry against current graph state; resolve only on proof.
+
+        Kind-dispatched: abstentions re-run the task (non-empty answers
+        resolve); dispatch/static-edge entries resolve when an asserted
+        edge covers a proposed candidate from the recorded table, and move
+        to investigating when a candidate exists but nothing is committed;
+        parse errors resolve when the file parses with symbols again.
+        A vanished diagnostic alone never resolves: without positive
+        evidence the entry moves to investigating at most. Manual
+        resolution with verification evidence remains available for
+        reviewer-verified cycles. Returns (status, verification).
+        """
+        authorize(self.principal, "review")
+        row = self.store.connection.execute(
+            "SELECT record FROM frontier WHERE id=?", (entry_id,)).fetchone()
+        if row is None:
+            raise ValueError("unknown frontier entry: " + entry_id)
+        record = json.loads(row[0])
+        if record.get("status") in ("resolved", "dismissed"):
+            resolution = record.get("resolution") or {}
+            return record["status"], resolution.get("note", "")
+        failure, target = record.get("failure", ""), record.get("target")
+        snapshot, view = self.store.view()
+        assertions = view["assertions"]
+
+        def table_candidates():
+            return [a for a in assertions
+                    if (a.get("proposition", {}).get("via") == "registry_dispatch"
+                        and (a.get("derivation") or {}).get("table") == target)]
+
+        def table_diagnostics():
+            return [d for d in view.get("diagnostics", [])
+                    if d.get("kind") == "dispatch_unresolved"
+                    and d.get("table") == target]
+
+        if failure == "retrieval_abstention":
+            found = self.answer(record.get("task", ""))
+            if found["outcome"] != "empty":
+                top = [c["symbol"] for c in found["candidates"][:3]]
+                return self.frontier_transition(
+                    entry_id, "resolved",
+                    resolution="task now retrieves: %s" % ", ".join(top),
+                    resolved_by="frontier_replay")["status"], \
+                    "task now retrieves: %s" % ", ".join(top)
+            return record["status"], "task still abstains"
+        if failure in ("static_edge_unresolved", "ingest_dispatch_unresolved"):
+            if not target:
+                return record["status"], "no replayable target recorded"
+            covered = {(a.get("proposition", {}).get("caller"),
+                        a.get("proposition", {}).get("callee"))
+                       for a in assertions
+                       if a.get("status") == "asserted_in_source"
+                       and a.get("proposition", {}).get("relation") == "depends_on"}
+            for candidate in table_candidates():
+                proposition = candidate.get("proposition", {})
+                if (proposition.get("caller"), proposition.get("callee")) in covered:
+                    note = "asserted edge covers %s -> %s" % (
+                        proposition.get("caller"), proposition.get("callee"))
+                    self.frontier_transition(entry_id, "resolved", resolution=note,
+                                             resolved_by="frontier_replay")
+                    return "resolved", note
+            if table_candidates():
+                self.frontier_transition(entry_id, "investigating",
+                                         resolution="candidate present, awaiting verification",
+                                         resolved_by="frontier_replay")
+                return "investigating", "candidate present, awaiting verification"
+            if not table_diagnostics():
+                return record["status"], "failure no longer reported; positive evidence still required"
+            return record["status"], "table still unresolved"
+        if failure == "ingest_parse_error":
+            if any(d.get("kind") == "parse_error" and d.get("path") == target
+                   for d in view.get("diagnostics", [])):
+                return record["status"], "file still fails to parse"
+            symbols = [s for s in view["symbols"] if s.get("path") == target]
+            if symbols:
+                note = "file parses with %d symbols" % len(symbols)
+                self.frontier_transition(entry_id, "resolved", resolution=note,
+                                         resolved_by="frontier_replay")
+                return "resolved", note
+            return "investigating", "parse error gone but no symbols yet"
+        if failure == "ingest_unresolved_call":
+            if any(d.get("kind") == "unresolved_call" and d.get("expression") == target
+                   for d in view.get("diagnostics", [])):
+                return record["status"], "call still unresolved"
+            return "investigating", "diagnostic gone; resolving edge not confirmed"
+        return record["status"], "no replay rule for this failure kind"
 
     def promote(self, subject, object, rel="depends_on", effective=None,
                 authority="agent-outcome", document="notes/outcomes.md", note=None):
