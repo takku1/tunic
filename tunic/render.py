@@ -144,6 +144,16 @@ def render_answer_text(result, *, cap=4000, receipt=None):
         (observed if verification == "syntactic_path_only" else asserted).append(
             entry.get("symbol", "?"))
     disputed, claims, corrections = [], [], []
+    nets = {}
+    for claim in result.get("claims") or []:
+        relation = claim.get("relation", "?")
+        if relation in ("retracts", "corrects", "supersedes"):
+            continue
+        key = (relation, claim.get("caller"),
+               claim.get("callee") or claim.get("candidate"))
+        supports, retractions = nets.get(key, (0, 0))
+        nets[key] = (max(supports, claim.get("supports") or 0),
+                     max(retractions, claim.get("retractions") or 0))
     for claim in result.get("claims") or []:
         relation = claim.get("relation", "?")
         text = "%s %s %s [authority=%s status=%s supports=%s retractions=%s]" % (
@@ -152,29 +162,47 @@ def render_answer_text(result, *, cap=4000, receipt=None):
             claim.get("authority", "?"), claim.get("status", "?"),
             claim.get("supports", 0), claim.get("retractions", 0))
         if relation in ("retracts", "corrects", "supersedes"):
-            # Meta-operations on the graph, not object-level evidence: a
-            # retracts/corrects/supersedes line explains removed knowledge.
-            # Rendering it as an asserted claim lets a model re-list the
-            # obsolete symbol as an answer (MS-correct regression).
-            corrections.append(text + " [obsolete %s; neither endpoint is an answer]" %
-                               (claim.get("retract") or relation))
+            # Meta-operations on the graph, not object-level evidence.
+            # A withdrawal that still leaves net support is history, not
+            # a prohibition; only a dead edge forbids its endpoints.
+            # Rendering a live-edge withdrawal as obsolete pushes the
+            # model to abstain on questions it should answer (B1-support).
+            target = (claim.get("retract") or relation,
+                      claim.get("caller"), claim.get("callee"))
+            net = nets.get(target, (0, 0))
+            if relation == "retracts" and net[0] > net[1]:
+                corrections.append(text + " [withdrawn but the edge survives "
+                                   "on remaining support; see DISPUTED]")
+            elif relation == "retracts":
+                corrections.append(text + " [obsolete %s; neither endpoint is an answer]" %
+                                   target[0])
+            else:
+                corrections.append(text + " [replaced: %s is obsolete; %s may be current]" %
+                                   (claim.get("callee"), claim.get("caller")))
         elif relation == "contradicts" or (claim.get("retractions") or 0) > 0:
             disputed.append(text)
         else:
             claims.append(text)
     selection = result.get("selection") or {}
     trace = selection.get("trace") or {}
-    withheld = [d.get("symbol", "?") for d in trace.get("decisions") or []
+    withheld = [(d.get("symbol", "?"), "; ".join(d.get("reasons") or []))
+                for d in trace.get("decisions") or []
                 if d.get("outcome") in ("insufficient_evidence", "out_of_scope")]
     for decision in trace.get("decisions") or []:
         if decision.get("outcome") == "contradicted":
             disputed.append(decision.get("symbol", "?")
                             + " [selection: contradicted, kept but flagged]")
     mentions = result.get("mentions") or []
-    mention_lines = ["  %s -> %s [%s]" % (mention.get("mentioner", "?"),
-                                          mention.get("candidate",
-                                                      mention.get("symbol", "?")),
-                                          mention.get("status", "?"))
+    def mention_window(mention):
+        window = ((mention.get("evidence") or {}).get("window") or "")
+        window = " ".join(window.split())
+        return window[:200]
+    mention_lines = ["  %s -> %s [%s]%s" % (mention.get("mentioner", "?"),
+                                            mention.get("candidate",
+                                                        mention.get("symbol", "?")),
+                                            mention.get("status", "?"),
+                                            (" says: \"%s\"" % mention_window(mention))
+                                            if mention_window(mention) else "")
                      for mention in mentions[:10]]
     trust = ("TRUST RULE: OBSERVED lines are verified static-code facts. "
              "ASSERTED lines are session-recorded claims with their authority "
@@ -198,7 +226,8 @@ def render_answer_text(result, *, cap=4000, receipt=None):
         ("disputed", "DISPUTED (contested; do not treat as settled either way):",
          ["  " + text for text in dedup(disputed)] or ["  (none)"], False),
         ("withheld", "WITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):",
-         ["  " + symbol for symbol in withheld] or ["  (none)"], False),
+         ["  " + symbol + (" [%s]" % reasons if reasons else "")
+          for symbol, reasons in withheld] or ["  (none)"], False),
         ("mentions", "TEXT MENTIONS (lexical co-occurrence, not a code relationship):",
          mention_lines or ["  (none)"], False),
     ]

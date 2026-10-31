@@ -126,10 +126,78 @@ class RenderAnswerTrustTest(unittest.TestCase):
         self.assertIn("retracts checkout.py::place_order", corrections)
         self.assertIn("obsolete", corrections)
 
+    def test_mention_lines_carry_prose_window(self):
+        mention = {"mentioner": "notes/decisions.md::document",
+                   "candidate": "pricing.py::round_total",
+                   "status": "syntactic_observation",
+                   "evidence": {"window": "We round down at totals; see more here."}}
+        result = {"candidates": [], "impacts": [], "mentions": [mention],
+                  "claims": [], "selection": None}
+        text = render_answer_text(result)
+        mentions = text.split("TEXT MENTIONS")[1].split("TRUST RULE")[0]
+        self.assertIn("We round down at totals", mentions)
+
     def test_zero_cap_returns_empty(self):
         receipt = {}
         self.assertEqual(render_answer_text({"candidates": []}, cap=0, receipt=receipt), "")
         self.assertTrue(receipt["truncated"])
+
+    def test_live_withdrawal_is_history_not_prohibition(self):
+        live = {"relation": "depends_on", "caller": "a.py::x",
+                "callee": "a.py::y", "authority": "n",
+                "status": "asserted_in_source", "supports": 2, "retractions": 1}
+        drop = {"relation": "retracts", "caller": "a.py::x",
+                "callee": "a.py::y", "authority": "n",
+                "status": "asserted_in_source", "supports": 0, "retractions": 0,
+                "retract": "depends_on"}
+        result = {"candidates": [], "impacts": [], "mentions": [],
+                  "claims": [dict(live), dict(drop)], "selection": None}
+        text = render_answer_text(result)
+        corrections = text.split("CORRECTIONS")[1].split("DISPUTED")[0]
+        self.assertIn("survives on remaining support", corrections)
+        self.assertNotIn("neither endpoint is an answer", corrections)
+
+    def test_dead_edge_withdrawal_forbids_endpoints(self):
+        dead = {"relation": "depends_on", "caller": "a.py::x",
+                "callee": "a.py::y", "authority": "n",
+                "status": "asserted_in_source", "supports": 1, "retractions": 1}
+        drop = {"relation": "retracts", "caller": "a.py::x",
+                "callee": "a.py::y", "authority": "n",
+                "status": "asserted_in_source", "supports": 0, "retractions": 0,
+                "retract": "depends_on"}
+        result = {"candidates": [], "impacts": [], "mentions": [],
+                  "claims": [dict(dead), dict(drop)], "selection": None}
+        text = render_answer_text(result)
+        corrections = text.split("CORRECTIONS")[1].split("DISPUTED")[0]
+        self.assertIn("neither endpoint is an answer", corrections)
+
+    def test_supersession_names_current_successor(self):
+        old = {"relation": "decided_by", "caller": "a.py::x",
+               "callee": "a.py::old", "authority": "n",
+               "status": "asserted_in_source", "supports": 1, "retractions": 0}
+        new = {"relation": "supersedes", "caller": "a.py::new",
+               "callee": "a.py::old", "authority": "n",
+               "status": "asserted_in_source", "supports": 0, "retractions": 0}
+        result = {"candidates": [], "impacts": [], "mentions": [],
+                  "claims": [dict(old), dict(new)], "selection": None}
+        text = render_answer_text(result)
+        corrections = text.split("CORRECTIONS")[1].split("DISPUTED")[0]
+        self.assertIn("a.py::old is obsolete", corrections)
+        self.assertIn("a.py::new may be current", corrections)
+        self.assertNotIn("neither endpoint is an answer", corrections)
+
+    def test_withheld_carries_successor_pointer(self):
+        result = {"candidates": [], "impacts": [], "mentions": [],
+                  "claims": [],
+                  "selection": {"kept": [],
+                                "trace": {"decisions": [{"symbol": "a.py::old",
+                                                         "outcome": "out_of_scope",
+                                                         "reasons": ["superseded by a.py::new",
+                                                                     "under current policy"]}]}}}
+        text = render_answer_text(result)
+        withheld = text.split("WITHHELD")[1].split("TEXT MENTIONS")[0]
+        self.assertIn("a.py::old", withheld)
+        self.assertIn("superseded by a.py::new", withheld)
 
     def test_contradicted_kept_is_surfaced_not_hidden(self):
         result = {"candidates": [{"symbol": "a.py::x", "score": 0.9,

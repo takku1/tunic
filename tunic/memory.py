@@ -298,14 +298,39 @@ class Memory:
         else:
             top = [key for _, key, _ in fused]
         origins = {key: ranks for _, key, ranks in fused}
-        order = {"exact": 0, "name": 1, "lexical": 2, "semantic": 3}
+        order = {"exact": 0, "name": 1, "lexical": 2, "semantic": 3, "graph": -1}
         known = {row["key"] for row in view["symbols"]}
         unknown_symbols = [key for key in top if key not in known]
         top = [key for key in top if key in known]
+        scores = {name: score for score, name, _ in fused}
+        subjects = [key for _, key, ranks in fused
+                    if "exact" in ranks or "name" in ranks]
+        followed = []
+        if subjects:
+            # Successor following: a named subject the graph records as
+            # replaced names its replacement; the replacement joins the
+            # candidates as a graph-sourced pointer but is not expanded:
+            # its own dependency neighborhood answers a different question,
+            # and expanding it reintroduces stale callers under current
+            # policy (the supersedes edge itself is the evidence).
+            from .selection import _live_claim_maps
+            superseded_by, _ = _live_claim_maps(view)
+            for subject in subjects:
+                if subject not in known:
+                    continue
+                for replacement in superseded_by.get(subject, []):
+                    if (replacement in known and replacement not in top
+                            and replacement not in scores):
+                        top.append(replacement)
+                        followed.append(replacement)
+                        origins[replacement] = {"graph": 1}
+                        scores[replacement] = scores.get(subject, 0.0)
         impacts = {}
         mentions = []
         claims = []
         for symbol in top:
+            if symbol in followed:
+                continue
             related = compiler.compile_related(self.store, symbol, snapshot=snapshot,
                                                policy=policy)
             for entry in related["impact"]["impacts"]:
@@ -318,8 +343,7 @@ class Memory:
                 "fusion": "weighted_rrf_k60", "provider": provider.name,
                 "budget": caps, "threshold": threshold, "stages": stages,
                 "candidates": [{"symbol": key,
-                                "score": next(score for score, name, _ in fused
-                                              if name == key),
+                                "score": scores[key],
                                 "match": min(origins[key], key=order.__getitem__),
                                 "origins": origins[key]} for key in top],
                 "impacts": [impacts[key] for key in sorted(impacts)],

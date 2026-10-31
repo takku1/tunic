@@ -18,7 +18,8 @@ def _evidence(store, record, snapshot):
     if not 0 <= start < end <= len(source["data"]):
         raise ValueError("invalid evidence coordinates")
     return {"source": source["id"], "path": source["path"], "digest": source["digest"],
-            "start": start, "end": end, "excerpt": source["data"][start:end].decode("utf-8")}
+            "start": start, "end": end, "excerpt": source["data"][start:end].decode("utf-8"),
+            "window": source["data"][max(0, start - 160):min(len(source["data"]), end + 160)].decode("utf-8")}
 
 
 def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100, policy="transparent"):

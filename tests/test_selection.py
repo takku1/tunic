@@ -267,6 +267,47 @@ class AnchoredAnswerTests(unittest.TestCase):
         self.assertEqual(decisions.get("m.py::caller"), "supported")
 
 
+class SuccessorTests(unittest.TestCase):
+    def successor_repo(self, tmp):
+        import shutil
+        from pathlib import Path
+        from tunic.memory import Memory
+        fixture = Path(__file__).resolve().parents[1] / "benchmarks/agent/repo"
+        root = Path(tmp) / "repo"
+        shutil.copytree(fixture, root,
+                        ignore=shutil.ignore_patterns("__pycache__"))
+        (root / "notes" / "outcome.md").unlink()
+        memory = Memory(str(Path(tmp) / "s.sqlite"), root)
+        memory.ingest()
+        memory.record_outcome("pricing.py::round_total",
+                              "notes/decisions.md::document",
+                              rel="decided_by", document="notes/d1.md",
+                              note="round down at totals")
+        memory.record_outcome("pricing.py::discount",
+                              "notes/decision2.md::document",
+                              rel="decided_by", document="notes/d2.md",
+                              note="rounding moved into discount")
+        memory.record_outcome("pricing.py::discount", "pricing.py::round_total",
+                              rel="supersedes", document="notes/d2.md",
+                              note="discount replaces round_total")
+        memory.ingest()
+        return memory
+
+    def test_superseded_subject_names_successor(self):
+        import tempfile
+        tmp = tempfile.mkdtemp()
+        self.addCleanup(__import__("shutil").rmtree, tmp, True)
+        memory = self.successor_repo(tmp)
+        self.addCleanup(memory.close)
+        for select in (False, True):
+            result = memory.answer("What did we decide about round_total?",
+                                   policy="current", select=select)
+            symbols = [c["symbol"] for c in result["candidates"]]
+            self.assertIn("pricing.py::discount", symbols, select)
+            matches = {c["symbol"]: c["match"] for c in result["candidates"]}
+            self.assertEqual(matches["pricing.py::discount"], "graph", select)
+
+
 class AnswerGuardTests(unittest.TestCase):
     """Lexical discovery can name symbols the graph does not publish
     (nested functions, decorated methods). answer() must skip them
