@@ -13,8 +13,14 @@ from .identity import digest, identity
 PROFILE = "python-static-v7"
 EXCLUDED = {".git", ".venv", "venv", "__pycache__", ".tunic", ".research", "node_modules"}
 TEXT_EXTENSIONS = {".md", ".txt", ".rst"}
-CLAIM_RELATIONS = {"depends_on", "implements", "supersedes", "decided_by", "contradicts"}
+CLAIM_RELATIONS = {"depends_on", "implements", "supersedes", "decided_by", "contradicts",
+                   "corrects", "retracts"}
 TRAVERSABLE_CLAIMS = {"depends_on", "implements"}
+# Relations a retracts claim may target: asserted relationships only.
+# Observations (static_call, text_mention) vanish when their source
+# changes; retracting them is meaningless. Meta-operations
+# (corrects, retracts) are superseded, never retracted.
+RETRACTABLE = {"depends_on", "implements", "supersedes", "decided_by", "contradicts"}
 
 
 def is_iso_date(value):
@@ -460,6 +466,22 @@ def _build_claims(sources, symbols, assertions, diagnostics, text_ids=None):
                             diagnostics.append({"path": s["path"], "line": fence_line,
                                                 "kind": "unknown_relation", "relation": rel})
                             continue
+                        retract_target = claim.get("retract")
+                        if rel == "retracts":
+                            if not isinstance(retract_target, str) or retract_target not in RETRACTABLE:
+                                diagnostics.append({"path": s["path"], "line": fence_line,
+                                                    "kind": "invalid_retract",
+                                                    "expression": (claim.get("subject", "?") + " retracts "
+                                                                   + claim["object"]),
+                                                    "retract": retract_target})
+                                continue
+                        elif retract_target is not None:
+                            diagnostics.append({"path": s["path"], "line": fence_line,
+                                                "kind": "invalid_retract",
+                                                "expression": (claim.get("subject", "?") + " " + rel + " "
+                                                               + claim["object"]),
+                                                "retract": retract_target})
+                            continue
                         subject = claim["subject"]
                         s_kind, s_candidates = _resolve_reference(subject)
                         o_kind, o_candidates = _resolve_reference(claim["object"])
@@ -475,6 +497,8 @@ def _build_claims(sources, symbols, assertions, diagnostics, text_ids=None):
                                                     "kind": "invalid_effective", "expression": expression})
                         if s_kind == "exact" and o_kind == "exact":
                             proposition = {"relation": rel, "caller": s_candidates[0], "callee": o_candidates[0]}
+                            if rel == "retracts":
+                                proposition["retract"] = retract_target
                             proposition.update(qualifiers)
                             if isinstance(claim.get("note"), str):
                                 proposition["note"] = claim["note"]
@@ -502,6 +526,8 @@ def _build_claims(sources, symbols, assertions, diagnostics, text_ids=None):
                                             "end": record["end"]}]
                                 proposition = {"relation": rel, "caller": caller, "callee": callee,
                                                "candidate": candidate}
+                                if rel == "retracts":
+                                    proposition["retract"] = retract_target
                                 proposition.update(qualifiers)
                                 if isinstance(claim.get("note"), str):
                                     proposition["note"] = claim["note"]

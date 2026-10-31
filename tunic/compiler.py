@@ -32,12 +32,28 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100, 
         raise ValueError("unknown policy: " + str(policy))
     as_of = store.committed_on(snapshot)
     blocked = set()
+    retracted = {}
     if policy == "current":
         for assertion in view["assertions"]:
             proposition = assertion["proposition"]
-            if proposition.get("relation") == "supersedes" and assertion.get("status") == "asserted_in_source":
+            if assertion.get("status") != "asserted_in_source":
+                continue
+            if proposition.get("relation") in ("supersedes", "corrects"):
                 if (proposition.get("effective") or as_of) <= as_of:
                     blocked.add(proposition.get("callee"))
+            elif proposition.get("relation") == "retracts":
+                if (proposition.get("effective") or as_of) <= as_of:
+                    key = (proposition.get("retract"), proposition.get("caller"),
+                           proposition.get("callee"))
+                    retracted[key] = retracted.get(key, 0) + 1
+    supports = {}
+    for assertion in view["assertions"]:
+        proposition = assertion["proposition"]
+        if (proposition.get("relation") in TRAVERSABLE_CLAIMS
+                and assertion.get("status") == "asserted_in_source"):
+            key = (proposition.get("relation"), proposition.get("caller"),
+                   proposition.get("callee"))
+            supports[key] = supports.get(key, 0) + 1
     incoming = defaultdict(list)
     for assertion in view["assertions"]:
         relation = assertion["proposition"].get("relation")
@@ -48,6 +64,10 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100, 
         callee_key = assertion["proposition"]["callee"]
         if policy == "evidence_only" and assertion["proposition"].get("relation") != "static_call":
             continue
+        if policy == "current" and relation in TRAVERSABLE_CLAIMS:
+            key = (relation, caller_key, callee_key)
+            if supports.get(key, 0) - retracted.get(key, 0) < 1:
+                continue
         if policy == "current" and (caller_key in blocked or callee_key in blocked):
             continue
         incoming[callee_key].append(assertion)
@@ -298,6 +318,19 @@ def compile_claims(store, symbol, *, snapshot=None):
     symbols = {s["key"]: s for s in view["symbols"]}
     if symbol not in symbols:
         raise ValueError("unknown symbol: " + symbol)
+    supports, retractions = {}, {}
+    for assertion in view["assertions"]:
+        proposition = assertion["proposition"]
+        if assertion.get("status") != "asserted_in_source":
+            continue
+        if proposition.get("relation") in TRAVERSABLE_CLAIMS:
+            key = (proposition.get("relation"), proposition.get("caller"),
+                   proposition.get("callee"))
+            supports[key] = supports.get(key, 0) + 1
+        elif proposition.get("relation") == "retracts":
+            key = (proposition.get("retract"), proposition.get("caller"),
+                   proposition.get("callee"))
+            retractions[key] = retractions.get(key, 0) + 1
     rows = []
     for assertion in view["assertions"]:
         proposition = assertion["proposition"]
@@ -309,6 +342,13 @@ def compile_claims(store, symbol, *, snapshot=None):
                      "callee": proposition["callee"], "candidate": proposition.get("candidate"),
                      "note": proposition.get("note"), "effective": proposition.get("effective"),
                      "authority": proposition.get("authority"), "status": assertion["status"],
+                     "supports": supports.get((
+                         proposition.get("relation"), proposition.get("caller"),
+                         proposition.get("callee")), 0),
+                     "retractions": retractions.get((
+                         proposition.get("relation"), proposition.get("caller"),
+                         proposition.get("callee")), 0),
+                     "retract": proposition.get("retract"),
                      "evidence": _evidence(store, assertion, snapshot),
                      "resolution": assertion["resolution"]})
     rows.sort(key=lambda r: (r["relation"], r["caller"], r["callee"] or "",
@@ -318,10 +358,13 @@ def compile_claims(store, symbol, *, snapshot=None):
 
 
 def compile_timeline(store, symbol, *, snapshot=None, at=None):
-    """Valid-time evidence view: claims, mentions, supersession, and conflicts as of a date.
+    """Bitemporal evidence view: valid-time `at` over transaction-time `snapshot`.
 
-    Undated evidence counts as of the snapshot commit date. Superseded and
-    future-dated entries are filtered by `at`, never deleted.
+    Every entry carries `effective` (valid time, asserted or defaulted to the
+    snapshot commit date) and `recorded` (transaction time: when this snapshot
+    committed, i.e. what was known when). Superseded, corrected, and
+    future-dated entries are filtered by `at`, never deleted; replaying an old
+    snapshot reproduces exactly what was known then.
     """
     if at is not None and not is_iso_date(at):
         raise ValueError("at must be an ISO YYYY-MM-DD date")
@@ -336,13 +379,16 @@ def compile_timeline(store, symbol, *, snapshot=None, at=None):
         effective = claim.get("effective") or current
         if effective > as_of:
             continue
-        entries.append({"kind": "claim", **claim, "effective": effective})
+        entries.append({"kind": "claim", **claim, "effective": effective,
+                        "recorded": current})
     for mention in compile_mentions(store, symbol, snapshot=snapshot)["mentions"]:
         if current > as_of:
             continue
-        entries.append({"kind": "mention", **mention, "effective": current})
+        entries.append({"kind": "mention", **mention, "effective": current,
+                        "recorded": current})
     entries.sort(key=lambda e: (e["effective"], e["kind"], e["evidence"]["path"], e["evidence"]["start"]))
     superseded_by = []
+    corrected_by = []
     conflicts = []
     for assertion in view["assertions"]:
         proposition = assertion["proposition"]
@@ -354,15 +400,47 @@ def compile_timeline(store, symbol, *, snapshot=None, at=None):
             continue
         if relation == "supersedes" and proposition.get("callee") == symbol:
             superseded_by.append({"by": proposition.get("caller"), "effective": effective,
-                                  "evidence": _evidence(store, assertion, snapshot)})
+                                  "evidence": _evidence(store, assertion, snapshot),
+                                  "recorded": current})
+        elif relation == "corrects" and proposition.get("callee") == symbol:
+            corrected_by.append({"by": proposition.get("caller"), "effective": effective,
+                                 "evidence": _evidence(store, assertion, snapshot),
+                                 "recorded": current})
         elif relation == "contradicts" and (proposition.get("caller") == symbol
                                             or proposition.get("callee") == symbol):
             conflicts.append([proposition.get("caller"), proposition.get("callee")])
     superseded_by.sort(key=lambda s: (s["effective"], s["by"]))
+    corrected_by.sort(key=lambda s: (s["effective"], s["by"]))
     conflicts.sort()
-    return {"symbol": symbol, "snapshot": snapshot, "as_of": as_of, "entries": entries,
-            "superseded_by": superseded_by, "conflicts": conflicts,
-            "outcome": "complete" if entries or superseded_by or conflicts else "empty"}
+    return {"symbol": symbol, "snapshot": snapshot, "as_of": as_of, "recorded": current,
+            "entries": entries,
+            "superseded_by": superseded_by, "corrected_by": corrected_by,
+            "conflicts": conflicts,
+            "outcome": "complete" if entries or superseded_by or corrected_by or conflicts
+                       else "empty"}
+
+
+def compile_history(store, symbol):
+    """Per-snapshot evolution: what each retained snapshot knew, in commit order.
+
+    Symbols unknown to an old snapshot are skipped there, not backfilled:
+    history shows first appearance, never retroactive knowledge.
+    """
+    rows = []
+    for entry in store.snapshots():
+        snapshot = entry["id"]
+        try:
+            timeline = compile_timeline(store, symbol, snapshot=snapshot)
+        except ValueError:
+            continue
+        rows.append({"snapshot": snapshot, "committed_on": entry["committed_on"],
+                     "entries": len(timeline["entries"]),
+                     "superseded_by": timeline["superseded_by"],
+                     "corrected_by": timeline["corrected_by"],
+                     "conflicts": timeline["conflicts"],
+                     "outcome": timeline["outcome"]})
+    return {"symbol": symbol, "snapshots": rows,
+            "outcome": "complete" if rows else "empty"}
 
 
 def validate_artifact(store, artifact, *, expected_snapshot=None):

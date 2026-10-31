@@ -261,11 +261,14 @@ class Memory:
                 "outcome": "complete" if top else "empty"}
 
     def record_outcome(self, subject, object, rel="depends_on", effective=None,
-                       authority="agent-outcome", document="notes/outcomes.md", note=None):
+                       authority="agent-outcome", document="notes/outcomes.md", note=None,
+                       retract=None):
         """Append an explicit outcome claim block; ingest separately to publish.
 
         The claim is asserted text, never an observation. Only exact symbol
         keys are accepted: bare names stay proposals, never merges.
+        A `retracts` claim must name its target relation via `retract`;
+        any other relation carrying `retract` is rejected.
         """
         if rel not in CLAIM_RELATIONS:
             raise ValueError("unknown relation: " + str(rel))
@@ -276,10 +279,18 @@ class Memory:
             effective = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         if not is_iso_date(effective):
             raise ValueError("effective must be an ISO YYYY-MM-DD date")
+        from .extract import RETRACTABLE
+        if rel == "retracts":
+            if retract not in RETRACTABLE:
+                raise ValueError("retracts needs a retractable relation: " + repr(retract))
+        elif retract is not None:
+            raise ValueError("retract is only valid with rel='retracts'")
         claim = {"rel": rel, "subject": subject, "object": object,
                  "effective": effective, "authority": authority}
         if note is not None:
             claim["note"] = note
+        if retract is not None:
+            claim["retract"] = retract
         block = ("# Recorded outcome\n\n```tunic-claims\n"
                  + json.dumps([claim], ensure_ascii=True) + "\n```\n")
         target = self._workspace_path(document)

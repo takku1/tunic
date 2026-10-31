@@ -581,6 +581,12 @@ class GraphStore:
                     published_new=result["snapshot"] != current, work=work,
                     diagnostics=result["diagnostics"])
 
+    def snapshots(self):
+        rows = self.connection.execute(
+            "SELECT id, substr(committed_at,1,10) FROM snapshots ORDER BY committed_at, id"
+        ).fetchall()
+        return [{"id": row[0], "committed_on": row[1]} for row in rows]
+
     def current(self):
         row = self.connection.execute("SELECT value FROM metadata WHERE key='current'").fetchone()
         if row is None:

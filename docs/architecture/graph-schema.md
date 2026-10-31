@@ -1,10 +1,14 @@
-# Tunic graph schema (v1)
+# Tunic graph schema (v2)
 
 Versioned type and relationship validation for the evidence graph.
 SHACL-style in semantics, implemented natively in Tunic — no RDF
 storage, no external validator. Bumping this version (new types,
 changed signatures, new defaults) is a contract change: record it in
 [decisions](decisions.md) with paired before/after arena runs.
+
+v2 adds `corrects` (backdated correction, distinct from supersession)
+and `retracts` (support withdrawal with multi-support survival), plus
+the retraction arithmetic and bitemporal surfacing rules below.
 
 ## Entities
 
@@ -33,6 +37,8 @@ edge coordinates (stable across profile bumps).
 | `depends_on` | doc entity | doc/code entity | `asserted_in_source` | exact or proposed (same rules) | yes |
 | `implements` | doc entity | doc/code entity | `asserted_in_source` | exact or proposed (same rules) | yes |
 | `supersedes` | claim | claim | `asserted_in_source` | exact claim reference | temporal filter |
+| `corrects` | claim | claim | `asserted_in_source` | exact claim reference | temporal filter (reported as correction) |
+| `retracts` | claim | claim | `asserted_in_source` | exact claim reference + `retract` field | removes one support (see arithmetic) |
 | `decided_by` | claim | doc entity | `asserted_in_source` | exact or proposed | no |
 | `contradicts` | claim | claim | `asserted_in_source` | exact claim reference | blocks promotion |
 
@@ -46,8 +52,24 @@ graph evidence.
 Assertions may carry valid-time `effective`/`authority` qualifiers
 (asserted text, not verified history). Superseded and future-dated
 entries filter out of `current`-policy views without deletion.
-Corrections are new assertions; history is never rewritten. Open:
-backdated corrections, transaction-time replay, retention/erasure.
+History is never rewritten: a correction is a new assertion, and
+`corrects` marks it as retrospective (the old claim was never true)
+as opposed to `supersedes` (a real-world change at the effective
+date). Every timeline entry carries both axes: `effective`
+(valid time) and `recorded` (transaction time = snapshot commit).
+Open: retention/erasure.
+
+## Retraction arithmetic
+
+A traversable asserted edge (`depends_on`, `implements`) is live
+under the `current` policy iff `supports - retractions >= 1`, where
+supports count asserted claims of that triple and retractions count
+asserted `retracts` claims naming it. One support survives one
+retraction; the last retraction removes the edge from traversal
+while both stay in history. `retracts` targets asserted
+relationships only (`RETRACTABLE`); retracting an observation or a
+bare/named (proposed) endpoint is an `invalid_retract` diagnostic
+with no effect. Named `retracts` stay proposals and never apply.
 
 ## Validation rules
 
@@ -61,6 +83,10 @@ backdated corrections, transaction-time replay, retention/erasure.
 | V-06 | Ambiguity is preserved (`proposed_ambiguous`, distinct candidates) | extractor + review tests |
 | V-07 | Disputed pairs cannot be promoted over | review/promote tests |
 | V-08 | `current` policy excludes superseded entities, queried node included | compiler guard removal test, agent suite v2 |
+| V-09 | `retracts` without a retractable target (or with `retract` on another relation) is an `invalid_retract` diagnostic | temporal tests |
+| V-10 | Traversable edges apply supports-minus-retractions; last retraction removes the edge, survivors keep it | temporal tests |
+| V-11 | `corrects` blocks like `supersedes` under `current` but is reported distinctly (`corrected_by`, not `superseded_by`) | temporal tests |
+| V-12 | History replays per snapshot in commit order and skips symbols unknown to old snapshots, never backfilling | temporal tests |
 
 Open: support-aware retraction survival, multi-principal scope
 validation, erasure. See [policy contract](policy-contract.md) §3/§5.
