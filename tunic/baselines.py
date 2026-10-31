@@ -99,3 +99,72 @@ def direct_callers(store, symbol, snapshot):
     return sorted({a["proposition"]["caller"] for a in view["assertions"]
                    if a["proposition"].get("relation") == "static_call"
                    and a["proposition"]["callee"] == symbol and a["proposition"]["caller"] != symbol})
+
+
+def _evidence_edges(view):
+    """Directed caller->callee pairs over static and mention evidence."""
+    edges = set()
+    for assertion in view["assertions"]:
+        proposition = assertion["proposition"]
+        if proposition.get("relation") not in ("static_call", "text_mention"):
+            continue
+        caller, callee = proposition.get("caller"), proposition.get("callee")
+        if caller and callee and caller != callee:
+            edges.add((caller, callee))
+    return edges
+
+
+def popularity(store, snapshot, *, top_k=5):
+    """Most-mentioned symbols first: the naive string-matcher proxy.
+
+    Query-independent. Ranks by incoming text_mention count, so generic
+    verbs that match everywhere top the list. That is the point: it
+    quantifies the fan-out pathology cheaper methods suffer from.
+    """
+    if type(top_k) is not int or top_k < 1:
+        raise ValueError("top_k must be positive")
+    _, view = store.view(snapshot)
+    counts = Counter()
+    for assertion in view["assertions"]:
+        if assertion["proposition"].get("relation") == "text_mention":
+            counts[assertion["proposition"]["callee"]] += 1
+    ranked = sorted(counts, key=lambda key: (-counts[key], key))
+    return [{"symbol": key, "score": float(counts[key])} for key in ranked[:top_k]]
+
+
+def pagerank(store, snapshot, *, top_k=5, iterations=50, damping=0.85):
+    """Global PageRank over the evidence graph; the classic structural baseline.
+
+    Query-independent and deterministic: fixed iteration count, sorted node
+    order, uniform dangling redistribution. Standard reference point from
+    the graph-tool world, reimplemented here in stdlib so the suite needs
+    no downloads.
+    """
+    if type(top_k) is not int or top_k < 1:
+        raise ValueError("top_k must be positive")
+    if type(iterations) is not int or iterations < 1:
+        raise ValueError("iterations must be positive")
+    if not isinstance(damping, (int, float)) or isinstance(damping, bool) \
+            or not 0.0 < damping < 1.0:
+        raise ValueError("damping must be strictly between 0 and 1")
+    _, view = store.view(snapshot)
+    edges = _evidence_edges(view)
+    nodes = sorted({node for edge in edges for node in edge})
+    if not nodes:
+        return []
+    outgoing = {node: sorted({callee for caller, callee in edges if caller == node})
+                for node in nodes}
+    count = len(nodes)
+    rank = {node: 1.0 / count for node in nodes}
+    for _ in range(iterations):
+        dangling = sum(rank[node] for node in nodes if not outgoing[node])
+        updated = {}
+        for node in nodes:
+            total = dangling / count
+            for caller in nodes:
+                if node in outgoing[caller]:
+                    total += rank[caller] / len(outgoing[caller])
+            updated[node] = (1.0 - damping) / count + damping * total
+        rank = updated
+    ordered = sorted(nodes, key=lambda node: (-rank[node], node))
+    return [{"symbol": node, "score": rank[node]} for node in ordered[:top_k]]

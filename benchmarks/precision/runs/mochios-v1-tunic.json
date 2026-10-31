@@ -1,0 +1,686 @@
+{
+  "benchmark": "mochios-precision-v1",
+  "corpus": {
+    "count": 1645
+  },
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10"
+  },
+  "implementation": {
+    "__init__.py": "8e82d6404c8022a80de72963d6e638eeadc002825d1d703003303c08d1d776ed",
+    "__main__.py": "0e111e338298047bba02dabed37e476c02aedefda35d821d74cbc9c84de3fa9e",
+    "baselines.py": "0b8b7a678a8ae23d4570787428070d451a523fc26ebf6fc5501a02ebb880a48b",
+    "benchmark.py": "f623f2c09931d1c4438f6b13971f79ea9f0416ca5f5c2b168e72e325fa1c9bd6",
+    "compiler.py": "5f9e5a522c7361c4c9236fc18e6d5ebf2d14e1f0ad37c33e362ead8179bb9a36",
+    "continuation.py": "de73f9004fbd01c1ddf41172d64176ca988c7cb5f02ada5ed1715bfeece06f9c",
+    "eval.py": "0ce7e90e6501f0fca9624ac48ac9c393347257f6a9049003a997c33e595fa860",
+    "extract.py": "85bee0ca6bca5cd228719f30e7e478f797bfb37de337684d00d50bceb6890a10",
+    "identity.py": "83df663de5b3f5316e72bca45d2fe6eae908143c9f17e4b1bdb2d4752286cab8",
+    "mcp.py": "afdab83bb97737f672a16169f30596e2cf88547f65f9e15f74be05805821ddc0",
+    "memory.py": "2489792a7f1efaa0037a48fdb349544e4550a812a759d8cdd258295d94383cea",
+    "ollama.py": "f00000f1d4f49398f798e61d08d639908f50a169d2b2edeebe192929c42813a4",
+    "render.py": "d60cacd080f3b6312ff1133a415fcf26c31273626af15d17cca7d26e24d7cb49",
+    "retrieval.py": "c987db0e3cded7631c88edcea47237d3330b3d1e4585744e73aa1be92647e0e4",
+    "store.py": "6a226028ba085df517e5b4dc807dc7d7e87beff097292a72d61a47229e59fcbb"
+  },
+  "limitations": [
+    "Zero refers labels: split measures false-positive rate and abstention, not recall.",
+    "Labels are Muse first-pass; user adjudication pending.",
+    "Corpus is a live checkout; manifest detects drift from the frozen digests."
+  ],
+  "mention_volume": {
+    "assertions": 4852,
+    "distinct_callees": 10,
+    "top_callees": [
+      [
+        "webbrowser/audit-web-platform.py::audit",
+        1266
+      ],
+      [
+        "webbrowser/audit-web-platform.py::read",
+        1218
+      ],
+      [
+        "optimization/build-optimization-workbook.py::main",
+        994
+      ],
+      [
+        "webbrowser/update-development-tracker.py::update",
+        895
+      ],
+      [
+        "webbrowser/audit-web-platform.py::requirements",
+        266
+      ],
+      [
+        "webbrowser/audit-web-platform.py::git",
+        193
+      ],
+      [
+        "webbrowser/build-development-tracker.py::sheet",
+        17
+      ],
+      [
+        "webbrowser/build-development-tracker.py::eng",
+        1
+      ],
+      [
+        "design/cursordesigns/mochi_cursors.py::tilted",
+        1
+      ],
+      [
+        "design/cursordesigns/mochipointers.py::tilted",
+        1
+      ]
+    ]
+  },
+  "snapshot": "snapshot:98faf05ad9ba2529d060a1fc5715677afb74152d12bd855f1e4c78e02f6697f4",
+  "summary": {
+    "ordinary": {
+      "correct_abstentions": 0,
+      "false_positives": 32,
+      "fp_rate": 1.0,
+      "hits": 32,
+      "n": 32
+    },
+    "qualified": {
+      "correct_abstentions": 7,
+      "false_positives": 1,
+      "fp_rate": 0.125,
+      "hits": 1,
+      "n": 8
+    },
+    "rare": {
+      "correct_abstentions": 0,
+      "false_positives": 8,
+      "fp_rate": 1.0,
+      "hits": 8,
+      "n": 8
+    }
+  },
+  "tasks": [
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/audit-web-platform.py::read",
+          "leaf": "read",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S001",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/audit-web-platform.py::read",
+          "leaf": "read",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S002",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/audit-web-platform.py::read",
+          "leaf": "read",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S003",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/audit-web-platform.py::read",
+          "leaf": "read",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S004",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/audit-web-platform.py::read",
+          "leaf": "read",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S005",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/audit-web-platform.py::read",
+          "leaf": "read",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S006",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/audit-web-platform.py::read",
+          "leaf": "read",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S007",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/audit-web-platform.py::read",
+          "leaf": "read",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S008",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "optimization/build-optimization-workbook.py::main",
+          "leaf": "main",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S009",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "optimization/build-optimization-workbook.py::main",
+          "leaf": "main",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S010",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "optimization/build-optimization-workbook.py::main",
+          "leaf": "main",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S011",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "optimization/build-optimization-workbook.py::main",
+          "leaf": "main",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S012",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "optimization/build-optimization-workbook.py::main",
+          "leaf": "main",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S013",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "optimization/build-optimization-workbook.py::main",
+          "leaf": "main",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S014",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "optimization/build-optimization-workbook.py::main",
+          "leaf": "main",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S015",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "optimization/build-optimization-workbook.py::main",
+          "leaf": "main",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S016",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/update-development-tracker.py::update",
+          "leaf": "update",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S017",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/update-development-tracker.py::update",
+          "leaf": "update",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S018",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/update-development-tracker.py::update",
+          "leaf": "update",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S019",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/update-development-tracker.py::update",
+          "leaf": "update",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S020",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/update-development-tracker.py::update",
+          "leaf": "update",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S021",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/update-development-tracker.py::update",
+          "leaf": "update",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S022",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/update-development-tracker.py::update",
+          "leaf": "update",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S023",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/update-development-tracker.py::update",
+          "leaf": "update",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S024",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/audit-web-platform.py::audit",
+          "leaf": "audit",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S025",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/audit-web-platform.py::audit",
+          "leaf": "audit",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S026",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/audit-web-platform.py::audit",
+          "leaf": "audit",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S027",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/audit-web-platform.py::audit",
+          "leaf": "audit",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S028",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/audit-web-platform.py::audit",
+          "leaf": "audit",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S029",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/audit-web-platform.py::audit",
+          "leaf": "audit",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S030",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/audit-web-platform.py::audit",
+          "leaf": "audit",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S031",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/audit-web-platform.py::audit",
+          "leaf": "audit",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S032",
+      "kind": "ordinary",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [],
+      "id": "S033",
+      "kind": "qualified",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [],
+      "id": "S034",
+      "kind": "qualified",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [],
+      "id": "S035",
+      "kind": "qualified",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [],
+      "id": "S036",
+      "kind": "qualified",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [],
+      "id": "S037",
+      "kind": "qualified",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [],
+      "id": "S038",
+      "kind": "qualified",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "optimization/build-optimization-workbook.py::main",
+          "leaf": "main",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S039",
+      "kind": "qualified",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [],
+      "id": "S040",
+      "kind": "qualified",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/build-development-tracker.py::eng",
+          "leaf": "eng",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S041",
+      "kind": "rare",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "design/cursordesigns/mochi_cursors.py::tilted",
+          "leaf": "tilted",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed_ambiguous"
+        },
+        {
+          "callee": "design/cursordesigns/mochipointers.py::tilted",
+          "leaf": "tilted",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed_ambiguous"
+        }
+      ],
+      "id": "S042",
+      "kind": "rare",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/build-development-tracker.py::sheet",
+          "leaf": "sheet",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S043",
+      "kind": "rare",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/audit-web-platform.py::git",
+          "leaf": "git",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S044",
+      "kind": "rare",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/audit-web-platform.py::requirements",
+          "leaf": "requirements",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S045",
+      "kind": "rare",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "optimization/build-optimization-workbook.py::main",
+          "leaf": "main",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S046",
+      "kind": "rare",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/update-development-tracker.py::update",
+          "leaf": "update",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S047",
+      "kind": "rare",
+      "label": "not-a-mention"
+    },
+    {
+      "hits": [
+        {
+          "callee": "webbrowser/audit-web-platform.py::read",
+          "leaf": "read",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "S048",
+      "kind": "rare",
+      "label": "not-a-mention"
+    }
+  ],
+  "tool": "tunic"
+}
