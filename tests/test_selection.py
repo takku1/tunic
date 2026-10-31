@@ -8,7 +8,7 @@ policy. No frozen gold labels are used here.
 
 import unittest
 
-from tunic.selection import OUTCOMES, classify_intent, select
+from tunic.selection import OUTCOMES, candidate_evidence, classify_intent, select
 
 
 def assertion(caller, callee, relation="static_call", status="syntactic_observation"):
@@ -155,6 +155,32 @@ class SelectTests(unittest.TestCase):
         first = select("What breaks?", fused, **kwargs)
         second = select("What breaks?", fused, **kwargs)
         self.assertEqual(first, second)
+
+
+class RetractionTests(unittest.TestCase):
+    def test_retracted_tie_gives_no_corroboration(self):
+        view = view_for(
+            ["a.py::x", "a.py::y"],
+            [assertion("a.py::x", "a.py::y", relation="depends_on",
+                       status="asserted_in_source"),
+             {"proposition": {"relation": "retracts", "retract": "depends_on",
+                              "caller": "a.py::x", "callee": "a.py::y"},
+              "source": "s", "start": 0, "end": 1,
+              "status": "asserted_in_source",
+              "resolution": {"rule": "test"}, "producer": "test"}])
+        evidence = candidate_evidence(view, "a.py::x")
+        self.assertEqual(evidence["asserted_ties"], 0)
+        self.assertEqual(evidence["retracted_ties"], 1)
+        self.assertEqual(evidence["graph_ties"], 0)
+
+    def test_unretracted_tie_still_counts(self):
+        view = view_for(
+            ["a.py::x", "a.py::y"],
+            [assertion("a.py::x", "a.py::y", relation="depends_on",
+                       status="asserted_in_source")])
+        evidence = candidate_evidence(view, "a.py::x")
+        self.assertEqual(evidence["asserted_ties"], 1)
+        self.assertEqual(evidence["retracted_ties"], 0)
 
 
 class AnswerGuardTests(unittest.TestCase):

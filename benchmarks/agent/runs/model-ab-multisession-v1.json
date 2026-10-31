@@ -1,0 +1,318 @@
+{
+ "benchmark": "model-ab-multisession-v1",
+ "protocol": "same model/prompt/budget; mechanical fence parsing; paired arms; fresh Memory per session over one DB; harness performs agent-side writes, model only reads",
+ "model": "qwen3:4b",
+ "decoding": {
+  "temperature": 0,
+  "seed": 0
+ },
+ "context_cap": 4000,
+ "tunic_commit": "7fbfddc18d48da7e6a846843bde78a820fa1eaee",
+ "summary": {
+  "none": {
+   "passed": 2,
+   "n": 4,
+   "stale_tasks": 0,
+   "hallucinated_tasks": 0,
+   "mean_latency_ms": 6797.7
+  },
+  "lexical": {
+   "passed": 3,
+   "n": 4,
+   "stale_tasks": 1,
+   "hallucinated_tasks": 0,
+   "mean_latency_ms": 8397.6
+  },
+  "tunic": {
+   "passed": 4,
+   "n": 4,
+   "stale_tasks": 0,
+   "hallucinated_tasks": 0,
+   "mean_latency_ms": 8020.6
+  },
+  "tunic-select": {
+   "passed": 3,
+   "n": 4,
+   "stale_tasks": 1,
+   "hallucinated_tasks": 0,
+   "mean_latency_ms": 9558.6
+  }
+ },
+ "tasks": [
+  {
+   "id": "MS-apply",
+   "session": 2,
+   "question": "What else must change if round_total changes?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "obsolete": [],
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "context": "(no context provided)",
+     "hallucinated": [],
+     "stale": [],
+     "pass": false,
+     "exact": false,
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 79,
+     "completion_tokens": 1115,
+     "latency_ms": 5433.9
+    },
+    "lexical": {
+     "context_chars": 436,
+     "parsed": [
+      "checkout.py::place_order"
+     ],
+     "context": "pricing.py::round_total\n\n---\nnotes/decisions.md\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n\n---\nnotes/outcome.md\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n",
+     "hallucinated": [],
+     "stale": [],
+     "pass": true,
+     "exact": true,
+     "response": "```symbols\ncheckout.py::place_order\n```",
+     "prompt_tokens": 206,
+     "completion_tokens": 671,
+     "latency_ms": 3126.2
+    },
+    "tunic": {
+     "context_chars": 1094,
+     "parsed": [
+      "checkout.py::place_order"
+     ],
+     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  pricing.py::round_total [best match: name; stages: name,lexical]\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  checkout.py::place_order\nASSERTED CLAIMS (source text; do not present as verified fact):\n  depends_on checkout.py::place_order pricing.py::round_total [authority=None status=asserted_in_source supports=1 retractions=0]\nDISPUTED (contested; do not treat as settled either way):\n  (none)\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  notes/decisions.md::document -> None [syntactic_observation]\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
+     "hallucinated": [],
+     "stale": [],
+     "pass": true,
+     "exact": true,
+     "response": "```symbols\ncheckout.py::place_order\n```",
+     "prompt_tokens": 332,
+     "completion_tokens": 158,
+     "latency_ms": 781.6
+    },
+    "tunic-select": {
+     "context_chars": 1094,
+     "parsed": [
+      "checkout.py::place_order"
+     ],
+     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  pricing.py::round_total [best match: name; stages: name,lexical]\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  checkout.py::place_order\nASSERTED CLAIMS (source text; do not present as verified fact):\n  depends_on checkout.py::place_order pricing.py::round_total [authority=None status=asserted_in_source supports=1 retractions=0]\nDISPUTED (contested; do not treat as settled either way):\n  (none)\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  notes/decisions.md::document -> None [syntactic_observation]\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
+     "hallucinated": [],
+     "stale": [],
+     "pass": true,
+     "exact": true,
+     "response": "```symbols\ncheckout.py::place_order\n```",
+     "prompt_tokens": 332,
+     "completion_tokens": 2508,
+     "latency_ms": 12170.4
+    }
+   }
+  },
+  {
+   "id": "MS-decide",
+   "session": 2,
+   "question": "What did we decide about round_total?",
+   "gold": [
+    "pricing.py::round_total"
+   ],
+   "obsolete": [],
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "context": "(no context provided)",
+     "hallucinated": [],
+     "stale": [],
+     "pass": false,
+     "exact": false,
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 78,
+     "completion_tokens": 2089,
+     "latency_ms": 10127.8
+    },
+    "lexical": {
+     "context_chars": 436,
+     "parsed": [
+      "pricing.py::round_total"
+     ],
+     "context": "pricing.py::round_total\n\n---\nnotes/decisions.md\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n\n---\nnotes/outcome.md\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n",
+     "hallucinated": [],
+     "stale": [],
+     "pass": true,
+     "exact": true,
+     "response": "```symbols\npricing.py::round_total\n```",
+     "prompt_tokens": 205,
+     "completion_tokens": 2113,
+     "latency_ms": 10057.8
+    },
+    "tunic": {
+     "context_chars": 1094,
+     "parsed": [
+      "pricing.py::round_total"
+     ],
+     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  pricing.py::round_total [best match: name; stages: name,lexical]\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  checkout.py::place_order\nASSERTED CLAIMS (source text; do not present as verified fact):\n  depends_on checkout.py::place_order pricing.py::round_total [authority=None status=asserted_in_source supports=1 retractions=0]\nDISPUTED (contested; do not treat as settled either way):\n  (none)\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  notes/decisions.md::document -> None [syntactic_observation]\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
+     "hallucinated": [],
+     "stale": [],
+     "pass": true,
+     "exact": true,
+     "response": "```symbols\npricing.py::round_total\n```",
+     "prompt_tokens": 331,
+     "completion_tokens": 1448,
+     "latency_ms": 6820.9
+    },
+    "tunic-select": {
+     "context_chars": 1094,
+     "parsed": [
+      "pricing.py::round_total"
+     ],
+     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  pricing.py::round_total [best match: name; stages: name,lexical]\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  checkout.py::place_order\nASSERTED CLAIMS (source text; do not present as verified fact):\n  depends_on checkout.py::place_order pricing.py::round_total [authority=None status=asserted_in_source supports=1 retractions=0]\nDISPUTED (contested; do not treat as settled either way):\n  (none)\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  notes/decisions.md::document -> None [syntactic_observation]\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
+     "hallucinated": [],
+     "stale": [],
+     "pass": true,
+     "exact": true,
+     "response": "```symbols\npricing.py::round_total\n```",
+     "prompt_tokens": 331,
+     "completion_tokens": 1257,
+     "latency_ms": 5851.1
+    }
+   }
+  },
+  {
+   "id": "MS-correct",
+   "session": 3,
+   "question": "What else must change if round_total changes?",
+   "gold": [],
+   "obsolete": [
+    "checkout.py::place_order"
+   ],
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "context": "(no context provided)",
+     "hallucinated": [],
+     "stale": [],
+     "pass": true,
+     "exact": true,
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 79,
+     "completion_tokens": 1115,
+     "latency_ms": 5178.1
+    },
+    "lexical": {
+     "context_chars": 753,
+     "parsed": [
+      "checkout.py::place_order"
+     ],
+     "context": "pricing.py::round_total\n\n---\nnotes/decisions.md\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n\n---\nnotes/correction.md\n\r\n\r\n# Recorded outcome\r\n\r\n```tunic-claims\r\n[{\"rel\": \"retracts\", \"subject\": \"checkout.py::place_order\", \"object\": \"pricing.py::round_total\", \"effective\": \"2026-10-31\", \"authority\": \"agent-outcome\", \"note\": \"rounding moved into place_order; round_total unused\", \"retract\": \"depends_on\"}]\r\n```\r\n\n---\nnotes/outcome.md\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n",
+     "hallucinated": [],
+     "stale": [
+      "checkout.py::place_order"
+     ],
+     "pass": false,
+     "exact": false,
+     "response": "```symbols\ncheckout.py::place_order\n```",
+     "prompt_tokens": 301,
+     "completion_tokens": 2562,
+     "latency_ms": 12189.8
+    },
+    "tunic": {
+     "context_chars": 1204,
+     "parsed": [],
+     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  pricing.py::round_total [best match: name; stages: name,lexical]\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  (none)\nASSERTED CLAIMS (source text; do not present as verified fact):\n  retracts checkout.py::place_order pricing.py::round_total [authority=agent-outcome status=asserted_in_source supports=0 retractions=0]\nDISPUTED (contested; do not treat as settled either way):\n  depends_on checkout.py::place_order pricing.py::round_total [authority=None status=asserted_in_source supports=1 retractions=1]\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  notes/decisions.md::document -> None [syntactic_observation]\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
+     "hallucinated": [],
+     "stale": [],
+     "pass": true,
+     "exact": true,
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 358,
+     "completion_tokens": 3119,
+     "latency_ms": 14870.5
+    },
+    "tunic-select": {
+     "context_chars": 1204,
+     "parsed": [
+      "checkout.py::place_order"
+     ],
+     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  pricing.py::round_total [best match: name; stages: name,lexical]\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  (none)\nASSERTED CLAIMS (source text; do not present as verified fact):\n  retracts checkout.py::place_order pricing.py::round_total [authority=agent-outcome status=asserted_in_source supports=0 retractions=0]\nDISPUTED (contested; do not treat as settled either way):\n  depends_on checkout.py::place_order pricing.py::round_total [authority=None status=asserted_in_source supports=1 retractions=1]\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  notes/decisions.md::document -> None [syntactic_observation]\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
+     "hallucinated": [],
+     "stale": [
+      "checkout.py::place_order"
+     ],
+     "pass": false,
+     "exact": false,
+     "response": "```symbols\ncheckout.py::place_order\n```",
+     "prompt_tokens": 358,
+     "completion_tokens": 1890,
+     "latency_ms": 8826.1
+    }
+   }
+  },
+  {
+   "id": "MS-irrelevant",
+   "session": 3,
+   "question": "Which functions break if route changes?",
+   "gold": [],
+   "obsolete": [],
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "context": "(no context provided)",
+     "hallucinated": [],
+     "stale": [],
+     "pass": true,
+     "exact": true,
+     "response": "```\n\n```",
+     "prompt_tokens": 77,
+     "completion_tokens": 1398,
+     "latency_ms": 6451.1
+    },
+    "lexical": {
+     "context_chars": 21,
+     "parsed": [],
+     "context": "(no context provided)",
+     "hallucinated": [],
+     "stale": [],
+     "pass": true,
+     "exact": true,
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 77,
+     "completion_tokens": 1773,
+     "latency_ms": 8216.7
+    },
+    "tunic": {
+     "context_chars": 843,
+     "parsed": [],
+     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  (none)\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  (none)\nASSERTED CLAIMS (source text; do not present as verified fact):\n  (none)\nDISPUTED (contested; do not treat as settled either way):\n  (none)\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  (none)\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
+     "hallucinated": [],
+     "stale": [],
+     "pass": true,
+     "exact": true,
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 274,
+     "completion_tokens": 1989,
+     "latency_ms": 9609.6
+    },
+    "tunic-select": {
+     "context_chars": 843,
+     "parsed": [],
+     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  (none)\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  (none)\nASSERTED CLAIMS (source text; do not present as verified fact):\n  (none)\nDISPUTED (contested; do not treat as settled either way):\n  (none)\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  (none)\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
+     "hallucinated": [],
+     "stale": [],
+     "pass": true,
+     "exact": true,
+     "response": "```\n\n```",
+     "prompt_tokens": 274,
+     "completion_tokens": 2377,
+     "latency_ms": 11386.8
+    }
+   }
+  }
+ ],
+ "limitations": [
+  "4 synthetic rows on one fixture; directional evidence.",
+  "Agent-side recording is harness-simulated, not model-emitted.",
+  "Temperature 0 but GPU sampling may vary; raw responses committed."
+ ]
+}

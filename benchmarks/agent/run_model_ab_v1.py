@@ -20,7 +20,7 @@ import time
 import urllib.request
 from pathlib import Path
 
-REPO = Path("Z:/tunic")
+REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
 from tunic.baselines import BM25  # noqa: E402
@@ -31,6 +31,27 @@ MODEL = "qwen3:4b"
 ENDPOINT = "http://localhost:11434/api/chat"
 CONTEXT_CAP = 4000
 FENCE = re.compile(r"```symbols\s*(.*?)\s*```", re.DOTALL)
+
+
+def source_manifest(path):
+    """Commit + working-tree status for a source checkout.
+
+    A SHA alone does not capture uncommitted or ignored files, so record
+    `git status --porcelain` alongside the commit. Non-git sources report
+    an error instead of a silent fake SHA.
+    """
+    manifest = {"path": str(path), "commit": None, "status": None,
+                "error": None}
+    commit = subprocess.run(["git", "rev-parse", "HEAD"], capture_output=True,
+                            text=True, cwd=str(path))
+    if commit.returncode != 0:
+        manifest["error"] = "not a git checkout"
+        return manifest
+    manifest["commit"] = commit.stdout.strip()
+    status = subprocess.run(["git", "status", "--porcelain"],
+                            capture_output=True, text=True, cwd=str(path))
+    manifest["status"] = status.stdout.strip() or "clean"
+    return manifest
 
 
 def chat(prompt):

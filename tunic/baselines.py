@@ -93,6 +93,48 @@ class BM25:
                      self.frequency, set(_tokens(query)), None, top_k)
 
 
+class TextNotes:
+    """Lexical memory over prose notes: markdown/text files outside code.
+
+    Code-only BM25 cannot retrieve session records, decisions, or outcomes,
+    so a notes baseline that cannot read notes is a fiction. Each document
+    is one retrievable unit keyed by relative path with an excerpt for
+    bundling. No graph edges, no identity resolution: pure lexical recall,
+    including stale records it cannot distinguish from current ones.
+    """
+    def __init__(self, root):
+        self.root = Path(root)
+        self.documents = []
+        for path in sorted(self.root.rglob("*")):
+            if ("__pycache__" in path.parts or path.is_symlink()
+                    or not path.is_file()):
+                continue
+            if path.suffix.lower() not in (".md", ".txt"):
+                continue
+            relative = path.relative_to(self.root).as_posix()
+            try:
+                text = path.read_bytes().decode("utf-8-sig")
+            except (ValueError, UnicodeError):
+                continue
+            self.documents.append({"symbol": relative,
+                                   "tokens": Counter(_tokens(text)),
+                                   "text": text, "is_test": False})
+        self.lengths = [sum(d["tokens"].values()) for d in self.documents]
+        self.average_length = sum(self.lengths)/len(self.lengths) if self.lengths else 1
+        self.frequency = Counter(t for d in self.documents for t in d["tokens"])
+
+    def search_text(self, query, *, top_k=5):
+        """Rank notes against free text; returns symbol/score/text rows."""
+        if type(top_k) is not int or top_k < 1:
+            raise ValueError("top_k must be positive")
+        if not isinstance(query, str) or not query.strip():
+            raise ValueError("query must be a non-empty string")
+        ranked = _rank(self.documents, self.lengths, self.average_length,
+                       self.frequency, set(_tokens(query)), None, top_k)
+        texts = {d["symbol"]: d["text"] for d in self.documents}
+        return [{**hit, "text": texts[hit["symbol"]]} for hit in ranked]
+
+
 def direct_callers(store, symbol, snapshot):
     """One-hop control shares extraction with Tunic; not an independent analyzer."""
     _, view = store.view(snapshot)

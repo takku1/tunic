@@ -8,6 +8,7 @@ never tuned against them. Requires Ollama.
 Writes: benchmarks/agent/runs/model-ab-pyq-v1.json.
 """
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -15,18 +16,18 @@ import tempfile
 import time
 from pathlib import Path
 
-REPO = Path("Z:/tunic")
+REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "benchmarks/agent"))
 
 from run_model_ab_v1 import (MODEL, PROMPT, bundle_lexical, bundle_tunic,  # noqa: E402
-                             chat, parse_symbols)
+                             chat, parse_symbols, source_manifest)
 
 from tunic.baselines import BM25  # noqa: E402
 from tunic.memory import Memory  # noqa: E402
 
 ARMS = ("none", "lexical", "tunic", "tunic-select")
-PYQ = "Z:/PyQuifer"
+PYQ = os.environ.get("TUNIC_PYQ_ROOT", "Z:/PyQuifer")
 
 
 def main():
@@ -36,9 +37,7 @@ def main():
     tunic_commit = subprocess.run(
         ["git", "rev-parse", "HEAD"], capture_output=True, text=True,
         cwd=str(REPO)).stdout.strip()
-    pyq_commit = subprocess.run(
-        ["git", "rev-parse", "HEAD"], capture_output=True, text=True,
-        cwd=PYQ).stdout.strip()
+    manifests = {"tunic": source_manifest(REPO), "pyquifer": source_manifest(PYQ)}
     work = Path(tempfile.mkdtemp(prefix="tunic-model-ab-pyq-"))
     dst = work / "pyquifer"
     shutil.copytree(PYQ, dst, ignore=shutil.ignore_patterns("__pycache__", ".git"))
@@ -94,7 +93,7 @@ def main():
               "suite_digest": heldout.get("split"),
               "model": MODEL, "decoding": {"temperature": 0, "seed": 0},
               "context_cap": 4000, "tunic_commit": tunic_commit,
-              "pyquifer_commit": pyq_commit,
+              "sources": manifests,
               "summary": summary, "tasks": rows,
               "limitations": ["20 real-repo tasks but still single-hop impact phrasing.",
                               "single-turn answers; the model never writes memory.",

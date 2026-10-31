@@ -73,7 +73,26 @@ def _live_claim_maps(view):
 
 
 def candidate_evidence(view, symbol):
-    """Structural evidence touching one candidate symbol."""
+    """Structural evidence touching one candidate symbol.
+
+    Asserted ties use supports-minus-retractions, mirroring the compiler:
+    a fully retracted edge contributes no corroboration, so selection
+    cannot resurrect through ranking what traversal correctly removed.
+    """
+    from .extract import TRAVERSABLE_CLAIMS
+    supports, retractions = {}, {}
+    for assertion in view["assertions"]:
+        proposition = assertion["proposition"]
+        if assertion.get("status") != "asserted_in_source":
+            continue
+        relation = proposition.get("relation")
+        if relation in TRAVERSABLE_CLAIMS:
+            key = (relation, proposition.get("caller"), proposition.get("callee"))
+            supports[key] = supports.get(key, 0) + 1
+        elif relation == "retracts" and proposition.get("retract") in TRAVERSABLE_CLAIMS:
+            key = (proposition.get("retract"), proposition.get("caller"),
+                   proposition.get("callee"))
+            retractions[key] = retractions.get(key, 0) + 1
     observed, asserted, mentions, proposals = 0, 0, 0, 0
     ambiguous = False
     for assertion in view["assertions"]:
@@ -84,7 +103,11 @@ def candidate_evidence(view, symbol):
         status = assertion.get("status")
         if relation == "static_call":
             observed += 1
-        elif relation in ("depends_on", "implements") and status == "asserted_in_source":
+        elif (relation in TRAVERSABLE_CLAIMS and status == "asserted_in_source"
+                and supports.get((relation, proposition.get("caller"),
+                                  proposition.get("callee")), 0)
+                > retractions.get((relation, proposition.get("caller"),
+                                   proposition.get("callee")), 0)):
             asserted += 1
         elif relation == "text_mention" and status == "syntactic_observation":
             mentions += 1
@@ -95,7 +118,10 @@ def candidate_evidence(view, symbol):
     return {"observed_edges": observed, "asserted_ties": asserted,
             "qualified_mentions": mentions, "proposals": proposals,
             "ambiguous": ambiguous,
-            "graph_ties": observed + asserted + mentions + proposals}
+            "graph_ties": observed + asserted + mentions + proposals,
+            "retracted_ties": sum(1 for key, count in supports.items()
+                                  if count <= retractions.get(key, 0)
+                                  and symbol in key[1:])}
 
 
 def select(task, fused, *, view, policy, limit):

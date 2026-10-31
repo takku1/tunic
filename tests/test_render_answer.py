@@ -82,6 +82,37 @@ class RenderAnswerTrustTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             render_answer_text([("x", 1.0, ["exact"])])
 
+    def test_receipt_reports_budgeting(self):
+        big = {"symbol": "svc.py::real", "score": 1.0,
+               "match": "exact", "origins": ["exact"]}
+        result = {"candidates": [dict(big) for _ in range(50)],
+                  "impacts": [{"symbol": "svc.py::helper",
+                               "derivation": {"verification": "syntactic_path_only"}}],
+                  "mentions": [], "claims": [], "selection": None}
+        receipt = {}
+        text = render_answer_text(result, cap=4000, receipt=receipt)
+        self.assertLessEqual(len(text), 4000)
+        self.assertTrue(text.endswith("WITHHELD lines are not evidence."))
+        self.assertFalse(receipt["truncated"])
+        self.assertIn("candidates", receipt["sections_kept"])
+        small = {}
+        tiny = render_answer_text(result, cap=600, receipt=small)
+        self.assertLessEqual(len(tiny), 600)
+        self.assertTrue(tiny.endswith("WITHHELD lines are not evidence."))
+        self.assertTrue(small["truncated"])
+        self.assertTrue(small["sections_dropped"])
+        floor = {}
+        clipped = render_answer_text(result, cap=100, receipt=floor)
+        self.assertLessEqual(len(clipped), 100)
+        self.assertTrue(floor.get("trust_partial"))
+        self.assertTrue(small["truncated"])
+        self.assertTrue(small["sections_dropped"])
+
+    def test_zero_cap_returns_empty(self):
+        receipt = {}
+        self.assertEqual(render_answer_text({"candidates": []}, cap=0, receipt=receipt), "")
+        self.assertTrue(receipt["truncated"])
+
     def test_contradicted_kept_is_surfaced_not_hidden(self):
         result = {"candidates": [{"symbol": "a.py::x", "score": 0.9,
                                   "match": "lexical", "origins": ["lexical"]}],

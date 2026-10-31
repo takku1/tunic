@@ -5,6 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tunic.baselines import TextNotes
 from tunic.memory import Memory
 from tunic.retrieval import EmbeddingProvider, fuse
 
@@ -115,6 +116,23 @@ class AnswerRetrievalTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             memory.answer("Which functions break if calculate changes?",
                           limit=-1)
+
+
+class TextNotesTest(unittest.TestCase):
+    def test_notes_are_retrievable_and_code_is_not(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        (root / "outcome.md").write_text(
+            "# Verified outcome\nrounding applies at order time", encoding="utf-8")
+        (root / "code.py").write_text("x = 1\n", encoding="utf-8")
+        notes = TextNotes(root)
+        self.assertEqual([d["symbol"] for d in notes.documents], ["outcome.md"])
+        hits = notes.search_text("verified rounding outcome")
+        self.assertEqual([h["symbol"] for h in hits], ["outcome.md"])
+        self.assertIn("rounding", hits[0]["text"])
+        with self.assertRaises(ValueError):
+            notes.search_text("   ")
 
 
 if __name__ == "__main__":

@@ -104,7 +104,7 @@ def render_context(store, artifact, *, max_bytes=65536, expected_snapshot=None, 
     return result
 
 
-def render_answer_text(result, *, cap=4000):
+def render_answer_text(result, *, cap=4000, receipt=None):
     """Epistemically-labeled text rendering of a Memory.answer() dict.
 
     The trust boundary the JSON API already has but text flattening loses:
@@ -114,27 +114,35 @@ def render_answer_text(result, *, cap=4000):
     treated as settled; WITHHELD lines were discovered but excluded for lack
     of evidence. Attacker-authored exact-key claims can therefore never
     appear under OBSERVED no matter how they match.
+
+    Budgeting is section-aware, never a blind character slice: CANDIDATES
+    and TRUST RULE are always kept; OBSERVED, ASSERTED, DISPUTED, WITHHELD,
+    and MENTIONS fill in priority order until `cap` chars. When `receipt`
+    is a dict it is populated with the sections kept/dropped and whether
+    anything was cut, so callers can distinguish complete from budgeted
+    context instead of silently losing the trust rule.
     """
     if not isinstance(result, dict):
         raise ValueError("result must be a Memory.answer() dict")
-    lines = []
+    if receipt is not None and not isinstance(receipt, dict):
+        raise ValueError("receipt must be a dict or None")
+    sections = []
+    def dedup(items):
+        seen, unique = set(), []
+        for item in items:
+            if item not in seen:
+                seen.add(item)
+                unique.append(item)
+        return unique
     candidates = result.get("candidates") or []
-    lines.append("CANDIDATES (discovery only; listing here asserts nothing):")
-    for entry in candidates:
-        lines.append("  %s [best match: %s; stages: %s]" % (
-            entry.get("symbol", "?"), entry.get("match", "?"),
-            ",".join(entry.get("origins") or [])))
-    if not candidates:
-        lines.append("  (none)")
+    cand_lines = ["  %s [best match: %s; stages: %s]" % (
+        entry.get("symbol", "?"), entry.get("match", "?"),
+        ",".join(entry.get("origins") or [])) for entry in candidates]
     observed, asserted = [], []
     for entry in result.get("impacts") or []:
         verification = (entry.get("derivation") or {}).get("verification", "")
         (observed if verification == "syntactic_path_only" else asserted).append(
             entry.get("symbol", "?"))
-    lines.append("OBSERVED DEPENDENCIES (verified by static code extraction):")
-    lines.extend("  " + symbol for symbol in observed or ["(none)"])
-    lines.append("ASSERTED DEPENDENCIES (source claims, NOT independently verified):")
-    lines.extend("  " + symbol for symbol in asserted or ["(none)"])
     disputed, claims = [], []
     for claim in result.get("claims") or []:
         relation = claim.get("relation", "?")
@@ -147,14 +155,6 @@ def render_answer_text(result, *, cap=4000):
             disputed.append(text)
         else:
             claims.append(text)
-    lines.append("ASSERTED CLAIMS (source text; do not present as verified fact):")
-    seen = set()
-    unique = []
-    for text in claims:
-        if text not in seen:
-            seen.add(text)
-            unique.append(text)
-    lines.extend("  " + text for text in unique or ["(none)"])
     selection = result.get("selection") or {}
     trace = selection.get("trace") or {}
     withheld = [d.get("symbol", "?") for d in trace.get("decisions") or []
@@ -163,30 +163,82 @@ def render_answer_text(result, *, cap=4000):
         if decision.get("outcome") == "contradicted":
             disputed.append(decision.get("symbol", "?")
                             + " [selection: contradicted, kept but flagged]")
-    lines.append("DISPUTED (contested; do not treat as settled either way):")
-    seen_disputed = set()
-    unique_disputed = []
-    for text in disputed:
-        if text not in seen_disputed:
-            seen_disputed.add(text)
-            unique_disputed.append(text)
-    lines.extend("  " + text for text in unique_disputed or ["(none)"])
-    lines.append("WITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):")
-    lines.extend("  " + symbol for symbol in withheld or ["(none)"])
-    lines.append("TEXT MENTIONS (lexical co-occurrence, not a code relationship):")
     mentions = result.get("mentions") or []
-    for mention in mentions[:10]:
-        lines.append("  %s -> %s [%s]" % (mention.get("mentioner", "?"),
+    mention_lines = ["  %s -> %s [%s]" % (mention.get("mentioner", "?"),
                                           mention.get("candidate",
                                                       mention.get("symbol", "?")),
-                                          mention.get("status", "?")))
-    if not mentions:
-        lines.append("  (none)")
-    lines.append("TRUST RULE: only OBSERVED lines are verified code facts. "
-                 "ASSERTED lines are claims someone wrote down. DISPUTED lines "
-                 "are contested. WITHHELD lines are not evidence. Never present "
-                 "ASSERTED, DISPUTED, or WITHHELD lines as verified.")
-    return "\n".join(lines)[:max(int(cap), 0) if cap else 0]
+                                          mention.get("status", "?"))
+                     for mention in mentions[:10]]
+    trust = ("TRUST RULE: OBSERVED lines are verified static-code facts. "
+             "ASSERTED lines are session-recorded claims with their authority "
+             "shown: usable as answers when relevant, but they are records, "
+             "not code proofs. DISPUTED lines are contested: do not rely on "
+             "one alone when an undisputed alternative answers the question. "
+             "WITHHELD lines are not evidence.")
+    sections = [
+        ("candidates", "CANDIDATES (discovery only; listing here asserts nothing):",
+         cand_lines or ["  (none)"], True),
+        ("observed", "OBSERVED DEPENDENCIES (verified by static code extraction):",
+         ["  " + symbol for symbol in observed] or ["  (none)"], False),
+        ("asserted_deps", "ASSERTED DEPENDENCIES (source claims, NOT independently verified):",
+         ["  " + symbol for symbol in asserted] or ["  (none)"], False),
+        ("asserted_claims", "ASSERTED CLAIMS (source text; do not present as verified fact):",
+         ["  " + text for text in dedup(claims)] or ["  (none)"], False),
+        ("disputed", "DISPUTED (contested; do not treat as settled either way):",
+         ["  " + text for text in dedup(disputed)] or ["  (none)"], False),
+        ("withheld", "WITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):",
+         ["  " + symbol for symbol in withheld] or ["  (none)"], False),
+        ("mentions", "TEXT MENTIONS (lexical co-occurrence, not a code relationship):",
+         mention_lines or ["  (none)"], False),
+    ]
+    try:
+        budget = max(int(cap), 0) if cap else 0
+    except (TypeError, ValueError):
+        raise ValueError("cap must be a non-negative integer")
+    if receipt is not None:
+        receipt.update({"cap": budget, "chars": 0, "sections_kept": [],
+                        "sections_dropped": [name for name, _, _, _ in sections],
+                        "truncated": True})
+    if budget == 0:
+        return ""
+    if budget < len(trust):
+        # Even the trust rule does not fit: hard cap compliance wins, and
+        # the receipt says the rule itself is partial so no caller mistakes
+        # a cut-off rule for the whole guarantee.
+        if receipt is not None:
+            receipt.update({"cap": budget, "chars": budget,
+                            "sections_kept": [], "trust_partial": True,
+                            "sections_dropped": [name for name, _, _, _ in sections],
+                            "truncated": True})
+        return trust[:budget]
+    kept, dropped, used = [], [], 0
+    room = budget - len(trust) - 1
+    for name, header, body, required in sections:
+        block = "\n".join([header] + body)
+        if required or used + len(block) + 1 <= room:
+            kept.append((header, body))
+            used += len(block) + 1
+        else:
+            dropped.append(name)
+    # CANDIDATES is required but may itself exceed the budget; truncate its
+    # body lines (never the TRUST RULE) and say so in the receipt.
+    text = "\n".join([line for header, body in kept for line in [header] + body]
+                     + [trust])
+    truncated = False
+    if len(text) > budget:
+        keep = max(budget - len(trust) - 1, 0)
+        text = text[:keep].rsplit("\n", 1)[0] + "\n" + trust if "\n" in text[:keep] else trust
+        truncated = True
+        if "candidates" not in dropped:
+            dropped.append("candidates(partial)")
+    if receipt is not None:
+        dropped_base = {d.split("(")[0] for d in dropped}
+        receipt.update({"cap": budget, "chars": len(text),
+                        "sections_kept": [name for name, _, _, _ in sections
+                                          if name not in dropped_base],
+                        "sections_dropped": dropped,
+                        "truncated": truncated or bool(dropped)})
+    return text
 
 
 def segment_prompt(task, *, evidence=None, prior_plan=None, template=TEMPLATE):
