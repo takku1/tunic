@@ -40,6 +40,10 @@ def main(argv=None):
     note = commands.add_parser("note", help="append a timestamped session note to a document")
     note.add_argument("path", help="document path to create or append, e.g. notes/session.md")
     note.add_argument("--text", required=True, help="note text to append")
+    candidates = commands.add_parser("candidates", help="list proposed-but-unverified relationship candidates")
+    frontier = commands.add_parser("frontier", help="list frontier ledger entries (unresolved observations)")
+    frontier.add_argument("--status", default=None, choices=["open", "investigating", "resolved", "dismissed"],
+                          help="filter by entry status; default lists all")
     draft = commands.add_parser("draft", help="propose claim blocks for co-mentioned entities (review input only)")
     draft.add_argument("document", help="repository-relative document path, e.g. notes.md")
     review = commands.add_parser("review", help="structured acquisition report for one document (read-only)")
@@ -119,6 +123,19 @@ def main(argv=None):
         if args.command == "mcp":
             from .mcp import serve
             return serve(args.db, args.root)
+        if args.command in {"candidates", "frontier"}:
+            from .memory import Memory
+            memory = Memory(args.db)
+            try:
+                if args.command == "candidates":
+                    result = memory.candidates()
+                else:
+                    result = {"status": args.status or "all",
+                              "entries": memory.frontier_list(status=args.status)}
+            finally:
+                memory.close()
+            print(json.dumps(result, ensure_ascii=True, sort_keys=True, indent=2))
+            return 0
         with GraphStore(args.db) as store:
             if args.command == "ingest":
                 result = store.ingest(args.root)

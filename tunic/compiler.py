@@ -188,6 +188,38 @@ def compile_mentions(store, symbol, *, snapshot=None):
             "mentions": mentions, "outcome": "complete" if mentions else "empty"}
 
 
+def compile_candidates(store, *, snapshot=None):
+    """Proposed-but-unverified relationship candidates.
+
+    Dispatch analysis and other mechanical passes surface candidates here
+    with derivation chains. Status is always proposed/proposed_ambiguous:
+    candidates never traverse, corroborate, or render as evidence until
+    verified and promoted through the governed path. Model and reviewer
+    tooling reads this to decide what is worth verifying.
+    """
+    snapshot, view = store.view(snapshot)
+    found = []
+    for assertion in view["assertions"]:
+        if assertion.get("status") not in ("proposed", "proposed_ambiguous"):
+            continue
+        proposition = assertion.get("proposition", {})
+        resolution = assertion.get("resolution") or {}
+        found.append({"id": assertion.get("id"),
+                      "relation": proposition.get("relation"),
+                      "caller": proposition.get("caller"),
+                      "callee": proposition.get("callee"),
+                      "via": proposition.get("via"),
+                      "status": assertion.get("status"),
+                      "rule": resolution.get("rule"),
+                      "derivation": assertion.get("derivation"),
+                      "resolution": resolution})
+    found.sort(key=lambda c: (c["relation"] or "", c["caller"] or "",
+                              c["callee"] or "", c["id"] or ""))
+    return {"snapshot": snapshot, "profile": view["profile"],
+            "candidates": found,
+            "outcome": "complete" if found else "empty"}
+
+
 def compile_drafts(store, document, *, snapshot=None):
     """Propose claim blocks for entity pairs co-mentioned in one document.
 

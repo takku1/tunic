@@ -13,6 +13,103 @@ from tunic import GraphStore, compile_claims, compile_impact, compile_mentions, 
 from tunic.identity import identity
 
 
+PRICING = "def round_total(cart):\n    return cart\n"
+DISPATCH = ("from pricing import round_total\n\nSTRATEGIES = {\"standard\": round_total}\n\n\n"
+            "def apply(strategy, cart):\n    return STRATEGIES[strategy](cart)\n")
+PLACE_ORDER = ("from dispatch import apply\n\n\ndef place_order(cart):\n"
+               "    return apply(\"standard\", cart)\n")
+
+
+class DispatchTests(unittest.TestCase):
+    """Registry/dict-dispatch indirection yields proposed candidates, never assertions."""
+
+    def setUp(self):
+        scratch = Path(__file__).resolve().parents[1] / ".tunic" / "test-runs"
+        scratch.mkdir(parents=True, exist_ok=True)
+        self.base = (scratch / ("run-" + uuid.uuid4().hex)).resolve()
+        self.base.mkdir()
+        self.root = self.base / "repo"
+        self.root.mkdir()
+        self.db = self.base / "graph.sqlite"
+        self._stores = []
+
+    def tearDown(self):
+        for store in self._stores:
+            store.close()
+        allowed = (Path(__file__).resolve().parents[1] / ".tunic" / "test-runs").resolve()
+        assert self.base.is_relative_to(allowed) and self.base != allowed
+        shutil.rmtree(self.base)
+
+    def write(self, path, text):
+        p = self.root / path
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_bytes(text.encode("utf-8"))
+
+    def ingest(self):
+        store = GraphStore(self.db)
+        self._stores.append(store)
+        store.ingest(self.root)
+        _, self.view = store.view()
+        return store
+
+    def candidates(self):
+        return [a for a in self.view["assertions"]
+                if a.get("proposition", {}).get("relation") == "depends_on"
+                and a.get("proposition", {}).get("via") == "registry_dispatch"]
+
+    def test_registry_indirection_produces_candidate_with_derivation(self):
+        self.write("pricing.py", PRICING)
+        self.write("dispatch.py", DISPATCH)
+        self.write("checkout.py", PLACE_ORDER)
+        store = self.ingest()
+        found = self.candidates()
+        self.assertEqual(len(found), 1)
+        candidate = found[0]
+        self.assertEqual(candidate["status"], "proposed")
+        self.assertEqual(candidate["proposition"]["caller"], "checkout.py::place_order")
+        self.assertEqual(candidate["proposition"]["callee"], "pricing.py::round_total")
+        self.assertEqual(candidate["resolution"]["rule"], "registry_dispatch_candidate_v1")
+        derivation = candidate.get("derivation", {})
+        self.assertEqual(derivation.get("table"), "dispatch.py::STRATEGIES")
+        self.assertEqual(derivation.get("key"), "standard")
+        self.assertTrue(derivation.get("binding") and derivation.get("lookup")
+                        and derivation.get("call"))
+        asserted = [a for a in self.view["assertions"]
+                    if a.get("proposition", {}).get("relation") == "depends_on"
+                    and a.get("proposition", {}).get("caller") == "checkout.py::place_order"
+                    and a.get("proposition", {}).get("callee") == "pricing.py::round_total"
+                    and a.get("status") == "asserted_in_source"]
+        self.assertEqual(asserted, [])
+        impacts = compile_impact(store, "pricing.py::round_total")["impacts"]
+        self.assertNotIn("checkout.py::place_order",
+                         [i["symbol"] for i in impacts])
+
+    def test_dynamic_dispatch_patterns_yield_no_candidates(self):
+        self.write("pricing.py", PRICING)
+        self.write("dispatch.py", DISPATCH + "\nTABLE2 = {}\n")
+        self.write("checkout.py",
+                   "from dispatch import apply, STRATEGIES\n"
+                   "from pricing import round_total\n"
+                   "import pricing\n\n\n"
+                   "def dynamic(cart, name):\n"
+                   "    return STRATEGIES[name](cart)\n\n\n"
+                   "def reassigned(cart):\n"
+                   "    STRATEGIES[\"x\"] = round_total\n"
+                   "    return apply(\"x\", cart)\n\n\n"
+                   "def reflected(cart, name):\n"
+                   "    return getattr(pricing, name)(cart)\n\n\n"
+                   "def aliased(cart):\n"
+                   "    table = STRATEGIES\n"
+                   "    return table[\"standard\"](cart)\n")
+        self.ingest()
+        self.assertEqual(self.candidates(), [])
+        kinds = {(d.get("kind"), d.get("reason")) for d in self.view.get("diagnostics", [])}
+        self.assertIn(("dispatch_unresolved", "dynamic_key"), kinds)
+        self.assertIn(("dispatch_unresolved", "reassigned_table"), kinds)
+        self.assertIn(("dispatch_unresolved", "getattr_dispatch"), kinds)
+        self.assertIn(("dispatch_unresolved", "indirect_table"), kinds)
+
+
 class ReferenceTests(unittest.TestCase):
     def setUp(self):
         scratch = Path(__file__).resolve().parents[1] / ".tunic" / "test-runs"
@@ -27,6 +124,7 @@ class ReferenceTests(unittest.TestCase):
         self.write("test_service.py", "import service as svc\n\ndef test_process():\n    assert svc.process(3) == 4\n")
         self.write("unrelated.py", 'def text():\n    return "calculate(3)"\n\ndef dynamic(callback):\n    return callback(3)\n')
         self.store = GraphStore(self.db)
+        self._stores = []
 
     def tearDown(self):
         self.store.close()

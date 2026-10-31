@@ -1,0 +1,132 @@
+{
+ "benchmark": "model-ab-s2-dispatch-replay",
+ "protocol": "S2 replay unchanged except the A3 candidate block is appended to the propose context; oracle reviewer gate; frontier entry resolves only on passing apply",
+ "model": "qwen3:4b",
+ "decoding": {
+  "temperature": 0,
+  "seed": 0
+ },
+ "context_cap": 4000,
+ "tunic_commit": "1734c686dde221c18e5fde361d0434f9d8006020",
+ "summary": {
+  "lexical": {
+   "committed": true,
+   "apply_pass": false,
+   "frontier": "open-investigating"
+  },
+  "tunic-select": {
+   "committed": true,
+   "apply_pass": true,
+   "frontier": "resolved"
+  }
+ },
+ "tasks": [
+  {
+   "id": "S2-replay-propose",
+   "session": 1,
+   "arm": "lexical",
+   "question": "What must change if round_total changes, and why?",
+   "gold_triple": [
+    "depends_on",
+    "checkout.py::place_order",
+    "pricing.py::round_total"
+   ],
+   "dispatch_candidates": 1,
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "checkout.py::place_order",
+    "object": "pricing.py::round_total"
+   },
+   "proposal_error": null,
+   "committed": true,
+   "commit_reason": "committed",
+   "pass": true,
+   "model_calls": 2,
+   "prompt_tokens": 386,
+   "completion_tokens": 2120,
+   "latency_ms": 10431.8,
+   "response": "```symbols\ncheckout.py::place_order\n```\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\", \"object\": \"pricing.py::round_total\"}]\n```"
+  },
+  {
+   "id": "S2-replay-apply",
+   "session": 2,
+   "arm": "lexical",
+   "question": "What else must change if round_total changes?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "had_commit": true,
+   "parsed": [],
+   "hallucinated": [],
+   "pass": false,
+   "model_calls": 1,
+   "prompt_tokens": 172,
+   "completion_tokens": 1979,
+   "latency_ms": 9654.6,
+   "response": "```\ndispatch.py::apply\n```"
+  },
+  {
+   "id": "S2-replay-frontier",
+   "session": 3,
+   "arm": "lexical",
+   "frontier_entry": "frontier-12c16f5a94dd",
+   "frontier_state": "open-investigating"
+  },
+  {
+   "id": "S2-replay-propose",
+   "session": 1,
+   "arm": "tunic-select",
+   "question": "What must change if round_total changes, and why?",
+   "gold_triple": [
+    "depends_on",
+    "checkout.py::place_order",
+    "pricing.py::round_total"
+   ],
+   "dispatch_candidates": 1,
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "checkout.py::place_order",
+    "object": "pricing.py::round_total"
+   },
+   "proposal_error": null,
+   "committed": true,
+   "commit_reason": "committed",
+   "pass": true,
+   "model_calls": 2,
+   "prompt_tokens": 838,
+   "completion_tokens": 6235,
+   "latency_ms": 32084.1,
+   "response": "```symbols\n\n```\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\", \"object\": \"pricing.py::round_total\"}]\n```"
+  },
+  {
+   "id": "S2-replay-apply",
+   "session": 2,
+   "arm": "tunic-select",
+   "question": "What else must change if round_total changes?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "had_commit": true,
+   "parsed": [
+    "checkout.py::place_order"
+   ],
+   "hallucinated": [],
+   "pass": true,
+   "model_calls": 1,
+   "prompt_tokens": 660,
+   "completion_tokens": 1817,
+   "latency_ms": 8822.5,
+   "response": "```symbols\ncheckout.py::place_order\n```"
+  },
+  {
+   "id": "S2-replay-frontier",
+   "session": 3,
+   "arm": "tunic-select",
+   "frontier_entry": "frontier-ece295cbc751",
+   "frontier_state": "resolved"
+  }
+ ],
+ "limitations": [
+  "n=1 per arm, temperature 0; directional evidence only."
+ ]
+}

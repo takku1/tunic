@@ -264,6 +264,40 @@ def _collect_code(sources, symbols, assertions, diagnostics):
             diagnostics.append({"path": s["path"], "kind": "module_execution"})
 
 
+def _import_map(s, tree):
+    """Local import bindings for one code source.
+
+    Shared by static-call resolution and registry-dispatch analysis so both
+    see the same module bindings. Returns (imports, import_evidence, star).
+    """
+    imports = {}
+    import_evidence = {}
+    for node in tree.body:
+        start, end = _span(s["data"], node)
+        if isinstance(node, ast.Import):
+            for a in node.names:
+                binding = a.asname or a.name.split(".")[0]
+                imports[binding] = a.name if a.asname else a.name.split(".")[0]
+                import_evidence[binding] = {"source": s["id"], "start": start, "end": end}
+        elif isinstance(node, ast.ImportFrom):
+            package = s["module"].split(".") if Path(s["path"]).name == "__init__.py" else s["module"].split(".")[:-1]
+            if node.level:
+                if node.level > len(package):
+                    continue
+                base = package[:len(package)-node.level+1]
+                prefix = ".".join(base + ([node.module] if node.module else []))
+            else:
+                prefix = node.module or ""
+            for a in node.names:
+                if a.name == "*":
+                    continue
+                binding = a.asname or a.name
+                imports[binding] = prefix + "." + a.name if prefix else a.name
+                import_evidence[binding] = {"source": s["id"], "start": start, "end": end}
+    star = any(isinstance(n, ast.ImportFrom) and any(a.name == "*" for a in n.names) for n in tree.body)
+    return imports, import_evidence, star
+
+
 def _resolve_code(sources, modules, symbols, assertions, diagnostics):
     """Resolve imports and static calls for parsed code sources.
 
@@ -275,33 +309,11 @@ def _resolve_code(sources, modules, symbols, assertions, diagnostics):
         tree = s["tree"]
         if tree is None:
             continue
-        imports = {}
-        import_evidence = {}
-        for node in tree.body:
-            if isinstance(node, ast.Import):
-                for a in node.names:
-                    binding = a.asname or a.name.split(".")[0]
-                    imports[binding] = a.name if a.asname else a.name.split(".")[0]
-                    start, end = _span(s["data"], node)
-                    import_evidence[binding] = {"source": s["id"], "start": start, "end": end}
-            elif isinstance(node, ast.ImportFrom):
-                package = s["module"].split(".") if Path(s["path"]).name == "__init__.py" else s["module"].split(".")[:-1]
-                if node.level:
-                    if node.level > len(package):
-                        continue
-                    base = package[:len(package)-node.level+1]
-                    prefix = ".".join(base + ([node.module] if node.module else []))
-                else:
-                    prefix = node.module or ""
-                for a in node.names:
-                    if a.name == "*":
-                        diagnostics.append({"path": s["path"], "line": node.lineno, "kind": "star_import"})
-                    else:
-                        binding = a.asname or a.name
-                        imports[binding] = prefix + "." + a.name if prefix else a.name
-                        start, end = _span(s["data"], node)
-                        import_evidence[binding] = {"source": s["id"], "start": start, "end": end}
-        star = any(isinstance(n, ast.ImportFrom) and any(a.name == "*" for a in n.names) for n in tree.body)
+        imports, import_evidence, star = _import_map(s, tree)
+        if star:
+            for node in tree.body:
+                if isinstance(node, ast.ImportFrom) and any(a.name == "*" for a in node.names):
+                    diagnostics.append({"path": s["path"], "line": node.lineno, "kind": "star_import"})
         targets = []
         for node in tree.body:
             if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name in s["functions"]:
@@ -380,6 +392,328 @@ def _resolve_code(sources, modules, symbols, assertions, diagnostics):
                 else:
                     diagnostics.append({"path": s["path"], "caller": caller, "line": call.lineno,
                                         "start": start, "end": end, "kind": "unresolved_call", "expression": expression})
+
+
+def _dispatch_target(value, record, imports, modules):
+    """Resolve a registry value name to a code symbol key, or None."""
+    if value in record["functions"]:
+        return record["functions"][value]
+    full = imports.get(value)
+    if not full:
+        return None
+    module, _, function = full.rpartition(".")
+    candidates = modules.get(module, [])
+    if len(candidates) == 1:
+        return candidates[0].get("functions", {}).get(function)
+    return None
+
+
+def _build_dispatch(sources, modules, symbols, assertions, diagnostics, invalid_tables=None):
+    """Propose depends_on candidates through registry/dict indirection.
+
+    Closed module-level ``NAME = {"key": func}`` tables with one static
+    assignment, indexed by literals in the same function or by a parameter
+    fed a literal at a static call site (one level), yield status=proposed
+    candidates with a derivation chain (registry binding, index lookup,
+    call site). Candidates never traverse: every compiler path requires
+    asserted_in_source. Dynamic keys, reassigned tables, aliases, getattr
+    dispatch, and unresolvable entries yield dispatch_unresolved
+    diagnostics instead. Accepts any source subset like _resolve_code;
+    refresh extends the affected set so caller/table pairs resolve
+    together, and carries forward invalid tables from kept diagnostics.
+    """
+    records = {}
+    for s in sources:
+        if s["tree"] is not None:
+            records[s["path"]] = s
+    tables = {}
+    invalid = {}
+
+    def note_invalid(qname, reason, path, line, start=None):
+        if qname not in invalid:
+            invalid[qname] = True
+            entry = {"path": path, "line": line, "kind": "dispatch_unresolved",
+                     "reason": reason, "table": qname}
+            if start is not None:
+                entry["start"] = start
+            diagnostics.append(entry)
+
+    for path in sorted(records):
+        s = records[path]
+        tree = s["tree"]
+        counts = {}
+        for node in tree.body:
+            if (isinstance(node, ast.Assign) and len(node.targets) == 1
+                    and isinstance(node.targets[0], ast.Name)):
+                name = node.targets[0].id
+                counts[name] = counts.get(name, 0) + 1
+                if counts[name] == 1 and isinstance(node.value, ast.Dict):
+                    keys = node.value.keys
+                    values = node.value.values
+                    if any(not isinstance(k, ast.Constant) or not isinstance(k.value, str)
+                           for k in keys):
+                        note_invalid(s["path"] + "::" + name, "dynamic_table_key",
+                                     s["path"], node.lineno)
+                        continue
+                    if any(not isinstance(v, ast.Name) for v in values):
+                        note_invalid(s["path"] + "::" + name, "unresolvable_entry",
+                                     s["path"], node.lineno)
+                        continue
+                    start, end = _span(s["data"], node)
+                    tables[s["path"] + "::" + name] = {
+                        "source": s["id"], "path": s["path"], "module": s["module"],
+                        "name": name, "span": {"source": s["id"], "start": start, "end": end},
+                        "entries": {k.value: v.id for k, v in zip(keys, values)}}
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.AnnAssign, ast.AugAssign)):
+                target = node.target
+                names = [target.id] if isinstance(target, ast.Name) else []
+                for name in names:
+                    if name in counts:
+                        note_invalid(s["path"] + "::" + name, "reassigned_table",
+                                     s["path"], getattr(node, "lineno", None))
+            elif isinstance(node, ast.Delete):
+                for target in node.targets:
+                    if isinstance(target, ast.Name) and target.id in counts:
+                        note_invalid(s["path"] + "::" + target.id, "reassigned_table",
+                                     s["path"], getattr(node, "lineno", None))
+    for qname in list(tables):
+        name = tables[qname]["name"]
+        path = tables[qname]["path"]
+        s = records[path]
+        tree = s["tree"]
+        stores = 0
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Assign):
+                for target in node.targets:
+                    if isinstance(target, ast.Name) and target.id == name:
+                        stores += 1
+        if stores != 1:
+            note_invalid(qname, "reassigned_table", path, None)
+            del tables[qname]
+    by_module = {}
+    for qname, info in tables.items():
+        by_module.setdefault(info["module"], {})[info["name"]] = info
+    for path in sorted(records):
+        s = records[path]
+        tree = s["tree"]
+        imports, _, _ = _import_map(s, tree)
+        for node in ast.walk(tree):
+            if not (isinstance(node, ast.Subscript) and isinstance(node.ctx, ast.Store)):
+                continue
+            target = node.value
+            table = None
+            if isinstance(target, ast.Name):
+                info = by_module.get(s["module"], {}).get(target.id)
+                if info is not None and info["path"] == s["path"]:
+                    table = info
+                else:
+                    full = imports.get(target.id, "")
+                    module, _, attr = full.rpartition(".")
+                    if attr == target.id:
+                        info = by_module.get(module, {}).get(attr)
+                        if info is not None:
+                            table = info
+            elif (isinstance(target, ast.Attribute) and isinstance(target.value, ast.Name)):
+                full = imports.get(target.value.id, "")
+                info = by_module.get(full or target.value.id, {}).get(target.attr)
+                if info is not None:
+                    table = info
+            if table is not None:
+                note_invalid(table["path"] + "::" + table["name"], "reassigned_table",
+                             s["path"], getattr(node, "lineno", None))
+    dead = {}
+    for qname in list(invalid):
+        if qname in tables:
+            dead[qname] = tables.pop(qname)
+    for qname in (invalid_tables or ()):
+        if qname in tables:
+            dead[qname] = tables.pop(qname)
+    by_module = {}
+    for qname, info in tables.items():
+        by_module.setdefault(info["module"], {})[info["name"]] = info
+    by_dead = {}
+    for qname, info in dead.items():
+        by_dead.setdefault(info["module"], {})[info["name"]] = info
+    for info in tables.values():
+        resolved = {}
+        s = records[info["path"]]
+        imports, _, _ = _import_map(s, s["tree"])
+        for key, value in info["entries"].items():
+            target = _dispatch_target(value, s, imports, modules)
+            if target is None or target not in symbols:
+                note_invalid(info["path"] + "::" + info["name"], "unknown_target",
+                             info["path"], None)
+                resolved = None
+                break
+            resolved[key] = target
+        info["resolved"] = resolved
+
+    def emit(caller_key, caller_source, call_span, lookup_span, lookup_expr, info, key):
+        start, end = call_span
+        call_ref = {"source": caller_source, "start": start, "end": end}
+        proposition = {"relation": "depends_on", "caller": caller_key,
+                       "callee": info["resolved"][key], "via": "registry_dispatch"}
+        assertion = {"proposition": proposition, "source": caller_source,
+                     "start": start, "end": end,
+                     "resolution": {"expression": lookup_expr,
+                                    "rule": "registry_dispatch_candidate_v1",
+                                    "support": [info["span"], lookup_span, call_ref]},
+                     "derivation": {"table": info["path"] + "::" + info["name"],
+                                    "key": key, "binding": info["span"],
+                                    "lookup": lookup_span, "call": call_ref},
+                     "producer": PROFILE, "status": "proposed"}
+        assertion["id"] = identity("assertion", assertion)
+        assertions.append(assertion)
+
+    func_index = {}
+    for path in sorted(records):
+        s = records[path]
+        for node in s["tree"].body:
+            if (isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+                    and node.name in s.get("functions", {})):
+                func_index[(s["module"], node.name)] = (node, s)
+    func_by_key = {}
+    for (_, _), (node, s) in func_index.items():
+        func_by_key[s["functions"][node.name]] = (node, s)
+    import_cache = {}
+
+    def find_table(name, record, imports, mapping):
+        direct = mapping.get(record["module"], {}).get(name)
+        if direct is not None and direct["path"] == record["path"]:
+            return direct
+        full = imports.get(name, "")
+        module, _, attr = full.rpartition(".")
+        if attr == name:
+            found = mapping.get(module, {}).get(attr)
+            if found is not None:
+                return found
+        return direct
+
+    def lookup_table(name, record, imports):
+        info = find_table(name, record, imports, by_module)
+        if info is not None:
+            return info, True
+        info = find_table(name, record, imports, by_dead)
+        return info, False
+
+    def imports_of(record):
+        if record["path"] not in import_cache:
+            import_cache[record["path"]] = _import_map(record, record["tree"])[0]
+        return import_cache[record["path"]]
+
+    def rebound(name, node):
+        for child in ast.walk(node):
+            if (isinstance(child, ast.Name) and isinstance(child.ctx, ast.Store)
+                    and child.id == name):
+                return True
+        return False
+
+    for (module, _), (node, s) in sorted(func_index.items()):
+        if any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda))
+               for statement in node.body for n in ast.walk(statement)):
+            continue
+        caller = s["functions"][node.name]
+        aliases = {}
+        for statement in node.body:
+            if (isinstance(statement, ast.Assign) and len(statement.targets) == 1
+                    and isinstance(statement.targets[0], ast.Name)
+                    and isinstance(statement.value, ast.Name)):
+                aliases[statement.targets[0].id] = statement.value.id
+        for call in (n for n in ast.walk(ast.Module(body=node.body, type_ignores=[]))
+                     if isinstance(n, ast.Call)):
+            target = call.func
+            if (isinstance(target, ast.Subscript)
+                    and isinstance(target.value, ast.Name)
+                    and isinstance(target.slice, ast.Constant)
+                    and isinstance(target.slice.value, str)):
+                table_name = target.value.id
+                if table_name in aliases:
+                    start, end = _span(s["data"], call)
+                    diagnostics.append({"path": s["path"], "line": call.lineno,
+                                        "kind": "dispatch_unresolved",
+                                        "reason": "indirect_table", "start": start})
+                    continue
+                info, live = lookup_table(table_name, s, imports_of(s))
+                if info is None or not live or info["resolved"] is None:
+                    continue
+                key = target.slice.value
+                if key not in info["resolved"]:
+                    start, end = _span(s["data"], call)
+                    diagnostics.append({"path": s["path"], "line": call.lineno,
+                                        "kind": "dispatch_unresolved", "reason": "unknown_key",
+                                        "table": info["path"] + "::" + info["name"],
+                                        "start": start})
+                    continue
+                call_start, call_end = _span(s["data"], call)
+                lookup_start, lookup_end = _span(s["data"], target)
+                lookup_span = {"source": s["id"], "start": lookup_start, "end": lookup_end}
+                emit(caller, s["id"], (call_start, call_end), lookup_span,
+                     table_name + "[\"" + key + "\"]", info, key)
+            elif (isinstance(target, ast.Subscript) and isinstance(target.value, ast.Name)):
+                table_name = target.value.id
+                if table_name in aliases:
+                    start, _ = _span(s["data"], call)
+                    diagnostics.append({"path": s["path"], "line": call.lineno,
+                                        "kind": "dispatch_unresolved",
+                                        "reason": "indirect_table", "start": start})
+                    continue
+                info, _live = lookup_table(table_name, s, imports_of(s))
+                if info is not None:
+                    start, _ = _span(s["data"], call)
+                    diagnostics.append({"path": s["path"], "line": call.lineno,
+                                        "kind": "dispatch_unresolved", "reason": "dynamic_key",
+                                        "table": info["path"] + "::" + info["name"],
+                                        "start": start})
+            elif (isinstance(target, ast.Call) and isinstance(target.func, ast.Name)
+                    and target.func.id == "getattr"):
+                start, _ = _span(s["data"], call)
+                diagnostics.append({"path": s["path"], "line": call.lineno,
+                                    "kind": "dispatch_unresolved",
+                                    "reason": "getattr_dispatch", "start": start})
+            elif isinstance(target, ast.Name):
+                callee_key = _dispatch_target(target.id, s, imports_of(s), modules)
+                found = func_by_key.get(callee_key)
+                if found is None:
+                    continue
+                def_node, def_s = found
+                if any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef,
+                                      ast.ClassDef, ast.Lambda))
+                       for statement in def_node.body for n in ast.walk(statement)):
+                    continue
+                params = [a.arg for a in def_node.args.args]
+                for position, argument in enumerate(call.args):
+                    if not (isinstance(argument, ast.Constant)
+                            and isinstance(argument.value, str)):
+                        continue
+                    if position >= len(params):
+                        continue
+                    key = argument.value
+                    param = params[position]
+                    if rebound(param, def_node):
+                        continue
+                    for site in ast.walk(def_node):
+                        if not (isinstance(site, ast.Subscript)
+                                and isinstance(site.value, ast.Name)
+                                and isinstance(site.slice, ast.Name)
+                                and site.slice.id == param):
+                            continue
+                        info = by_module.get(def_s["module"], {}).get(site.value.id)
+                        if info is None or info["resolved"] is None:
+                            continue
+                        if key not in info["resolved"]:
+                            continue
+                        call_start, call_end = _span(s["data"], call)
+                        lookup_start, lookup_end = _span(def_s["data"], site)
+                        lookup_span = {"source": def_s["id"],
+                                       "start": lookup_start, "end": lookup_end}
+                        emit(caller, s["id"], (call_start, call_end), lookup_span,
+                             info["name"] + "[\"" + key + "\"] via "
+                             + params[position], info, key)
+                        break
+                    else:
+                        continue
+                    break
 
 
 def _build_docs(sources, symbols, assertions, diagnostics):
@@ -864,5 +1198,6 @@ def extract(root):
     symbols, assertions = {}, []
     _collect_code(sources, symbols, assertions, diagnostics)
     _resolve_code(sources, modules, symbols, assertions, diagnostics)
+    _build_dispatch(sources, modules, symbols, assertions, diagnostics)
     _build_docs(sources, symbols, assertions, diagnostics)
     return sources, sorted(symbols.values(), key=lambda x:x["key"]), sorted(assertions, key=lambda x:x["id"]), sorted(diagnostics, key=lambda x: (x["path"], x.get("line") or 0, x["kind"], x.get("start", 0)))

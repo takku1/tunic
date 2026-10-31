@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import sqlite3
 
-from .extract import DOC_PHASE_KINDS, STRUCTURE_KINDS, TEXT_EXTENSIONS, _build_bare_mentions, _build_claims, _build_docs, _build_exact_mentions, _build_mentions, _claim_mention_refs, _code_leaf_names, _collect_code, _exact_mention_refs, _leaf_document_frequency, _requalify, _resolve_code, _scan, extract, module_of, parse_source, PROFILE
+from .extract import DOC_PHASE_KINDS, STRUCTURE_KINDS, TEXT_EXTENSIONS, _build_bare_mentions, _build_claims, _build_dispatch, _build_docs, _build_exact_mentions, _build_mentions, _claim_mention_refs, _code_leaf_names, _collect_code, _exact_mention_refs, _leaf_document_frequency, _requalify, _resolve_code, _scan, extract, module_of, parse_source, PROFILE
 from .identity import canonical, digest, identity
 
 SCHEMA = """
@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS entities(
     snapshot TEXT REFERENCES snapshots(id), key TEXT, record TEXT NOT NULL,
     PRIMARY KEY(snapshot,key));
 CREATE TABLE IF NOT EXISTS propositions(id TEXT PRIMARY KEY, record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS frontier(id TEXT PRIMARY KEY, record TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS assertions(
     id TEXT PRIMARY KEY, proposition TEXT REFERENCES propositions(id),
     source TEXT REFERENCES sources(id), caller TEXT NOT NULL, callee TEXT NOT NULL,
@@ -218,6 +219,45 @@ class GraphStore:
                 return True
         return False
 
+    @staticmethod
+    def _dispatch_scope(manifest, touched_set, stored):
+        """Caller/table file pairs linked by registry-dispatch candidates.
+
+        A candidate's validity spans its call-site file and its registry
+        table file, so touching either side must re-resolve both. Returns
+        (extra affected paths, invalid table names carried forward from
+        kept diagnostics on untouched files). Table-validity reasons only;
+        site-level reasons never invalidate a table.
+        """
+        callers = {}
+        for assertion in manifest["assertions"]:
+            proposition = assertion.get("proposition", {})
+            if proposition.get("via") != "registry_dispatch":
+                continue
+            caller_path = proposition.get("caller", "").split("::")[0]
+            table = (assertion.get("derivation") or {}).get("table", "")
+            table_path = table.split("::")[0]
+            if not caller_path or not table_path:
+                continue
+            callers.setdefault(table, set()).add(caller_path)
+        extra = set()
+        for table, paths in callers.items():
+            table_path = table.split("::")[0]
+            if table_path in touched_set:
+                extra.update(p for p in paths if p in stored)
+            if paths & touched_set and table_path in stored:
+                extra.add(table_path)
+        invalid = set()
+        for diagnostic in manifest["diagnostics"]:
+            if (diagnostic.get("kind") == "dispatch_unresolved"
+                    and diagnostic.get("reason") in (
+                        "reassigned_table", "dynamic_table_key",
+                        "unresolvable_entry", "unknown_target")
+                    and diagnostic.get("path") not in touched_set
+                    and diagnostic.get("table")):
+                invalid.add(diagnostic["table"])
+        return extra, invalid
+
     def _doc_subset(self, text_sources, symbols, code_assertions, manifest,
                       reprocess):
         """Recompute claims and mentions for reprocessed docs only.
@@ -398,6 +438,9 @@ class GraphStore:
                 continue
             if self._imports_touched(text, path, touched_modules):
                 affected.add(path)
+        dispatch_extra, dispatch_invalid = self._dispatch_scope(
+            manifest, touched_set, stored)
+        affected |= {p for p in dispatch_extra if p in fresh}
         parse_paths = sorted(p for p in affected if p in fresh)
         records, parse_diagnostics, unparsed = {}, [], []
         for path in parse_paths:
@@ -454,6 +497,9 @@ class GraphStore:
         resolve_assertions, resolve_diags = [], []
         _resolve_code(code_sources, modules, symbols,
                       resolve_assertions, resolve_diags)
+        _build_dispatch(code_sources, modules, symbols,
+                        resolve_assertions, resolve_diags,
+                        invalid_tables=dispatch_invalid)
         rows = {row[0]: row[1] for row in self.connection.execute(
             """SELECT s.id, s.path FROM sources s
                JOIN members m ON m.source=s.id WHERE m.snapshot=?""", (current,))}

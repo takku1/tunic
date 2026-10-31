@@ -1,5 +1,6 @@
 """Agent-facing memory sessions sharing one database across processes."""
 
+import json
 import re
 import shutil
 import sys
@@ -408,6 +409,173 @@ class ReconcileTests(unittest.TestCase):
             rel="decided_by")
         self.assertEqual(action, "invalid")
         self.assertIn("notes/missing.md::document", reason)
+
+
+class CommitProposalTests(unittest.TestCase):
+    """commit_proposal: reconcile first, promote only clean ADDs."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.root = self.tmp / "repo"
+        self.root.mkdir()
+        (self.root / "core.py").write_bytes(b"def calculate(x):\n    return x + 1\n")
+        (self.root / "service.py").write_bytes(
+            b"from core import calculate as compute\n\ndef process(value):\n    return compute(value)\n")
+        self.memory = Memory(str(self.tmp / "memory.sqlite"), self.root)
+        self.addCleanup(self.memory.close)
+        self.memory.ingest()
+
+    def _assertion_count(self):
+        _, view = self.memory.store.view()
+        return len(view["assertions"])
+
+    def test_clean_proposal_promotes(self):
+        committed, action, reason = self.memory.commit_proposal(
+            "service.py::process", "core.py::calculate")
+        self.assertTrue(committed)
+        self.assertEqual(action, "add")
+        self.assertTrue(reason)
+
+    def test_duplicate_is_noop_without_write(self):
+        self.memory.commit_proposal("service.py::process", "core.py::calculate")
+        self.memory.ingest()
+        before = self._assertion_count()
+        committed, action, reason = self.memory.commit_proposal(
+            "service.py::process", "core.py::calculate")
+        self.assertFalse(committed)
+        self.assertEqual(action, "duplicate")
+        self.assertEqual(self._assertion_count(), before)
+        self.assertEqual(
+            [e for e in self.memory.frontier_list() if e["failure"].startswith("reconcile_")], [])
+
+    def test_invalid_and_conflict_refuse_and_file_frontier(self):
+        committed, action, _ = self.memory.commit_proposal(
+            "ghost.py::phantom", "core.py::calculate")
+        self.assertEqual((committed, action), (False, "invalid"))
+        self.memory.record_outcome("service.py::process", "core.py::calculate",
+                                   authority="session-a")
+        self.memory.record_outcome("core.py::calculate", "service.py::process",
+                                   rel="contradicts", authority="session-b")
+        self.memory.ingest()
+        committed, action, reason = self.memory.commit_proposal(
+            "service.py::process", "core.py::calculate")
+        self.assertEqual((committed, action), (False, "conflict"))
+        kinds = {e["kind"] for e in self.memory.frontier_list()}
+        self.assertIn("unsupported", kinds)
+        self.assertIn("contradictory", kinds)
+
+    def test_candidates_surface_dispatch_proposals(self):
+        (self.root / "pricing.py").write_bytes(b"def round_total(cart):\n    return cart\n")
+        (self.root / "dispatch.py").write_bytes(
+            b"from pricing import round_total\n\nSTRATEGIES = {\"standard\": round_total}\n\n\n"
+            b"def apply(strategy, cart):\n    return STRATEGIES[strategy](cart)\n")
+        (self.root / "checkout.py").write_bytes(
+            b"from dispatch import apply\n\n\ndef place_order(cart):\n"
+            b"    return apply(\"standard\", cart)\n")
+        self.memory.ingest()
+        found = self.memory.candidates()
+        dispatch = [c for c in found["candidates"]
+                    if c.get("via") == "registry_dispatch"]
+        self.assertEqual(len(dispatch), 1)
+        self.assertEqual(dispatch[0]["caller"], "checkout.py::place_order")
+        self.assertEqual(dispatch[0]["callee"], "pricing.py::round_total")
+        self.assertEqual(dispatch[0]["status"], "proposed")
+        self.assertTrue(dispatch[0]["derivation"]["table"])
+
+
+class FrontierTests(unittest.TestCase):
+    """Frontier ledger v0: record, dedupe, transitions, abstention hook."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.root = self.tmp / "repo"
+        self.root.mkdir()
+        (self.root / "core.py").write_bytes(b"def calculate(x):\n    return x + 1\n")
+        self.memory = Memory(str(self.tmp / "memory.sqlite"), self.root)
+        self.addCleanup(self.memory.close)
+        self.memory.ingest()
+
+    def test_record_list_resolve_cycle(self):
+        entry_id, created = self.memory.frontier_record(
+            "unsupported", "resolve registry dispatch", "static_edge_unresolved",
+            required_evidence=("registry assignment",))
+        self.assertTrue(created)
+        entries = self.memory.frontier_list(status="open")
+        self.assertEqual([e["id"] for e in entries], [entry_id])
+        self.assertEqual(entries[0]["promotion_policy"], "review_required")
+        again_id, created = self.memory.frontier_record(
+            "unsupported", "resolve registry dispatch", "static_edge_unresolved",
+            required_evidence=("registry assignment",))
+        self.assertEqual((again_id, created), (entry_id, False))
+        self.assertEqual(self.memory.frontier_list()[0]["recurrence"], 2)
+        resolved = self.memory.frontier_transition(
+            entry_id, "resolved", resolution="dispatch candidate verified",
+            resolved_by="reviewer")
+        self.assertEqual(resolved["status"], "resolved")
+        self.assertEqual(self.memory.frontier_list(status="open"), [])
+        with self.assertRaises(ValueError):
+            self.memory.frontier_transition(entry_id, "dismissed", resolution="late")
+
+    def test_abstention_files_unresolved_entry(self):
+        self.assertEqual(self.memory.frontier_list(), [])
+        found = self.memory.answer("Zebra xylophone quark jigsaw zephyr quandary?")
+        self.assertEqual(found["outcome"], "empty")
+        entries = self.memory.frontier_list(status="open")
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(entries[0]["kind"], "unresolved")
+        self.assertEqual(entries[0]["failure"], "retrieval_abstention")
+        self.memory.answer("Zebra xylophone quark jigsaw zephyr quandary?")
+        self.assertEqual(self.memory.frontier_list()[0]["recurrence"], 2)
+
+
+class CLITests(unittest.TestCase):
+    """candidates/frontier read paths through the CLI."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.root = self.tmp / "repo"
+        self.root.mkdir()
+        (self.root / "core.py").write_bytes(b"def calculate(x):\n    return x + 1\n")
+        self.db = str(self.tmp / "memory.sqlite")
+
+    def _run(self, *argv):
+        import io
+        from contextlib import redirect_stdout
+        from tunic.__main__ import main
+        buffer = io.StringIO()
+        with redirect_stdout(buffer):
+            code = main(["--db", self.db, *argv])
+        self.assertEqual(code, 0)
+        return json.loads(buffer.getvalue())
+
+    def test_frontier_lists_recorded_entry(self):
+        memory = Memory(self.db, self.root)
+        memory.ingest()
+        entry_id, _ = memory.frontier_record(
+            "unsupported", "resolve registry dispatch", "static_edge_unresolved")
+        memory.close()
+        result = self._run("frontier")
+        self.assertEqual([e["id"] for e in result["entries"]], [entry_id])
+        self.assertEqual(self._run("frontier", "--status", "resolved")["entries"], [])
+
+    def test_candidates_lists_dispatch_proposals(self):
+        (self.root / "pricing.py").write_bytes(b"def round_total(cart):\n    return cart\n")
+        (self.root / "dispatch.py").write_bytes(
+            b"from pricing import round_total\n\nSTRATEGIES = {\"standard\": round_total}\n\n\n"
+            b"def apply(strategy, cart):\n    return STRATEGIES[strategy](cart)\n")
+        (self.root / "checkout.py").write_bytes(
+            b"from dispatch import apply\n\n\ndef place_order(cart):\n"
+            b"    return apply(\"standard\", cart)\n")
+        memory = Memory(self.db, self.root)
+        memory.ingest()
+        memory.close()
+        result = self._run("candidates")
+        dispatch = [c for c in result["candidates"] if c.get("via") == "registry_dispatch"]
+        self.assertEqual(len(dispatch), 1)
+        self.assertEqual(dispatch[0]["derivation"]["table"], "dispatch.py::STRATEGIES")
 
 
 class UnicodeWindowTests(unittest.TestCase):

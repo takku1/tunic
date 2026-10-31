@@ -14,7 +14,12 @@ from pathlib import Path
 from . import compiler
 from .baselines import BM25, TextNotes
 from .extract import CLAIM_RELATIONS, is_iso_date
+from .identity import digest as _digest
 from .store import GraphStore
+
+FRONTIER_KINDS = ("unresolved", "novel", "contradictory", "unsupported", "irrelevant")
+FRONTIER_BASE_PRIORITY = {"contradictory": 0.6, "unsupported": 0.5, "novel": 0.4,
+                          "unresolved": 0.3, "irrelevant": 0.05}
 
 
 def authorize(principal, action):
@@ -135,6 +140,128 @@ class Memory:
     def review(self, document, **kwargs):
         authorize(self.principal, "review")
         return compiler.compile_review(self.store, document, **kwargs)
+
+    def candidates(self, **kwargs):
+        """Proposed-but-unverified candidates with derivation chains.
+
+        Read path for verification tooling: mechanical passes (registry
+        dispatch, drafts) propose here; nothing returned can traverse or
+        render as evidence until promoted.
+        """
+        authorize(self.principal, "review")
+        return compiler.compile_candidates(self.store, **kwargs)
+
+    def commit_proposal(self, subject, object, rel="depends_on", document="notes/proposed.md",
+                        authority="agent-proposal", note=None):
+        """One-shot propose, deterministic reconcile, explicit promote.
+
+        Product form of the v4 condition-C path: reconcile first, promote
+        only clean ADDs. DUPLICATE is an explicit NOOP (no write);
+        CONFLICT and INVALID refuse and file a frontier entry instead of
+        writing. Returns (committed, action, reason). The caller invoking
+        this is the approver; pair with tests, a human, or a reviewer
+        gate before autonomous use.
+        """
+        action, reason = self.reconcile_proposal(subject, object, rel=rel)
+        if action != "add":
+            if action in ("conflict", "invalid"):
+                self._frontier_upsert(
+                    "contradictory" if action == "conflict" else "unsupported",
+                    "proposal %s %s %s refused: %s" % (subject, rel, object, reason),
+                    "reconcile_%s" % action,
+                    source_refs=(), required_evidence=("review blocking evidence",))
+            return False, action, reason
+        self.promote(subject, object, rel=rel, authority=authority,
+                     document=document, note=note)
+        return True, action, reason
+
+    def _frontier_upsert(self, kind, task, failure, source_refs=(),
+                         required_evidence=(), candidate_explanations=()):
+        """Record an unresolved observation, or bump recurrence of the open one.
+
+        Diagnostic write, not a claim: entries never traverse, corroborate,
+        or render as evidence. Dedupe key is (kind, task, source_refs); a
+        repeat bumps recurrence and priority instead of inserting.
+        """
+        if kind not in FRONTIER_KINDS:
+            raise ValueError("unknown frontier kind: " + str(kind))
+        refs = sorted(source_refs)
+        dedupe = _digest(json.dumps([kind, task, refs], sort_keys=True).encode("utf-8"))
+        now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        row = self.store.connection.execute("SELECT record FROM frontier").fetchall()
+        for (text,) in row:
+            record = json.loads(text)
+            if record.get("dedupe") == dedupe and record.get("status") in ("open", "investigating"):
+                record["recurrence"] = record.get("recurrence", 1) + 1
+                record["priority"] = min(
+                    0.95, FRONTIER_BASE_PRIORITY[kind] + 0.05 * record["recurrence"])
+                record["updated_at"] = now
+                self.store.connection.execute(
+                    "UPDATE frontier SET record=? WHERE id=?",
+                    (json.dumps(record, sort_keys=True), record["id"]))
+                self.store.connection.commit()
+                return record["id"], False
+        record = {"kind": kind, "status": "open", "task": task,
+                  "failure": failure, "source_refs": refs,
+                  "candidate_explanations": list(candidate_explanations),
+                  "required_evidence": list(required_evidence),
+                  "attempts": 0, "recurrence": 1,
+                  "priority": min(0.95, FRONTIER_BASE_PRIORITY[kind] + 0.05),
+                  "promotion_policy": "review_required",
+                  "created_at": now, "updated_at": now, "dedupe": dedupe,
+                  "resolution": None}
+        record["id"] = "frontier-" + _digest(
+            json.dumps([kind, task, refs, now], sort_keys=True).encode("utf-8"))[:12]
+        self.store.connection.execute(
+            "INSERT INTO frontier(id, record) VALUES(?, ?)",
+            (record["id"], json.dumps(record, sort_keys=True)))
+        self.store.connection.commit()
+        return record["id"], True
+
+    def frontier_record(self, kind, task, failure, source_refs=(),
+                        required_evidence=(), candidate_explanations=()):
+        """Record an unresolved observation in the frontier ledger."""
+        authorize(self.principal, "review")
+        return self._frontier_upsert(kind, task, failure, source_refs=source_refs,
+                                     required_evidence=required_evidence,
+                                     candidate_explanations=candidate_explanations)
+
+    def frontier_list(self, status=None):
+        """List ledger entries, highest priority first."""
+        authorize(self.principal, "review")
+        rows = self.store.connection.execute("SELECT record FROM frontier").fetchall()
+        entries = [json.loads(text) for (text,) in rows]
+        if status is not None:
+            entries = [e for e in entries if e.get("status") == status]
+        entries.sort(key=lambda e: (-e.get("priority", 0.0), e.get("created_at", "")))
+        return entries
+
+    def frontier_transition(self, entry_id, status, resolution=None, resolved_by=None):
+        """Move an entry open -> investigating -> resolved | dismissed.
+
+        Terminal states are sticky: resolving or dismissing twice raises.
+        History is preserved either way.
+        """
+        authorize(self.principal, "review")
+        if status not in ("investigating", "resolved", "dismissed"):
+            raise ValueError("unknown frontier status: " + str(status))
+        row = self.store.connection.execute(
+            "SELECT record FROM frontier WHERE id=?", (entry_id,)).fetchone()
+        if row is None:
+            raise ValueError("unknown frontier entry: " + entry_id)
+        record = json.loads(row[0])
+        if record.get("status") in ("resolved", "dismissed"):
+            raise ValueError("entry %s is terminal (%s)" % (entry_id, record.get("status")))
+        record["status"] = status
+        record["updated_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        if resolution is not None:
+            record["resolution"] = {"note": resolution, "by": resolved_by,
+                                    "at": record["updated_at"]}
+        self.store.connection.execute(
+            "UPDATE frontier SET record=? WHERE id=?",
+            (json.dumps(record, sort_keys=True), entry_id))
+        self.store.connection.commit()
+        return record
 
     def promote(self, subject, object, rel="depends_on", effective=None,
                 authority="agent-outcome", document="notes/outcomes.md", note=None):
@@ -428,7 +555,7 @@ class Memory:
                 mentions.append(mention)
         mentions.sort(key=lambda m: (m["evidence"]["path"], m["evidence"]["start"], m["status"]))
         claims.sort(key=lambda c: (c["relation"], c["caller"], c["callee"] or ""))
-        return {"task": task, "snapshot": snapshot, "policy": policy,
+        result = {"task": task, "snapshot": snapshot, "policy": policy,
                 "fusion": "weighted_rrf_k60", "provider": provider.name,
                 "budget": caps, "threshold": threshold, "stages": stages,
                 "candidates": [{"symbol": key,
@@ -440,6 +567,11 @@ class Memory:
                 "selection": selection,
                 "unknown_symbols": unknown_symbols,
                 "outcome": "complete" if top else "empty"}
+        if result["outcome"] == "empty":
+            self._frontier_upsert(
+                "unresolved", task, "retrieval_abstention",
+                required_evidence=("rephrase the task", "add supporting evidence"))
+        return result
 
     def record_outcome(self, subject, object, rel="depends_on", effective=None,
                        authority="agent-outcome", document="notes/outcomes.md", note=None,

@@ -1,6 +1,10 @@
 # Frontier Ledger: remembering what Tunic cannot yet understand
 
-Status: design + v0 specification, 2026-10-31. Not yet implemented.
+Status: v0 implemented (ledger table, record/list/transition, dedupe,
+answer-abstention hook, commit_proposal refusal filing, `frontier` and
+`candidates` CLI reads, S2 open→resolved cycle demonstrated). Pending:
+ingest-diagnostic auto-wiring, zero-config `tunic <path>` ingest (spec
+below, not built), investigation scheduling.
 Motivation: the v4 acquisition benchmark (S2, 0/6 commits on every
 protocol) proved models will not synthesize an edge through registry
 indirection even with the evidence in context, and probes of real
