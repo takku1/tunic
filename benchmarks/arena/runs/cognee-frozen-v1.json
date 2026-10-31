@@ -1,0 +1,734 @@
+{
+ "benchmark": "frozen-competitors-v1",
+ "tool": "cognee",
+ "tool_version": "1.6.6",
+ "tunic_commit": "e7d2f38d41e186f3a77554cf485abc420254b9c9",
+ "pinned_stack": {
+  "llm": "ollama/qwen3:4b",
+  "embeddings": "ollama/nomic-embed-text",
+  "vector_db": "lancedb(default)",
+  "graph": "ladybug(default)",
+  "extraction": "default LLM pipeline"
+ },
+ "protocol": "ingest 3 fixture repos; retrieval-only recall (no LLM completion); raw results only, scored by score_frozen_v1.py",
+ "tasks": [
+  {
+   "id": "code-task",
+   "repo": "repo",
+   "question": "Which functions break if total changes?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "arms": {
+    "CHUNKS": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n\n# Checkout investigation\n\nFound the totals path while tracing the batch summary: `cart.py::total`\nis where each batch total is computed before checkout.\n\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n"
+      }
+     ]
+    },
+    "CHUNKS_LEXICAL": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Checkout investigation\n\nFound the totals path while tracing the batch summary: `cart.py::total`\nis where each batch total is computed before checkout.\n\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n"
+      }
+     ]
+    },
+    "GRAPH_COMPLETION": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "The question is: `Which functions break if total changes?`\nand here is the context provided with a set of relationships from a knowledge graph separated by \\n---\\n each represented as node1 -- relation -- node2 triplet: `Nodes:\nNode: round_total\n__node_content_start__\n\n__node_content_end__\n\nNode: function\n__node_content_start__\nfunction\n__node_content_end__\n\nNode: round_total (pricing.py)\n__node_content_start__\n\n__node_content_end__\n\nNode: Timestamp: 2026-10-26 concept: round_down function: round_total The... [function, timestamp, 2026-10-26]\n__node_content_start__\nTimestamp: 2026-10-26\nconcept: round_down\nfunction: round_total\nThe function implements rounding down\n__node_content_end__\n\nNode: # Rounding decision DECISION 2026-10-26: We round... [decision, rounding, 2026-10-26]\n__node_content_start__\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n\n__node_content_end__\n\nNode: function: place_order (checkout.py), round_total (pricing.py) Timestamp: 2026-10-27... [place_order, checkout.py, round_total]\n__node_content_start__\nfunction: place_order (checkout.py), round_total (pricing.py)\nTimestamp: 2026-10-27\ndependency: dependency between place_order (checkout.py) and round_total (pricing.py)\nrounding applies at order time\nbegins at 2026-10-27\n__node_content_end__\n\nNode: # Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\":... [verified, outcome, tunic-claims]\n__node_content_start__\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n\n__node_content_end__\n\n\nConnections:\nround_total --[is_a]--> function  (round_total is a function.)\nround_total (pricing.py) --[is_a]--> function  (round_total (pricing.py) is a function.)\nTimestamp: 2026-10-26 concept: round_down function: round_total The... [function, timestamp, 2026-10-26] --[made_from]--> # Rounding decision DECISION 2026-10-26: We round... [decision, rounding, 2026-10-26]  (Timestamp: 2026-10-26 concept: round_down function: round_total The function imp made from # Rounding decision DECISION 2026-10-26: We round down at totals; see `pricing.p.)\n# Rounding decision DECISION 2026-10-26: We round... [decision, rounding, 2026-10-26] --[contains]--> round_total  (# Rounding decision DECISION 2026-10-26: We round down at totals; see `pricing.p contains round_total.)\nfunction: place_order (checkout.py), round_total (pricing.py) Timestamp: 2026-10-27... [place_order, checkout.py, round_total] --[made_from]--> # Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\":... [verified, outcome, tunic-claims]  (function: place_order (checkout.py), round_total (pricing.py) Timestamp: 2026-10 made from # Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\": \"checkout.p.)`"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "decision-task",
+   "repo": "repo",
+   "question": "What did we decide about round_total?",
+   "gold": [
+    "pricing.py::round_total"
+   ],
+   "arms": {
+    "CHUNKS": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n\n# Checkout investigation\n\nFound the totals path while tracing the batch summary: `cart.py::total`\nis where each batch total is computed before checkout.\n"
+      }
+     ]
+    },
+    "CHUNKS_LEXICAL": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n\n# Checkout investigation\n\nFound the totals path while tracing the batch summary: `cart.py::total`\nis where each batch total is computed before checkout.\n"
+      }
+     ]
+    },
+    "GRAPH_COMPLETION": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "The question is: `What did we decide about round_total?`\nand here is the context provided with a set of relationships from a knowledge graph separated by \\n---\\n each represented as node1 -- relation -- node2 triplet: `Nodes:\nNode: # Rounding decision DECISION 2026-10-26: We round... [decision, rounding, 2026-10-26]\n__node_content_start__\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n\n__node_content_end__\n\nNode: round_total\n__node_content_start__\n\n__node_content_end__\n\nNode: Timestamp: 2026-10-26 concept: round_down function: round_total The... [function, timestamp, 2026-10-26]\n__node_content_start__\nTimestamp: 2026-10-26\nconcept: round_down\nfunction: round_total\nThe function implements rounding down\n__node_content_end__\n\nNode: decisions\n__node_content_start__\nNone\n__node_content_end__\n\nNode: round_down\n__node_content_start__\nRounds down totals\n__node_content_end__\n\nNode: function\n__node_content_start__\nfunction\n__node_content_end__\n\n\nConnections:\n# Rounding decision DECISION 2026-10-26: We round... [decision, rounding, 2026-10-26] --[contains]--> round_total  (# Rounding decision DECISION 2026-10-26: We round down at totals; see `pricing.p contains round_total.)\nTimestamp: 2026-10-26 concept: round_down function: round_total The... [function, timestamp, 2026-10-26] --[made_from]--> # Rounding decision DECISION 2026-10-26: We round... [decision, rounding, 2026-10-26]  (Timestamp: 2026-10-26 concept: round_down function: round_total The function imp made from # Rounding decision DECISION 2026-10-26: We round down at totals; see `pricing.p.)\n# Rounding decision DECISION 2026-10-26: We round... [decision, rounding, 2026-10-26] --[is_part_of]--> decisions  (# Rounding decision DECISION 2026-10-26: We round down at totals; see `pricing.p is part of decisions.)\n# Rounding decision DECISION 2026-10-26: We round... [decision, rounding, 2026-10-26] --[contains]--> round_down  (Document chunk mentions round_down: Rounds down totals)\nround_total --[is_a]--> function  (round_total is a function.)`"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "outcome-task",
+   "repo": "repo",
+   "question": "What else must change if round_total changes?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "arms": {
+    "CHUNKS": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n\n# Checkout investigation\n\nFound the totals path while tracing the batch summary: `cart.py::total`\nis where each batch total is computed before checkout.\n"
+      }
+     ]
+    },
+    "CHUNKS_LEXICAL": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n\n# Checkout investigation\n\nFound the totals path while tracing the batch summary: `cart.py::total`\nis where each batch total is computed before checkout.\n"
+      }
+     ]
+    },
+    "GRAPH_COMPLETION": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "The question is: `What else must change if round_total changes?`\nand here is the context provided with a set of relationships from a knowledge graph separated by \\n---\\n each represented as node1 -- relation -- node2 triplet: `Nodes:\nNode: # Rounding decision DECISION 2026-10-26: We round... [decision, rounding, 2026-10-26]\n__node_content_start__\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n\n__node_content_end__\n\nNode: round_total\n__node_content_start__\n\n__node_content_end__\n\nNode: Timestamp: 2026-10-26 concept: round_down function: round_total The... [function, timestamp, 2026-10-26]\n__node_content_start__\nTimestamp: 2026-10-26\nconcept: round_down\nfunction: round_total\nThe function implements rounding down\n__node_content_end__\n\nNode: round_down\n__node_content_start__\nRounds down totals\n__node_content_end__\n\nNode: function\n__node_content_start__\nfunction\n__node_content_end__\n\n\nConnections:\n# Rounding decision DECISION 2026-10-26: We round... [decision, rounding, 2026-10-26] --[contains]--> round_total  (# Rounding decision DECISION 2026-10-26: We round down at totals; see `pricing.p contains round_total.)\nTimestamp: 2026-10-26 concept: round_down function: round_total The... [function, timestamp, 2026-10-26] --[made_from]--> # Rounding decision DECISION 2026-10-26: We round... [decision, rounding, 2026-10-26]  (Timestamp: 2026-10-26 concept: round_down function: round_total The function imp made from # Rounding decision DECISION 2026-10-26: We round down at totals; see `pricing.p.)\n# Rounding decision DECISION 2026-10-26: We round... [decision, rounding, 2026-10-26] --[contains]--> round_down  (Document chunk mentions round_down: Rounds down totals)\nround_down --[implements]--> round_total  (The function implements rounding down)\nround_total --[is_a]--> function  (round_total is a function.)`"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "lexical-task",
+   "repo": "repo",
+   "question": "Which checkout step finalizes the order?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "arms": {
+    "CHUNKS": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Checkout investigation\n\nFound the totals path while tracing the batch summary: `cart.py::total`\nis where each batch total is computed before checkout.\n\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n"
+      }
+     ]
+    },
+    "CHUNKS_LEXICAL": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n\n# Checkout investigation\n\nFound the totals path while tracing the batch summary: `cart.py::total`\nis where each batch total is computed before checkout.\n\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n"
+      }
+     ]
+    },
+    "GRAPH_COMPLETION": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "The question is: `Which checkout step finalizes the order?`\nand here is the context provided with a set of relationships from a knowledge graph separated by \\n---\\n each represented as node1 -- relation -- node2 triplet: `Nodes:\nNode: # Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\":... [verified, outcome, tunic-claims]\n__node_content_start__\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n\n__node_content_end__\n\nNode: place_order (checkout.py)\n__node_content_start__\n\n__node_content_end__\n\nNode: function: place_order (checkout.py), round_total (pricing.py) Timestamp: 2026-10-27... [place_order, checkout.py, round_total]\n__node_content_start__\nfunction: place_order (checkout.py), round_total (pricing.py)\nTimestamp: 2026-10-27\ndependency: dependency between place_order (checkout.py) and round_total (pricing.py)\nrounding applies at order time\nbegins at 2026-10-27\n__node_content_end__\n\nNode: dependency between place_order (checkout.py) and round_total (pricing.py)\n__node_content_start__\n\n__node_content_end__\n\nNode: function\n__node_content_start__\nfunction\n__node_content_end__\n\nNode: round_total (pricing.py)\n__node_content_start__\n\n__node_content_end__\n\n\nConnections:\n# Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\":... [verified, outcome, tunic-claims] --[contains]--> place_order (checkout.py)  (# Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\": \"checkout.p contains place_order (checkout.py).)\nfunction: place_order (checkout.py), round_total (pricing.py) Timestamp: 2026-10-27... [place_order, checkout.py, round_total] --[made_from]--> # Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\":... [verified, outcome, tunic-claims]  (function: place_order (checkout.py), round_total (pricing.py) Timestamp: 2026-10 made from # Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\": \"checkout.p.)\n# Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\":... [verified, outcome, tunic-claims] --[contains]--> dependency between place_order (checkout.py) and round_total (pricing.py)  (# Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\": \"checkout.p contains dependency between place_order (checkout.py) and round_total (pricing.py).)\nplace_order (checkout.py) --[is_a]--> function  (place_order (checkout.py) is a function.)\nplace_order (checkout.py) --[depends_on]--> round_total (pricing.py)  (rounding applies at order time)`"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "stale-task",
+   "repo": "evolve",
+   "question": "Which functions break if handle_legacy changes?",
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "arms": {
+    "CHUNKS": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Migration session\n\nCut over to `api.py::handle_modern`; the legacy handler is retired.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"reviewer\"},\n {\"rel\": \"supersedes\", \"subject\": \"api.py::handle_modern\",\n  \"object\": \"api.py::handle_legacy\", \"effective\": \"2026-10-20\"}]\n```\n\n# First session\n\nRouting goes through `api.py::handle_legacy`; verified against the batch job.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_legacy\", \"authority\": \"agent-outcome\"}]\n```\n\n# Dispute session\n\nNot convinced the modern handler covers every legacy quirk.\n\n```tunic-claims\n[{\"rel\": \"contradicts\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"skeptic\",\n  \"effective\": \"2026-10-21\"}]\n```\n\n# Unrelated session\n\nDashboard color is blue. `api.py::route` appears in the access logs.\n"
+      }
+     ]
+    },
+    "CHUNKS_LEXICAL": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# First session\n\nRouting goes through `api.py::handle_legacy`; verified against the batch job.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_legacy\", \"authority\": \"agent-outcome\"}]\n```\n\n# Migration session\n\nCut over to `api.py::handle_modern`; the legacy handler is retired.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"reviewer\"},\n {\"rel\": \"supersedes\", \"subject\": \"api.py::handle_modern\",\n  \"object\": \"api.py::handle_legacy\", \"effective\": \"2026-10-20\"}]\n```\n\n# Dispute session\n\nNot convinced the modern handler covers every legacy quirk.\n\n```tunic-claims\n[{\"rel\": \"contradicts\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"skeptic\",\n  \"effective\": \"2026-10-21\"}]\n```\n\n# Unrelated session\n\nDashboard color is blue. `api.py::route` appears in the access logs.\n"
+      }
+     ]
+    },
+    "GRAPH_COMPLETION": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "The question is: `Which functions break if handle_legacy changes?`\nand here is the context provided with a set of relationships from a knowledge graph separated by \\n---\\n each represented as node1 -- relation -- node2 triplet: `Nodes:\nNode: api.py::handle_modern\n__node_content_start__\n\n__node_content_end__\n\nNode: api.py::handle_legacy\n__node_content_start__\n\n__node_content_end__\n\nNode: # Migration session Cut over to `api.py::handle_modern`;... [api.py::handle_modern, rel, subject]\n__node_content_start__\n# Migration session\n\nCut over to `api.py::handle_modern`; the legacy handler is retired.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"reviewer\"},\n {\"rel\": \"supersedes\", \"subject\": \"api.py::handle_modern\",\n  \"object\": \"api.py::handle_legacy\", \"effective\": \"2026-10-20\"}]\n```\n\n__node_content_end__\n\nNode: function\n__node_content_start__\nfunction\n__node_content_end__\n\nNode: # First session Routing goes through `api.py::handle_legacy`;... [api.py::handle_legacy, first, session]\n__node_content_start__\n# First session\n\nRouting goes through `api.py::handle_legacy`; verified against the batch job.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_legacy\", \"authority\": \"agent-outcome\"}]\n```\n\n__node_content_end__\n\n\nConnections:\napi.py::handle_modern --[supersedes]--> api.py::handle_legacy  (api.py::handle_modern supersedes api.py::handle_legacy)\n# Migration session Cut over to `api.py::handle_modern`;... [api.py::handle_modern, rel, subject] --[contains]--> api.py::handle_legacy  (# Migration session Cut over to `api.py::handle_modern`; the legacy handler is r contains api.py::handle_legacy.)\napi.py::handle_legacy --[is_a]--> function  (api.py::handle_legacy is a function.)\n# Migration session Cut over to `api.py::handle_modern`;... [api.py::handle_modern, rel, subject] --[contains]--> api.py::handle_modern  (# Migration session Cut over to `api.py::handle_modern`; the legacy handler is r contains api.py::handle_modern.)\n# First session Routing goes through `api.py::handle_legacy`;... [api.py::handle_legacy, first, session] --[contains]--> api.py::handle_legacy  (# First session Routing goes through `api.py::handle_legacy`; verified against t contains api.py::handle_legacy.)`"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "conflict-task",
+   "repo": "evolve",
+   "question": "Which functions break if handle_modern changes?",
+   "gold": [
+    "api.py::route"
+   ],
+   "arms": {
+    "CHUNKS": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Migration session\n\nCut over to `api.py::handle_modern`; the legacy handler is retired.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"reviewer\"},\n {\"rel\": \"supersedes\", \"subject\": \"api.py::handle_modern\",\n  \"object\": \"api.py::handle_legacy\", \"effective\": \"2026-10-20\"}]\n```\n\n# Dispute session\n\nNot convinced the modern handler covers every legacy quirk.\n\n```tunic-claims\n[{\"rel\": \"contradicts\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"skeptic\",\n  \"effective\": \"2026-10-21\"}]\n```\n\n# First session\n\nRouting goes through `api.py::handle_legacy`; verified against the batch job.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_legacy\", \"authority\": \"agent-outcome\"}]\n```\n\n# Unrelated session\n\nDashboard color is blue. `api.py::route` appears in the access logs.\n"
+      }
+     ]
+    },
+    "CHUNKS_LEXICAL": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Migration session\n\nCut over to `api.py::handle_modern`; the legacy handler is retired.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"reviewer\"},\n {\"rel\": \"supersedes\", \"subject\": \"api.py::handle_modern\",\n  \"object\": \"api.py::handle_legacy\", \"effective\": \"2026-10-20\"}]\n```\n\n# Dispute session\n\nNot convinced the modern handler covers every legacy quirk.\n\n```tunic-claims\n[{\"rel\": \"contradicts\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"skeptic\",\n  \"effective\": \"2026-10-21\"}]\n```\n\n# Unrelated session\n\nDashboard color is blue. `api.py::route` appears in the access logs.\n\n# First session\n\nRouting goes through `api.py::handle_legacy`; verified against the batch job.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_legacy\", \"authority\": \"agent-outcome\"}]\n```\n"
+      }
+     ]
+    },
+    "GRAPH_COMPLETION": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "The question is: `Which functions break if handle_modern changes?`\nand here is the context provided with a set of relationships from a knowledge graph separated by \\n---\\n each represented as node1 -- relation -- node2 triplet: `Nodes:\nNode: api.py::handle_modern\n__node_content_start__\n\n__node_content_end__\n\nNode: function\n__node_content_start__\nfunction\n__node_content_end__\n\nNode: # Migration session Cut over to `api.py::handle_modern`;... [api.py::handle_modern, rel, subject]\n__node_content_start__\n# Migration session\n\nCut over to `api.py::handle_modern`; the legacy handler is retired.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"reviewer\"},\n {\"rel\": \"supersedes\", \"subject\": \"api.py::handle_modern\",\n  \"object\": \"api.py::handle_legacy\", \"effective\": \"2026-10-20\"}]\n```\n\n__node_content_end__\n\nNode: # Dispute session Not convinced the modern... [dispute, session, convinced]\n__node_content_start__\n# Dispute session\n\nNot convinced the modern handler covers every legacy quirk.\n\n```tunic-claims\n[{\"rel\": \"contradicts\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"skeptic\",\n  \"effective\": \"2026-10-21\"}]\n```\n\n__node_content_end__\n\nNode: api.py::handle_legacy\n__node_content_start__\n\n__node_content_end__\n\n\nConnections:\napi.py::handle_modern --[is_a]--> function  (api.py::handle_modern is a function.)\n# Migration session Cut over to `api.py::handle_modern`;... [api.py::handle_modern, rel, subject] --[contains]--> api.py::handle_modern  (# Migration session Cut over to `api.py::handle_modern`; the legacy handler is r contains api.py::handle_modern.)\n# Dispute session Not convinced the modern... [dispute, session, convinced] --[contains]--> api.py::handle_modern  (# Dispute session Not convinced the modern handler covers every legacy quirk. `` contains api.py::handle_modern.)\napi.py::handle_modern --[supersedes]--> api.py::handle_legacy  (api.py::handle_modern supersedes api.py::handle_legacy)\n# Migration session Cut over to `api.py::handle_modern`;... [api.py::handle_modern, rel, subject] --[contains]--> api.py::handle_legacy  (# Migration session Cut over to `api.py::handle_modern`; the legacy handler is r contains api.py::handle_legacy.)`"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "irrelevant-task",
+   "repo": "evolve",
+   "question": "Which functions break if route changes?",
+   "gold": [
+    "api.py::route"
+   ],
+   "arms": {
+    "CHUNKS": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Unrelated session\n\nDashboard color is blue. `api.py::route` appears in the access logs.\n\n# First session\n\nRouting goes through `api.py::handle_legacy`; verified against the batch job.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_legacy\", \"authority\": \"agent-outcome\"}]\n```\n\n# Migration session\n\nCut over to `api.py::handle_modern`; the legacy handler is retired.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"reviewer\"},\n {\"rel\": \"supersedes\", \"subject\": \"api.py::handle_modern\",\n  \"object\": \"api.py::handle_legacy\", \"effective\": \"2026-10-20\"}]\n```\n\n# Dispute session\n\nNot convinced the modern handler covers every legacy quirk.\n\n```tunic-claims\n[{\"rel\": \"contradicts\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"skeptic\",\n  \"effective\": \"2026-10-21\"}]\n```\n"
+      }
+     ]
+    },
+    "CHUNKS_LEXICAL": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Unrelated session\n\nDashboard color is blue. `api.py::route` appears in the access logs.\n\n# Dispute session\n\nNot convinced the modern handler covers every legacy quirk.\n\n```tunic-claims\n[{\"rel\": \"contradicts\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"skeptic\",\n  \"effective\": \"2026-10-21\"}]\n```\n\n# First session\n\nRouting goes through `api.py::handle_legacy`; verified against the batch job.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_legacy\", \"authority\": \"agent-outcome\"}]\n```\n\n# Migration session\n\nCut over to `api.py::handle_modern`; the legacy handler is retired.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"reviewer\"},\n {\"rel\": \"supersedes\", \"subject\": \"api.py::handle_modern\",\n  \"object\": \"api.py::handle_legacy\", \"effective\": \"2026-10-20\"}]\n```\n"
+      }
+     ]
+    },
+    "GRAPH_COMPLETION": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "The question is: `Which functions break if route changes?`\nand here is the context provided with a set of relationships from a knowledge graph separated by \\n---\\n each represented as node1 -- relation -- node2 triplet: `Nodes:\nNode: api.py::route\n__node_content_start__\n\n__node_content_end__\n\nNode: function\n__node_content_start__\nfunction\n__node_content_end__\n\nNode: function: api.py::route, api.py::handle_legacy job: batch job api.py::route... [api.py::route, api.py::handle_legacy, job]\n__node_content_start__\nfunction: api.py::route, api.py::handle_legacy\njob: batch job\napi.py::route depends on api.py::handle_legacy\n__node_content_end__\n\nNode: # First session Routing goes through `api.py::handle_legacy`;... [api.py::handle_legacy, first, session]\n__node_content_start__\n# First session\n\nRouting goes through `api.py::handle_legacy`; verified against the batch job.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_legacy\", \"authority\": \"agent-outcome\"}]\n```\n\n__node_content_end__\n\nNode: # Dispute session Not convinced the modern... [dispute, session, convinced]\n__node_content_start__\n# Dispute session\n\nNot convinced the modern handler covers every legacy quirk.\n\n```tunic-claims\n[{\"rel\": \"contradicts\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"skeptic\",\n  \"effective\": \"2026-10-21\"}]\n```\n\n__node_content_end__\n\nNode: api.py::handle_modern\n__node_content_start__\n\n__node_content_end__\n\n\nConnections:\napi.py::route --[is_a]--> function  (api.py::route is a function.)\nfunction: api.py::route, api.py::handle_legacy job: batch job api.py::route... [api.py::route, api.py::handle_legacy, job] --[made_from]--> # First session Routing goes through `api.py::handle_legacy`;... [api.py::handle_legacy, first, session]  (function: api.py::route, api.py::handle_legacy job: batch job api.py::route depe made from # First session Routing goes through `api.py::handle_legacy`; verified against t.)\n# First session Routing goes through `api.py::handle_legacy`;... [api.py::handle_legacy, first, session] --[contains]--> api.py::route  (# First session Routing goes through `api.py::handle_legacy`; verified against t contains api.py::route.)\n# Dispute session Not convinced the modern... [dispute, session, convinced] --[contains]--> api.py::route  (# Dispute session Not convinced the modern handler covers every legacy quirk. `` contains api.py::route.)\napi.py::route --[contradicts]--> api.py::handle_modern  (api.py::route contradicts api.py::handle_modern)`"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "lib-impact",
+   "repo": "library",
+   "question": "Which functions break if find_book changes?",
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "arms": {
+    "CHUNKS": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n"
+      }
+     ]
+    },
+    "CHUNKS_LEXICAL": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n"
+      }
+     ]
+    },
+    "GRAPH_COMPLETION": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "The question is: `Which functions break if find_book changes?`\nand here is the context provided with a set of relationships from a knowledge graph separated by \\n---\\n each represented as node1 -- relation -- node2 triplet: `Nodes:\nNode: # Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk]\n__node_content_start__\n# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n\n__node_content_end__\n\nNode: catalog.py::find_book\n__node_content_start__\nFunction in catalog.py that finds books for checkout.\n__node_content_end__\n\nNode: function\n__node_content_start__\nfunction\n__node_content_end__\n\nNode: loans.py::checkout_book\n__node_content_start__\nFunction in loans.py that checks out books by calling catalog.py::find_book.\n__node_content_end__\n\nNode: process: checkout function: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine concept:... [process, checkout, loans.py::checkout_book]\n__node_content_start__\nprocess: checkout\nfunction: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine\nconcept: fines, posted schedule\nCheckout process uses loans.py::checkout_book to check out books.\nCheckout process uses catalog.py::find_book to locate books.\nloans.py::checkout_book depends on loans.py::overdue_fine for calculating fines.\nFines follow the posted schedule.\n__node_content_end__\n\n\nConnections:\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> catalog.py::find_book  (Document chunk mentions catalog.py::find_book: Function in catalog.py that finds books for checkout.)\ncatalog.py::find_book --[is_a]--> function  (catalog.py::find_book is a function.)\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> loans.py::checkout_book  (Document chunk mentions loans.py::checkout_book: Function in loans.py that checks out books by calling catalog.py::find_book.)\nprocess: checkout function: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine concept:... [process, checkout, loans.py::checkout_book] --[made_from]--> # Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk]  (process: checkout function: loans.py::checkout_book, catalog.py::find_book, loan made from # Circulation desk Checkout goes through `loans.py::checkout_book` using `catalo.)\nloans.py::checkout_book --[is_a]--> function  (loans.py::checkout_book is a function.)`"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "lib-outcome",
+   "repo": "library",
+   "question": "What else must change if overdue_fine changes?",
+   "gold": [
+    "loans.py::checkout_book"
+   ],
+   "arms": {
+    "CHUNKS": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n"
+      }
+     ]
+    },
+    "CHUNKS_LEXICAL": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n"
+      }
+     ]
+    },
+    "GRAPH_COMPLETION": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "The question is: `What else must change if overdue_fine changes?`\nand here is the context provided with a set of relationships from a knowledge graph separated by \\n---\\n each represented as node1 -- relation -- node2 triplet: `Nodes:\nNode: # Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk]\n__node_content_start__\n# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n\n__node_content_end__\n\nNode: loans.py::overdue_fine\n__node_content_start__\nFunction in loans.py that calculates overdue fines.\n__node_content_end__\n\nNode: function\n__node_content_start__\nfunction\n__node_content_end__\n\nNode: loans.py::checkout_book\n__node_content_start__\nFunction in loans.py that checks out books by calling catalog.py::find_book.\n__node_content_end__\n\nNode: fines\n__node_content_start__\nLibrary fines that follow the posted schedule.\n__node_content_end__\n\nNode: process: checkout function: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine concept:... [process, checkout, loans.py::checkout_book]\n__node_content_start__\nprocess: checkout\nfunction: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine\nconcept: fines, posted schedule\nCheckout process uses loans.py::checkout_book to check out books.\nCheckout process uses catalog.py::find_book to locate books.\nloans.py::checkout_book depends on loans.py::overdue_fine for calculating fines.\nFines follow the posted schedule.\n__node_content_end__\n\n\nConnections:\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> loans.py::overdue_fine  (Document chunk mentions loans.py::overdue_fine: Function in loans.py that calculates overdue fines.)\nloans.py::overdue_fine --[is_a]--> function  (loans.py::overdue_fine is a function.)\nloans.py::checkout_book --[depends_on]--> loans.py::overdue_fine  (loans.py::checkout_book depends on loans.py::overdue_fine for calculating fines.)\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> fines  (Document chunk mentions fines: Library fines that follow the posted schedule.)\nprocess: checkout function: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine concept:... [process, checkout, loans.py::checkout_book] --[made_from]--> # Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk]  (process: checkout function: loans.py::checkout_book, catalog.py::find_book, loan made from # Circulation desk Checkout goes through `loans.py::checkout_book` using `catalo.)`"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "shop-para",
+   "repo": "repo",
+   "question": "If the batch total shifts, what breaks?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "arms": {
+    "CHUNKS": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Checkout investigation\n\nFound the totals path while tracing the batch summary: `cart.py::total`\nis where each batch total is computed before checkout.\n\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n"
+      }
+     ]
+    },
+    "CHUNKS_LEXICAL": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Checkout investigation\n\nFound the totals path while tracing the batch summary: `cart.py::total`\nis where each batch total is computed before checkout.\n\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n"
+      }
+     ]
+    },
+    "GRAPH_COMPLETION": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "The question is: `If the batch total shifts, what breaks?`\nand here is the context provided with a set of relationships from a knowledge graph separated by \\n---\\n each represented as node1 -- relation -- node2 triplet: `Nodes:\nNode: # Checkout investigation Found the totals path... [checkout, batch, investigation]\n__node_content_start__\n# Checkout investigation\n\nFound the totals path while tracing the batch summary: `cart.py::total`\nis where each batch total is computed before checkout.\n\n__node_content_end__\n\nNode: session\n__node_content_start__\nNone\n__node_content_end__\n\nNode: function: place_order (checkout.py), round_total (pricing.py) Timestamp: 2026-10-27... [place_order, checkout.py, round_total]\n__node_content_start__\nfunction: place_order (checkout.py), round_total (pricing.py)\nTimestamp: 2026-10-27\ndependency: dependency between place_order (checkout.py) and round_total (pricing.py)\nrounding applies at order time\nbegins at 2026-10-27\n__node_content_end__\n\nNode: # Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\":... [verified, outcome, tunic-claims]\n__node_content_start__\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n\n__node_content_end__\n\nNode: dependency between place_order (checkout.py) and round_total (pricing.py)\n__node_content_start__\n\n__node_content_end__\n\nNode: outcome\n__node_content_start__\nNone\n__node_content_end__\n\nNode: # Rounding decision DECISION 2026-10-26: We round... [decision, rounding, 2026-10-26]\n__node_content_start__\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n\n__node_content_end__\n\nNode: round_total\n__node_content_start__\n\n__node_content_end__\n\n\nConnections:\n# Checkout investigation Found the totals path... [checkout, batch, investigation] --[is_part_of]--> session  (# Checkout investigation Found the totals path while tracing the batch summary:  is part of session.)\nfunction: place_order (checkout.py), round_total (pricing.py) Timestamp: 2026-10-27... [place_order, checkout.py, round_total] --[made_from]--> # Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\":... [verified, outcome, tunic-claims]  (function: place_order (checkout.py), round_total (pricing.py) Timestamp: 2026-10 made from # Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\": \"checkout.p.)\n# Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\":... [verified, outcome, tunic-claims] --[contains]--> dependency between place_order (checkout.py) and round_total (pricing.py)  (# Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\": \"checkout.p contains dependency between place_order (checkout.py) and round_total (pricing.py).)\n# Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\":... [verified, outcome, tunic-claims] --[is_part_of]--> outcome  (# Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\": \"checkout.p is part of outcome.)\n# Rounding decision DECISION 2026-10-26: We round... [decision, rounding, 2026-10-26] --[contains]--> round_total  (# Rounding decision DECISION 2026-10-26: We round down at totals; see `pricing.p contains round_total.)`"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "evolve-para",
+   "repo": "evolve",
+   "question": "If the legacy handler shifts, what breaks?",
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "arms": {
+    "CHUNKS": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Migration session\n\nCut over to `api.py::handle_modern`; the legacy handler is retired.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"reviewer\"},\n {\"rel\": \"supersedes\", \"subject\": \"api.py::handle_modern\",\n  \"object\": \"api.py::handle_legacy\", \"effective\": \"2026-10-20\"}]\n```\n\n# First session\n\nRouting goes through `api.py::handle_legacy`; verified against the batch job.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_legacy\", \"authority\": \"agent-outcome\"}]\n```\n\n# Dispute session\n\nNot convinced the modern handler covers every legacy quirk.\n\n```tunic-claims\n[{\"rel\": \"contradicts\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"skeptic\",\n  \"effective\": \"2026-10-21\"}]\n```\n\n# Unrelated session\n\nDashboard color is blue. `api.py::route` appears in the access logs.\n"
+      }
+     ]
+    },
+    "CHUNKS_LEXICAL": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Dispute session\n\nNot convinced the modern handler covers every legacy quirk.\n\n```tunic-claims\n[{\"rel\": \"contradicts\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"skeptic\",\n  \"effective\": \"2026-10-21\"}]\n```\n\n# Migration session\n\nCut over to `api.py::handle_modern`; the legacy handler is retired.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"reviewer\"},\n {\"rel\": \"supersedes\", \"subject\": \"api.py::handle_modern\",\n  \"object\": \"api.py::handle_legacy\", \"effective\": \"2026-10-20\"}]\n```\n\n# Unrelated session\n\nDashboard color is blue. `api.py::route` appears in the access logs.\n\n# First session\n\nRouting goes through `api.py::handle_legacy`; verified against the batch job.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_legacy\", \"authority\": \"agent-outcome\"}]\n```\n"
+      }
+     ]
+    },
+    "GRAPH_COMPLETION": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "The question is: `If the legacy handler shifts, what breaks?`\nand here is the context provided with a set of relationships from a knowledge graph separated by \\n---\\n each represented as node1 -- relation -- node2 triplet: `Nodes:\nNode: # Migration session Cut over to `api.py::handle_modern`;... [api.py::handle_modern, rel, subject]\n__node_content_start__\n# Migration session\n\nCut over to `api.py::handle_modern`; the legacy handler is retired.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"reviewer\"},\n {\"rel\": \"supersedes\", \"subject\": \"api.py::handle_modern\",\n  \"object\": \"api.py::handle_legacy\", \"effective\": \"2026-10-20\"}]\n```\n\n__node_content_end__\n\nNode: api.py::handle_legacy\n__node_content_start__\n\n__node_content_end__\n\nNode: # First session Routing goes through `api.py::handle_legacy`;... [api.py::handle_legacy, first, session]\n__node_content_start__\n# First session\n\nRouting goes through `api.py::handle_legacy`; verified against the batch job.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_legacy\", \"authority\": \"agent-outcome\"}]\n```\n\n__node_content_end__\n\nNode: function: api.py::route, api.py::handle_modern, api.py::handle_legacy Timestamp: 2026-10-20 api.py::route... [api.py::handle_modern, api.py::route, api.py::handle_legacy]\n__node_content_start__\nfunction: api.py::route, api.py::handle_modern, api.py::handle_legacy\nTimestamp: 2026-10-20\napi.py::route depends on api.py::handle_modern\napi.py::handle_modern supersedes api.py::handle_legacy\napi.py::handle_modern begins at 2026-10-20\n__node_content_end__\n\nNode: api.py::handle_modern\n__node_content_start__\n\n__node_content_end__\n\n\nConnections:\n# Migration session Cut over to `api.py::handle_modern`;... [api.py::handle_modern, rel, subject] --[contains]--> api.py::handle_legacy  (# Migration session Cut over to `api.py::handle_modern`; the legacy handler is r contains api.py::handle_legacy.)\n# First session Routing goes through `api.py::handle_legacy`;... [api.py::handle_legacy, first, session] --[contains]--> api.py::handle_legacy  (# First session Routing goes through `api.py::handle_legacy`; verified against t contains api.py::handle_legacy.)\nfunction: api.py::route, api.py::handle_modern, api.py::handle_legacy Timestamp: 2026-10-20 api.py::route... [api.py::handle_modern, api.py::route, api.py::handle_legacy] --[made_from]--> # Migration session Cut over to `api.py::handle_modern`;... [api.py::handle_modern, rel, subject]  (function: api.py::route, api.py::handle_modern, api.py::handle_legacy Timestamp: made from # Migration session Cut over to `api.py::handle_modern`; the legacy handler is r.)\napi.py::handle_modern --[supersedes]--> api.py::handle_legacy  (api.py::handle_modern supersedes api.py::handle_legacy)\n# Migration session Cut over to `api.py::handle_modern`;... [api.py::handle_modern, rel, subject] --[contains]--> api.py::handle_modern  (# Migration session Cut over to `api.py::handle_modern`; the legacy handler is r contains api.py::handle_modern.)`"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "lib-para",
+   "repo": "library",
+   "question": "If find_book shifts, which routines fail?",
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "arms": {
+    "CHUNKS": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n"
+      }
+     ]
+    },
+    "CHUNKS_LEXICAL": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n"
+      }
+     ]
+    },
+    "GRAPH_COMPLETION": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "The question is: `If find_book shifts, which routines fail?`\nand here is the context provided with a set of relationships from a knowledge graph separated by \\n---\\n each represented as node1 -- relation -- node2 triplet: `Nodes:\nNode: # Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk]\n__node_content_start__\n# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n\n__node_content_end__\n\nNode: catalog.py::find_book\n__node_content_start__\nFunction in catalog.py that finds books for checkout.\n__node_content_end__\n\nNode: process: checkout function: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine concept:... [process, checkout, loans.py::checkout_book]\n__node_content_start__\nprocess: checkout\nfunction: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine\nconcept: fines, posted schedule\nCheckout process uses loans.py::checkout_book to check out books.\nCheckout process uses catalog.py::find_book to locate books.\nloans.py::checkout_book depends on loans.py::overdue_fine for calculating fines.\nFines follow the posted schedule.\n__node_content_end__\n\nNode: loans.py::checkout_book\n__node_content_start__\nFunction in loans.py that checks out books by calling catalog.py::find_book.\n__node_content_end__\n\nNode: function\n__node_content_start__\nfunction\n__node_content_end__\n\nNode: posted schedule\n__node_content_start__\nSchedule for applying fines to overdue books.\n__node_content_end__\n\n\nConnections:\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> catalog.py::find_book  (Document chunk mentions catalog.py::find_book: Function in catalog.py that finds books for checkout.)\nprocess: checkout function: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine concept:... [process, checkout, loans.py::checkout_book] --[made_from]--> # Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk]  (process: checkout function: loans.py::checkout_book, catalog.py::find_book, loan made from # Circulation desk Checkout goes through `loans.py::checkout_book` using `catalo.)\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> loans.py::checkout_book  (Document chunk mentions loans.py::checkout_book: Function in loans.py that checks out books by calling catalog.py::find_book.)\ncatalog.py::find_book --[is_a]--> function  (catalog.py::find_book is a function.)\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> posted schedule  (Document chunk mentions posted schedule: Schedule for applying fines to overdue books.)`"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "shop-semantic",
+   "repo": "repo",
+   "question": "Who finalizes the purchase?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "arms": {
+    "CHUNKS": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n\n# Checkout investigation\n\nFound the totals path while tracing the batch summary: `cart.py::total`\nis where each batch total is computed before checkout.\n"
+      }
+     ]
+    },
+    "CHUNKS_LEXICAL": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n\n# Checkout investigation\n\nFound the totals path while tracing the batch summary: `cart.py::total`\nis where each batch total is computed before checkout.\n\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n"
+      }
+     ]
+    },
+    "GRAPH_COMPLETION": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "The question is: `Who finalizes the purchase?`\nand here is the context provided with a set of relationships from a knowledge graph separated by \\n---\\n each represented as node1 -- relation -- node2 triplet: `Nodes:\nNode: # Rounding decision DECISION 2026-10-26: We round... [decision, rounding, 2026-10-26]\n__node_content_start__\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n\n__node_content_end__\n\nNode: decisions\n__node_content_start__\nNone\n__node_content_end__\n\nNode: function: place_order (checkout.py), round_total (pricing.py) Timestamp: 2026-10-27... [place_order, checkout.py, round_total]\n__node_content_start__\nfunction: place_order (checkout.py), round_total (pricing.py)\nTimestamp: 2026-10-27\ndependency: dependency between place_order (checkout.py) and round_total (pricing.py)\nrounding applies at order time\nbegins at 2026-10-27\n__node_content_end__\n\nNode: # Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\":... [verified, outcome, tunic-claims]\n__node_content_start__\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n\n__node_content_end__\n\nNode: place_order (checkout.py)\n__node_content_start__\n\n__node_content_end__\n\nNode: outcome\n__node_content_start__\nNone\n__node_content_end__\n\nNode: dependency between place_order (checkout.py) and round_total (pricing.py)\n__node_content_start__\n\n__node_content_end__\n\n\nConnections:\n# Rounding decision DECISION 2026-10-26: We round... [decision, rounding, 2026-10-26] --[is_part_of]--> decisions  (# Rounding decision DECISION 2026-10-26: We round down at totals; see `pricing.p is part of decisions.)\nfunction: place_order (checkout.py), round_total (pricing.py) Timestamp: 2026-10-27... [place_order, checkout.py, round_total] --[made_from]--> # Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\":... [verified, outcome, tunic-claims]  (function: place_order (checkout.py), round_total (pricing.py) Timestamp: 2026-10 made from # Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\": \"checkout.p.)\n# Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\":... [verified, outcome, tunic-claims] --[contains]--> place_order (checkout.py)  (# Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\": \"checkout.p contains place_order (checkout.py).)\n# Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\":... [verified, outcome, tunic-claims] --[is_part_of]--> outcome  (# Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\": \"checkout.p is part of outcome.)\n# Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\":... [verified, outcome, tunic-claims] --[contains]--> dependency between place_order (checkout.py) and round_total (pricing.py)  (# Verified outcome ```tunic-claims [{\"rel\": \"depends_on\", \"subject\": \"checkout.p contains dependency between place_order (checkout.py) and round_total (pricing.py).)`"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "id": "lib-semantic",
+   "repo": "library",
+   "question": "Who computes late fees?",
+   "gold": [
+    "loans.py::overdue_fine"
+   ],
+   "arms": {
+    "CHUNKS": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n"
+      }
+     ]
+    },
+    "CHUNKS_LEXICAL": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n"
+      }
+     ]
+    },
+    "GRAPH_COMPLETION": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "The question is: `Who computes late fees?`\nand here is the context provided with a set of relationships from a knowledge graph separated by \\n---\\n each represented as node1 -- relation -- node2 triplet: `Nodes:\nNode: # Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk]\n__node_content_start__\n# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n\n__node_content_end__\n\nNode: loans.py::overdue_fine\n__node_content_start__\nFunction in loans.py that calculates overdue fines.\n__node_content_end__\n\nNode: fines\n__node_content_start__\nLibrary fines that follow the posted schedule.\n__node_content_end__\n\nNode: process: checkout function: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine concept:... [process, checkout, loans.py::checkout_book]\n__node_content_start__\nprocess: checkout\nfunction: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine\nconcept: fines, posted schedule\nCheckout process uses loans.py::checkout_book to check out books.\nCheckout process uses catalog.py::find_book to locate books.\nloans.py::checkout_book depends on loans.py::overdue_fine for calculating fines.\nFines follow the posted schedule.\n__node_content_end__\n\nNode: loans.py::checkout_book\n__node_content_start__\nFunction in loans.py that checks out books by calling catalog.py::find_book.\n__node_content_end__\n\nNode: posted schedule\n__node_content_start__\nSchedule for applying fines to overdue books.\n__node_content_end__\n\n\nConnections:\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> loans.py::overdue_fine  (Document chunk mentions loans.py::overdue_fine: Function in loans.py that calculates overdue fines.)\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> fines  (Document chunk mentions fines: Library fines that follow the posted schedule.)\nprocess: checkout function: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine concept:... [process, checkout, loans.py::checkout_book] --[made_from]--> # Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk]  (process: checkout function: loans.py::checkout_book, catalog.py::find_book, loan made from # Circulation desk Checkout goes through `loans.py::checkout_book` using `catalo.)\nloans.py::checkout_book --[depends_on]--> loans.py::overdue_fine  (loans.py::checkout_book depends on loans.py::overdue_fine for calculating fines.)\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> posted schedule  (Document chunk mentions posted schedule: Schedule for applying fines to overdue books.)`"
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "negatives": [
+  {
+   "question": "quantum banana firmware requirements",
+   "arms": {
+    "CHUNKS": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n"
+      }
+     ]
+    },
+    "CHUNKS_LEXICAL": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n"
+      }
+     ]
+    },
+    "GRAPH_COMPLETION": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "The question is: `quantum banana firmware requirements`\nand here is the context provided with a set of relationships from a knowledge graph separated by \\n---\\n each represented as node1 -- relation -- node2 triplet: `Nodes:\nNode: # Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk]\n__node_content_start__\n# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n\n__node_content_end__\n\nNode: loans.py::checkout_book\n__node_content_start__\nFunction in loans.py that checks out books by calling catalog.py::find_book.\n__node_content_end__\n\nNode: process: checkout function: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine concept:... [process, checkout, loans.py::checkout_book]\n__node_content_start__\nprocess: checkout\nfunction: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine\nconcept: fines, posted schedule\nCheckout process uses loans.py::checkout_book to check out books.\nCheckout process uses catalog.py::find_book to locate books.\nloans.py::checkout_book depends on loans.py::overdue_fine for calculating fines.\nFines follow the posted schedule.\n__node_content_end__\n\nNode: loans.py::overdue_fine\n__node_content_start__\nFunction in loans.py that calculates overdue fines.\n__node_content_end__\n\nNode: catalog.py::find_book\n__node_content_start__\nFunction in catalog.py that finds books for checkout.\n__node_content_end__\n\n\nConnections:\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> loans.py::checkout_book  (Document chunk mentions loans.py::checkout_book: Function in loans.py that checks out books by calling catalog.py::find_book.)\nprocess: checkout function: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine concept:... [process, checkout, loans.py::checkout_book] --[made_from]--> # Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk]  (process: checkout function: loans.py::checkout_book, catalog.py::find_book, loan made from # Circulation desk Checkout goes through `loans.py::checkout_book` using `catalo.)\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> loans.py::overdue_fine  (Document chunk mentions loans.py::overdue_fine: Function in loans.py that calculates overdue fines.)\nloans.py::checkout_book --[depends_on]--> loans.py::overdue_fine  (loans.py::checkout_book depends on loans.py::overdue_fine for calculating fines.)\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> catalog.py::find_book  (Document chunk mentions catalog.py::find_book: Function in catalog.py that finds books for checkout.)`"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "question": "how do I bake sourdough bread",
+   "arms": {
+    "CHUNKS": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n"
+      }
+     ]
+    },
+    "CHUNKS_LEXICAL": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n"
+      }
+     ]
+    },
+    "GRAPH_COMPLETION": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "The question is: `how do I bake sourdough bread`\nand here is the context provided with a set of relationships from a knowledge graph separated by \\n---\\n each represented as node1 -- relation -- node2 triplet: `Nodes:\nNode: checkout\n__node_content_start__\nLibrary process for checking out books using loans.py::checkout_book and catalog.py::find_book.\n__node_content_end__\n\nNode: process\n__node_content_start__\nprocess\n__node_content_end__\n\nNode: process: checkout function: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine concept:... [process, checkout, loans.py::checkout_book]\n__node_content_start__\nprocess: checkout\nfunction: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine\nconcept: fines, posted schedule\nCheckout process uses loans.py::checkout_book to check out books.\nCheckout process uses catalog.py::find_book to locate books.\nloans.py::checkout_book depends on loans.py::overdue_fine for calculating fines.\nFines follow the posted schedule.\n__node_content_end__\n\nNode: # Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk]\n__node_content_start__\n# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n\n__node_content_end__\n\nNode: catalog.py::find_book\n__node_content_start__\nFunction in catalog.py that finds books for checkout.\n__node_content_end__\n\nNode: loans.py::checkout_book\n__node_content_start__\nFunction in loans.py that checks out books by calling catalog.py::find_book.\n__node_content_end__\n\nNode: s1\n__node_content_start__\nNone\n__node_content_end__\n\n\nConnections:\ncheckout --[is_a]--> process  (checkout is a process.)\nprocess: checkout function: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine concept:... [process, checkout, loans.py::checkout_book] --[made_from]--> # Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk]  (process: checkout function: loans.py::checkout_book, catalog.py::find_book, loan made from # Circulation desk Checkout goes through `loans.py::checkout_book` using `catalo.)\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> catalog.py::find_book  (Document chunk mentions catalog.py::find_book: Function in catalog.py that finds books for checkout.)\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> loans.py::checkout_book  (Document chunk mentions loans.py::checkout_book: Function in loans.py that checks out books by calling catalog.py::find_book.)\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[is_part_of]--> s1  (# Circulation desk Checkout goes through `loans.py::checkout_book` using `catalo is part of s1.)`"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "question": "explain the offside rule in soccer",
+   "arms": {
+    "CHUNKS": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n"
+      }
+     ]
+    },
+    "CHUNKS_LEXICAL": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n"
+      }
+     ]
+    },
+    "GRAPH_COMPLETION": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "The question is: `explain the offside rule in soccer`\nand here is the context provided with a set of relationships from a knowledge graph separated by \\n---\\n each represented as node1 -- relation -- node2 triplet: `Nodes:\nNode: loans.py::overdue_fine\n__node_content_start__\nFunction in loans.py that calculates overdue fines.\n__node_content_end__\n\nNode: function\n__node_content_start__\nfunction\n__node_content_end__\n\nNode: fines\n__node_content_start__\nLibrary fines that follow the posted schedule.\n__node_content_end__\n\nNode: concept\n__node_content_start__\nconcept\n__node_content_end__\n\nNode: # Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk]\n__node_content_start__\n# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n\n__node_content_end__\n\nNode: process: checkout function: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine concept:... [process, checkout, loans.py::checkout_book]\n__node_content_start__\nprocess: checkout\nfunction: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine\nconcept: fines, posted schedule\nCheckout process uses loans.py::checkout_book to check out books.\nCheckout process uses catalog.py::find_book to locate books.\nloans.py::checkout_book depends on loans.py::overdue_fine for calculating fines.\nFines follow the posted schedule.\n__node_content_end__\n\n\nConnections:\nloans.py::overdue_fine --[is_a]--> function  (loans.py::overdue_fine is a function.)\nfines --[is_a]--> concept  (fines is a concept.)\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> loans.py::overdue_fine  (Document chunk mentions loans.py::overdue_fine: Function in loans.py that calculates overdue fines.)\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> fines  (Document chunk mentions fines: Library fines that follow the posted schedule.)\nprocess: checkout function: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine concept:... [process, checkout, loans.py::checkout_book] --[made_from]--> # Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk]  (process: checkout function: loans.py::checkout_book, catalog.py::find_book, loan made from # Circulation desk Checkout goes through `loans.py::checkout_book` using `catalo.)`"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "question": "what is the capital of Assyria",
+   "arms": {
+    "CHUNKS": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n"
+      }
+     ]
+    },
+    "CHUNKS_LEXICAL": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n"
+      }
+     ]
+    },
+    "GRAPH_COMPLETION": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "The question is: `what is the capital of Assyria`\nand here is the context provided with a set of relationships from a knowledge graph separated by \\n---\\n each represented as node1 -- relation -- node2 triplet: `Nodes:\nNode: # Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk]\n__node_content_start__\n# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n\n__node_content_end__\n\nNode: s1\n__node_content_start__\nNone\n__node_content_end__\n\nNode: catalog.py::find_book\n__node_content_start__\nFunction in catalog.py that finds books for checkout.\n__node_content_end__\n\nNode: function\n__node_content_start__\nfunction\n__node_content_end__\n\nNode: loans.py::overdue_fine\n__node_content_start__\nFunction in loans.py that calculates overdue fines.\n__node_content_end__\n\nNode: loans.py::checkout_book\n__node_content_start__\nFunction in loans.py that checks out books by calling catalog.py::find_book.\n__node_content_end__\n\n\nConnections:\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[is_part_of]--> s1  (# Circulation desk Checkout goes through `loans.py::checkout_book` using `catalo is part of s1.)\ncatalog.py::find_book --[is_a]--> function  (catalog.py::find_book is a function.)\nloans.py::overdue_fine --[is_a]--> function  (loans.py::overdue_fine is a function.)\nloans.py::checkout_book --[is_a]--> function  (loans.py::checkout_book is a function.)\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> loans.py::overdue_fine  (Document chunk mentions loans.py::overdue_fine: Function in loans.py that calculates overdue fines.)`"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "question": "summarize yesterday's standup notes",
+   "arms": {
+    "CHUNKS": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n"
+      }
+     ]
+    },
+    "CHUNKS_LEXICAL": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n"
+      }
+     ]
+    },
+    "GRAPH_COMPLETION": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "The question is: `summarize yesterday's standup notes`\nand here is the context provided with a set of relationships from a knowledge graph separated by \\n---\\n each represented as node1 -- relation -- node2 triplet: `Nodes:\nNode: process: checkout function: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine concept:... [process, checkout, loans.py::checkout_book]\n__node_content_start__\nprocess: checkout\nfunction: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine\nconcept: fines, posted schedule\nCheckout process uses loans.py::checkout_book to check out books.\nCheckout process uses catalog.py::find_book to locate books.\nloans.py::checkout_book depends on loans.py::overdue_fine for calculating fines.\nFines follow the posted schedule.\n__node_content_end__\n\nNode: # Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk]\n__node_content_start__\n# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n\n__node_content_end__\n\nNode: posted schedule\n__node_content_start__\nSchedule for applying fines to overdue books.\n__node_content_end__\n\nNode: checkout\n__node_content_start__\nLibrary process for checking out books using loans.py::checkout_book and catalog.py::find_book.\n__node_content_end__\n\nNode: fines\n__node_content_start__\nLibrary fines that follow the posted schedule.\n__node_content_end__\n\n\nConnections:\nprocess: checkout function: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine concept:... [process, checkout, loans.py::checkout_book] --[made_from]--> # Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk]  (process: checkout function: loans.py::checkout_book, catalog.py::find_book, loan made from # Circulation desk Checkout goes through `loans.py::checkout_book` using `catalo.)\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> posted schedule  (Document chunk mentions posted schedule: Schedule for applying fines to overdue books.)\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> checkout  (Document chunk mentions checkout: Library process for checking out books using loans.py::checkout_book and catalog.py::find_book.)\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> fines  (Document chunk mentions fines: Library fines that follow the posted schedule.)\nfines --[follows]--> posted schedule  (Fines follow the posted schedule.)`"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "question": "translate hello to Klingon",
+   "arms": {
+    "CHUNKS": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n"
+      }
+     ]
+    },
+    "CHUNKS_LEXICAL": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n"
+      }
+     ]
+    },
+    "GRAPH_COMPLETION": {
+     "results": [
+      {
+       "kind": null,
+       "score": null,
+       "text": "The question is: `translate hello to Klingon`\nand here is the context provided with a set of relationships from a knowledge graph separated by \\n---\\n each represented as node1 -- relation -- node2 triplet: `Nodes:\nNode: checkout\n__node_content_start__\nLibrary process for checking out books using loans.py::checkout_book and catalog.py::find_book.\n__node_content_end__\n\nNode: process\n__node_content_start__\nprocess\n__node_content_end__\n\nNode: # Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk]\n__node_content_start__\n# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n\n__node_content_end__\n\nNode: s1\n__node_content_start__\nNone\n__node_content_end__\n\nNode: process: checkout function: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine concept:... [process, checkout, loans.py::checkout_book]\n__node_content_start__\nprocess: checkout\nfunction: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine\nconcept: fines, posted schedule\nCheckout process uses loans.py::checkout_book to check out books.\nCheckout process uses catalog.py::find_book to locate books.\nloans.py::checkout_book depends on loans.py::overdue_fine for calculating fines.\nFines follow the posted schedule.\n__node_content_end__\n\nNode: posted schedule\n__node_content_start__\nSchedule for applying fines to overdue books.\n__node_content_end__\n\nNode: concept\n__node_content_start__\nconcept\n__node_content_end__\n\n\nConnections:\ncheckout --[is_a]--> process  (checkout is a process.)\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[is_part_of]--> s1  (# Circulation desk Checkout goes through `loans.py::checkout_book` using `catalo is part of s1.)\n# Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk] --[contains]--> checkout  (Document chunk mentions checkout: Library process for checking out books using loans.py::checkout_book and catalog.py::find_book.)\nprocess: checkout function: loans.py::checkout_book, catalog.py::find_book, loans.py::overdue_fine concept:... [process, checkout, loans.py::checkout_book] --[made_from]--> # Circulation desk Checkout goes through `loans.py::checkout_book`... [loans.py::checkout_book, circulation, desk]  (process: checkout function: loans.py::checkout_book, catalog.py::find_book, loan made from # Circulation desk Checkout goes through `loans.py::checkout_book` using `catalo.)\nposted schedule --[is_a]--> concept  (posted schedule is a concept.)`"
+      }
+     ]
+    }
+   }
+  }
+ ],
+ "limitations": [
+  "fact extraction uses a 4b local LLM; extraction misses are a tool result, not a protocol failure.",
+  "returned units are texts, not symbols; scored by key-mention rule (see scorer)."
+ ]
+}

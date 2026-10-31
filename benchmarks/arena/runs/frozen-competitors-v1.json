@@ -1,0 +1,788 @@
+{
+ "benchmark": "frozen-competitors-v1",
+ "protocol": "uniform key-mention rule (exact key, or file path + leaf word in the same returned text); generous to text systems on common leaves; raw outputs committed for rescoring",
+ "summary": {
+  "cognee": {
+   "tool_version": "1.6.6",
+   "pinned_stack": {
+    "llm": "ollama/qwen3:4b",
+    "embeddings": "ollama/nomic-embed-text",
+    "vector_db": "lancedb(default)",
+    "graph": "ladybug(default)",
+    "extraction": "default LLM pipeline"
+   },
+   "arms": {
+    "CHUNKS": {
+     "suite": {
+      "tasks": [
+       {
+        "id": "code-task",
+        "covered": [
+         "checkout.py::place_order"
+        ],
+        "gold": [
+         "checkout.py::place_order"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "decision-task",
+        "covered": [
+         "pricing.py::round_total"
+        ],
+        "gold": [
+         "pricing.py::round_total"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "outcome-task",
+        "covered": [
+         "checkout.py::place_order"
+        ],
+        "gold": [
+         "checkout.py::place_order"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "lexical-task",
+        "covered": [
+         "checkout.py::place_order"
+        ],
+        "gold": [
+         "checkout.py::place_order"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "stale-task",
+        "covered": [
+         "api.py::handle_legacy"
+        ],
+        "gold": [
+         "api.py::handle_legacy"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "conflict-task",
+        "covered": [
+         "api.py::route"
+        ],
+        "gold": [
+         "api.py::route"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "irrelevant-task",
+        "covered": [
+         "api.py::route"
+        ],
+        "gold": [
+         "api.py::route"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "lib-impact",
+        "covered": [
+         "loans.py::checkout_book"
+        ],
+        "gold": [
+         "loans.py::checkout_book",
+         "loans.py::return_book"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "lib-outcome",
+        "covered": [
+         "loans.py::checkout_book"
+        ],
+        "gold": [
+         "loans.py::checkout_book"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "shop-para",
+        "covered": [
+         "checkout.py::place_order"
+        ],
+        "gold": [
+         "checkout.py::place_order"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "evolve-para",
+        "covered": [
+         "api.py::handle_legacy"
+        ],
+        "gold": [
+         "api.py::handle_legacy"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "lib-para",
+        "covered": [
+         "loans.py::checkout_book"
+        ],
+        "gold": [
+         "loans.py::checkout_book",
+         "loans.py::return_book"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "shop-semantic",
+        "covered": [
+         "checkout.py::place_order"
+        ],
+        "gold": [
+         "checkout.py::place_order"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "lib-semantic",
+        "covered": [
+         "loans.py::overdue_fine"
+        ],
+        "gold": [
+         "loans.py::overdue_fine"
+        ],
+        "abstained": false
+       }
+      ],
+      "hits": 14,
+      "gold_total": 16,
+      "recall": 0.875,
+      "exact_tasks": 12,
+      "abstained_tasks": 0,
+      "n": 14
+     },
+     "negatives": {
+      "tasks": [
+       {
+        "question": "quantum banana firmware requirements",
+        "abstained": false,
+        "n_results": 1
+       },
+       {
+        "question": "how do I bake sourdough bread",
+        "abstained": false,
+        "n_results": 1
+       },
+       {
+        "question": "explain the offside rule in soccer",
+        "abstained": false,
+        "n_results": 1
+       },
+       {
+        "question": "what is the capital of Assyria",
+        "abstained": false,
+        "n_results": 1
+       },
+       {
+        "question": "summarize yesterday's standup notes",
+        "abstained": false,
+        "n_results": 1
+       },
+       {
+        "question": "translate hello to Klingon",
+        "abstained": false,
+        "n_results": 1
+       }
+      ],
+      "abstained": 0,
+      "n": 6
+     }
+    },
+    "CHUNKS_LEXICAL": {
+     "suite": {
+      "tasks": [
+       {
+        "id": "code-task",
+        "covered": [
+         "checkout.py::place_order"
+        ],
+        "gold": [
+         "checkout.py::place_order"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "decision-task",
+        "covered": [
+         "pricing.py::round_total"
+        ],
+        "gold": [
+         "pricing.py::round_total"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "outcome-task",
+        "covered": [
+         "checkout.py::place_order"
+        ],
+        "gold": [
+         "checkout.py::place_order"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "lexical-task",
+        "covered": [
+         "checkout.py::place_order"
+        ],
+        "gold": [
+         "checkout.py::place_order"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "stale-task",
+        "covered": [
+         "api.py::handle_legacy"
+        ],
+        "gold": [
+         "api.py::handle_legacy"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "conflict-task",
+        "covered": [
+         "api.py::route"
+        ],
+        "gold": [
+         "api.py::route"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "irrelevant-task",
+        "covered": [
+         "api.py::route"
+        ],
+        "gold": [
+         "api.py::route"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "lib-impact",
+        "covered": [
+         "loans.py::checkout_book"
+        ],
+        "gold": [
+         "loans.py::checkout_book",
+         "loans.py::return_book"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "lib-outcome",
+        "covered": [
+         "loans.py::checkout_book"
+        ],
+        "gold": [
+         "loans.py::checkout_book"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "shop-para",
+        "covered": [
+         "checkout.py::place_order"
+        ],
+        "gold": [
+         "checkout.py::place_order"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "evolve-para",
+        "covered": [
+         "api.py::handle_legacy"
+        ],
+        "gold": [
+         "api.py::handle_legacy"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "lib-para",
+        "covered": [
+         "loans.py::checkout_book"
+        ],
+        "gold": [
+         "loans.py::checkout_book",
+         "loans.py::return_book"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "shop-semantic",
+        "covered": [
+         "checkout.py::place_order"
+        ],
+        "gold": [
+         "checkout.py::place_order"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "lib-semantic",
+        "covered": [
+         "loans.py::overdue_fine"
+        ],
+        "gold": [
+         "loans.py::overdue_fine"
+        ],
+        "abstained": false
+       }
+      ],
+      "hits": 14,
+      "gold_total": 16,
+      "recall": 0.875,
+      "exact_tasks": 12,
+      "abstained_tasks": 0,
+      "n": 14
+     },
+     "negatives": {
+      "tasks": [
+       {
+        "question": "quantum banana firmware requirements",
+        "abstained": false,
+        "n_results": 1
+       },
+       {
+        "question": "how do I bake sourdough bread",
+        "abstained": false,
+        "n_results": 1
+       },
+       {
+        "question": "explain the offside rule in soccer",
+        "abstained": false,
+        "n_results": 1
+       },
+       {
+        "question": "what is the capital of Assyria",
+        "abstained": false,
+        "n_results": 1
+       },
+       {
+        "question": "summarize yesterday's standup notes",
+        "abstained": false,
+        "n_results": 1
+       },
+       {
+        "question": "translate hello to Klingon",
+        "abstained": false,
+        "n_results": 1
+       }
+      ],
+      "abstained": 0,
+      "n": 6
+     }
+    },
+    "GRAPH_COMPLETION": {
+     "suite": {
+      "tasks": [
+       {
+        "id": "code-task",
+        "covered": [
+         "checkout.py::place_order"
+        ],
+        "gold": [
+         "checkout.py::place_order"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "decision-task",
+        "covered": [
+         "pricing.py::round_total"
+        ],
+        "gold": [
+         "pricing.py::round_total"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "outcome-task",
+        "covered": [],
+        "gold": [
+         "checkout.py::place_order"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "lexical-task",
+        "covered": [
+         "checkout.py::place_order"
+        ],
+        "gold": [
+         "checkout.py::place_order"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "stale-task",
+        "covered": [
+         "api.py::handle_legacy"
+        ],
+        "gold": [
+         "api.py::handle_legacy"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "conflict-task",
+        "covered": [
+         "api.py::route"
+        ],
+        "gold": [
+         "api.py::route"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "irrelevant-task",
+        "covered": [
+         "api.py::route"
+        ],
+        "gold": [
+         "api.py::route"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "lib-impact",
+        "covered": [
+         "loans.py::checkout_book"
+        ],
+        "gold": [
+         "loans.py::checkout_book",
+         "loans.py::return_book"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "lib-outcome",
+        "covered": [
+         "loans.py::checkout_book"
+        ],
+        "gold": [
+         "loans.py::checkout_book"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "shop-para",
+        "covered": [
+         "checkout.py::place_order"
+        ],
+        "gold": [
+         "checkout.py::place_order"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "evolve-para",
+        "covered": [
+         "api.py::handle_legacy"
+        ],
+        "gold": [
+         "api.py::handle_legacy"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "lib-para",
+        "covered": [
+         "loans.py::checkout_book"
+        ],
+        "gold": [
+         "loans.py::checkout_book",
+         "loans.py::return_book"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "shop-semantic",
+        "covered": [
+         "checkout.py::place_order"
+        ],
+        "gold": [
+         "checkout.py::place_order"
+        ],
+        "abstained": false
+       },
+       {
+        "id": "lib-semantic",
+        "covered": [
+         "loans.py::overdue_fine"
+        ],
+        "gold": [
+         "loans.py::overdue_fine"
+        ],
+        "abstained": false
+       }
+      ],
+      "hits": 13,
+      "gold_total": 16,
+      "recall": 0.8125,
+      "exact_tasks": 11,
+      "abstained_tasks": 0,
+      "n": 14
+     },
+     "negatives": {
+      "tasks": [
+       {
+        "question": "quantum banana firmware requirements",
+        "abstained": false,
+        "n_results": 1
+       },
+       {
+        "question": "how do I bake sourdough bread",
+        "abstained": false,
+        "n_results": 1
+       },
+       {
+        "question": "explain the offside rule in soccer",
+        "abstained": false,
+        "n_results": 1
+       },
+       {
+        "question": "what is the capital of Assyria",
+        "abstained": false,
+        "n_results": 1
+       },
+       {
+        "question": "summarize yesterday's standup notes",
+        "abstained": false,
+        "n_results": 1
+       },
+       {
+        "question": "translate hello to Klingon",
+        "abstained": false,
+        "n_results": 1
+       }
+      ],
+      "abstained": 0,
+      "n": 6
+     }
+    }
+   }
+  },
+  "mem0": {
+   "tool_version": "2.2.1",
+   "pinned_stack": {
+    "llm": "ollama/qwen3:4b (extraction only; infer=False here)",
+    "embeddings": "ollama/nomic-embed-text",
+    "vector_store": "faiss(local, 768 dims)"
+   },
+   "suite": {
+    "tasks": [
+     {
+      "id": "code-task",
+      "covered": [
+       "checkout.py::place_order"
+      ],
+      "gold": [
+       "checkout.py::place_order"
+      ],
+      "abstained": false
+     },
+     {
+      "id": "decision-task",
+      "covered": [
+       "pricing.py::round_total"
+      ],
+      "gold": [
+       "pricing.py::round_total"
+      ],
+      "abstained": false
+     },
+     {
+      "id": "outcome-task",
+      "covered": [
+       "checkout.py::place_order"
+      ],
+      "gold": [
+       "checkout.py::place_order"
+      ],
+      "abstained": false
+     },
+     {
+      "id": "lexical-task",
+      "covered": [
+       "checkout.py::place_order"
+      ],
+      "gold": [
+       "checkout.py::place_order"
+      ],
+      "abstained": false
+     },
+     {
+      "id": "stale-task",
+      "covered": [
+       "api.py::handle_legacy"
+      ],
+      "gold": [
+       "api.py::handle_legacy"
+      ],
+      "abstained": false
+     },
+     {
+      "id": "conflict-task",
+      "covered": [
+       "api.py::route"
+      ],
+      "gold": [
+       "api.py::route"
+      ],
+      "abstained": false
+     },
+     {
+      "id": "irrelevant-task",
+      "covered": [
+       "api.py::route"
+      ],
+      "gold": [
+       "api.py::route"
+      ],
+      "abstained": false
+     },
+     {
+      "id": "lib-impact",
+      "covered": [
+       "loans.py::checkout_book",
+       "loans.py::return_book"
+      ],
+      "gold": [
+       "loans.py::checkout_book",
+       "loans.py::return_book"
+      ],
+      "abstained": false
+     },
+     {
+      "id": "lib-outcome",
+      "covered": [
+       "loans.py::checkout_book"
+      ],
+      "gold": [
+       "loans.py::checkout_book"
+      ],
+      "abstained": false
+     },
+     {
+      "id": "shop-para",
+      "covered": [
+       "checkout.py::place_order"
+      ],
+      "gold": [
+       "checkout.py::place_order"
+      ],
+      "abstained": false
+     },
+     {
+      "id": "evolve-para",
+      "covered": [
+       "api.py::handle_legacy"
+      ],
+      "gold": [
+       "api.py::handle_legacy"
+      ],
+      "abstained": false
+     },
+     {
+      "id": "lib-para",
+      "covered": [
+       "loans.py::checkout_book",
+       "loans.py::return_book"
+      ],
+      "gold": [
+       "loans.py::checkout_book",
+       "loans.py::return_book"
+      ],
+      "abstained": false
+     },
+     {
+      "id": "shop-semantic",
+      "covered": [
+       "checkout.py::place_order"
+      ],
+      "gold": [
+       "checkout.py::place_order"
+      ],
+      "abstained": false
+     },
+     {
+      "id": "lib-semantic",
+      "covered": [
+       "loans.py::overdue_fine"
+      ],
+      "gold": [
+       "loans.py::overdue_fine"
+      ],
+      "abstained": false
+     }
+    ],
+    "hits": 16,
+    "gold_total": 16,
+    "recall": 1.0,
+    "exact_tasks": 14,
+    "abstained_tasks": 0,
+    "n": 14
+   },
+   "negatives": {
+    "tasks": [
+     {
+      "question": "quantum banana firmware requirements",
+      "abstained": false,
+      "n_results": 4
+     },
+     {
+      "question": "how do I bake sourdough bread",
+      "abstained": false,
+      "n_results": 4
+     },
+     {
+      "question": "explain the offside rule in soccer",
+      "abstained": false,
+      "n_results": 4
+     },
+     {
+      "question": "what is the capital of Assyria",
+      "abstained": false,
+      "n_results": 4
+     },
+     {
+      "question": "summarize yesterday's standup notes",
+      "abstained": false,
+      "n_results": 4
+     },
+     {
+      "question": "translate hello to Klingon",
+      "abstained": false,
+      "n_results": 4
+     }
+    ],
+    "abstained": 0,
+    "n": 6
+   }
+  }
+ },
+ "limitations": [
+  "text-system precision is not computed: returned units are texts, not symbols.",
+  "frozen rows never rerun: corpus, labels, tool versions, and model digests pinned."
+ ]
+}

@@ -1,0 +1,622 @@
+{
+ "benchmark": "frozen-competitors-v1",
+ "tool": "mem0",
+ "tool_version": "2.2.1",
+ "tunic_commit": "bba27c35337d783e7b393da58bf85b02262ff799",
+ "pinned_stack": {
+  "llm": "ollama/qwen3:4b (extraction only; infer=False here)",
+  "embeddings": "ollama/nomic-embed-text",
+  "vector_store": "faiss(local, 768 dims)"
+ },
+ "protocol": "one memory per repo file (infer=False); search filtered by repo; raw results only, scored by score_frozen_v1.py",
+ "ingest_counts": {
+  "repo": 6,
+  "evolve": 5,
+  "library": 4
+ },
+ "extraction_note": "infer=True (LLM fact extraction with qwen3:4b) stores zero memories on this stack; retrieval benchmark uses infer=False.",
+ "tasks": [
+  {
+   "id": "code-task",
+   "repo": "repo",
+   "question": "Which functions break if total changes?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "answer": {
+    "results": [
+     {
+      "memory": "File: notes/decisions.md\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n",
+      "score": 0.5328844418581391
+     },
+     {
+      "memory": "File: pricing.py\ndef discount(total):\n    return total * 0.9\n\n\ndef round_total(value):\n    return int(value)\n",
+      "score": 0.5240920387111506
+     },
+     {
+      "memory": "File: notes/session.md\n# Checkout investigation\n\nFound the totals path while tracing the batch summary: `cart.py::total`\nis where each batch total is computed before checkout.\n",
+      "score": 0.5164032326912495
+     },
+     {
+      "memory": "File: checkout.py\nfrom cart import add_item, total\nfrom pricing import discount\n\n\ndef place_order(cart):\n    return discount(total(cart))\n",
+      "score": 0.5112028368360398
+     },
+     {
+      "memory": "File: cart.py\ndef add_item(cart, item):\n    cart.append(item)\n\n\ndef total(cart):\n    return sum(line[\"price\"] for line in cart)\n",
+      "score": 0.5051235798117196
+     },
+     {
+      "memory": "File: notes/outcome.md\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n",
+      "score": 0.5017697946786948
+     }
+    ]
+   }
+  },
+  {
+   "id": "decision-task",
+   "repo": "repo",
+   "question": "What did we decide about round_total?",
+   "gold": [
+    "pricing.py::round_total"
+   ],
+   "answer": {
+    "results": [
+     {
+      "memory": "File: notes/decisions.md\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n",
+      "score": 0.6144249910164803
+     },
+     {
+      "memory": "File: pricing.py\ndef discount(total):\n    return total * 0.9\n\n\ndef round_total(value):\n    return int(value)\n",
+      "score": 0.5493916262752061
+     },
+     {
+      "memory": "File: notes/outcome.md\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n",
+      "score": 0.5391644225606346
+     },
+     {
+      "memory": "File: notes/session.md\n# Checkout investigation\n\nFound the totals path while tracing the batch summary: `cart.py::total`\nis where each batch total is computed before checkout.\n",
+      "score": 0.5360606456129431
+     },
+     {
+      "memory": "File: cart.py\ndef add_item(cart, item):\n    cart.append(item)\n\n\ndef total(cart):\n    return sum(line[\"price\"] for line in cart)\n",
+      "score": 0.5048402291668899
+     },
+     {
+      "memory": "File: checkout.py\nfrom cart import add_item, total\nfrom pricing import discount\n\n\ndef place_order(cart):\n    return discount(total(cart))\n",
+      "score": 0.498477252859693
+     }
+    ]
+   }
+  },
+  {
+   "id": "outcome-task",
+   "repo": "repo",
+   "question": "What else must change if round_total changes?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "answer": {
+    "results": [
+     {
+      "memory": "File: notes/decisions.md\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n",
+      "score": 0.5826754282993029
+     },
+     {
+      "memory": "File: notes/outcome.md\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n",
+      "score": 0.5351267413044619
+     },
+     {
+      "memory": "File: pricing.py\ndef discount(total):\n    return total * 0.9\n\n\ndef round_total(value):\n    return int(value)\n",
+      "score": 0.5308551594093823
+     },
+     {
+      "memory": "File: notes/session.md\n# Checkout investigation\n\nFound the totals path while tracing the batch summary: `cart.py::total`\nis where each batch total is computed before checkout.\n",
+      "score": 0.5058505687753141
+     },
+     {
+      "memory": "File: cart.py\ndef add_item(cart, item):\n    cart.append(item)\n\n\ndef total(cart):\n    return sum(line[\"price\"] for line in cart)\n",
+      "score": 0.49553372639990834
+     },
+     {
+      "memory": "File: checkout.py\nfrom cart import add_item, total\nfrom pricing import discount\n\n\ndef place_order(cart):\n    return discount(total(cart))\n",
+      "score": 0.4935422314564124
+     }
+    ]
+   }
+  },
+  {
+   "id": "lexical-task",
+   "repo": "repo",
+   "question": "Which checkout step finalizes the order?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "answer": {
+    "results": [
+     {
+      "memory": "File: checkout.py\nfrom cart import add_item, total\nfrom pricing import discount\n\n\ndef place_order(cart):\n    return discount(total(cart))\n",
+      "score": 0.5941386955492902
+     },
+     {
+      "memory": "File: notes/session.md\n# Checkout investigation\n\nFound the totals path while tracing the batch summary: `cart.py::total`\nis where each batch total is computed before checkout.\n",
+      "score": 0.5870012713940262
+     },
+     {
+      "memory": "File: notes/outcome.md\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n",
+      "score": 0.5732188573148611
+     },
+     {
+      "memory": "File: notes/decisions.md\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n",
+      "score": 0.5375139679105377
+     },
+     {
+      "memory": "File: cart.py\ndef add_item(cart, item):\n    cart.append(item)\n\n\ndef total(cart):\n    return sum(line[\"price\"] for line in cart)\n",
+      "score": 0.5111786011332986
+     },
+     {
+      "memory": "File: pricing.py\ndef discount(total):\n    return total * 0.9\n\n\ndef round_total(value):\n    return int(value)\n",
+      "score": 0.49747617930166355
+     }
+    ]
+   }
+  },
+  {
+   "id": "stale-task",
+   "repo": "evolve",
+   "question": "Which functions break if handle_legacy changes?",
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "answer": {
+    "results": [
+     {
+      "memory": "File: api.py\ndef handle_legacy(request):\n    return \"legacy:\" + request\n\n\ndef handle_modern(request):\n    return \"modern:\" + request\n\n\ndef route(request):\n    return handle_modern(request)\n",
+      "score": 0.6147899623538065
+     },
+     {
+      "memory": "File: notes/s2.md\n# Migration session\n\nCut over to `api.py::handle_modern`; the legacy handler is retired.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"reviewer\"},\n {\"rel\": \"supersedes\", \"subject\": \"api.py::handle_modern\",\n  \"object\": \"api.py::handle_legacy\", \"effective\": \"2026-10-20\"}]\n```\n",
+      "score": 0.596093963124298
+     },
+     {
+      "memory": "File: notes/s1.md\n# First session\n\nRouting goes through `api.py::handle_legacy`; verified against the batch job.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_legacy\", \"authority\": \"agent-outcome\"}]\n```\n",
+      "score": 0.5515255004856071
+     },
+     {
+      "memory": "File: notes/s3.md\n# Dispute session\n\nNot convinced the modern handler covers every legacy quirk.\n\n```tunic-claims\n[{\"rel\": \"contradicts\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"skeptic\",\n  \"effective\": \"2026-10-21\"}]\n```\n",
+      "score": 0.548029118045102
+     },
+     {
+      "memory": "File: notes/s4.md\n# Unrelated session\n\nDashboard color is blue. `api.py::route` appears in the access logs.\n",
+      "score": 0.4876228458345739
+     }
+    ]
+   }
+  },
+  {
+   "id": "conflict-task",
+   "repo": "evolve",
+   "question": "Which functions break if handle_modern changes?",
+   "gold": [
+    "api.py::route"
+   ],
+   "answer": {
+    "results": [
+     {
+      "memory": "File: api.py\ndef handle_legacy(request):\n    return \"legacy:\" + request\n\n\ndef handle_modern(request):\n    return \"modern:\" + request\n\n\ndef route(request):\n    return handle_modern(request)\n",
+      "score": 0.588289112341822
+     },
+     {
+      "memory": "File: notes/s2.md\n# Migration session\n\nCut over to `api.py::handle_modern`; the legacy handler is retired.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"reviewer\"},\n {\"rel\": \"supersedes\", \"subject\": \"api.py::handle_modern\",\n  \"object\": \"api.py::handle_legacy\", \"effective\": \"2026-10-20\"}]\n```\n",
+      "score": 0.5734493465523378
+     },
+     {
+      "memory": "File: notes/s3.md\n# Dispute session\n\nNot convinced the modern handler covers every legacy quirk.\n\n```tunic-claims\n[{\"rel\": \"contradicts\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"skeptic\",\n  \"effective\": \"2026-10-21\"}]\n```\n",
+      "score": 0.5542508713886282
+     },
+     {
+      "memory": "File: notes/s1.md\n# First session\n\nRouting goes through `api.py::handle_legacy`; verified against the batch job.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_legacy\", \"authority\": \"agent-outcome\"}]\n```\n",
+      "score": 0.510402981345387
+     },
+     {
+      "memory": "File: notes/s4.md\n# Unrelated session\n\nDashboard color is blue. `api.py::route` appears in the access logs.\n",
+      "score": 0.47930389183921424
+     }
+    ]
+   }
+  },
+  {
+   "id": "irrelevant-task",
+   "repo": "evolve",
+   "question": "Which functions break if route changes?",
+   "gold": [
+    "api.py::route"
+   ],
+   "answer": {
+    "results": [
+     {
+      "memory": "File: notes/s4.md\n# Unrelated session\n\nDashboard color is blue. `api.py::route` appears in the access logs.\n",
+      "score": 0.5494652354313757
+     },
+     {
+      "memory": "File: notes/s1.md\n# First session\n\nRouting goes through `api.py::handle_legacy`; verified against the batch job.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_legacy\", \"authority\": \"agent-outcome\"}]\n```\n",
+      "score": 0.5427714016178437
+     },
+     {
+      "memory": "File: api.py\ndef handle_legacy(request):\n    return \"legacy:\" + request\n\n\ndef handle_modern(request):\n    return \"modern:\" + request\n\n\ndef route(request):\n    return handle_modern(request)\n",
+      "score": 0.5170464892372845
+     },
+     {
+      "memory": "File: notes/s3.md\n# Dispute session\n\nNot convinced the modern handler covers every legacy quirk.\n\n```tunic-claims\n[{\"rel\": \"contradicts\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"skeptic\",\n  \"effective\": \"2026-10-21\"}]\n```\n",
+      "score": 0.5081171402540923
+     },
+     {
+      "memory": "File: notes/s2.md\n# Migration session\n\nCut over to `api.py::handle_modern`; the legacy handler is retired.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"reviewer\"},\n {\"rel\": \"supersedes\", \"subject\": \"api.py::handle_modern\",\n  \"object\": \"api.py::handle_legacy\", \"effective\": \"2026-10-20\"}]\n```\n",
+      "score": 0.506437792855573
+     }
+    ]
+   }
+  },
+  {
+   "id": "lib-impact",
+   "repo": "library",
+   "question": "Which functions break if find_book changes?",
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "answer": {
+    "results": [
+     {
+      "memory": "File: catalog.py\ndef find_book(catalog, title):\n    for entry in catalog:\n        if entry[\"title\"] == title:\n            return entry\n    return None\n\n\ndef add_book(catalog, entry):\n    catalog.append(entry)\n",
+      "score": 0.6079233161914959
+     },
+     {
+      "memory": "File: loans.py\nfrom catalog import find_book\n\n\ndef checkout_book(catalog, title, member):\n    entry = find_book(catalog, title)\n    if entry is None:\n        return None\n    entry[\"holder\"] = member\n    return entry\n\n\ndef return_book(catalog, title):\n    entry = find_book(catalog, title)\n    if entry is None:\n        return False\n    entry[\"holder\"] = None\n    return True\n\n\ndef overdue_fine(days_late):\n    return days_late * 2\n",
+      "score": 0.6078268482759526
+     },
+     {
+      "memory": "File: notes/s1.md\n# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n",
+      "score": 0.5752906042541261
+     },
+     {
+      "memory": "File: members.py\ndef register_member(roster, name):\n    roster.append(name)\n    return name\n",
+      "score": 0.4797640381719913
+     }
+    ]
+   }
+  },
+  {
+   "id": "lib-outcome",
+   "repo": "library",
+   "question": "What else must change if overdue_fine changes?",
+   "gold": [
+    "loans.py::checkout_book"
+   ],
+   "answer": {
+    "results": [
+     {
+      "memory": "File: notes/s1.md\n# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n",
+      "score": 0.540158793758553
+     },
+     {
+      "memory": "File: loans.py\nfrom catalog import find_book\n\n\ndef checkout_book(catalog, title, member):\n    entry = find_book(catalog, title)\n    if entry is None:\n        return None\n    entry[\"holder\"] = member\n    return entry\n\n\ndef return_book(catalog, title):\n    entry = find_book(catalog, title)\n    if entry is None:\n        return False\n    entry[\"holder\"] = None\n    return True\n\n\ndef overdue_fine(days_late):\n    return days_late * 2\n",
+      "score": 0.530679571089144
+     },
+     {
+      "memory": "File: catalog.py\ndef find_book(catalog, title):\n    for entry in catalog:\n        if entry[\"title\"] == title:\n            return entry\n    return None\n\n\ndef add_book(catalog, entry):\n    catalog.append(entry)\n",
+      "score": 0.48416391419884386
+     },
+     {
+      "memory": "File: members.py\ndef register_member(roster, name):\n    roster.append(name)\n    return name\n",
+      "score": 0.4748111364461208
+     }
+    ]
+   }
+  },
+  {
+   "id": "shop-para",
+   "repo": "repo",
+   "question": "If the batch total shifts, what breaks?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "answer": {
+    "results": [
+     {
+      "memory": "File: notes/session.md\n# Checkout investigation\n\nFound the totals path while tracing the batch summary: `cart.py::total`\nis where each batch total is computed before checkout.\n",
+      "score": 0.5471305642758768
+     },
+     {
+      "memory": "File: notes/decisions.md\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n",
+      "score": 0.5087299722938738
+     },
+     {
+      "memory": "File: notes/outcome.md\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n",
+      "score": 0.5061130684935292
+     },
+     {
+      "memory": "File: checkout.py\nfrom cart import add_item, total\nfrom pricing import discount\n\n\ndef place_order(cart):\n    return discount(total(cart))\n",
+      "score": 0.492971608820943
+     },
+     {
+      "memory": "File: pricing.py\ndef discount(total):\n    return total * 0.9\n\n\ndef round_total(value):\n    return int(value)\n",
+      "score": 0.48182339821701503
+     },
+     {
+      "memory": "File: cart.py\ndef add_item(cart, item):\n    cart.append(item)\n\n\ndef total(cart):\n    return sum(line[\"price\"] for line in cart)\n",
+      "score": 0.47157334991927957
+     }
+    ]
+   }
+  },
+  {
+   "id": "evolve-para",
+   "repo": "evolve",
+   "question": "If the legacy handler shifts, what breaks?",
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "answer": {
+    "results": [
+     {
+      "memory": "File: notes/s2.md\n# Migration session\n\nCut over to `api.py::handle_modern`; the legacy handler is retired.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"reviewer\"},\n {\"rel\": \"supersedes\", \"subject\": \"api.py::handle_modern\",\n  \"object\": \"api.py::handle_legacy\", \"effective\": \"2026-10-20\"}]\n```\n",
+      "score": 0.5824537013940624
+     },
+     {
+      "memory": "File: api.py\ndef handle_legacy(request):\n    return \"legacy:\" + request\n\n\ndef handle_modern(request):\n    return \"modern:\" + request\n\n\ndef route(request):\n    return handle_modern(request)\n",
+      "score": 0.5639792372794182
+     },
+     {
+      "memory": "File: notes/s1.md\n# First session\n\nRouting goes through `api.py::handle_legacy`; verified against the batch job.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_legacy\", \"authority\": \"agent-outcome\"}]\n```\n",
+      "score": 0.5390911394505461
+     },
+     {
+      "memory": "File: notes/s3.md\n# Dispute session\n\nNot convinced the modern handler covers every legacy quirk.\n\n```tunic-claims\n[{\"rel\": \"contradicts\", \"subject\": \"api.py::route\",\n  \"object\": \"api.py::handle_modern\", \"authority\": \"skeptic\",\n  \"effective\": \"2026-10-21\"}]\n```\n",
+      "score": 0.5385299634124044
+     },
+     {
+      "memory": "File: notes/s4.md\n# Unrelated session\n\nDashboard color is blue. `api.py::route` appears in the access logs.\n",
+      "score": 0.47504767546198123
+     }
+    ]
+   }
+  },
+  {
+   "id": "lib-para",
+   "repo": "library",
+   "question": "If find_book shifts, which routines fail?",
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "answer": {
+    "results": [
+     {
+      "memory": "File: loans.py\nfrom catalog import find_book\n\n\ndef checkout_book(catalog, title, member):\n    entry = find_book(catalog, title)\n    if entry is None:\n        return None\n    entry[\"holder\"] = member\n    return entry\n\n\ndef return_book(catalog, title):\n    entry = find_book(catalog, title)\n    if entry is None:\n        return False\n    entry[\"holder\"] = None\n    return True\n\n\ndef overdue_fine(days_late):\n    return days_late * 2\n",
+      "score": 0.563705001786818
+     },
+     {
+      "memory": "File: catalog.py\ndef find_book(catalog, title):\n    for entry in catalog:\n        if entry[\"title\"] == title:\n            return entry\n    return None\n\n\ndef add_book(catalog, entry):\n    catalog.append(entry)\n",
+      "score": 0.5619929123546875
+     },
+     {
+      "memory": "File: notes/s1.md\n# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n",
+      "score": 0.5284660859042897
+     },
+     {
+      "memory": "File: members.py\ndef register_member(roster, name):\n    roster.append(name)\n    return name\n",
+      "score": 0.47157642509139924
+     }
+    ]
+   }
+  },
+  {
+   "id": "shop-semantic",
+   "repo": "repo",
+   "question": "Who finalizes the purchase?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "answer": {
+    "results": [
+     {
+      "memory": "File: notes/outcome.md\n# Verified outcome\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"checkout.py::place_order\",\n  \"object\": \"pricing.py::round_total\", \"span\": \"rounding applies at order time\",\n  \"valid_from\": \"2026-10-27\"}]\n```\n",
+      "score": 0.5448424363044785
+     },
+     {
+      "memory": "File: checkout.py\nfrom cart import add_item, total\nfrom pricing import discount\n\n\ndef place_order(cart):\n    return discount(total(cart))\n",
+      "score": 0.5325431172806921
+     },
+     {
+      "memory": "File: notes/decisions.md\n# Rounding decision\n\nDECISION 2026-10-26: We round down at totals; see `pricing.py::round_total`.\nDisplay prices must never exceed the computed charge.\n",
+      "score": 0.5301956218736613
+     },
+     {
+      "memory": "File: notes/session.md\n# Checkout investigation\n\nFound the totals path while tracing the batch summary: `cart.py::total`\nis where each batch total is computed before checkout.\n",
+      "score": 0.5118847134648019
+     },
+     {
+      "memory": "File: cart.py\ndef add_item(cart, item):\n    cart.append(item)\n\n\ndef total(cart):\n    return sum(line[\"price\"] for line in cart)\n",
+      "score": 0.4943133628827388
+     },
+     {
+      "memory": "File: pricing.py\ndef discount(total):\n    return total * 0.9\n\n\ndef round_total(value):\n    return int(value)\n",
+      "score": 0.47689452060168036
+     }
+    ]
+   }
+  },
+  {
+   "id": "lib-semantic",
+   "repo": "library",
+   "question": "Who computes late fees?",
+   "gold": [
+    "loans.py::overdue_fine"
+   ],
+   "answer": {
+    "results": [
+     {
+      "memory": "File: loans.py\nfrom catalog import find_book\n\n\ndef checkout_book(catalog, title, member):\n    entry = find_book(catalog, title)\n    if entry is None:\n        return None\n    entry[\"holder\"] = member\n    return entry\n\n\ndef return_book(catalog, title):\n    entry = find_book(catalog, title)\n    if entry is None:\n        return False\n    entry[\"holder\"] = None\n    return True\n\n\ndef overdue_fine(days_late):\n    return days_late * 2\n",
+      "score": 0.5078653025486022
+     },
+     {
+      "memory": "File: notes/s1.md\n# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n",
+      "score": 0.4998644361981927
+     },
+     {
+      "memory": "File: members.py\ndef register_member(roster, name):\n    roster.append(name)\n    return name\n",
+      "score": 0.46151889229409543
+     },
+     {
+      "memory": "File: catalog.py\ndef find_book(catalog, title):\n    for entry in catalog:\n        if entry[\"title\"] == title:\n            return entry\n    return None\n\n\ndef add_book(catalog, entry):\n    catalog.append(entry)\n",
+      "score": 0.45142612980197455
+     }
+    ]
+   }
+  }
+ ],
+ "negatives": [
+  {
+   "question": "quantum banana firmware requirements",
+   "answer": {
+    "results": [
+     {
+      "memory": "File: members.py\ndef register_member(roster, name):\n    roster.append(name)\n    return name\n",
+      "score": 0.46508613893158585
+     },
+     {
+      "memory": "File: notes/s1.md\n# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n",
+      "score": 0.4528221628831388
+     },
+     {
+      "memory": "File: loans.py\nfrom catalog import find_book\n\n\ndef checkout_book(catalog, title, member):\n    entry = find_book(catalog, title)\n    if entry is None:\n        return None\n    entry[\"holder\"] = member\n    return entry\n\n\ndef return_book(catalog, title):\n    entry = find_book(catalog, title)\n    if entry is None:\n        return False\n    entry[\"holder\"] = None\n    return True\n\n\ndef overdue_fine(days_late):\n    return days_late * 2\n",
+      "score": 0.4450030333129698
+     },
+     {
+      "memory": "File: catalog.py\ndef find_book(catalog, title):\n    for entry in catalog:\n        if entry[\"title\"] == title:\n            return entry\n    return None\n\n\ndef add_book(catalog, entry):\n    catalog.append(entry)\n",
+      "score": 0.4439101586302861
+     }
+    ]
+   }
+  },
+  {
+   "question": "how do I bake sourdough bread",
+   "answer": {
+    "results": [
+     {
+      "memory": "File: members.py\ndef register_member(roster, name):\n    roster.append(name)\n    return name\n",
+      "score": 0.4578004902934557
+     },
+     {
+      "memory": "File: catalog.py\ndef find_book(catalog, title):\n    for entry in catalog:\n        if entry[\"title\"] == title:\n            return entry\n    return None\n\n\ndef add_book(catalog, entry):\n    catalog.append(entry)\n",
+      "score": 0.45411984278674683
+     },
+     {
+      "memory": "File: loans.py\nfrom catalog import find_book\n\n\ndef checkout_book(catalog, title, member):\n    entry = find_book(catalog, title)\n    if entry is None:\n        return None\n    entry[\"holder\"] = member\n    return entry\n\n\ndef return_book(catalog, title):\n    entry = find_book(catalog, title)\n    if entry is None:\n        return False\n    entry[\"holder\"] = None\n    return True\n\n\ndef overdue_fine(days_late):\n    return days_late * 2\n",
+      "score": 0.44846719324418277
+     },
+     {
+      "memory": "File: notes/s1.md\n# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n",
+      "score": 0.44213752199986
+     }
+    ]
+   }
+  },
+  {
+   "question": "explain the offside rule in soccer",
+   "answer": {
+    "results": [
+     {
+      "memory": "File: members.py\ndef register_member(roster, name):\n    roster.append(name)\n    return name\n",
+      "score": 0.4527528513995056
+     },
+     {
+      "memory": "File: notes/s1.md\n# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n",
+      "score": 0.44992368532232513
+     },
+     {
+      "memory": "File: loans.py\nfrom catalog import find_book\n\n\ndef checkout_book(catalog, title, member):\n    entry = find_book(catalog, title)\n    if entry is None:\n        return None\n    entry[\"holder\"] = member\n    return entry\n\n\ndef return_book(catalog, title):\n    entry = find_book(catalog, title)\n    if entry is None:\n        return False\n    entry[\"holder\"] = None\n    return True\n\n\ndef overdue_fine(days_late):\n    return days_late * 2\n",
+      "score": 0.4490463541984504
+     },
+     {
+      "memory": "File: catalog.py\ndef find_book(catalog, title):\n    for entry in catalog:\n        if entry[\"title\"] == title:\n            return entry\n    return None\n\n\ndef add_book(catalog, entry):\n    catalog.append(entry)\n",
+      "score": 0.4301904747203721
+     }
+    ]
+   }
+  },
+  {
+   "question": "what is the capital of Assyria",
+   "answer": {
+    "results": [
+     {
+      "memory": "File: members.py\ndef register_member(roster, name):\n    roster.append(name)\n    return name\n",
+      "score": 0.454786996420086
+     },
+     {
+      "memory": "File: catalog.py\ndef find_book(catalog, title):\n    for entry in catalog:\n        if entry[\"title\"] == title:\n            return entry\n    return None\n\n\ndef add_book(catalog, entry):\n    catalog.append(entry)\n",
+      "score": 0.4491854311685536
+     },
+     {
+      "memory": "File: loans.py\nfrom catalog import find_book\n\n\ndef checkout_book(catalog, title, member):\n    entry = find_book(catalog, title)\n    if entry is None:\n        return None\n    entry[\"holder\"] = member\n    return entry\n\n\ndef return_book(catalog, title):\n    entry = find_book(catalog, title)\n    if entry is None:\n        return False\n    entry[\"holder\"] = None\n    return True\n\n\ndef overdue_fine(days_late):\n    return days_late * 2\n",
+      "score": 0.4396351984121452
+     },
+     {
+      "memory": "File: notes/s1.md\n# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n",
+      "score": 0.43662304361458537
+     }
+    ]
+   }
+  },
+  {
+   "question": "summarize yesterday's standup notes",
+   "answer": {
+    "results": [
+     {
+      "memory": "File: notes/s1.md\n# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n",
+      "score": 0.5088004019644289
+     },
+     {
+      "memory": "File: loans.py\nfrom catalog import find_book\n\n\ndef checkout_book(catalog, title, member):\n    entry = find_book(catalog, title)\n    if entry is None:\n        return None\n    entry[\"holder\"] = member\n    return entry\n\n\ndef return_book(catalog, title):\n    entry = find_book(catalog, title)\n    if entry is None:\n        return False\n    entry[\"holder\"] = None\n    return True\n\n\ndef overdue_fine(days_late):\n    return days_late * 2\n",
+      "score": 0.4850162354181892
+     },
+     {
+      "memory": "File: catalog.py\ndef find_book(catalog, title):\n    for entry in catalog:\n        if entry[\"title\"] == title:\n            return entry\n    return None\n\n\ndef add_book(catalog, entry):\n    catalog.append(entry)\n",
+      "score": 0.4668006274752468
+     },
+     {
+      "memory": "File: members.py\ndef register_member(roster, name):\n    roster.append(name)\n    return name\n",
+      "score": 0.45821595177304375
+     }
+    ]
+   }
+  },
+  {
+   "question": "translate hello to Klingon",
+   "answer": {
+    "results": [
+     {
+      "memory": "File: members.py\ndef register_member(roster, name):\n    roster.append(name)\n    return name\n",
+      "score": 0.45326235547501026
+     },
+     {
+      "memory": "File: catalog.py\ndef find_book(catalog, title):\n    for entry in catalog:\n        if entry[\"title\"] == title:\n            return entry\n    return None\n\n\ndef add_book(catalog, entry):\n    catalog.append(entry)\n",
+      "score": 0.4469385754412586
+     },
+     {
+      "memory": "File: loans.py\nfrom catalog import find_book\n\n\ndef checkout_book(catalog, title, member):\n    entry = find_book(catalog, title)\n    if entry is None:\n        return None\n    entry[\"holder\"] = member\n    return entry\n\n\ndef return_book(catalog, title):\n    entry = find_book(catalog, title)\n    if entry is None:\n        return False\n    entry[\"holder\"] = None\n    return True\n\n\ndef overdue_fine(days_late):\n    return days_late * 2\n",
+      "score": 0.43590866286446894
+     },
+     {
+      "memory": "File: notes/s1.md\n# Circulation desk\n\nCheckout goes through `loans.py::checkout_book` using\n`catalog.py::find_book`. Fines follow the posted schedule.\n\n```tunic-claims\n[{\"rel\": \"depends_on\", \"subject\": \"loans.py::checkout_book\",\n  \"object\": \"loans.py::overdue_fine\", \"authority\": \"librarian\"}]\n```\n",
+      "score": 0.4321578149854647
+     }
+    ]
+   }
+  }
+ ],
+ "limitations": [
+  "fact extraction with the pinned 4b model fails; only retrieval of stored file texts is measured.",
+  "returned units are texts, not symbols; scored by key-mention rule (see scorer)."
+ ]
+}

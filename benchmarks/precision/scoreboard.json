@@ -1,88 +1,92 @@
 {
-  "benchmark": "mochios-precision-v1",
-  "rows": {
-    "code-review-graph": {
-      "reason": "Executed v2.3.9 locally on the frozen fanout fixture (isolated scratch clone, AST-only, no embeddings): 6 nodes / 9 edges; callers_of(calculate_total)=checkout and callees_of(checkout)=calculate_total both exact; keyword search finds symbol nodes. No prose-to-entity mention-linking operation exists, so it abstains on all 48 mention samples by design. Candidate for a future code-edge benchmark.",
-      "status": "out-of-scope"
-    },
-    "cognee": {
-      "reason": "Needs an LLM plus an embedding model; no embedding model installed and no downloads permitted. Revisit if a pinned local embed model is approved.",
-      "status": "not-run"
-    },
-    "falkordb": {
-      "reason": "Graph database backend, not a mention-linking method. No server available locally.",
-      "status": "out-of-scope"
-    },
-    "graphify": {
-      "reason": "Two-pass AST plus LLM semantic extraction; needs an LLM backend and per-repo setup. Not yet executed.",
-      "status": "not-run"
-    },
-    "graphrag-microsoft": {
-      "reason": "Needs LLM API endpoints plus embedding model; no paid APIs and no embedding model available.",
-      "status": "not-run"
-    },
-    "letta": {
-      "reason": "Stateful agent-memory server (docker plus LLM backend); different task from mention precision. Not yet executed.",
-      "status": "not-run"
-    },
-    "mem0": {
-      "reason": "Memory API needing LLM plus vector store; no local path without an embedding model.",
-      "status": "not-run"
-    },
-    "membase": {
-      "reason": "Managed cloud API; no keys and no paid services.",
-      "status": "out-of-scope"
-    },
-    "neo4j-graphrag": {
-      "reason": "Property-graph backend with vector search; a backend, not a linking method, and no server available.",
-      "status": "out-of-scope"
-    },
-    "supermemory": {
-      "reason": "Managed cloud API; no keys and no paid services.",
-      "status": "out-of-scope"
-    },
-    "tunic": {
-      "candidate_index": {
-        "candidates": 4848,
-        "distinct_pairs": 10
-      },
-      "corpus_manifest": "mochios-corpus-v1.manifest.json",
-      "history": [
-        "runs/mochios-v1-tunic.json",
-        "runs/mochios-v2-tunic.json"
-      ],
-      "labels": "Muse first-pass; user adjudication pending",
-      "note": "Evidence precision gate: bare matches need an independent signal (same-doc exact ref, asserted claim, dotted/call on a low-frequency leaf). v1->v3: ordinary FP 1.0->0.0, rare 1.0->0.0, qualified 0.125->0.0. Evidence assertions 4874->4; the demoted matches persist in the candidate index with frequencies, nothing deleted.",
-      "run": "runs/mochios-v3-tunic.json",
-      "status": "measured",
-      "summary": {
-        "ordinary": {
-          "correct_abstentions": 32,
-          "false_positives": 0,
-          "fp_rate": 0.0,
-          "hits": 0,
-          "n": 32
-        },
-        "qualified": {
-          "correct_abstentions": 8,
-          "false_positives": 0,
-          "fp_rate": 0.0,
-          "hits": 0,
-          "n": 8
-        },
-        "rare": {
-          "correct_abstentions": 8,
-          "false_positives": 0,
-          "fp_rate": 0.0,
-          "hits": 0,
-          "n": 8
-        }
-      },
-      "volume": {
-        "assertions": 4,
-        "distinct_callees": 1
-      }
-    }
+ "benchmark": "mochios-precision-v1",
+ "rows": {
+  "code-review-graph": {
+   "reason": "Executed v2.3.9 locally on the frozen fanout fixture (isolated scratch clone, AST-only, no embeddings): 6 nodes / 9 edges; callers_of(calculate_total)=checkout and callees_of(checkout)=calculate_total both exact; keyword search finds symbol nodes. No prose-to-entity mention-linking operation exists, so it abstains on all 48 mention samples by design. Candidate for a future code-edge benchmark.",
+   "status": "out-of-scope"
   },
-  "scoreboard_policy": "Rows are added only for tools actually executed against the frozen inputs. Out-of-scope entries name the reason instead of scoring zero."
+  "cognee": {
+   "status": "out-of-scope",
+   "reason": "No prose-to-fixed-inventory mention-linking operation; executed as a retrieval baseline instead: Cognee 1.6.6 (ollama/qwen3:4b + nomic-embed-text, lancedb/ladybug defaults) on the 14-task suite, frozen in benchmarks/arena/runs/frozen-competitors-v1.json (CHUNKS recall 0.875, GRAPH_COMPLETION 0.812). Mention-precision row stays unscored, not zero."
+  },
+  "falkordb": {
+   "reason": "Graph database backend, not a mention-linking method. No server available locally.",
+   "status": "out-of-scope"
+  },
+  "graphify": {
+   "reason": "Two-pass AST plus LLM semantic extraction; needs an LLM backend and per-repo setup. Not yet executed.",
+   "status": "not-run"
+  },
+  "graphrag-microsoft": {
+   "reason": "Needs LLM API endpoints plus embedding model; no paid APIs and no embedding model available.",
+   "status": "not-run"
+  },
+  "letta": {
+   "reason": "Stateful agent-memory server (docker plus LLM backend); different task from mention precision. Not yet executed.",
+   "status": "not-run"
+  },
+  "mem0": {
+   "status": "out-of-scope",
+   "reason": "Memory API, not a mention linker; executed as a retrieval baseline instead: Mem0 2.2.1 (ollama/nomic-embed-text, local FAISS, infer=False) on the 14-task suite, frozen in benchmarks/arena/runs/frozen-competitors-v1.json (file-recall 1.0 under the generous key-mention rule). LLM fact extraction (infer=True) with qwen3:4b stores zero memories on this stack; recorded in the run artifact. Mention-precision row stays unscored, not zero."
+  },
+  "membase": {
+   "reason": "Managed cloud API; no keys and no paid services.",
+   "status": "out-of-scope"
+  },
+  "neo4j-graphrag": {
+   "reason": "Property-graph backend with vector search; a backend, not a linking method, and no server available.",
+   "status": "out-of-scope"
+  },
+  "supermemory": {
+   "reason": "Managed cloud API; no keys and no paid services.",
+   "status": "out-of-scope"
+  },
+  "tunic": {
+   "candidate_index": {
+    "candidates": 4848,
+    "distinct_pairs": 10
+   },
+   "corpus_manifest": "mochios-corpus-v1.manifest.json",
+   "history": [
+    "runs/mochios-v1-tunic.json",
+    "runs/mochios-v2-tunic.json"
+   ],
+   "labels": "Muse first-pass; user adjudication pending",
+   "note": "Evidence precision gate: bare matches need an independent signal (same-doc exact ref, asserted claim, dotted/call on a low-frequency leaf). v1->v3: ordinary FP 1.0->0.0, rare 1.0->0.0, qualified 0.125->0.0. Evidence assertions 4874->4; the demoted matches persist in the candidate index with frequencies, nothing deleted.",
+   "run": "runs/mochios-v3-tunic.json",
+   "status": "measured",
+   "summary": {
+    "ordinary": {
+     "correct_abstentions": 32,
+     "false_positives": 0,
+     "fp_rate": 0.0,
+     "hits": 0,
+     "n": 32
+    },
+    "qualified": {
+     "correct_abstentions": 8,
+     "false_positives": 0,
+     "fp_rate": 0.0,
+     "hits": 0,
+     "n": 8
+    },
+    "rare": {
+     "correct_abstentions": 8,
+     "false_positives": 0,
+     "fp_rate": 0.0,
+     "hits": 0,
+     "n": 8
+    }
+   },
+   "volume": {
+    "assertions": 4,
+    "distinct_callees": 1
+   }
+  },
+  "graphiti": {
+   "status": "not-run",
+   "reason": "Needs a graph backend server (FalkorDB/Neo4j); Docker daemon unavailable in this environment (verified 2026-10-31) and no server installed. Revisit with a temporal split that exercises its strength."
+  }
+ },
+ "scoreboard_policy": "Rows are added only for tools actually executed against the frozen inputs. Out-of-scope entries name the reason instead of scoring zero."
 }
