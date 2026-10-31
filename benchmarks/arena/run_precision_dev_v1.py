@@ -129,9 +129,10 @@ def main():
                 select=spec["select"])
             ms = (time.perf_counter() - started) * 1000.0
             ranked = ranked_list(result)
+            answer_ranked = caller_ranked(task, ranked)
             row["arms"][arm] = {
                 "ranked": ranked,
-                "scores": set_scores(ranked, task["gold"]),
+                "scores": set_scores(answer_ranked, task["gold"]),
                 "ranked_metrics": ranked_metrics(ranked, task["gold"]),
                 "latency_ms": round(ms, 1),
                 "outcome": result["outcome"]}
@@ -140,7 +141,10 @@ def main():
 
     record = {
         "benchmark": "pyquifer-precision-dev-v1",
-        "protocol": "dev-only retrieval scoring; tune freely; held-out stays untouched",
+        "protocol": "dev-only retrieval scoring; tune freely; held-out stays untouched. "
+                    "Set metrics (P/R/F1/exact) score the answer set after the gold-free "
+                    "query-leaf exclusion (caller_ranked rule: the named subject is context, "
+                    "never an impact answer); ranking metrics use the raw list.",
         "conditions": {"top_k": 5, "dev": "pyquifer-precision-dev-v1 (disjoint from held-out)"},
         "environment": env,
         "tracemalloc_peak_mb": round(peak / 1048576, 1),

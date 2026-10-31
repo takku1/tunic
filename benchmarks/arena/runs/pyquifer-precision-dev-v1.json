@@ -9,7 +9,7 @@
       "caller_mrr": 0.5808333333333333,
       "caller_recall_at_1": 0.4166666666666667,
       "caller_recall_at_3": 0.5700000000000001,
-      "exact_tasks": 0,
+      "exact_tasks": 1,
       "junk_symbols": [
         "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
         "tests/benchmarks/bench_penrose_chess.py::main",
@@ -27,8 +27,8 @@
       "mean_ndcg_at_5": 0.5004561803550784,
       "mean_recall_at_1": 0.29166666666666663,
       "mean_recall_at_3": 0.5033333333333333,
-      "micro_f1": 0.25125628140703515,
-      "micro_precision": 0.15432098765432098,
+      "micro_f1": 0.27472527472527475,
+      "micro_precision": 0.1724137931034483,
       "micro_recall": 0.6756756756756757,
       "mrr": 0.48666666666666664
     },
@@ -36,7 +36,7 @@
       "caller_mrr": 0.6858333333333333,
       "caller_recall_at_1": 0.4333333333333333,
       "caller_recall_at_3": 0.6533333333333333,
-      "exact_tasks": 0,
+      "exact_tasks": 1,
       "junk_symbols": [
         "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
         "tests/benchmarks/bench_penrose_chess.py::main",
@@ -54,8 +54,8 @@
       "mean_ndcg_at_5": 0.38680916466051396,
       "mean_recall_at_1": 0.0,
       "mean_recall_at_3": 0.49333333333333335,
-      "micro_f1": 0.35406698564593303,
-      "micro_precision": 0.21511627906976744,
+      "micro_f1": 0.42045454545454547,
+      "micro_precision": 0.26618705035971224,
       "micro_recall": 1.0,
       "mrr": 0.34172619047619046
     },
@@ -63,7 +63,7 @@
       "caller_mrr": 0.8266666666666668,
       "caller_recall_at_1": 0.5433333333333333,
       "caller_recall_at_3": 0.8633333333333333,
-      "exact_tasks": 0,
+      "exact_tasks": 10,
       "junk_symbols": [],
       "latency_ms": {
         "max": 41852.1,
@@ -75,8 +75,8 @@
       "mean_ndcg_at_5": 0.49428421972513165,
       "mean_recall_at_1": 0.0,
       "mean_recall_at_3": 0.6950000000000001,
-      "micro_f1": 0.6016260162601627,
-      "micro_precision": 0.43023255813953487,
+      "micro_f1": 0.8222222222222222,
+      "micro_precision": 0.6981132075471698,
       "micro_recall": 1.0,
       "mrr": 0.39672619047619045
     }
@@ -169,15 +169,14 @@
             "expected": [
               "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward"
             ],
-            "f1": 0.18181818181818182,
+            "f1": 0.2,
             "fn": 0,
-            "fp": 9,
+            "fp": 8,
             "missing": [],
-            "precision": 0.1,
+            "precision": 0.1111111111111111,
             "predicted": [
               "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
               "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward",
-              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.generate",
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
               "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
@@ -190,7 +189,6 @@
             "tp": 1,
             "unexpected": [
               "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
-              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.generate",
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
               "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
@@ -222,21 +220,19 @@
             "expected": [
               "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward"
             ],
-            "f1": 0.5,
+            "f1": 0.6666666666666666,
             "fn": 0,
-            "fp": 2,
+            "fp": 1,
             "missing": [],
-            "precision": 0.3333333333333333,
+            "precision": 0.5,
             "predicted": [
               "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
-              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward",
-              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.generate"
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward"
             ],
             "recall": 1.0,
             "tp": 1,
             "unexpected": [
-              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
-              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.generate"
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss"
             ]
           }
         }
@@ -279,15 +275,14 @@
               "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mic",
               "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mie"
             ],
-            "f1": 0.3076923076923077,
+            "f1": 0.3333333333333333,
             "fn": 0,
-            "fp": 9,
+            "fp": 8,
             "missing": [],
-            "precision": 0.18181818181818182,
+            "precision": 0.2,
             "predicted": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
-              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire._unconstrained_repertoire",
               "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_concept",
               "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mic",
               "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mie",
@@ -302,7 +297,6 @@
             "unexpected": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
-              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire._unconstrained_repertoire",
               "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_concept",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
@@ -342,15 +336,14 @@
               "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mic",
               "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mie"
             ],
-            "f1": 0.3076923076923077,
+            "f1": 0.3333333333333333,
             "fn": 0,
-            "fp": 9,
+            "fp": 8,
             "missing": [],
-            "precision": 0.18181818181818182,
+            "precision": 0.2,
             "predicted": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
-              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire._unconstrained_repertoire",
               "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_concept",
               "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mic",
               "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mie",
@@ -365,7 +358,6 @@
             "unexpected": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
-              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire._unconstrained_repertoire",
               "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_concept",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
@@ -398,13 +390,12 @@
               "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mic",
               "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mie"
             ],
-            "f1": 0.6666666666666666,
+            "f1": 0.8,
             "fn": 0,
-            "fp": 2,
+            "fp": 1,
             "missing": [],
-            "precision": 0.5,
+            "precision": 0.6666666666666666,
             "predicted": [
-              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire._unconstrained_repertoire",
               "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_concept",
               "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mic",
               "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mie"
@@ -412,7 +403,6 @@
             "recall": 1.0,
             "tp": 2,
             "unexpected": [
-              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire._unconstrained_repertoire",
               "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_concept"
             ]
           }
@@ -455,16 +445,14 @@
             "expected": [
               "src/pyquifer/identity/neural_darwinism.py::SelectionArena.forward"
             ],
-            "f1": 0.18181818181818182,
+            "f1": 0.2222222222222222,
             "fn": 0,
-            "fp": 9,
+            "fp": 7,
             "missing": [],
-            "precision": 0.1,
+            "precision": 0.125,
             "predicted": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/identity/neural_darwinism.py::SelectionArena.compute_fitness",
               "src/pyquifer/identity/neural_darwinism.py::SelectionArena.forward",
-              "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.compute_fitness",
               "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.forward",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
@@ -476,8 +464,6 @@
             "tp": 1,
             "unexpected": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/identity/neural_darwinism.py::SelectionArena.compute_fitness",
-              "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.compute_fitness",
               "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.forward",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
@@ -515,16 +501,14 @@
             "expected": [
               "src/pyquifer/identity/neural_darwinism.py::SelectionArena.forward"
             ],
-            "f1": 0.18181818181818182,
+            "f1": 0.2222222222222222,
             "fn": 0,
-            "fp": 9,
+            "fp": 7,
             "missing": [],
-            "precision": 0.1,
+            "precision": 0.125,
             "predicted": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/identity/neural_darwinism.py::SelectionArena.compute_fitness",
               "src/pyquifer/identity/neural_darwinism.py::SelectionArena.forward",
-              "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.compute_fitness",
               "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.forward",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
@@ -536,8 +520,6 @@
             "tp": 1,
             "unexpected": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/identity/neural_darwinism.py::SelectionArena.compute_fitness",
-              "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.compute_fitness",
               "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.forward",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
@@ -569,22 +551,18 @@
             "expected": [
               "src/pyquifer/identity/neural_darwinism.py::SelectionArena.forward"
             ],
-            "f1": 0.4,
+            "f1": 0.6666666666666666,
             "fn": 0,
-            "fp": 3,
+            "fp": 1,
             "missing": [],
-            "precision": 0.25,
+            "precision": 0.5,
             "predicted": [
-              "src/pyquifer/identity/neural_darwinism.py::SelectionArena.compute_fitness",
               "src/pyquifer/identity/neural_darwinism.py::SelectionArena.forward",
-              "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.compute_fitness",
               "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.forward"
             ],
             "recall": 1.0,
             "tp": 1,
             "unexpected": [
-              "src/pyquifer/identity/neural_darwinism.py::SelectionArena.compute_fitness",
-              "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.compute_fitness",
               "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.forward"
             ]
           }
@@ -624,15 +602,14 @@
             "expected": [
               "src/pyquifer/learning/continual.py::MESU.apply_modulation"
             ],
-            "f1": 0.2222222222222222,
+            "f1": 0.25,
             "fn": 0,
-            "fp": 7,
+            "fp": 6,
             "missing": [],
-            "precision": 0.125,
+            "precision": 0.14285714285714285,
             "predicted": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
               "src/pyquifer/learning/continual.py::MESU.apply_modulation",
-              "src/pyquifer/learning/continual.py::MESU.get_learning_rates",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -643,7 +620,6 @@
             "tp": 1,
             "unexpected": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/learning/continual.py::MESU.get_learning_rates",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -678,15 +654,14 @@
             "expected": [
               "src/pyquifer/learning/continual.py::MESU.apply_modulation"
             ],
-            "f1": 0.2222222222222222,
+            "f1": 0.25,
             "fn": 0,
-            "fp": 7,
+            "fp": 6,
             "missing": [],
-            "precision": 0.125,
+            "precision": 0.14285714285714285,
             "predicted": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
               "src/pyquifer/learning/continual.py::MESU.apply_modulation",
-              "src/pyquifer/learning/continual.py::MESU.get_learning_rates",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -697,7 +672,6 @@
             "tp": 1,
             "unexpected": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/learning/continual.py::MESU.get_learning_rates",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -722,24 +696,21 @@
           },
           "scores": {
             "available": true,
-            "exact_match": false,
+            "exact_match": true,
             "expected": [
               "src/pyquifer/learning/continual.py::MESU.apply_modulation"
             ],
-            "f1": 0.6666666666666666,
+            "f1": 1.0,
             "fn": 0,
-            "fp": 1,
+            "fp": 0,
             "missing": [],
-            "precision": 0.5,
+            "precision": 1.0,
             "predicted": [
-              "src/pyquifer/learning/continual.py::MESU.apply_modulation",
-              "src/pyquifer/learning/continual.py::MESU.get_learning_rates"
+              "src/pyquifer/learning/continual.py::MESU.apply_modulation"
             ],
             "recall": 1.0,
             "tp": 1,
-            "unexpected": [
-              "src/pyquifer/learning/continual.py::MESU.get_learning_rates"
-            ]
+            "unexpected": []
           }
         }
       },
@@ -832,15 +803,14 @@
               "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
               "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.get_frequencies"
             ],
-            "f1": 0.4,
+            "f1": 0.4444444444444444,
             "fn": 0,
-            "fp": 6,
+            "fp": 5,
             "missing": [],
-            "precision": 0.25,
+            "precision": 0.2857142857142857,
             "predicted": [
               "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
               "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.get_frequencies",
-              "src/pyquifer/dynamics/oscillators/spherical.py::_params_to_skew_symmetric",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -850,7 +820,6 @@
             "recall": 1.0,
             "tp": 2,
             "unexpected": [
-              "src/pyquifer/dynamics/oscillators/spherical.py::_params_to_skew_symmetric",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -876,26 +845,23 @@
           },
           "scores": {
             "available": true,
-            "exact_match": false,
+            "exact_match": true,
             "expected": [
               "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
               "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.get_frequencies"
             ],
-            "f1": 0.8,
+            "f1": 1.0,
             "fn": 0,
-            "fp": 1,
+            "fp": 0,
             "missing": [],
-            "precision": 0.6666666666666666,
+            "precision": 1.0,
             "predicted": [
               "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
-              "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.get_frequencies",
-              "src/pyquifer/dynamics/oscillators/spherical.py::_params_to_skew_symmetric"
+              "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.get_frequencies"
             ],
             "recall": 1.0,
             "tp": 2,
-            "unexpected": [
-              "src/pyquifer/dynamics/oscillators/spherical.py::_params_to_skew_symmetric"
-            ]
+            "unexpected": []
           }
         }
       },
@@ -924,24 +890,21 @@
           },
           "scores": {
             "available": true,
-            "exact_match": false,
+            "exact_match": true,
             "expected": [
               "src/pyquifer/memory/perturbation.py::PerlinNoise.noise2d"
             ],
-            "f1": 0.6666666666666666,
+            "f1": 1.0,
             "fn": 0,
-            "fp": 1,
+            "fp": 0,
             "missing": [],
-            "precision": 0.5,
+            "precision": 1.0,
             "predicted": [
-              "src/pyquifer/memory/perturbation.py::PerlinNoise._lerp",
               "src/pyquifer/memory/perturbation.py::PerlinNoise.noise2d"
             ],
             "recall": 1.0,
             "tp": 1,
-            "unexpected": [
-              "src/pyquifer/memory/perturbation.py::PerlinNoise._lerp"
-            ]
+            "unexpected": []
           }
         },
         "full-hybrid": {
@@ -960,24 +923,21 @@
           },
           "scores": {
             "available": true,
-            "exact_match": false,
+            "exact_match": true,
             "expected": [
               "src/pyquifer/memory/perturbation.py::PerlinNoise.noise2d"
             ],
-            "f1": 0.6666666666666666,
+            "f1": 1.0,
             "fn": 0,
-            "fp": 1,
+            "fp": 0,
             "missing": [],
-            "precision": 0.5,
+            "precision": 1.0,
             "predicted": [
-              "src/pyquifer/memory/perturbation.py::PerlinNoise._lerp",
               "src/pyquifer/memory/perturbation.py::PerlinNoise.noise2d"
             ],
             "recall": 1.0,
             "tp": 1,
-            "unexpected": [
-              "src/pyquifer/memory/perturbation.py::PerlinNoise._lerp"
-            ]
+            "unexpected": []
           }
         },
         "hybrid-select": {
@@ -996,24 +956,21 @@
           },
           "scores": {
             "available": true,
-            "exact_match": false,
+            "exact_match": true,
             "expected": [
               "src/pyquifer/memory/perturbation.py::PerlinNoise.noise2d"
             ],
-            "f1": 0.6666666666666666,
+            "f1": 1.0,
             "fn": 0,
-            "fp": 1,
+            "fp": 0,
             "missing": [],
-            "precision": 0.5,
+            "precision": 1.0,
             "predicted": [
-              "src/pyquifer/memory/perturbation.py::PerlinNoise._lerp",
               "src/pyquifer/memory/perturbation.py::PerlinNoise.noise2d"
             ],
             "recall": 1.0,
             "tp": 1,
-            "unexpected": [
-              "src/pyquifer/memory/perturbation.py::PerlinNoise._lerp"
-            ]
+            "unexpected": []
           }
         }
       },
@@ -1055,7 +1012,7 @@
             ],
             "f1": 0.0,
             "fn": 1,
-            "fp": 10,
+            "fp": 9,
             "missing": [
               "src/pyquifer/experimental/quantum.py::QuantumState.entropy"
             ],
@@ -1063,7 +1020,6 @@
             "predicted": [
               "src/pyquifer/embodiment/developmental.py::DevelopmentalStageDetector.forward",
               "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.measure",
-              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.probabilities",
               "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.soft_measure",
               "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
@@ -1077,7 +1033,6 @@
             "unexpected": [
               "src/pyquifer/embodiment/developmental.py::DevelopmentalStageDetector.forward",
               "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.measure",
-              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.probabilities",
               "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.soft_measure",
               "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
@@ -1113,29 +1068,25 @@
             "expected": [
               "src/pyquifer/experimental/quantum.py::QuantumState.entropy"
             ],
-            "f1": 0.25,
+            "f1": 0.3333333333333333,
             "fn": 0,
-            "fp": 6,
+            "fp": 4,
             "missing": [],
-            "precision": 0.14285714285714285,
+            "precision": 0.2,
             "predicted": [
               "src/pyquifer/embodiment/developmental.py::DevelopmentalStageDetector.forward",
               "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.measure",
-              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.probabilities",
               "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.soft_measure",
               "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward",
-              "src/pyquifer/experimental/quantum.py::QuantumState.entropy",
-              "src/pyquifer/experimental/quantum.py::QuantumState.probabilities"
+              "src/pyquifer/experimental/quantum.py::QuantumState.entropy"
             ],
             "recall": 1.0,
             "tp": 1,
             "unexpected": [
               "src/pyquifer/embodiment/developmental.py::DevelopmentalStageDetector.forward",
               "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.measure",
-              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.probabilities",
               "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.soft_measure",
-              "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward",
-              "src/pyquifer/experimental/quantum.py::QuantumState.probabilities"
+              "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward"
             ]
           }
         },
@@ -1164,29 +1115,25 @@
             "expected": [
               "src/pyquifer/experimental/quantum.py::QuantumState.entropy"
             ],
-            "f1": 0.25,
+            "f1": 0.3333333333333333,
             "fn": 0,
-            "fp": 6,
+            "fp": 4,
             "missing": [],
-            "precision": 0.14285714285714285,
+            "precision": 0.2,
             "predicted": [
               "src/pyquifer/embodiment/developmental.py::DevelopmentalStageDetector.forward",
               "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.measure",
-              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.probabilities",
               "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.soft_measure",
               "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward",
-              "src/pyquifer/experimental/quantum.py::QuantumState.entropy",
-              "src/pyquifer/experimental/quantum.py::QuantumState.probabilities"
+              "src/pyquifer/experimental/quantum.py::QuantumState.entropy"
             ],
             "recall": 1.0,
             "tp": 1,
             "unexpected": [
               "src/pyquifer/embodiment/developmental.py::DevelopmentalStageDetector.forward",
               "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.measure",
-              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.probabilities",
               "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.soft_measure",
-              "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward",
-              "src/pyquifer/experimental/quantum.py::QuantumState.probabilities"
+              "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward"
             ]
           }
         }
@@ -1226,16 +1173,15 @@
             "expected": [
               "src/pyquifer/experimental/quantum.py::QuantumInterference.forward"
             ],
-            "f1": 0.2,
+            "f1": 0.2222222222222222,
             "fn": 0,
-            "fp": 8,
+            "fp": 7,
             "missing": [],
-            "precision": 0.1111111111111111,
+            "precision": 0.125,
             "predicted": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
               "src/pyquifer/experimental/quantum.py::QuantumInterference.forward",
-              "src/pyquifer/experimental/quantum.py::QuantumInterference.select_context",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -1247,7 +1193,6 @@
             "unexpected": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
-              "src/pyquifer/experimental/quantum.py::QuantumInterference.select_context",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -1283,16 +1228,15 @@
             "expected": [
               "src/pyquifer/experimental/quantum.py::QuantumInterference.forward"
             ],
-            "f1": 0.2,
+            "f1": 0.2222222222222222,
             "fn": 0,
-            "fp": 8,
+            "fp": 7,
             "missing": [],
-            "precision": 0.1111111111111111,
+            "precision": 0.125,
             "predicted": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
               "src/pyquifer/experimental/quantum.py::QuantumInterference.forward",
-              "src/pyquifer/experimental/quantum.py::QuantumInterference.select_context",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -1304,7 +1248,6 @@
             "unexpected": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
-              "src/pyquifer/experimental/quantum.py::QuantumInterference.select_context",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -1329,24 +1272,21 @@
           },
           "scores": {
             "available": true,
-            "exact_match": false,
+            "exact_match": true,
             "expected": [
               "src/pyquifer/experimental/quantum.py::QuantumInterference.forward"
             ],
-            "f1": 0.6666666666666666,
+            "f1": 1.0,
             "fn": 0,
-            "fp": 1,
+            "fp": 0,
             "missing": [],
-            "precision": 0.5,
+            "precision": 1.0,
             "predicted": [
-              "src/pyquifer/experimental/quantum.py::QuantumInterference.forward",
-              "src/pyquifer/experimental/quantum.py::QuantumInterference.select_context"
+              "src/pyquifer/experimental/quantum.py::QuantumInterference.forward"
             ],
             "recall": 1.0,
             "tp": 1,
-            "unexpected": [
-              "src/pyquifer/experimental/quantum.py::QuantumInterference.select_context"
-            ]
+            "unexpected": []
           }
         }
       },
@@ -1384,14 +1324,13 @@
             "expected": [
               "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize"
             ],
-            "f1": 0.2222222222222222,
+            "f1": 0.25,
             "fn": 0,
-            "fp": 7,
+            "fp": 6,
             "missing": [],
-            "precision": 0.125,
+            "precision": 0.14285714285714285,
             "predicted": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.generate_neighbor",
               "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
@@ -1403,7 +1342,6 @@
             "tp": 1,
             "unexpected": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.generate_neighbor",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -1438,14 +1376,13 @@
             "expected": [
               "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize"
             ],
-            "f1": 0.2222222222222222,
+            "f1": 0.25,
             "fn": 0,
-            "fp": 7,
+            "fp": 6,
             "missing": [],
-            "precision": 0.125,
+            "precision": 0.14285714285714285,
             "predicted": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.generate_neighbor",
               "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
@@ -1457,7 +1394,6 @@
             "tp": 1,
             "unexpected": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.generate_neighbor",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -1482,24 +1418,21 @@
           },
           "scores": {
             "available": true,
-            "exact_match": false,
+            "exact_match": true,
             "expected": [
               "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize"
             ],
-            "f1": 0.6666666666666666,
+            "f1": 1.0,
             "fn": 0,
-            "fp": 1,
+            "fp": 0,
             "missing": [],
-            "precision": 0.5,
+            "precision": 1.0,
             "predicted": [
-              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.generate_neighbor",
               "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize"
             ],
             "recall": 1.0,
             "tp": 1,
-            "unexpected": [
-              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.generate_neighbor"
-            ]
+            "unexpected": []
           }
         }
       },
@@ -1537,15 +1470,14 @@
             "expected": [
               "src/pyquifer/experimental/quantum.py::UnitaryTransform.forward"
             ],
-            "f1": 0.2222222222222222,
+            "f1": 0.25,
             "fn": 0,
-            "fp": 7,
+            "fp": 6,
             "missing": [],
-            "precision": 0.125,
+            "precision": 0.14285714285714285,
             "predicted": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
               "src/pyquifer/experimental/quantum.py::UnitaryTransform.forward",
-              "src/pyquifer/experimental/quantum.py::UnitaryTransform.get_unitary",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -1556,7 +1488,6 @@
             "tp": 1,
             "unexpected": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/experimental/quantum.py::UnitaryTransform.get_unitary",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -1591,15 +1522,14 @@
             "expected": [
               "src/pyquifer/experimental/quantum.py::UnitaryTransform.forward"
             ],
-            "f1": 0.2222222222222222,
+            "f1": 0.25,
             "fn": 0,
-            "fp": 7,
+            "fp": 6,
             "missing": [],
-            "precision": 0.125,
+            "precision": 0.14285714285714285,
             "predicted": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
               "src/pyquifer/experimental/quantum.py::UnitaryTransform.forward",
-              "src/pyquifer/experimental/quantum.py::UnitaryTransform.get_unitary",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -1610,7 +1540,6 @@
             "tp": 1,
             "unexpected": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/experimental/quantum.py::UnitaryTransform.get_unitary",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -1635,24 +1564,21 @@
           },
           "scores": {
             "available": true,
-            "exact_match": false,
+            "exact_match": true,
             "expected": [
               "src/pyquifer/experimental/quantum.py::UnitaryTransform.forward"
             ],
-            "f1": 0.6666666666666666,
+            "f1": 1.0,
             "fn": 0,
-            "fp": 1,
+            "fp": 0,
             "missing": [],
-            "precision": 0.5,
+            "precision": 1.0,
             "predicted": [
-              "src/pyquifer/experimental/quantum.py::UnitaryTransform.forward",
-              "src/pyquifer/experimental/quantum.py::UnitaryTransform.get_unitary"
+              "src/pyquifer/experimental/quantum.py::UnitaryTransform.forward"
             ],
             "recall": 1.0,
             "tp": 1,
-            "unexpected": [
-              "src/pyquifer/experimental/quantum.py::UnitaryTransform.get_unitary"
-            ]
+            "unexpected": []
           }
         }
       },
@@ -1690,14 +1616,13 @@
             "expected": [
               "src/pyquifer/embodiment/safety.py::ReflexToStrategy.forward"
             ],
-            "f1": 0.2222222222222222,
+            "f1": 0.25,
             "fn": 0,
-            "fp": 7,
+            "fp": 6,
             "missing": [],
-            "precision": 0.125,
+            "precision": 0.14285714285714285,
             "predicted": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/embodiment/safety.py::ReflexToStrategy._get_stage",
               "src/pyquifer/embodiment/safety.py::ReflexToStrategy.forward",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
@@ -1709,7 +1634,6 @@
             "tp": 1,
             "unexpected": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/embodiment/safety.py::ReflexToStrategy._get_stage",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -1744,14 +1668,13 @@
             "expected": [
               "src/pyquifer/embodiment/safety.py::ReflexToStrategy.forward"
             ],
-            "f1": 0.2222222222222222,
+            "f1": 0.25,
             "fn": 0,
-            "fp": 7,
+            "fp": 6,
             "missing": [],
-            "precision": 0.125,
+            "precision": 0.14285714285714285,
             "predicted": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/embodiment/safety.py::ReflexToStrategy._get_stage",
               "src/pyquifer/embodiment/safety.py::ReflexToStrategy.forward",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
@@ -1763,7 +1686,6 @@
             "tp": 1,
             "unexpected": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/embodiment/safety.py::ReflexToStrategy._get_stage",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -1788,24 +1710,21 @@
           },
           "scores": {
             "available": true,
-            "exact_match": false,
+            "exact_match": true,
             "expected": [
               "src/pyquifer/embodiment/safety.py::ReflexToStrategy.forward"
             ],
-            "f1": 0.6666666666666666,
+            "f1": 1.0,
             "fn": 0,
-            "fp": 1,
+            "fp": 0,
             "missing": [],
-            "precision": 0.5,
+            "precision": 1.0,
             "predicted": [
-              "src/pyquifer/embodiment/safety.py::ReflexToStrategy._get_stage",
               "src/pyquifer/embodiment/safety.py::ReflexToStrategy.forward"
             ],
             "recall": 1.0,
             "tp": 1,
-            "unexpected": [
-              "src/pyquifer/embodiment/safety.py::ReflexToStrategy._get_stage"
-            ]
+            "unexpected": []
           }
         }
       },
@@ -1843,14 +1762,13 @@
             "expected": [
               "src/pyquifer/learning/continual.py::ExperienceReplay.add"
             ],
-            "f1": 0.2222222222222222,
+            "f1": 0.25,
             "fn": 0,
-            "fp": 7,
+            "fp": 6,
             "missing": [],
-            "precision": 0.125,
+            "precision": 0.14285714285714285,
             "predicted": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/learning/continual.py::ExperienceReplay._add_single",
               "src/pyquifer/learning/continual.py::ExperienceReplay.add",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
@@ -1862,7 +1780,6 @@
             "tp": 1,
             "unexpected": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/learning/continual.py::ExperienceReplay._add_single",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -1897,14 +1814,13 @@
             "expected": [
               "src/pyquifer/learning/continual.py::ExperienceReplay.add"
             ],
-            "f1": 0.2222222222222222,
+            "f1": 0.25,
             "fn": 0,
-            "fp": 7,
+            "fp": 6,
             "missing": [],
-            "precision": 0.125,
+            "precision": 0.14285714285714285,
             "predicted": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/learning/continual.py::ExperienceReplay._add_single",
               "src/pyquifer/learning/continual.py::ExperienceReplay.add",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
@@ -1916,7 +1832,6 @@
             "tp": 1,
             "unexpected": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/learning/continual.py::ExperienceReplay._add_single",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -1941,24 +1856,21 @@
           },
           "scores": {
             "available": true,
-            "exact_match": false,
+            "exact_match": true,
             "expected": [
               "src/pyquifer/learning/continual.py::ExperienceReplay.add"
             ],
-            "f1": 0.6666666666666666,
+            "f1": 1.0,
             "fn": 0,
-            "fp": 1,
+            "fp": 0,
             "missing": [],
-            "precision": 0.5,
+            "precision": 1.0,
             "predicted": [
-              "src/pyquifer/learning/continual.py::ExperienceReplay._add_single",
               "src/pyquifer/learning/continual.py::ExperienceReplay.add"
             ],
             "recall": 1.0,
             "tp": 1,
-            "unexpected": [
-              "src/pyquifer/learning/continual.py::ExperienceReplay._add_single"
-            ]
+            "unexpected": []
           }
         }
       },
@@ -1996,14 +1908,13 @@
             "expected": [
               "src/pyquifer/memory/cls.py::ForgettingCurve.should_forget"
             ],
-            "f1": 0.2222222222222222,
+            "f1": 0.25,
             "fn": 0,
-            "fp": 7,
+            "fp": 6,
             "missing": [],
-            "precision": 0.125,
+            "precision": 0.14285714285714285,
             "predicted": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/memory/cls.py::ForgettingCurve.retention",
               "src/pyquifer/memory/cls.py::ForgettingCurve.should_forget",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
@@ -2015,7 +1926,6 @@
             "tp": 1,
             "unexpected": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/memory/cls.py::ForgettingCurve.retention",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -2050,14 +1960,13 @@
             "expected": [
               "src/pyquifer/memory/cls.py::ForgettingCurve.should_forget"
             ],
-            "f1": 0.2222222222222222,
+            "f1": 0.25,
             "fn": 0,
-            "fp": 7,
+            "fp": 6,
             "missing": [],
-            "precision": 0.125,
+            "precision": 0.14285714285714285,
             "predicted": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/memory/cls.py::ForgettingCurve.retention",
               "src/pyquifer/memory/cls.py::ForgettingCurve.should_forget",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
@@ -2069,7 +1978,6 @@
             "tp": 1,
             "unexpected": [
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
-              "src/pyquifer/memory/cls.py::ForgettingCurve.retention",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -2094,24 +2002,21 @@
           },
           "scores": {
             "available": true,
-            "exact_match": false,
+            "exact_match": true,
             "expected": [
               "src/pyquifer/memory/cls.py::ForgettingCurve.should_forget"
             ],
-            "f1": 0.6666666666666666,
+            "f1": 1.0,
             "fn": 0,
-            "fp": 1,
+            "fp": 0,
             "missing": [],
-            "precision": 0.5,
+            "precision": 1.0,
             "predicted": [
-              "src/pyquifer/memory/cls.py::ForgettingCurve.retention",
               "src/pyquifer/memory/cls.py::ForgettingCurve.should_forget"
             ],
             "recall": 1.0,
             "tp": 1,
-            "unexpected": [
-              "src/pyquifer/memory/cls.py::ForgettingCurve.retention"
-            ]
+            "unexpected": []
           }
         }
       },
@@ -2151,16 +2056,15 @@
               "src/pyquifer/cognition/binding/visual.py::AKOrNLayer._kuramoto_step",
               "src/pyquifer/cognition/binding/visual.py::_normalize_to_sphere"
             ],
-            "f1": 0.36363636363636365,
+            "f1": 0.4,
             "fn": 0,
-            "fp": 7,
+            "fp": 6,
             "missing": [],
-            "precision": 0.2222222222222222,
+            "precision": 0.25,
             "predicted": [
               "src/pyquifer/cognition/binding/visual.py::AKOrNLayer._kuramoto_step",
               "src/pyquifer/cognition/binding/visual.py::AKOrNLayer.forward",
               "src/pyquifer/cognition/binding/visual.py::_normalize_to_sphere",
-              "src/pyquifer/cognition/binding/visual.py::_reshape_to_groups",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -2171,7 +2075,6 @@
             "tp": 2,
             "unexpected": [
               "src/pyquifer/cognition/binding/visual.py::AKOrNLayer.forward",
-              "src/pyquifer/cognition/binding/visual.py::_reshape_to_groups",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -2208,16 +2111,15 @@
               "src/pyquifer/cognition/binding/visual.py::AKOrNLayer._kuramoto_step",
               "src/pyquifer/cognition/binding/visual.py::_normalize_to_sphere"
             ],
-            "f1": 0.36363636363636365,
+            "f1": 0.4,
             "fn": 0,
-            "fp": 7,
+            "fp": 6,
             "missing": [],
-            "precision": 0.2222222222222222,
+            "precision": 0.25,
             "predicted": [
               "src/pyquifer/cognition/binding/visual.py::AKOrNLayer._kuramoto_step",
               "src/pyquifer/cognition/binding/visual.py::AKOrNLayer.forward",
               "src/pyquifer/cognition/binding/visual.py::_normalize_to_sphere",
-              "src/pyquifer/cognition/binding/visual.py::_reshape_to_groups",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -2228,7 +2130,6 @@
             "tp": 2,
             "unexpected": [
               "src/pyquifer/cognition/binding/visual.py::AKOrNLayer.forward",
-              "src/pyquifer/cognition/binding/visual.py::_reshape_to_groups",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -2260,22 +2161,20 @@
               "src/pyquifer/cognition/binding/visual.py::AKOrNLayer._kuramoto_step",
               "src/pyquifer/cognition/binding/visual.py::_normalize_to_sphere"
             ],
-            "f1": 0.6666666666666666,
+            "f1": 0.8,
             "fn": 0,
-            "fp": 2,
+            "fp": 1,
             "missing": [],
-            "precision": 0.5,
+            "precision": 0.6666666666666666,
             "predicted": [
               "src/pyquifer/cognition/binding/visual.py::AKOrNLayer._kuramoto_step",
               "src/pyquifer/cognition/binding/visual.py::AKOrNLayer.forward",
-              "src/pyquifer/cognition/binding/visual.py::_normalize_to_sphere",
-              "src/pyquifer/cognition/binding/visual.py::_reshape_to_groups"
+              "src/pyquifer/cognition/binding/visual.py::_normalize_to_sphere"
             ],
             "recall": 1.0,
             "tp": 2,
             "unexpected": [
-              "src/pyquifer/cognition/binding/visual.py::AKOrNLayer.forward",
-              "src/pyquifer/cognition/binding/visual.py::_reshape_to_groups"
+              "src/pyquifer/cognition/binding/visual.py::AKOrNLayer.forward"
             ]
           }
         }
@@ -2375,16 +2274,15 @@
               "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.unbind_role",
               "src/pyquifer/experimental/hyperdimensional.py::HypervectorMemory.retrieve"
             ],
-            "f1": 0.5,
+            "f1": 0.5454545454545454,
             "fn": 0,
-            "fp": 6,
+            "fp": 5,
             "missing": [],
-            "precision": 0.3333333333333333,
+            "precision": 0.375,
             "predicted": [
               "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.analogy",
               "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.unbind_role",
               "src/pyquifer/experimental/hyperdimensional.py::HypervectorMemory.retrieve",
-              "src/pyquifer/experimental/hyperdimensional.py::circular_correlation",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -2394,7 +2292,6 @@
             "recall": 1.0,
             "tp": 3,
             "unexpected": [
-              "src/pyquifer/experimental/hyperdimensional.py::circular_correlation",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
               "tests/benchmarks/bench_penrose_chess.py::main",
               "tests/benchmarks/bench_penrose_chess.py::minimax",
@@ -2421,28 +2318,25 @@
           },
           "scores": {
             "available": true,
-            "exact_match": false,
+            "exact_match": true,
             "expected": [
               "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.analogy",
               "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.unbind_role",
               "src/pyquifer/experimental/hyperdimensional.py::HypervectorMemory.retrieve"
             ],
-            "f1": 0.8571428571428571,
+            "f1": 1.0,
             "fn": 0,
-            "fp": 1,
+            "fp": 0,
             "missing": [],
-            "precision": 0.75,
+            "precision": 1.0,
             "predicted": [
               "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.analogy",
               "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.unbind_role",
-              "src/pyquifer/experimental/hyperdimensional.py::HypervectorMemory.retrieve",
-              "src/pyquifer/experimental/hyperdimensional.py::circular_correlation"
+              "src/pyquifer/experimental/hyperdimensional.py::HypervectorMemory.retrieve"
             ],
             "recall": 1.0,
             "tp": 3,
-            "unexpected": [
-              "src/pyquifer/experimental/hyperdimensional.py::circular_correlation"
-            ]
+            "unexpected": []
           }
         }
       },
@@ -2538,33 +2432,23 @@
               "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.find_synchronized_state",
               "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.forward"
             ],
-            "f1": 0.46153846153846156,
+            "f1": 0.75,
             "fn": 0,
-            "fp": 7,
+            "fp": 2,
             "missing": [],
-            "precision": 0.3,
+            "precision": 0.6,
             "predicted": [
               "src/pyquifer/api/bridge.py::PyQuiferBridge.profile_step",
-              "src/pyquifer/api/bridge.py::PyQuiferBridge.step",
-              "src/pyquifer/api/bridge.py::SteppedModulator.step",
-              "src/pyquifer/dynamics/basal_ganglia.py::BasalGangliaLoop.step",
               "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.forward",
-              "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.step",
               "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.anneal",
               "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.find_synchronized_state",
-              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.forward",
-              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.step"
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.forward"
             ],
             "recall": 1.0,
             "tp": 3,
             "unexpected": [
               "src/pyquifer/api/bridge.py::PyQuiferBridge.profile_step",
-              "src/pyquifer/api/bridge.py::PyQuiferBridge.step",
-              "src/pyquifer/api/bridge.py::SteppedModulator.step",
-              "src/pyquifer/dynamics/basal_ganglia.py::BasalGangliaLoop.step",
-              "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.forward",
-              "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.step",
-              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.step"
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.forward"
             ]
           }
         },
@@ -2598,33 +2482,23 @@
               "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.find_synchronized_state",
               "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.forward"
             ],
-            "f1": 0.46153846153846156,
+            "f1": 0.75,
             "fn": 0,
-            "fp": 7,
+            "fp": 2,
             "missing": [],
-            "precision": 0.3,
+            "precision": 0.6,
             "predicted": [
               "src/pyquifer/api/bridge.py::PyQuiferBridge.profile_step",
-              "src/pyquifer/api/bridge.py::PyQuiferBridge.step",
-              "src/pyquifer/api/bridge.py::SteppedModulator.step",
-              "src/pyquifer/dynamics/basal_ganglia.py::BasalGangliaLoop.step",
               "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.forward",
-              "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.step",
               "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.anneal",
               "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.find_synchronized_state",
-              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.forward",
-              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.step"
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.forward"
             ],
             "recall": 1.0,
             "tp": 3,
             "unexpected": [
               "src/pyquifer/api/bridge.py::PyQuiferBridge.profile_step",
-              "src/pyquifer/api/bridge.py::PyQuiferBridge.step",
-              "src/pyquifer/api/bridge.py::SteppedModulator.step",
-              "src/pyquifer/dynamics/basal_ganglia.py::BasalGangliaLoop.step",
-              "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.forward",
-              "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.step",
-              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.step"
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.forward"
             ]
           }
         }
@@ -2729,31 +2603,21 @@
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind"
             ],
-            "f1": 0.5,
+            "f1": 0.8571428571428571,
             "fn": 0,
-            "fp": 6,
+            "fp": 1,
             "missing": [],
-            "precision": 0.3333333333333333,
+            "precision": 0.75,
             "predicted": [
-              "src/pyquifer/cognition/predictive/deep_active_inference.py::DeepAIF.encode",
-              "src/pyquifer/dynamics/continuous/linoss.py::LinOSSEncoder.encode",
-              "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.encode",
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
-              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.encode",
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind",
-              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss",
-              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.encode"
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss"
             ],
             "recall": 1.0,
             "tp": 3,
             "unexpected": [
-              "src/pyquifer/cognition/predictive/deep_active_inference.py::DeepAIF.encode",
-              "src/pyquifer/dynamics/continuous/linoss.py::LinOSSEncoder.encode",
-              "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.encode",
-              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.encode",
-              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss",
-              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.encode"
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss"
             ]
           }
         },
@@ -2786,31 +2650,21 @@
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind"
             ],
-            "f1": 0.5,
+            "f1": 0.8571428571428571,
             "fn": 0,
-            "fp": 6,
+            "fp": 1,
             "missing": [],
-            "precision": 0.3333333333333333,
+            "precision": 0.75,
             "predicted": [
-              "src/pyquifer/cognition/predictive/deep_active_inference.py::DeepAIF.encode",
-              "src/pyquifer/dynamics/continuous/linoss.py::LinOSSEncoder.encode",
-              "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.encode",
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
-              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.encode",
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind",
-              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss",
-              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.encode"
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss"
             ],
             "recall": 1.0,
             "tp": 3,
             "unexpected": [
-              "src/pyquifer/cognition/predictive/deep_active_inference.py::DeepAIF.encode",
-              "src/pyquifer/dynamics/continuous/linoss.py::LinOSSEncoder.encode",
-              "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.encode",
-              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.encode",
-              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss",
-              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.encode"
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss"
             ]
           }
         }
@@ -2857,11 +2711,11 @@
               "src/pyquifer/dynamics/oscillators/spherical.py::exponential_map",
               "src/pyquifer/dynamics/oscillators/spherical.py::normalize_oscillators"
             ],
-            "f1": 0.6666666666666666,
+            "f1": 0.7142857142857143,
             "fn": 0,
-            "fp": 5,
+            "fp": 4,
             "missing": [],
-            "precision": 0.5,
+            "precision": 0.5555555555555556,
             "predicted": [
               "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
               "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank.__init__",
@@ -2871,8 +2725,7 @@
               "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.kuramoto_update",
               "src/pyquifer/dynamics/oscillators/spherical.py::exponential_map",
               "src/pyquifer/dynamics/oscillators/spherical.py::normalize_oscillators",
-              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_from_groups",
-              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_to_groups"
+              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_from_groups"
             ],
             "recall": 1.0,
             "tp": 5,
@@ -2880,8 +2733,7 @@
               "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank.__init__",
               "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank._normalize_states",
               "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.forward",
-              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_from_groups",
-              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_to_groups"
+              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_from_groups"
             ]
           }
         },
@@ -2917,11 +2769,11 @@
               "src/pyquifer/dynamics/oscillators/spherical.py::exponential_map",
               "src/pyquifer/dynamics/oscillators/spherical.py::normalize_oscillators"
             ],
-            "f1": 0.6666666666666666,
+            "f1": 0.7142857142857143,
             "fn": 0,
-            "fp": 5,
+            "fp": 4,
             "missing": [],
-            "precision": 0.5,
+            "precision": 0.5555555555555556,
             "predicted": [
               "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
               "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank.__init__",
@@ -2931,8 +2783,7 @@
               "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.kuramoto_update",
               "src/pyquifer/dynamics/oscillators/spherical.py::exponential_map",
               "src/pyquifer/dynamics/oscillators/spherical.py::normalize_oscillators",
-              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_from_groups",
-              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_to_groups"
+              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_from_groups"
             ],
             "recall": 1.0,
             "tp": 5,
@@ -2940,8 +2791,7 @@
               "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank.__init__",
               "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank._normalize_states",
               "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.forward",
-              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_from_groups",
-              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_to_groups"
+              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_from_groups"
             ]
           }
         },
@@ -2976,11 +2826,11 @@
               "src/pyquifer/dynamics/oscillators/spherical.py::exponential_map",
               "src/pyquifer/dynamics/oscillators/spherical.py::normalize_oscillators"
             ],
-            "f1": 0.7142857142857143,
+            "f1": 0.7692307692307693,
             "fn": 0,
-            "fp": 4,
+            "fp": 3,
             "missing": [],
-            "precision": 0.5555555555555556,
+            "precision": 0.625,
             "predicted": [
               "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
               "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank.__init__",
@@ -2989,16 +2839,14 @@
               "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.get_order_parameter",
               "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.kuramoto_update",
               "src/pyquifer/dynamics/oscillators/spherical.py::exponential_map",
-              "src/pyquifer/dynamics/oscillators/spherical.py::normalize_oscillators",
-              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_to_groups"
+              "src/pyquifer/dynamics/oscillators/spherical.py::normalize_oscillators"
             ],
             "recall": 1.0,
             "tp": 5,
             "unexpected": [
               "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank.__init__",
               "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank._normalize_states",
-              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.forward",
-              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_to_groups"
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.forward"
             ]
           }
         }
@@ -3043,17 +2891,14 @@
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind"
             ],
-            "f1": 0.5454545454545454,
+            "f1": 0.75,
             "fn": 0,
-            "fp": 5,
+            "fp": 2,
             "missing": [],
-            "precision": 0.375,
+            "precision": 0.6,
             "predicted": [
-              "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.decode",
-              "src/pyquifer/experimental/fhrr.py::LatencyEncoder.decode",
               "src/pyquifer/experimental/fhrr.py::SpikeVSAOps.resonator_decode",
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
-              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.decode",
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind",
               "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss"
@@ -3061,10 +2906,7 @@
             "recall": 1.0,
             "tp": 3,
             "unexpected": [
-              "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.decode",
-              "src/pyquifer/experimental/fhrr.py::LatencyEncoder.decode",
               "src/pyquifer/experimental/fhrr.py::SpikeVSAOps.resonator_decode",
-              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.decode",
               "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss"
             ]
           }
@@ -3097,29 +2939,21 @@
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind"
             ],
-            "f1": 0.5454545454545454,
+            "f1": 0.8571428571428571,
             "fn": 0,
-            "fp": 5,
+            "fp": 1,
             "missing": [],
-            "precision": 0.375,
+            "precision": 0.75,
             "predicted": [
-              "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.decode",
-              "src/pyquifer/experimental/fhrr.py::LatencyEncoder.decode",
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
-              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.decode",
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind",
-              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss",
-              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.decode"
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss"
             ],
             "recall": 1.0,
             "tp": 3,
             "unexpected": [
-              "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.decode",
-              "src/pyquifer/experimental/fhrr.py::LatencyEncoder.decode",
-              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.decode",
-              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss",
-              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.decode"
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss"
             ]
           }
         },
@@ -3151,29 +2985,21 @@
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind"
             ],
-            "f1": 0.5454545454545454,
+            "f1": 0.8571428571428571,
             "fn": 0,
-            "fp": 5,
+            "fp": 1,
             "missing": [],
-            "precision": 0.375,
+            "precision": 0.75,
             "predicted": [
-              "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.decode",
-              "src/pyquifer/experimental/fhrr.py::LatencyEncoder.decode",
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
-              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.decode",
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
               "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind",
-              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss",
-              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.decode"
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss"
             ],
             "recall": 1.0,
             "tp": 3,
             "unexpected": [
-              "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.decode",
-              "src/pyquifer/experimental/fhrr.py::LatencyEncoder.decode",
-              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.decode",
-              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss",
-              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.decode"
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss"
             ]
           }
         }
@@ -3281,17 +3107,16 @@
               "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.select_action",
               "src/pyquifer/cognition/predictive/active_inference.py::PredictiveEncoder.sample"
             ],
-            "f1": 0.4,
+            "f1": 0.42857142857142855,
             "fn": 0,
-            "fp": 9,
+            "fp": 8,
             "missing": [],
-            "precision": 0.25,
+            "precision": 0.2727272727272727,
             "predicted": [
               "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
               "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward",
               "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.select_action",
               "src/pyquifer/cognition/predictive/active_inference.py::PredictiveEncoder.sample",
-              "src/pyquifer/cognition/predictive/active_inference.py::reparameterize",
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
@@ -3304,7 +3129,6 @@
             "tp": 3,
             "unexpected": [
               "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
-              "src/pyquifer/cognition/predictive/active_inference.py::reparameterize",
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
               "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
               "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
@@ -3340,23 +3164,21 @@
               "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.select_action",
               "src/pyquifer/cognition/predictive/active_inference.py::PredictiveEncoder.sample"
             ],
-            "f1": 0.75,
+            "f1": 0.8571428571428571,
             "fn": 0,
-            "fp": 2,
+            "fp": 1,
             "missing": [],
-            "precision": 0.6,
+            "precision": 0.75,
             "predicted": [
               "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
               "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward",
               "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.select_action",
-              "src/pyquifer/cognition/predictive/active_inference.py::PredictiveEncoder.sample",
-              "src/pyquifer/cognition/predictive/active_inference.py::reparameterize"
+              "src/pyquifer/cognition/predictive/active_inference.py::PredictiveEncoder.sample"
             ],
             "recall": 1.0,
             "tp": 3,
             "unexpected": [
-              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
-              "src/pyquifer/cognition/predictive/active_inference.py::reparameterize"
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss"
             ]
           }
         }
@@ -3403,8 +3225,9 @@
   },
   "limitations": [
     "20 dev tasks, 1-hop impact phrasing; retrieval only, no model loop.",
-    "Server-side embedding time and RAM not instrumented."
+    "Server-side embedding time and RAM not instrumented.",
+    "Set scores recomputed deterministically from the committed ranked lists (selection code unchanged since that run); no model calls in this step."
   ],
-  "protocol": "dev-only retrieval scoring; tune freely; held-out stays untouched",
+  "protocol": "dev-only retrieval scoring; tune freely; held-out stays untouched. Set metrics (P/R/F1/exact) score the answer set after the gold-free query-leaf exclusion (caller_ranked rule: the named subject is context, never an impact answer); ranking metrics use the raw list.",
   "tracemalloc_peak_mb": 175.3
 }
