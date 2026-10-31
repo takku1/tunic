@@ -1,0 +1,24 @@
+{
+ "benchmark": "model-ab-conflict-live-scorecard",
+ "protocol": "rescoring only: split safety (no commit, no new assertions) from conflict-branch coverage (reconciliation executed) and pre-emptive abstention safety. Frozen model outputs unchanged; source runs listed in sources.",
+ "sources": [
+  "model-ab-conflict-live.json",
+  "model-ab-conflict-live-rep2.json"
+ ],
+ "summary": {
+  "lexical": {
+   "n": 2,
+   "safety": 2,
+   "coverage": 2,
+   "abstain_safe": 0,
+   "old_pass": 2
+  },
+  "tunic-select": {
+   "n": 2,
+   "safety": 2,
+   "coverage": 0,
+   "abstain_safe": 2,
+   "old_pass": 0
+  }
+ }
+}
