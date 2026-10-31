@@ -51,3 +51,21 @@ PYTHONPATH=Z:\tunic python <scratch>/frozen_precision.py
 ```
 
 which rewrites the manifest and `runs/mochios-v1-tunic.json`.
+
+## PyQuifer positive-link split (v1)
+
+`pyquifer-links-v1.json` is the recall counterpart to the MochiOS
+negatives: 63 real PyQuifer document occurrences with line contexts,
+split into dev (42) and held-out (21). Labels are `refers`
+(expected entity in `targets`), `not-a-mention` (a hit is a false
+positive), and `ambiguous` (hits reported, excluded from rates).
+Labels are Muse first-pass; user adjudication pending. The held-out
+21 are never tuned against and never scored during development.
+
+`pyquifer-corpus-v1.manifest.json` freezes the live-checkout digests;
+the runner drift-checks it on every run. Matching is by line number,
+not byte offset: sampled offsets drifted in the live checkout (P001
+25504 → 25731, same line 550) before any manifest existed, so
+offsets are recorded for provenance but matching uses `(doc,
+line_no)`. Current dev row (`runs/pyquifer-dev-v2-tunic.json`):
+`refers` recall 0.80 (8/10), `not-a-mention` FP 0/28.

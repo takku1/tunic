@@ -1,6 +1,6 @@
 # Tunic documentation
 
-Tunic is an evidence and context substrate under development: semantic graph, context compiler, and model-specific runtime adapter. A bounded [Python/SQLite W1 reference slice](architecture/w1-reference.md) now implements ingestion, static impact queries, snapshot history, and deterministic evidence compilation. A [local continuation reference](architecture/continuation-reference.md) adds faithful rendering and a pinned Ollama adapter. Full contracts and comparative benchmarks remain unfinished. GraphGraph is historical reference material with no compatibility requirement.
+Tunic is an evidence and context substrate under development: semantic graph, context compiler, and model-specific runtime adapter. A bounded [Python/SQLite W1 reference slice](architecture/w1-reference.md) now implements ingestion, static impact queries, snapshot history, and deterministic evidence compilation. A [local continuation reference](architecture/continuation-reference.md) adds faithful rendering and a pinned Ollama adapter. Beyond W1: hybrid retrieval with pinned embeddings, an evidence qualification gate, an MCP boundary, a knowledge policy contract, and frozen precision/arena benchmarks with corpus manifests. GraphGraph is historical reference material with no compatibility requirement.
 
 ## Start here
 
@@ -13,6 +13,9 @@ Read [architecture overview](architecture/overview.md), [semantic graph contract
 | What is Tunic, who owns state, and how does a request flow? | [Architecture overview](architecture/overview.md) |
 | What do durable claims, evidence, identity, time, and snapshots mean? | [Semantic graph](architecture/semantic-graph.md) |
 | What does compilation produce and validate? | [Context IR](architecture/context-ir.md) |
+| Which types and relations can the graph hold? | [Graph schema](architecture/graph-schema.md) |
+| What decides what becomes knowledge, is shown, and is acted on? | [Policy contract](architecture/policy-contract.md) |
+| Which evidence reaches an agent for a query, and why? | [Evidence selection](architecture/evidence-selection.md) (target, unimplemented) |
 | How are inputs lowered and execution/cache compatibility checked? | [Lowering and runtime](architecture/runtime.md) |
 | How might retrieval continue during an inference session? | [Runtime memory controller](architecture/runtime-memory.md) and [bounded implementation](architecture/continuation-reference.md) |
 | Where are security and authority boundaries enforced? | [Security requirements and limits](architecture/security.md) |
@@ -20,6 +23,7 @@ Read [architecture overview](architecture/overview.md), [semantic graph contract
 | What is chosen or still unresolved? | [Decision dispositions](architecture/decisions.md) |
 | What actually runs, with which limits and checks? | [W1 profile](architecture/w1-reference.md), [continuation results](evaluation/continuation-results.md), and [quickstart](../README.md#run-the-reference-slice) |
 | How will behavior, utility, and costs be assessed? | [Evaluation strategy](evaluation/strategy.md) and [workload definitions](evaluation/workloads.md) |
+| What do the frozen benchmarks freeze and what did Tunic score? | [Precision README](../benchmarks/precision/README.md) (extends below) and [arena audit](../benchmarks/arena/AUDIT-2026-10-31.md) |
 
 Architecture contracts describe proposed behavior, not implemented guarantees. Research notes support or challenge choices; references report inspected external artifacts. If they disagree, update the owning contract/decision explicitly rather than treating an older research suggestion as a second requirement.
 
@@ -32,6 +36,8 @@ Architecture contracts describe proposed behavior, not implemented guarantees. R
 - [Database/runtime tools](research/tools.md) and [current project landscape](research/project-landscape.md): candidates and comparison questions.
 - [SmartMemory concepts](research/smartmemory-concepts.md): documented memory/retrieval approaches and their limits.
 - [Geometry research](research/geometry/README.md): multidimensional scores, paths, resistance, curvature, causal limits, and learned utility. [Mathematics](research/geometry/mathematics.md), [experiments](research/geometry/experiments.md), and [sources](research/geometry/sources.md) retain the research detail.
+- [Knowledge policy survey](research/knowledge-policy-survey.md): RAG, memory, representation, authorization, and evaluation frameworks relevant to the policy contract.
+- [Standards mapping](research/standards-mapping.md): PROV-O, SHACL, data/AI quality, and security standards adopted as requirements (not certifications).
 
 ## Reference evidence
 
@@ -42,6 +48,6 @@ Architecture contracts describe proposed behavior, not implemented guarantees. R
 
 **Observed** means a local artifact or described capability was inspected within its stated limits. **Reported** means an external source's claim/result. **Proposed** means a Tunic design or experiment. **Unknown** requires investigation. A paper abstract, code read, test, proof, and benchmark establish different evidence scopes.
 
-Sources were researched through 2026-10-30. Research ledgers record partial reading; no complete literature review or reproduced external result is claimed. Pin actual dependencies, licenses, models, data, and runtime versions before implementation comparisons.
+Sources were researched through 2026-10-31. Research ledgers record partial reading; no complete literature review or reproduced external result is claimed. Pin actual dependencies, licenses, models, data, and runtime versions before implementation comparisons.
 
 When changing the architecture, update the owning contract and decision disposition, then affected validation criteria and links. Keep equations and alternative techniques in research, historical observations in references, and runnable results separate from planned checks. Avoid duplicating fields/invariants across summaries; link to their owner.
