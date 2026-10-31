@@ -1,6 +1,6 @@
 # Tunic architecture
 
-Status: target architecture, 2026-10-30. A bounded [W1 reference slice](w1-reference.md) implements local Python evidence ingestion, snapshots, impact queries, and a versioned JSON context profile. A [local continuation adapter](continuation-reference.md) also renders evidence and executes supported segments. Most target contracts and comparative performance evaluation remain unfinished. Decision dispositions are maintained in [decisions](decisions.md); [glossary](glossary.md) defines shared terms.
+Status: target architecture, 2026-10-31. A bounded [W1 reference slice](w1-reference.md) implements local Python evidence ingestion, snapshots, impact queries, and a versioned JSON context profile. A [local continuation adapter](continuation-reference.md) also renders evidence and executes supported segments. Shipped beyond W1: methods/self-receiver extraction, document mentions with an [evidence-precision gate](evidence-qualification.md), typed claims with retrieval policies, incremental refresh with full-rebuild equivalence, a persistent agent-memory API, an MCP stdio boundary, and local-embedding hybrid retrieval with a digest-keyed vector cache. Frozen evaluation lives in benchmarks/precision (mention split), benchmarks/memory, benchmarks/agent, and benchmarks/arena (semantic runs, audit notes). Prefetch, KV-cache fusion, multi-user authorization, and distributed operation remain unfinished. Decision dispositions are maintained in [decisions](decisions.md); [glossary](glossary.md) defines shared terms.
 
 ## Purpose and first slice
 
