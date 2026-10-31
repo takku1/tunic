@@ -68,18 +68,9 @@ def bundle_lexical(index, question, limit=5):
 
 
 def bundle_tunic(memory, question, limit=5, select=False):
+    from tunic.render import render_answer_text  # noqa: E402
     result = memory.answer(question, limit=limit, policy="current", select=select)
-    lines = ["candidates: " + ", ".join(c["symbol"] for c in result["candidates"])]
-    for entry in result["impacts"]:
-        lines.append("impact %s" % entry["symbol"])
-    for mention in result["mentions"][:10]:
-        lines.append("mention %s -> %s (%s)" % (mention["mentioner"],
-                                                mention.get("candidate", "?"),
-                                                mention["status"]))
-    for claim in result["claims"][:10]:
-        lines.append("claim %s %s %s" % (claim["relation"], claim["caller"],
-                                         claim["callee"] or claim.get("candidate", "")))
-    return "\n".join(lines)[:CONTEXT_CAP]
+    return render_answer_text(result, cap=CONTEXT_CAP)
 
 
 PROMPT = ("You are a code assistant answering about a small repository. "

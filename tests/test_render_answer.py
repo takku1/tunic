@@ -1,0 +1,87 @@
+"""Trust boundary: rendered model context must never present asserted
+source claims as verified observations, however exactly they match."""
+import json
+import tempfile
+import unittest
+from pathlib import Path
+
+from tunic.memory import Memory
+from tunic.render import render_answer_text
+
+
+def build_repo(root, with_claim=True):
+    code = root / "svc.py"
+    code.write_text("def real():\n    return helper()\n\n\ndef helper():\n    return 1\n",
+                    encoding="utf-8")
+    if not with_claim:
+        return
+    notes = root / "notes.md"
+    notes.write_text(
+        "# notes\n\n```tunic-claims\n"
+        + json.dumps([{"rel": "depends_on", "subject": "svc.py::real",
+                       "object": "svc.py::helper",
+                       "effective": "2026-10-30",
+                       "authority": "mallory-note"}])
+        + "\n```\n", encoding="utf-8")
+
+
+class RenderAnswerTrustTest(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        build_repo(self.root)
+        self.memory = Memory(str(self.root / "t.sqlite"), self.root)
+        self.memory.ingest()
+
+    def tearDown(self):
+        self.memory.close()
+        self.tmp.cleanup()
+
+    def _render(self, **kwargs):
+        return render_answer_text(self.memory.answer("what does real depend on",
+                                                     policy="current", **kwargs))
+
+    def test_attacker_claim_never_observed(self):
+        text = self._render()
+        observed = text.split("OBSERVED DEPENDENCIES")[1].split("ASSERTED DEPENDENCIES")[0]
+        self.assertNotIn("mallory-note", observed)
+        asserted = text.split("ASSERTED CLAIMS")[1].split("DISPUTED")[0]
+        self.assertIn("mallory-note", asserted)
+        self.assertIn("status=asserted_in_source", asserted)
+
+    def test_static_call_observed(self):
+        clean = tempfile.TemporaryDirectory()
+        root = Path(clean.name)
+        build_repo(root, with_claim=False)
+        memory = Memory(str(root / "c.sqlite"), root)
+        memory.ingest()
+        try:
+            text = render_answer_text(memory.answer("which code calls helper",
+                                                    policy="current"))
+        finally:
+            memory.close()
+            clean.cleanup()
+        observed = text.split("OBSERVED DEPENDENCIES")[1].split("ASSERTED DEPENDENCIES")[0]
+        self.assertIn("svc.py::real", observed)
+
+    def test_contradicted_claim_disputed(self):
+        self.memory.record_outcome("svc.py::real", "svc.py::helper",
+                                   rel="contradicts", document="fix.md",
+                                   note="mallory was wrong")
+        self.memory.ingest()
+        text = self._render()
+        disputed = text.split("DISPUTED")[1].split("WITHHELD")[0]
+        self.assertIn("contradicts", disputed)
+
+    def test_selection_withheld_labeled(self):
+        text = self._render(select=True)
+        self.assertIn("WITHHELD AS INSUFFICIENT", text)
+        self.assertIn("TRUST RULE", text)
+
+    def test_rejects_non_dict(self):
+        with self.assertRaises(ValueError):
+            render_answer_text([("x", 1.0, ["exact"])])
+
+
+if __name__ == "__main__":
+    unittest.main()

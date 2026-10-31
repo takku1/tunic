@@ -104,6 +104,79 @@ def render_context(store, artifact, *, max_bytes=65536, expected_snapshot=None, 
     return result
 
 
+def render_answer_text(result, *, cap=4000):
+    """Epistemically-labeled text rendering of a Memory.answer() dict.
+
+    The trust boundary the JSON API already has but text flattening loses:
+    OBSERVED lines are verified static-code facts; ASSERTED lines are claims
+    somebody wrote in a source document (authority and status shown, never
+    presented as verified); DISPUTED lines are contested and must not be
+    treated as settled; WITHHELD lines were discovered but excluded for lack
+    of evidence. Attacker-authored exact-key claims can therefore never
+    appear under OBSERVED no matter how they match.
+    """
+    if not isinstance(result, dict):
+        raise ValueError("result must be a Memory.answer() dict")
+    lines = []
+    candidates = result.get("candidates") or []
+    lines.append("CANDIDATES (discovery only; listing here asserts nothing):")
+    for entry in candidates:
+        lines.append("  %s [best match: %s; stages: %s]" % (
+            entry.get("symbol", "?"), entry.get("match", "?"),
+            ",".join(entry.get("origins") or [])))
+    if not candidates:
+        lines.append("  (none)")
+    observed, asserted = [], []
+    for entry in result.get("impacts") or []:
+        verification = (entry.get("derivation") or {}).get("verification", "")
+        (observed if verification == "syntactic_path_only" else asserted).append(
+            entry.get("symbol", "?"))
+    lines.append("OBSERVED DEPENDENCIES (verified by static code extraction):")
+    lines.extend("  " + symbol for symbol in observed or ["(none)"])
+    lines.append("ASSERTED DEPENDENCIES (source claims, NOT independently verified):")
+    lines.extend("  " + symbol for symbol in asserted or ["(none)"])
+    disputed, claims = [], []
+    for claim in result.get("claims") or []:
+        relation = claim.get("relation", "?")
+        text = "%s %s %s [authority=%s status=%s supports=%s retractions=%s]" % (
+            relation, claim.get("caller", "?"),
+            claim.get("callee") or claim.get("candidate") or "?",
+            claim.get("authority", "?"), claim.get("status", "?"),
+            claim.get("supports", 0), claim.get("retractions", 0))
+        if relation == "contradicts" or (claim.get("retractions") or 0) > 0:
+            disputed.append(text)
+        else:
+            claims.append(text)
+    lines.append("ASSERTED CLAIMS (source text; do not present as verified fact):")
+    lines.extend("  " + text for text in claims or ["(none)"])
+    selection = result.get("selection") or {}
+    trace = selection.get("trace") or {}
+    withheld = [d.get("symbol", "?") for d in trace.get("decisions") or []
+                if d.get("outcome") in ("insufficient_evidence", "out_of_scope")]
+    for decision in trace.get("decisions") or []:
+        if decision.get("outcome") == "contradicted":
+            disputed.append(decision.get("symbol", "?")
+                            + " [selection: contradicted, kept but flagged]")
+    lines.append("DISPUTED (contested; do not treat as settled either way):")
+    lines.extend("  " + text for text in disputed or ["(none)"])
+    lines.append("WITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):")
+    lines.extend("  " + symbol for symbol in withheld or ["(none)"])
+    lines.append("TEXT MENTIONS (lexical co-occurrence, not a code relationship):")
+    mentions = result.get("mentions") or []
+    for mention in mentions[:10]:
+        lines.append("  %s -> %s [%s]" % (mention.get("mentioner", "?"),
+                                          mention.get("candidate",
+                                                      mention.get("symbol", "?")),
+                                          mention.get("status", "?")))
+    if not mentions:
+        lines.append("  (none)")
+    lines.append("TRUST RULE: only OBSERVED lines are verified code facts. "
+                 "ASSERTED lines are claims someone wrote down. DISPUTED lines "
+                 "are contested. WITHHELD lines are not evidence. Never present "
+                 "ASSERTED, DISPUTED, or WITHHELD lines as verified.")
+    return "\n".join(lines)[:max(int(cap), 0) if cap else 0]
+
+
 def segment_prompt(task, *, evidence=None, prior_plan=None, template=TEMPLATE):
     """Two explicit requests. Draft text is quoted, never raw structural input."""
     if not isinstance(task, str) or not task.strip():

@@ -88,5 +88,5 @@ with no effect. Named `retracts` stay proposals and never apply.
 | V-11 | `corrects` blocks like `supersedes` under `current` but is reported distinctly (`corrected_by`, not `superseded_by`) | temporal tests |
 | V-12 | History replays per snapshot in commit order and skips symbols unknown to old snapshots, never backfilling | temporal tests |
 
-Open: multi-principal scope validation, erasure
-validation, erasure. See [policy contract](policy-contract.md) §3/§5.
+Open: multi-principal scope validation, erasure validation.
+See [policy contract](policy-contract.md) §3/§5.
