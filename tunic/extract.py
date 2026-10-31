@@ -657,37 +657,79 @@ def _requalify(leaf, line, source_id, callee, doc_freq, exact_refs, claim_refs=f
     stays identical to a full rebuild without reprocessing everything.
     """
     frequency = doc_freq.get(leaf, 0.0)
+    class_hit, module_hit, inventory = _context_hits(line, callee)
     signals = _mention_signals(line, leaf, (source_id, callee) in exact_refs,
-                               (source_id, callee) in claim_refs)
+                               (source_id, callee) in claim_refs,
+                               class_hit, module_hit, inventory)
     return ("exact_same_document" in signals
             or "asserted_claim_same_document" in signals
+            or "class_context" in signals
             or (frequency <= EVIDENCE_DF_THRESHOLD
-                and "dotted_or_call" in signals))
+                and ("dotted_or_call" in signals
+                     or "module_path_context" in signals
+                     or "inventory_list" in signals)))
 
 
-def _mention_signals(line, leaf, exact_same_doc, claimed_same_doc):
+INVENTORY_HEADER = re.compile(
+    r"^\s*[-*]?\s*(defs?|classes?|functions?|methods?|members?|exports?|"
+    r"symbols?|apis?|attributes?)\s*:", re.IGNORECASE)
+
+PATH_TOKEN = re.compile(r"[\w$./-]+\.\w+")
+
+
+def _mention_signals(line, leaf, exact_same_doc, claimed_same_doc,
+                     class_hit=False, module_hit=False, inventory=False):
     """Independent corroborating signals for one bare occurrence.
 
     exact_same_document: the same document already references the entity
     exactly, so identity is established, not guessed. asserted_claim_same_
     document: the document asserts a typed claim touching the entity, which
-    corroborates identity as strongly as an exact mention. dotted_or_call:
-    `recv.leaf` or `leaf(` syntax denotes the code entity, not a prose
-    verb. code_span: the leaf sits inside backticks. A backticked span
-    alone is weak (prose backticks file names too) and never qualifies
-    by itself; it only corroborates low-frequency leaves.
+    corroborates identity as strongly as an exact mention. class_context:
+    the line names the candidate's own class next to the leaf, which is
+    joint identity evidence as discriminating as an exact key. dotted_or_
+    call: `recv.leaf` or `leaf(` syntax denotes the code entity, not a
+    prose verb. module_path_context: the line names the candidate's file,
+    corroborating identity by location. inventory_list: the leaf sits in
+    an explicit member inventory (`defs:`, `classes:`, ...), which lists
+    entities rather than using their names as prose. code_span: the leaf
+    sits inside backticks. A backticked span alone is weak (prose backticks
+    file names too) and never qualifies by itself.
     """
     signals = []
     if exact_same_doc:
         signals.append("exact_same_document")
     if claimed_same_doc:
         signals.append("asserted_claim_same_document")
+    if class_hit:
+        signals.append("class_context")
     if re.search(r"[\w$]+\." + re.escape(leaf) + r"\b|\b" + re.escape(leaf) + r"\s*\(",
                  line):
         signals.append("dotted_or_call")
+    if module_hit:
+        signals.append("module_path_context")
+    if inventory:
+        signals.append("inventory_list")
     if re.search(r"`[^`]*\b" + re.escape(leaf) + r"\b[^`]*`", line):
         signals.append("code_span")
     return signals
+
+
+def _context_hits(line, callee_key):
+    """Structural corroboration available to any bare occurrence.
+
+    Returns (class_hit, module_hit, inventory): whether the line names the
+    candidate's own class, names the candidate's file, or sits in an
+    explicit member-inventory list. Derived from the key and the line
+    alone, so full rebuilds and incremental refreshes agree exactly.
+    """
+    parts = callee_key.split("::")
+    dotted = parts[1].split(".") if len(parts) > 1 else []
+    class_hit = (len(dotted) > 1
+                 and re.search(r"\b" + re.escape(dotted[-2]) + r"\b", line) is not None)
+    cand_path = parts[0]
+    module_hit = any(cand_path == token or cand_path.endswith("/" + token)
+                     for token in PATH_TOKEN.findall(line))
+    return class_hit, module_hit, INVENTORY_HEADER.match(line) is not None
 
 
 def _build_bare_mentions(sources, symbols, assertions, diagnostics, claim_spans, seen,
@@ -700,9 +742,9 @@ def _build_bare_mentions(sources, symbols, assertions, diagnostics, claim_spans,
     match, even in a different document.
 
     Bare matches are qualified, not merely collected. A token match
-    becomes a graph assertion only with an independent signal (same-doc
-    exact reference, asserted claim touching the entity, or dotted/call
-    syntax on a low-frequency leaf); anything weaker is recorded as a
+    becomes a graph assertion with same-doc exact or claim evidence, with
+    class context, or with dotted/call, file-path, or inventory-list
+    syntax on a low-frequency leaf; anything weaker is recorded as a
     mention_candidate diagnostic. Backticked spans are recorded as a
     signal but never qualify alone: prose backticks tool names too.
     Candidates stay searchable through the lexical stage and visible for
@@ -753,13 +795,18 @@ def _build_bare_mentions(sources, symbols, assertions, diagnostics, claim_spans,
                         continue
                     seen_mentions.add((start, key))
                     frequency = doc_freq.get(leaf, 0.0)
+                    class_hit, module_hit, inventory = _context_hits(line, key)
                     signals = _mention_signals(
                         line, leaf, (s["id"], key) in exact_refs,
-                        (s["id"], key) in claim_refs)
+                        (s["id"], key) in claim_refs,
+                        class_hit, module_hit, inventory)
                     qualified = ("exact_same_document" in signals
                                  or "asserted_claim_same_document" in signals
+                                 or "class_context" in signals
                                  or (frequency <= EVIDENCE_DF_THRESHOLD
-                                     and "dotted_or_call" in signals))
+                                     and ("dotted_or_call" in signals
+                                          or "module_path_context" in signals
+                                          or "inventory_list" in signals)))
                     if not qualified:
                         diagnostics.append({"path": s["path"], "line": lineno,
                                             "kind": "mention_candidate",

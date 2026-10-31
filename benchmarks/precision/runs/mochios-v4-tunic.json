@@ -1,0 +1,360 @@
+{
+ "benchmark": "mochios-precision-v1",
+ "run": "mochios-v4-tunic",
+ "tool": "tunic",
+ "snapshot": "snapshot:c2ecf2cabcfc3b8260f4359d364c9c0bee1e81dfab137c23c73456e7aeb70f85",
+ "corpus": {
+  "count": 1645,
+  "drift": []
+ },
+ "environment": {
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.10"
+ },
+ "implementation": {
+  "__init__.py": "8e82d6404c8022a80de72963d6e638eeadc002825d1d703003303c08d1d776ed",
+  "__main__.py": "0e111e338298047bba02dabed37e476c02aedefda35d821d74cbc9c84de3fa9e",
+  "baselines.py": "0b8b7a678a8ae23d4570787428070d451a523fc26ebf6fc5501a02ebb880a48b",
+  "benchmark.py": "f623f2c09931d1c4438f6b13971f79ea9f0416ca5f5c2b168e72e325fa1c9bd6",
+  "compiler.py": "b93be5cee707af34e637cac199c9332f88ab96ff0355d5f94f85b968e1708416",
+  "continuation.py": "de73f9004fbd01c1ddf41172d64176ca988c7cb5f02ada5ed1715bfeece06f9c",
+  "embedcache.py": "0776028250a777adbf705188c8bb736b23180c739a7c781bc6b10b5e7fac14e8",
+  "eval.py": "0ce7e90e6501f0fca9624ac48ac9c393347257f6a9049003a997c33e595fa860",
+  "extract.py": "a76aee4958b3de8002eb35ecbc155da36a87dc8c32116ddc8f17c718c5b8c959",
+  "identity.py": "83df663de5b3f5316e72bca45d2fe6eae908143c9f17e4b1bdb2d4752286cab8",
+  "mcp.py": "afdab83bb97737f672a16169f30596e2cf88547f65f9e15f74be05805821ddc0",
+  "memory.py": "2489792a7f1efaa0037a48fdb349544e4550a812a759d8cdd258295d94383cea",
+  "ollama.py": "f00000f1d4f49398f798e61d08d639908f50a169d2b2edeebe192929c42813a4",
+  "render.py": "d60cacd080f3b6312ff1133a415fcf26c31273626af15d17cca7d26e24d7cb49",
+  "retrieval.py": "e0075653f8e773ba6f7c589eca5f3d9cc9e8b1c43e14b6c093326ebdce336a61",
+  "store.py": "0d0d1afb6b67e9cfc746146f9c1249bdb7b13d5cf20d6a57c07853689d6750d0"
+ },
+ "summary": {
+  "ordinary": {
+   "n": 32,
+   "hits": 0,
+   "false_positives": 0,
+   "correct_abstentions": 32,
+   "fp_rate": 0.0
+  },
+  "qualified": {
+   "n": 8,
+   "hits": 0,
+   "false_positives": 0,
+   "correct_abstentions": 8,
+   "fp_rate": 0.0
+  },
+  "rare": {
+   "n": 8,
+   "hits": 0,
+   "false_positives": 0,
+   "correct_abstentions": 8,
+   "fp_rate": 0.0
+  }
+ },
+ "tasks": [
+  {
+   "id": "S001",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S002",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S003",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S004",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S005",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S006",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S007",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S008",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S009",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S010",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S011",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S012",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S013",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S014",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S015",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S016",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S017",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S018",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S019",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S020",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S021",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S022",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S023",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S024",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S025",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S026",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S027",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S028",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S029",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S030",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S031",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S032",
+   "kind": "ordinary",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S033",
+   "kind": "qualified",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S034",
+   "kind": "qualified",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S035",
+   "kind": "qualified",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S036",
+   "kind": "qualified",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S037",
+   "kind": "qualified",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S038",
+   "kind": "qualified",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S039",
+   "kind": "qualified",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S040",
+   "kind": "qualified",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S041",
+   "kind": "rare",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S042",
+   "kind": "rare",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S043",
+   "kind": "rare",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S044",
+   "kind": "rare",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S045",
+   "kind": "rare",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S046",
+   "kind": "rare",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S047",
+   "kind": "rare",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "S048",
+   "kind": "rare",
+   "label": "not-a-mention",
+   "hits": []
+  }
+ ],
+ "mention_volume": {
+  "assertions": 4,
+  "distinct_callees": 1,
+  "top_callees": [
+   [
+    "webbrowser/audit-web-platform.py::git",
+    4
+   ]
+  ]
+ },
+ "limitations": [
+  "Zero refers labels: split measures false-positive rate and abstention, not recall.",
+  "Labels are Muse first-pass; user adjudication pending.",
+  "Corpus is a live checkout; manifest detects drift from the frozen digests."
+ ]
+}

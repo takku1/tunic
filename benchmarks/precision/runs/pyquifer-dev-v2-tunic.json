@@ -1,0 +1,309 @@
+{
+ "benchmark": "pyquifer-links-v1",
+ "run": "pyquifer-dev-v2-tunic",
+ "tool": "tunic",
+ "snapshot": "snapshot:56fd5c0e98ff11d686ef38212f5e0917133ca934302ccefd687a0b11344355f5",
+ "split": "dev",
+ "summary": {
+  "n": 42,
+  "refers_n": 10,
+  "refers_hits": 8,
+  "refers_recall": 0.8,
+  "not_a_mention_n": 28,
+  "not_a_mention_fp": 0,
+  "ambiguous_n": 4,
+  "ambiguous_with_hits": 2
+ },
+ "signal_breakdown": {
+  "inventory_list": 5,
+  "dotted_or_call": 7,
+  "module_path_context": 2,
+  "code_span": 4
+ },
+ "tasks": [
+  {
+   "id": "P001",
+   "leaf": "__dir__",
+   "label": "refers",
+   "hits": [
+    "src/pyquifer/__init__.py::__dir__"
+   ]
+  },
+  {
+   "id": "P002",
+   "leaf": "__getattr__",
+   "label": "refers",
+   "hits": [
+    "src/pyquifer/__init__.py::__getattr__"
+   ]
+  },
+  {
+   "id": "P004",
+   "leaf": "_criticality_feedback",
+   "label": "refers",
+   "hits": [
+    "src/pyquifer/runtime/criticality_feedback.py::_criticality_feedback"
+   ]
+  },
+  {
+   "id": "P005",
+   "leaf": "_criticality_feedback",
+   "label": "refers",
+   "hits": [
+    "src/pyquifer/runtime/criticality_feedback.py::_criticality_feedback"
+   ]
+  },
+  {
+   "id": "P007",
+   "leaf": "_init_adjacency",
+   "label": "ambiguous",
+   "hits": [
+    "src/pyquifer/dynamics/oscillators/complex.py::ComplexCoupling._init_adjacency",
+    "src/pyquifer/dynamics/oscillators/kuramoto.py::LearnableKuramotoBank._init_adjacency"
+   ]
+  },
+  {
+   "id": "P008",
+   "leaf": "_init_adjacency",
+   "label": "ambiguous",
+   "hits": [
+    "src/pyquifer/dynamics/oscillators/complex.py::ComplexCoupling._init_adjacency",
+    "src/pyquifer/dynamics/oscillators/kuramoto.py::LearnableKuramotoBank._init_adjacency"
+   ]
+  },
+  {
+   "id": "P009",
+   "leaf": "_interpolate_state",
+   "label": "refers",
+   "hits": [
+    "src/pyquifer/api/bridge.py::_interpolate_state"
+   ]
+  },
+  {
+   "id": "P010",
+   "leaf": "_measure_snr",
+   "label": "refers",
+   "hits": [
+    "src/pyquifer/dynamics/stochastic.py::AdaptiveStochasticResonance._measure_snr"
+   ]
+  },
+  {
+   "id": "P012",
+   "leaf": "_rk4_step",
+   "label": "refers",
+   "hits": [
+    "src/pyquifer/dynamics/oscillators/kuramoto.py::_rk4_step"
+   ]
+  },
+  {
+   "id": "P014",
+   "leaf": "_rk4_step",
+   "label": "refers",
+   "hits": [
+    "src/pyquifer/dynamics/continuous/liquid.py::NeuralODE._rk4_step",
+    "src/pyquifer/dynamics/oscillators/kuramoto.py::_rk4_step"
+   ]
+  },
+  {
+   "id": "P016",
+   "leaf": "__init__",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P017",
+   "leaf": "__init__",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P019",
+   "leaf": "_preprocess_data",
+   "label": "refers",
+   "hits": []
+  },
+  {
+   "id": "P020",
+   "leaf": "_preprocess_data",
+   "label": "refers",
+   "hits": []
+  },
+  {
+   "id": "P022",
+   "leaf": "accept",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P023",
+   "leaf": "accept",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P025",
+   "leaf": "analyze",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P026",
+   "leaf": "analyze",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P028",
+   "leaf": "check",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P029",
+   "leaf": "check",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P031",
+   "leaf": "compile",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P032",
+   "leaf": "compile",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P034",
+   "leaf": "decode",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P035",
+   "leaf": "decode",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P037",
+   "leaf": "encode",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P038",
+   "leaf": "encode",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P040",
+   "leaf": "add",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P041",
+   "leaf": "add",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P043",
+   "leaf": "clear",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P044",
+   "leaf": "clear",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P046",
+   "leaf": "energy",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P047",
+   "leaf": "energy",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P049",
+   "leaf": "entropy",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P050",
+   "leaf": "entropy",
+   "label": "ambiguous",
+   "hits": []
+  },
+  {
+   "id": "P051",
+   "leaf": "entropy",
+   "label": "ambiguous",
+   "hits": []
+  },
+  {
+   "id": "P052",
+   "leaf": "forward",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P055",
+   "leaf": "generate",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P056",
+   "leaf": "generate",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P058",
+   "leaf": "learn",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P059",
+   "leaf": "learn",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P061",
+   "leaf": "loss",
+   "label": "not-a-mention",
+   "hits": []
+  },
+  {
+   "id": "P062",
+   "leaf": "loss",
+   "label": "not-a-mention",
+   "hits": []
+  }
+ ],
+ "corpus": {
+  "manifest": "pyquifer-corpus-v1.manifest.json",
+  "drift": []
+ },
+ "limitations": [
+  "Dev split only; held-out untouched.",
+  "Labels are Muse first-pass; user adjudication pending.",
+  "Matched by line number: sampled byte offsets drifted (live checkout, no frozen manifest at sampling time); corpus manifest frozen from this run forward."
+ ]
+}

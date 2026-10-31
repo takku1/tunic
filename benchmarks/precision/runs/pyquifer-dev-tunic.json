@@ -1,0 +1,315 @@
+{
+  "benchmark": "pyquifer-links-v1",
+  "limitations": [
+    "Labels are Muse first pass; user adjudication pending.",
+    "Corpus is a live checkout; no manifest yet \u2014 reruns may drift."
+  ],
+  "run": "pyquifer-dev-tunic",
+  "snapshot": "snapshot:817f395efeb9f2b07124a846e06ace5fc6dcb6c0c38094e01da2fb6c7ab3e7b8",
+  "split": "dev",
+  "summary": {
+    "ambiguous_n": 4,
+    "ambiguous_with_hits": 2,
+    "false_negatives": 7,
+    "not_a_mention_fp": 0,
+    "not_a_mention_n": 28,
+    "refers_n": 10,
+    "refers_recall": 0.3,
+    "true_positives": 3
+  },
+  "tasks": [
+    {
+      "hits": [],
+      "id": "P001",
+      "label": "refers",
+      "target": "src/pyquifer/__init__.py::__dir__"
+    },
+    {
+      "hits": [],
+      "id": "P002",
+      "label": "refers",
+      "target": "src/pyquifer/__init__.py::__getattr__"
+    },
+    {
+      "hits": [
+        {
+          "callee": "src/pyquifer/runtime/criticality_feedback.py::_criticality_feedback",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "P004",
+      "label": "refers",
+      "target": "src/pyquifer/runtime/criticality_feedback.py::_criticality_feedback"
+    },
+    {
+      "hits": [
+        {
+          "callee": "src/pyquifer/runtime/criticality_feedback.py::_criticality_feedback",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "P005",
+      "label": "refers",
+      "target": "src/pyquifer/runtime/criticality_feedback.py::_criticality_feedback"
+    },
+    {
+      "hits": [
+        {
+          "callee": "src/pyquifer/dynamics/oscillators/kuramoto.py::LearnableKuramotoBank._init_adjacency",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed_ambiguous"
+        },
+        {
+          "callee": "src/pyquifer/dynamics/oscillators/complex.py::ComplexCoupling._init_adjacency",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed_ambiguous"
+        }
+      ],
+      "id": "P007",
+      "label": "ambiguous",
+      "target": null
+    },
+    {
+      "hits": [
+        {
+          "callee": "src/pyquifer/dynamics/oscillators/kuramoto.py::LearnableKuramotoBank._init_adjacency",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed_ambiguous"
+        },
+        {
+          "callee": "src/pyquifer/dynamics/oscillators/complex.py::ComplexCoupling._init_adjacency",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed_ambiguous"
+        }
+      ],
+      "id": "P008",
+      "label": "ambiguous",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P009",
+      "label": "refers",
+      "target": "src/pyquifer/api/bridge.py::_interpolate_state"
+    },
+    {
+      "hits": [
+        {
+          "callee": "src/pyquifer/dynamics/stochastic.py::AdaptiveStochasticResonance._measure_snr",
+          "rule": "name_match_proposed_v1",
+          "status": "proposed"
+        }
+      ],
+      "id": "P010",
+      "label": "refers",
+      "target": "src/pyquifer/dynamics/stochastic.py::AdaptiveStochasticResonance._measure_snr"
+    },
+    {
+      "hits": [],
+      "id": "P012",
+      "label": "refers",
+      "target": "src/pyquifer/dynamics/oscillators/kuramoto.py::_rk4_step"
+    },
+    {
+      "hits": [],
+      "id": "P014",
+      "label": "refers",
+      "target": "src/pyquifer/dynamics/oscillators/kuramoto.py::_rk4_step"
+    },
+    {
+      "hits": [],
+      "id": "P016",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P017",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P019",
+      "label": "refers",
+      "target": "src/pyquifer/api/legacy.py::PyQuifer._preprocess_data"
+    },
+    {
+      "hits": [],
+      "id": "P020",
+      "label": "refers",
+      "target": "src/pyquifer/api/legacy.py::PyQuifer._preprocess_data"
+    },
+    {
+      "hits": [],
+      "id": "P022",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P023",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P025",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P026",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P028",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P029",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P031",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P032",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P034",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P035",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P037",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P038",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P040",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P041",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P043",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P044",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P046",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P047",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P049",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P050",
+      "label": "ambiguous",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P051",
+      "label": "ambiguous",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P052",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P055",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P056",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P058",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P059",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P061",
+      "label": "not-a-mention",
+      "target": null
+    },
+    {
+      "hits": [],
+      "id": "P062",
+      "label": "not-a-mention",
+      "target": null
+    }
+  ],
+  "tool": "tunic"
+}

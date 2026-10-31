@@ -61,6 +61,41 @@ class BaselineArmTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             pagerank(self.store, self.report["snapshot"], damping=True)
 
+    def test_structural_signals_detected_from_key_and_line(self):
+        from tunic.extract import _context_hits
+        self.assertEqual(
+            _context_hits("The Parser.parse routine handles input.",
+                          "pkg/mod.py::Parser.parse"), (True, False, False))
+        self.assertEqual(
+            _context_hits("see pkg/mod.py for the render helper.",
+                          "pkg/mod.py::render"), (False, True, False))
+        self.assertEqual(
+            _context_hits("  - defs: render, parse", "pkg/mod.py::render"),
+            (False, False, True))
+        self.assertEqual(
+            _context_hits("Read the documentation first.", "core.py::read"),
+            (False, False, False))
+
+    def test_class_context_qualifies_without_frequency(self):
+        from tunic.extract import _mention_signals, _requalify
+        signals = _mention_signals("The Parser.parse routine handles input.",
+                                   "parse", False, False, True, False, False)
+        self.assertIn("class_context", signals)
+        self.assertTrue(_requalify("parse", "The Parser.parse routine handles input.",
+                                  "src", "pkg/mod.py::Parser.parse",
+                                  {"parse": 1.0}, set()))
+
+    def test_structural_signals_qualify_low_frequency_leaves(self):
+        from tunic.extract import _requalify
+        self.assertTrue(_requalify("render", "see pkg/mod.py for the render helper.",
+                                  "src", "pkg/mod.py::render",
+                                  {"render": 1 / 21}, set()))
+        self.assertTrue(_requalify("render", "  - defs: render, parse",
+                                  "src", "pkg/mod.py::render",
+                                  {"render": 1 / 21}, set()))
+        self.assertFalse(_requalify("read", "Read the documentation first.",
+                                   "src", "core.py::read", {"read": 0.9}, set()))
+
     def test_exact_reference_is_strong_evidence(self):
         _, view = self.store.view()
         exact = [a for a in view["assertions"]
@@ -93,6 +128,55 @@ class BaselineArmTests(unittest.TestCase):
                             for c in report["candidates"]))
         self.assertFalse(any(p.get("candidate") == "core.py::read"
                              for p in report["proposals"]))
+
+
+class StructuralSignalIntegrationTests(unittest.TestCase):
+    """End-to-end: class, file-path, and inventory signals qualify evidence.
+
+    Twenty filler documents keep every leaf at document frequency 1/21,
+    under the 0.05 gate, so the signals — not frequency — decide.
+    """
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.root = self.tmp / "repo"
+        (self.root / "pkg").mkdir(parents=True)
+        (self.root / "pkg" / "mod.py").write_text(
+            "class Parser:\n"
+            "    def parse(self):\n"
+            "        return 1\n"
+            "\n"
+            "\n"
+            "def render():\n"
+            "    return 2\n")
+        (self.root / "guide.md").write_text(
+            "The Parser.parse routine handles input.\n"
+            "see pkg/mod.py for the render helper.\n"
+            "  - defs: render\n")
+        for i in range(20):
+            (self.root / f"filler{i:02d}.md").write_text(
+                f"Unrelated filler note number {i} about release process.\n")
+        self.store = GraphStore(str(self.tmp / "graph.sqlite"))
+        self.addCleanup(self.store.close)
+        self.store.ingest(str(self.root))
+
+    def test_signals_become_evidence_with_trace(self):
+        _, view = self.store.view()
+        bare = [a for a in view["assertions"]
+                if a.get("resolution", {}).get("rule") == "name_match_proposed_v1"]
+        by_callee = {}
+        for a in bare:
+            by_callee.setdefault(a["proposition"]["callee"], []).append(a)
+        parse = by_callee.get("pkg/mod.py::Parser.parse", [])
+        self.assertEqual(len(parse), 1)
+        self.assertIn("class_context",
+                      parse[0]["resolution"]["qualification"]["signals"])
+        render = by_callee.get("pkg/mod.py::render", [])
+        self.assertEqual(len(render), 2)
+        signals = [r["resolution"]["qualification"]["signals"] for r in render]
+        self.assertTrue(any("module_path_context" in s for s in signals))
+        self.assertTrue(any("inventory_list" in s for s in signals))
 
 
 if __name__ == "__main__":
