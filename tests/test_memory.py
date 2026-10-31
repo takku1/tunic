@@ -410,5 +410,43 @@ class ReconcileTests(unittest.TestCase):
         self.assertIn("notes/missing.md::document", reason)
 
 
+class UnicodeWindowTests(unittest.TestCase):
+    """Evidence windows must not split multibyte characters."""
+
+    def test_window_around_mention_in_non_ascii_note(self):
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp, True)
+        root = tmp / "repo"
+        (root / "notes").mkdir(parents=True)
+        (root / "core.py").write_bytes("def calculate(x):\n    return x + 1\n".encode("utf-8"))
+        (root / "notes" / "ctx.md").write_bytes(
+            ("Café naïve über — rounding notes. " * 12
+             + "\nSee core.py::calculate.\n").encode("utf-8"))
+        memory = Memory(str(tmp / "memory.sqlite"), root)
+        self.addCleanup(memory.close)
+        memory.ingest()
+        import json as _json
+        blob = _json.dumps(memory.related("core.py::calculate"))
+        self.assertIn("core.py::calculate", blob)
+        windows = []
+
+        def walk(node):
+            if isinstance(node, dict):
+                for key, value in node.items():
+                    if key == "window":
+                        windows.append((node.get("excerpt"), value))
+                    else:
+                        walk(value)
+            elif isinstance(node, list):
+                for value in node:
+                    walk(value)
+
+        walk(memory.related("core.py::calculate"))
+        self.assertTrue(windows)
+        for excerpt, window in windows:
+            self.assertIsInstance(window, str)
+            self.assertIn(excerpt, window)
+
+
 if __name__ == "__main__":
     unittest.main()

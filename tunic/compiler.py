@@ -10,6 +10,19 @@ IR_VERSION = "tunic.w1.v3"
 POLICIES = ("transparent", "evidence_only", "current")
 
 
+def _char_window(data, start, end, radius=160):
+    """Character-aligned evidence window around byte offsets [start, end).
+
+    Byte-slicing a UTF-8 buffer can split a multibyte character; decoding
+    the whole buffer first and converting offsets keeps the excerpt exact
+    and the window well-formed on non-ASCII sources.
+    """
+    text = data.decode("utf-8")
+    char_start = len(data[:start].decode("utf-8"))
+    char_end = char_start + len(data[start:end].decode("utf-8"))
+    return text[max(0, char_start - radius):min(len(text), char_end + radius)]
+
+
 def _evidence(store, record, snapshot):
     source = store.source(record["source"], snapshot)
     if digest(source["data"]) != source["digest"] or identity("source", [source["path"], source["digest"]]) != source["id"]:
@@ -19,7 +32,7 @@ def _evidence(store, record, snapshot):
         raise ValueError("invalid evidence coordinates")
     return {"source": source["id"], "path": source["path"], "digest": source["digest"],
             "start": start, "end": end, "excerpt": source["data"][start:end].decode("utf-8"),
-            "window": source["data"][max(0, start - 160):min(len(source["data"]), end + 160)].decode("utf-8")}
+            "window": _char_window(source["data"], start, end)}
 
 
 def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100, policy="transparent"):
