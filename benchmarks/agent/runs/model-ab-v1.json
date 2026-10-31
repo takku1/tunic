@@ -1,0 +1,713 @@
+{
+ "benchmark": "model-ab-v1",
+ "protocol": "same model/prompt/budget; mechanical fence parsing; paired arms within one run; reruns may vary (sampled decoding)",
+ "model": "qwen3:4b",
+ "decoding": {
+  "temperature": 0,
+  "seed": 0
+ },
+ "context_cap": 4000,
+ "tunic_commit": "7e9d980a6dd3e022ad67ed6c22210072d5dde1d8",
+ "summary": {
+  "none": {
+   "passed": 0,
+   "n": 14,
+   "hallucinated_tasks": 0,
+   "mean_latency_ms": 7597.8
+  },
+  "lexical": {
+   "passed": 8,
+   "n": 14,
+   "hallucinated_tasks": 0,
+   "mean_latency_ms": 10639.7
+  },
+  "tunic": {
+   "passed": 9,
+   "n": 14,
+   "hallucinated_tasks": 1,
+   "mean_latency_ms": 11650.9
+  }
+ },
+ "tasks": [
+  {
+   "id": "code-task",
+   "repo": "repo",
+   "question": "Which functions break if total changes?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "forbidden": [],
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 77,
+     "completion_tokens": 1989,
+     "latency_ms": 9608.3,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 71,
+     "parsed": [
+      "checkout.py::place_order",
+      "pricing.py::discount"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\ncheckout.py::place_order\npricing.py::discount\n```",
+     "prompt_tokens": 91,
+     "completion_tokens": 2314,
+     "latency_ms": 10787.7,
+     "pass": true,
+     "exact": false
+    },
+    "tunic": {
+     "context_chars": 303,
+     "parsed": [
+      "checkout.py::place_order"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\ncheckout.py::place_order\n```",
+     "prompt_tokens": 141,
+     "completion_tokens": 3132,
+     "latency_ms": 14808.0,
+     "pass": true,
+     "exact": true
+    }
+   }
+  },
+  {
+   "id": "decision-task",
+   "repo": "repo",
+   "question": "What did we decide about round_total?",
+   "gold": [
+    "pricing.py::round_total"
+   ],
+   "forbidden": [],
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\n\n```",
+     "prompt_tokens": 78,
+     "completion_tokens": 1858,
+     "latency_ms": 8644.0,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 24,
+     "parsed": [
+      "pricing.py::round_total"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\npricing.py::round_total\n```",
+     "prompt_tokens": 80,
+     "completion_tokens": 1159,
+     "latency_ms": 5347.0,
+     "pass": true,
+     "exact": true
+    },
+    "tunic": {
+     "context_chars": 202,
+     "parsed": [
+      "pricing.py::round_total"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\npricing.py::round_total\n```",
+     "prompt_tokens": 119,
+     "completion_tokens": 2080,
+     "latency_ms": 9601.9,
+     "pass": true,
+     "exact": true
+    }
+   }
+  },
+  {
+   "id": "outcome-task",
+   "repo": "repo",
+   "question": "What else must change if round_total changes?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "forbidden": [],
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\n\n```",
+     "prompt_tokens": 79,
+     "completion_tokens": 1061,
+     "latency_ms": 4905.8,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 24,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 81,
+     "completion_tokens": 2725,
+     "latency_ms": 12771.7,
+     "pass": false,
+     "exact": false
+    },
+    "tunic": {
+     "context_chars": 202,
+     "parsed": [
+      "checkout.py::place_order"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\ncheckout.py::place_order\n```",
+     "prompt_tokens": 120,
+     "completion_tokens": 1112,
+     "latency_ms": 5144.4,
+     "pass": true,
+     "exact": true
+    }
+   }
+  },
+  {
+   "id": "lexical-task",
+   "repo": "repo",
+   "question": "Which checkout step finalizes the order?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "forbidden": [],
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\n\n```",
+     "prompt_tokens": 78,
+     "completion_tokens": 1793,
+     "latency_ms": 8312.2,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 25,
+     "parsed": [
+      "checkout.py::place_order"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\ncheckout.py::place_order\n```",
+     "prompt_tokens": 80,
+     "completion_tokens": 792,
+     "latency_ms": 3653.3,
+     "pass": true,
+     "exact": true
+    },
+    "tunic": {
+     "context_chars": 102,
+     "parsed": [
+      "checkout.py::place_order"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\ncheckout.py::place_order\n```",
+     "prompt_tokens": 95,
+     "completion_tokens": 723,
+     "latency_ms": 3286.3,
+     "pass": true,
+     "exact": true
+    }
+   }
+  },
+  {
+   "id": "stale-task",
+   "repo": "evolve",
+   "question": "Which functions break if handle_legacy changes?",
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "forbidden": [
+    "api.py::route"
+   ],
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\n\n```",
+     "prompt_tokens": 78,
+     "completion_tokens": 1989,
+     "latency_ms": 9229.5,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 22,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 80,
+     "completion_tokens": 2010,
+     "latency_ms": 9354.7,
+     "pass": false,
+     "exact": false
+    },
+    "tunic": {
+     "context_chars": 209,
+     "parsed": [
+      "api.py::route"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\napi.py::route\n```",
+     "prompt_tokens": 126,
+     "completion_tokens": 2461,
+     "latency_ms": 11563.2,
+     "pass": false,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "conflict-task",
+   "repo": "evolve",
+   "question": "Which functions break if handle_modern changes?",
+   "gold": [
+    "api.py::route"
+   ],
+   "forbidden": [],
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\n```",
+     "prompt_tokens": 79,
+     "completion_tokens": 1627,
+     "latency_ms": 7512.1,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 41,
+     "parsed": [
+      "api.py::route"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\napi.py::route\n```",
+     "prompt_tokens": 88,
+     "completion_tokens": 2008,
+     "latency_ms": 9389.0,
+     "pass": true,
+     "exact": true
+    },
+    "tunic": {
+     "context_chars": 521,
+     "parsed": [
+      "api.py::route",
+      "api.py::handle_legacy"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\napi.py::route\napi.py::handle_legacy\n```",
+     "prompt_tokens": 211,
+     "completion_tokens": 4241,
+     "latency_ms": 20961.6,
+     "pass": true,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "irrelevant-task",
+   "repo": "evolve",
+   "question": "Which functions break if route changes?",
+   "gold": [
+    "api.py::route"
+   ],
+   "forbidden": [],
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\n\n```",
+     "prompt_tokens": 77,
+     "completion_tokens": 987,
+     "latency_ms": 4598.8,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 14,
+     "parsed": [
+      "api.py::route"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\napi.py::route\n```",
+     "prompt_tokens": 78,
+     "completion_tokens": 2538,
+     "latency_ms": 11966.3,
+     "pass": true,
+     "exact": true
+    },
+    "tunic": {
+     "context_chars": 247,
+     "parsed": [
+      "api.py::handle_legacy",
+      "api.py::handle_modern"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\napi.py::handle_legacy\napi.py::handle_modern\n```",
+     "prompt_tokens": 136,
+     "completion_tokens": 2588,
+     "latency_ms": 12627.0,
+     "pass": false,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "lib-impact",
+   "repo": "library",
+   "question": "Which functions break if find_book changes?",
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "forbidden": [],
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\n\n```",
+     "prompt_tokens": 78,
+     "completion_tokens": 1541,
+     "latency_ms": 7344.3,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 106,
+     "parsed": [
+      "loans.py::checkout_book"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nloans.py::checkout_book\n```",
+     "prompt_tokens": 106,
+     "completion_tokens": 2697,
+     "latency_ms": 12783.6,
+     "pass": false,
+     "exact": false
+    },
+    "tunic": {
+     "context_chars": 417,
+     "parsed": [
+      "loans.py::checkout_book",
+      "loans.py::return_book"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nloans.py::checkout_book\nloans.py::return_book\n```",
+     "prompt_tokens": 179,
+     "completion_tokens": 2133,
+     "latency_ms": 10195.9,
+     "pass": true,
+     "exact": true
+    }
+   }
+  },
+  {
+   "id": "lib-outcome",
+   "repo": "library",
+   "question": "What else must change if overdue_fine changes?",
+   "gold": [
+    "loans.py::checkout_book"
+   ],
+   "forbidden": [],
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 80,
+     "completion_tokens": 967,
+     "latency_ms": 4579.3,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 106,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\nloans.py::return_book\nloans.py::checkout_book\n```",
+     "prompt_tokens": 108,
+     "completion_tokens": 4444,
+     "latency_ms": 21850.3,
+     "pass": false,
+     "exact": false
+    },
+    "tunic": {
+     "context_chars": 417,
+     "parsed": [
+      "loans.py::checkout_book",
+      "loans.py::return_book"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nloans.py::checkout_book\nloans.py::return_book\n```",
+     "prompt_tokens": 181,
+     "completion_tokens": 1250,
+     "latency_ms": 6059.3,
+     "pass": true,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "shop-para",
+   "repo": "repo",
+   "question": "If the batch total shifts, what breaks?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "forbidden": [],
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 79,
+     "completion_tokens": 1572,
+     "latency_ms": 7540.1,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 71,
+     "parsed": [
+      "checkout.py::place_order"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\ncheckout.py::place_order\n```",
+     "prompt_tokens": 93,
+     "completion_tokens": 2076,
+     "latency_ms": 10023.6,
+     "pass": true,
+     "exact": true
+    },
+    "tunic": {
+     "context_chars": 303,
+     "parsed": [
+      "checkout.py::place_order"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\ncheckout.py::place_order\n```",
+     "prompt_tokens": 143,
+     "completion_tokens": 2865,
+     "latency_ms": 13762.0,
+     "pass": true,
+     "exact": true
+    }
+   }
+  },
+  {
+   "id": "evolve-para",
+   "repo": "evolve",
+   "question": "If the legacy handler shifts, what breaks?",
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "forbidden": [
+    "api.py::route"
+   ],
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 79,
+     "completion_tokens": 1998,
+     "latency_ms": 9625.0,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 22,
+     "parsed": [
+      "api.py::handle_legacy"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\napi.py::handle_legacy\n```",
+     "prompt_tokens": 81,
+     "completion_tokens": 2035,
+     "latency_ms": 9744.2,
+     "pass": true,
+     "exact": true
+    },
+    "tunic": {
+     "context_chars": 209,
+     "parsed": [
+      "api.py::claim"
+     ],
+     "hallucinated": [
+      "api.py::claim"
+     ],
+     "response": "```symbols\napi.py::claim\n```",
+     "prompt_tokens": 127,
+     "completion_tokens": 4429,
+     "latency_ms": 22014.0,
+     "pass": false,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "lib-para",
+   "repo": "library",
+   "question": "If find_book shifts, which routines fail?",
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "forbidden": [],
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\n```",
+     "prompt_tokens": 79,
+     "completion_tokens": 1573,
+     "latency_ms": 7559.1,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 106,
+     "parsed": [
+      "loans.py::return_book",
+      "loans.py::checkout_book",
+      "loans.py::overdue_fine"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nloans.py::return_book\nloans.py::checkout_book\nloans.py::overdue_fine\n```",
+     "prompt_tokens": 107,
+     "completion_tokens": 3336,
+     "latency_ms": 16347.2,
+     "pass": true,
+     "exact": false
+    },
+    "tunic": {
+     "context_chars": 417,
+     "parsed": [
+      "loans.py::checkout_book",
+      "loans.py::return_book"
+     ],
+     "hallucinated": [],
+     "response": "```symbols\nloans.py::checkout_book\nloans.py::return_book\n```",
+     "prompt_tokens": 180,
+     "completion_tokens": 2132,
+     "latency_ms": 10434.1,
+     "pass": true,
+     "exact": true
+    }
+   }
+  },
+  {
+   "id": "shop-semantic",
+   "repo": "repo",
+   "question": "Who finalizes the purchase?",
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "forbidden": [],
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 76,
+     "completion_tokens": 1777,
+     "latency_ms": 8532.0,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```symbols\n\n```",
+     "prompt_tokens": 76,
+     "completion_tokens": 1305,
+     "latency_ms": 6160.6,
+     "pass": false,
+     "exact": false
+    },
+    "tunic": {
+     "context_chars": 12,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\n\n```",
+     "prompt_tokens": 75,
+     "completion_tokens": 1934,
+     "latency_ms": 9221.5,
+     "pass": false,
+     "exact": false
+    }
+   }
+  },
+  {
+   "id": "lib-semantic",
+   "repo": "library",
+   "question": "Who computes late fees?",
+   "gold": [
+    "loans.py::overdue_fine"
+   ],
+   "forbidden": [],
+   "arms": {
+    "none": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\n\n```",
+     "prompt_tokens": 75,
+     "completion_tokens": 1768,
+     "latency_ms": 8378.4,
+     "pass": false,
+     "exact": false
+    },
+    "lexical": {
+     "context_chars": 21,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\n\n```",
+     "prompt_tokens": 75,
+     "completion_tokens": 1836,
+     "latency_ms": 8776.1,
+     "pass": false,
+     "exact": false
+    },
+    "tunic": {
+     "context_chars": 12,
+     "parsed": [],
+     "hallucinated": [],
+     "response": "```\nbilling.py::calculate_late_fees\n```",
+     "prompt_tokens": 74,
+     "completion_tokens": 2771,
+     "latency_ms": 13433.0,
+     "pass": false,
+     "exact": false
+    }
+   }
+  }
+ ],
+ "limitations": [
+  "14 small synthetic tasks; not a general agent claim.",
+  "single-turn answers; the model never writes memory (read-only A/B).",
+  "temperature 0 but GPU sampling may vary across runs; raw responses committed.",
+  "run history: first run hit an Ollama outage (17 arms errored); this artifact is a second complete 42-arm run under identical protocol, with one transiently-errored arm (conflict-task/tunic) retried once and passing; per-arm error fields retained."
+ ]
+}
