@@ -220,7 +220,7 @@ def compile_review(store, document, *, snapshot=None):
     mentioner = document + "::document"
     if mentioner not in symbols:
         raise ValueError("unknown document: " + document)
-    entities, asserted, proposals = [], [], []
+    entities, asserted, proposals, candidates = [], [], [], []
     for assertion in view["assertions"]:
         proposition = assertion["proposition"]
         evidence = _evidence(store, assertion, snapshot)
@@ -242,6 +242,16 @@ def compile_review(store, document, *, snapshot=None):
                               "candidate": proposition.get("candidate"),
                               "expression": assertion["resolution"].get("expression"),
                               "status": assertion["status"], "evidence": evidence})
+    for diagnostic in view["diagnostics"]:
+        if diagnostic.get("kind") != "mention_candidate" or diagnostic.get("path") != document:
+            continue
+        candidates.append({"expression": diagnostic.get("expression"),
+                           "callee": diagnostic.get("callee"),
+                           "candidate": diagnostic.get("candidate"),
+                           "document_frequency": diagnostic.get("document_frequency"),
+                           "signals": diagnostic.get("signals"),
+                           "line": diagnostic.get("line")})
+    candidates.sort(key=lambda c: (c["line"] or 0, c["expression"], c["callee"] or ""))
     entities.sort(key=lambda e: (e["evidence"]["start"], e["symbol"]))
     spans = {entity["symbol"]: entity["evidence"].get("excerpt", "") for entity in entities}
     drafts = []
@@ -266,6 +276,7 @@ def compile_review(store, document, *, snapshot=None):
     conflicts.sort(key=lambda c: (c["subject"], c["object"]))
     return {"document": document, "snapshot": snapshot, "profile": view["profile"],
             "entities": entities, "asserted": asserted, "proposals": proposals,
+            "candidates": candidates,
             "drafts": drafts, "conflicts": conflicts, "outcome": "complete"}
 
 

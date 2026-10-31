@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import sqlite3
 
-from .extract import DOC_PHASE_KINDS, STRUCTURE_KINDS, TEXT_EXTENSIONS, _build_bare_mentions, _build_claims, _build_docs, _build_exact_mentions, _build_mentions, _collect_code, _resolve_code, _scan, extract, module_of, parse_source, PROFILE
+from .extract import DOC_PHASE_KINDS, STRUCTURE_KINDS, TEXT_EXTENSIONS, _build_bare_mentions, _build_claims, _build_docs, _build_exact_mentions, _build_mentions, _claim_mention_refs, _code_leaf_names, _collect_code, _exact_mention_refs, _leaf_document_frequency, _requalify, _resolve_code, _scan, extract, module_of, parse_source, PROFILE
 from .identity import canonical, digest, identity
 
 SCHEMA = """
@@ -233,43 +233,113 @@ class GraphStore:
         order = [s["path"] for s in text_sources]
         by_path = {s["path"]: s for s in text_sources}
         reprocess = set(reprocess)
-        repro = [by_path[p] for p in order if p in reprocess]
         all_text_ids = {s["id"] for s in text_sources}
-        claim_assertions, claim_diags = [], []
-        claim_spans = _build_claims(repro, symbols, claim_assertions,
-                                    claim_diags, all_text_ids)
         stored_mentions = {}
         for record in manifest["assertions"]:
             proposition = record.get("proposition", {})
             if proposition.get("relation") == "text_mention":
                 stored_mentions.setdefault(record.get("source"), []).append(record)
         src_id = {s["path"]: s["id"] for s in text_sources}
+        id_of_source = {s["id"]: s["path"] for s in text_sources}
+
+        def _line_at(path, start):
+            offset = 0
+            for raw in by_path[path]["data"].splitlines(keepends=True):
+                offset += len(raw)
+                if offset > start:
+                    try:
+                        return raw.decode("utf-8")
+                    except UnicodeError:
+                        return ""
+            return ""
+
         seen = set()
         fresh_mentions, mention_diags = [], []
         kept_mentions = []
-        for exact in (True, False):
-            for path in order:
-                if path in reprocess:
-                    if exact:
-                        _build_exact_mentions([by_path[path]], symbols,
-                                              fresh_mentions, claim_spans,
-                                              seen, all_text_ids)
-                    else:
-                        _build_bare_mentions([by_path[path]], symbols,
-                                             fresh_mentions, claim_spans,
-                                             seen, all_text_ids)
-                else:
-                    for record in stored_mentions.get(src_id[path], []):
-                        is_exact = (record.get("resolution", {}).get("rule")
-                                    == "exact_key_match_v1")
-                        if is_exact != exact:
-                            continue
-                        key = (record.get("start"),
-                               record["proposition"].get("callee"))
-                        if key in seen:
-                            continue
-                        seen.add(key)
-                        kept_mentions.append(record)
+        kept_exact = {(src_id[path], record["proposition"].get("callee"))
+                      for path in order if path not in reprocess
+                      for record in stored_mentions.get(src_id[path], [])
+                      if record.get("resolution", {}).get("rule") == "exact_key_match_v1"}
+        doc_freq = _leaf_document_frequency(
+            text_sources, _code_leaf_names(symbols, all_text_ids))
+        kept_claim_refs = set()
+        for entry in manifest["assertions"]:
+            proposition = entry.get("proposition", {})
+            if (entry.get("status") != "asserted_in_source"
+                    or proposition.get("relation") in ("static_call", "text_mention")):
+                continue
+            doc = id_of_source.get(entry.get("source"))
+            if doc is None or doc in reprocess:
+                continue
+            kept_claim_refs.add((entry.get("source"), proposition.get("caller")))
+            kept_claim_refs.add((entry.get("source"), proposition.get("callee")))
+        for record in manifest["assertions"]:
+            if (record.get("proposition", {}).get("relation") != "text_mention"
+                    or record.get("resolution", {}).get("rule") != "name_match_proposed_v1"):
+                continue
+            path = id_of_source.get(record.get("source"))
+            if path is None or path in reprocess or path not in by_path:
+                continue
+            leaf = record.get("resolution", {}).get("expression", "")
+            if not _requalify(leaf, _line_at(path, record.get("start", 0)),
+                              record.get("source"),
+                              record["proposition"].get("callee"),
+                              doc_freq, kept_exact, kept_claim_refs):
+                reprocess.add(path)
+        for diagnostic in manifest["diagnostics"]:
+            if diagnostic.get("kind") != "mention_candidate":
+                continue
+            path = diagnostic.get("path")
+            if path is None or path in reprocess or path not in by_path:
+                continue
+            lines = by_path[path]["data"].splitlines()
+            lineno = diagnostic.get("line") or 0
+            try:
+                line = lines[lineno - 1].decode("utf-8")
+            except (UnicodeError, IndexError):
+                line = ""
+            if _requalify(diagnostic.get("expression", ""), line,
+                          src_id.get(path),
+                          diagnostic.get("callee"), doc_freq, kept_exact,
+                          kept_claim_refs):
+                reprocess.add(path)
+        repro = [by_path[p] for p in order if p in reprocess]
+        claim_assertions, claim_diags = [], []
+        claim_spans = _build_claims(repro, symbols, claim_assertions,
+                                    claim_diags, all_text_ids)
+        for path in order:
+            if path in reprocess:
+                _build_exact_mentions([by_path[path]], symbols,
+                                      fresh_mentions, claim_spans,
+                                      seen, all_text_ids)
+            else:
+                for record in stored_mentions.get(src_id[path], []):
+                    if record.get("resolution", {}).get("rule") != "exact_key_match_v1":
+                        continue
+                    key = (record.get("start"),
+                           record["proposition"].get("callee"))
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                    kept_mentions.append(record)
+        exact_refs = kept_exact | _exact_mention_refs(fresh_mentions)
+        for path in order:
+            if path in reprocess:
+                _build_bare_mentions([by_path[path]], symbols,
+                                     fresh_mentions, mention_diags,
+                                     claim_spans, seen, all_text_ids,
+                                     doc_freq, exact_refs,
+                                     kept_claim_refs | _claim_mention_refs(claim_assertions))
+            else:
+                for record in stored_mentions.get(src_id[path], []):
+                    if record.get("resolution", {}).get("rule") == "exact_key_match_v1":
+                        continue
+                    key = (record.get("start"),
+                           record["proposition"].get("callee"))
+                    if key in seen:
+                        continue
+                    seen.add(key)
+                    kept_mentions.append(record)
         valid_ids = {s["id"] for s in text_sources if s["path"] not in reprocess}
         kept_claims = [a for a in manifest["assertions"]
                        if a.get("proposition", {}).get("relation")

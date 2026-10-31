@@ -122,19 +122,23 @@ class IncrementalCodeTests(unittest.TestCase):
         self.assertEqual(report["path"], "code")
         self._check_equivalent(report)
 
-    def test_bare_leaf_mention_doc_rebuilds_on_body_change(self):
+    def test_bare_leaf_candidate_survives_body_change(self):
         _write(self.root, "bare.md",
                "Some context here.\ncalculate handles the increment.\n")
         report = self.store.refresh(str(self.root))
         self.assertEqual(report["path"], "documents")
         self._check_equivalent(report)
-        mentions = [a for a in self.store.view()[1]["assertions"]
-                    if a.get("proposition", {}).get("relation") == "text_mention"
-                    and a.get("proposition", {}).get("caller", "").startswith("bare.md::")]
+        candidates = [d for d in self.store.view()[1]["diagnostics"]
+                      if d.get("kind") == "mention_candidate"
+                      and d.get("path") == "bare.md"]
         self.assertTrue(
-            any(a["proposition"].get("candidate") == "core.py::calculate"
-                for a in mentions),
-            "bare leaf mention should resolve to core.py::calculate")
+            any(d.get("callee") == "core.py::calculate" for d in candidates),
+            "bare 'calculate' should be a recorded candidate")
+        self.assertFalse(
+            [a for a in self.store.view()[1]["assertions"]
+             if a.get("proposition", {}).get("caller", "") == "bare.md::document"
+             and a.get("proposition", {}).get("relation") == "text_mention"],
+            "uncorroborated bare mention must not become evidence")
         _write(self.root, "core.py", CORE.replace("value + 1", "value + 2"))
         report = self.store.refresh(str(self.root))
         self.assertEqual(report["path"], "code")

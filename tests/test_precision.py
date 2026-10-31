@@ -30,12 +30,12 @@ class BaselineArmTests(unittest.TestCase):
         first = popularity(self.store, self.report["snapshot"], top_k=3)
         second = popularity(self.store, self.report["snapshot"], top_k=3)
         self.assertEqual(first, second)
-        # update x4 (three verbs plus 'every update'), read x3 from prose,
-        # calculate_total x2 exact across two lines; audit/main have no
-        # fixture symbols so they cannot rank.
+        # Precision gate: bare prose verbs are candidates, not assertions,
+        # so popularity ranks only exact evidence: calculate_total x2
+        # across two lines, checkout x1. Raw fan-out volume is measured
+        # on the frozen MochiOS split, not here.
         self.assertEqual([row["symbol"] for row in first],
-                         ["core.py::update", "core.py::read",
-                          "core.py::calculate_total"])
+                         ["core.py::calculate_total", "service.py::checkout"])
         counts = [row["score"] for row in first]
         self.assertEqual(counts, sorted(counts, reverse=True))
 
@@ -68,17 +68,31 @@ class BaselineArmTests(unittest.TestCase):
         self.assertTrue(any(a["proposition"]["callee"] == "service.py::checkout"
                             for a in exact))
 
-    def test_ordinary_prose_currently_proposes(self):
-        """Pins today's behavior: 'read the runbook' proposes the read helper.
+    def test_ordinary_prose_becomes_candidate_not_evidence(self):
+        """Precision gate: 'read the runbook' is a candidate, not an edge.
 
-        The precision gate must suppress this class of mention; when it does,
-        update this expectation with the new rule cited.
+        Changed deliberately by the evidence-precision milestone: a bare
+        common verb with no corroborating signal must not become a graph
+        assertion. The candidate stays inspectable with its frequency
+        and (empty) signal list.
         """
+        from tunic.compiler import compile_review
         _, view = self.store.view()
         bare = [a for a in view["assertions"]
                 if a.get("resolution", {}).get("rule") == "name_match_proposed_v1"
                 and a["proposition"].get("callee") == "core.py::read"]
-        self.assertTrue(bare, "current matcher proposes bare 'read' from prose")
+        self.assertEqual(bare, [])
+        candidates = [d for d in view["diagnostics"]
+                      if d.get("kind") == "mention_candidate"
+                      and d.get("callee") == "core.py::read"]
+        self.assertTrue(candidates)
+        self.assertTrue(all(c["document_frequency"] > 0.05 or c["signals"] == []
+                            for c in candidates))
+        report = compile_review(self.store, "notes.md")
+        self.assertTrue(any(c["callee"] == "core.py::read"
+                            for c in report["candidates"]))
+        self.assertFalse(any(p.get("candidate") == "core.py::read"
+                             for p in report["proposals"]))
 
 
 if __name__ == "__main__":

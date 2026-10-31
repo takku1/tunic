@@ -63,7 +63,7 @@ def _span(data, node):
 
 DOC_PHASE_KINDS = {"malformed_claims", "invalid_claim", "unknown_relation",
                    "invalid_effective", "ambiguous_reference", "unresolved_reference",
-                   "unclosed_claims"}
+                   "unclosed_claims", "mention_candidate"}
 STRUCTURE_KINDS = {"excluded_symlink"}
 
 
@@ -533,6 +533,26 @@ def _build_claims(sources, symbols, assertions, diagnostics, text_ids=None):
     return claim_spans
 
 
+def _code_leaf_names(symbols, text_ids):
+    """Mappable bare leaves over code symbols: {leaf: [keys]}."""
+    leaf_names = {}
+    for key, record in symbols.items():
+        if record["source"] in text_ids:
+            continue
+        leaf = record["name"].split(".")[-1]
+        if len(leaf) >= 2:
+            leaf_names.setdefault(leaf, []).append(key)
+    return leaf_names
+
+
+def _exact_mention_refs(assertion_list):
+    """(source id, callee) pairs of exact text mentions for corroboration."""
+    return {(record.get("source"), record["proposition"].get("callee"))
+            for record in assertion_list
+            if record.get("proposition", {}).get("relation") == "text_mention"
+            and record.get("resolution", {}).get("rule") == "exact_key_match_v1"}
+
+
 def _build_mentions(sources, symbols, assertions, diagnostics, claim_spans, seen=None):
     """Populate document mention assertions in source order.
 
@@ -544,7 +564,14 @@ def _build_mentions(sources, symbols, assertions, diagnostics, claim_spans, seen
     """
     seen_mentions = set() if seen is None else seen
     _build_exact_mentions(sources, symbols, assertions, claim_spans, seen_mentions)
-    _build_bare_mentions(sources, symbols, assertions, claim_spans, seen_mentions)
+    text_ids = {s["id"] for s in sources if s.get("text")}
+    doc_freq = _leaf_document_frequency(
+        [s for s in sources if s.get("text")],
+        _code_leaf_names(symbols, text_ids))
+    _build_bare_mentions(sources, symbols, assertions, diagnostics, claim_spans,
+                         seen_mentions, text_ids,
+                         doc_freq, _exact_mention_refs(assertions),
+                         _claim_mention_refs(assertions))
     return seen_mentions
 
 
@@ -581,22 +608,120 @@ def _build_exact_mentions(sources, symbols, assertions, claim_spans, seen, text_
     return seen_mentions
 
 
-def _build_bare_mentions(sources, symbols, assertions, claim_spans, seen, text_ids=None):
+EVIDENCE_DF_THRESHOLD = 0.05
+
+
+def _leaf_document_frequency(text_sources, leaf_names):
+    """Fraction of text sources containing each bare leaf, one scan per doc.
+
+    Corpus-relative, never a fixed stopword list: a leaf that appears
+    everywhere carries no identity evidence for any single occurrence.
+    Must run over every text source, not a subset, or frequencies skew.
+    """
+    pattern = re.compile("|".join(
+        r"\b" + re.escape(leaf) + r"\b"
+        for leaf in sorted(leaf_names, key=len, reverse=True))) if leaf_names else None
+    counts = {leaf: 0 for leaf in leaf_names}
+    total = 0
+    for source in text_sources:
+        try:
+            text = source["data"].decode("utf-8")
+        except UnicodeError:
+            continue
+        total += 1
+        if pattern is None:
+            continue
+        for leaf in {match.group(0) for match in pattern.finditer(text)}:
+            counts[leaf] += 1
+    return {leaf: (counts[leaf] / total if total else 0.0) for leaf in leaf_names}
+
+
+def _claim_mention_refs(assertion_list):
+    """(source id, entity) pairs touched by asserted doc claims."""
+    refs = set()
+    for record in assertion_list:
+        proposition = record.get("proposition", {})
+        if (record.get("status") != "asserted_in_source"
+                or proposition.get("relation") in ("static_call", "text_mention")):
+            continue
+        refs.add((record.get("source"), proposition.get("caller")))
+        refs.add((record.get("source"), proposition.get("callee")))
+    return refs
+
+
+def _requalify(leaf, line, source_id, callee, doc_freq, exact_refs, claim_refs=frozenset()):
+    """Recompute admission for a kept mention under current corpus state.
+
+    Lets incremental refresh reprocess documents whose bare mentions flip
+    verdicts when frequencies or exact references change, so refresh output
+    stays identical to a full rebuild without reprocessing everything.
+    """
+    frequency = doc_freq.get(leaf, 0.0)
+    signals = _mention_signals(line, leaf, (source_id, callee) in exact_refs,
+                               (source_id, callee) in claim_refs)
+    return ("exact_same_document" in signals
+            or "asserted_claim_same_document" in signals
+            or (frequency <= EVIDENCE_DF_THRESHOLD
+                and "dotted_or_call" in signals))
+
+
+def _mention_signals(line, leaf, exact_same_doc, claimed_same_doc):
+    """Independent corroborating signals for one bare occurrence.
+
+    exact_same_document: the same document already references the entity
+    exactly, so identity is established, not guessed. asserted_claim_same_
+    document: the document asserts a typed claim touching the entity, which
+    corroborates identity as strongly as an exact mention. dotted_or_call:
+    `recv.leaf` or `leaf(` syntax denotes the code entity, not a prose
+    verb. code_span: the leaf sits inside backticks. A backticked span
+    alone is weak (prose backticks file names too) and never qualifies
+    by itself; it only corroborates low-frequency leaves.
+    """
+    signals = []
+    if exact_same_doc:
+        signals.append("exact_same_document")
+    if claimed_same_doc:
+        signals.append("asserted_claim_same_document")
+    if re.search(r"[\w$]+\." + re.escape(leaf) + r"\b|\b" + re.escape(leaf) + r"\s*\(",
+                 line):
+        signals.append("dotted_or_call")
+    if re.search(r"`[^`]*\b" + re.escape(leaf) + r"\b[^`]*`", line):
+        signals.append("code_span")
+    return signals
+
+
+def _build_bare_mentions(sources, symbols, assertions, diagnostics, claim_spans, seen,
+                         text_ids=None, doc_freq=None, exact_refs=None,
+                         claim_refs=None):
     """Populate bare leaf-name mention assertions in source order.
 
     Must run after the exact pass over every document: a bare match is
     suppressed when its (start, key) pair was already claimed by an exact
     match, even in a different document.
+
+    Bare matches are qualified, not merely collected. A token match
+    becomes a graph assertion only with an independent signal (same-doc
+    exact reference, asserted claim touching the entity, or dotted/call
+    syntax on a low-frequency leaf); anything weaker is recorded as a
+    mention_candidate diagnostic. Backticked spans are recorded as a
+    signal but never qualify alone: prose backticks tool names too.
+    Candidates stay searchable through the lexical stage and visible for
+    review, but never become evidence edges. doc_freq must cover every
+    text source and exact_refs every exact mention, or subset refreshes
+    diverge from full rebuilds.
     """
     if text_ids is None:
         text_ids = {s["id"] for s in sources if s.get("text")}
     code_keys = sorted(key for key, record in symbols.items() if record["source"] not in text_ids)
     seen_mentions = seen
-    leaf_names = {}
-    for key in code_keys:
-        leaf = symbols[key]["name"].split(".")[-1]
-        if len(leaf) >= 2:
-            leaf_names.setdefault(leaf, []).append(key)
+    leaf_names = _code_leaf_names(symbols, text_ids)
+    if doc_freq is None:
+        doc_freq = _leaf_document_frequency(
+            [s for s in sources if s.get("text")], leaf_names)
+    if exact_refs is None:
+        exact_refs = set()
+    if claim_refs is None:
+        claim_refs = set()
     leaf_pattern = None
     if leaf_names:
         leaf_pattern = re.compile("|".join(
@@ -608,7 +733,7 @@ def _build_bare_mentions(sources, symbols, assertions, claim_spans, seen, text_i
         mentioner = s["path"] + "::document"
         hidden = claim_spans.get(s["id"], [])
         offset = 0
-        for raw_line in s["data"].splitlines(keepends=True):
+        for lineno, raw_line in enumerate(s["data"].splitlines(keepends=True), start=1):
             start, end = offset, offset + len(raw_line)
             offset = end
             if any(first <= start < last for first, last in hidden):
@@ -627,6 +752,22 @@ def _build_bare_mentions(sources, symbols, assertions, claim_spans, seen, text_i
                     if key in exact_here or (start, key) in seen_mentions:
                         continue
                     seen_mentions.add((start, key))
+                    frequency = doc_freq.get(leaf, 0.0)
+                    signals = _mention_signals(
+                        line, leaf, (s["id"], key) in exact_refs,
+                        (s["id"], key) in claim_refs)
+                    qualified = ("exact_same_document" in signals
+                                 or "asserted_claim_same_document" in signals
+                                 or (frequency <= EVIDENCE_DF_THRESHOLD
+                                     and "dotted_or_call" in signals))
+                    if not qualified:
+                        diagnostics.append({"path": s["path"], "line": lineno,
+                                            "kind": "mention_candidate",
+                                            "expression": leaf, "callee": key,
+                                            "candidate": key,
+                                            "document_frequency": round(frequency, 4),
+                                            "signals": signals})
+                        continue
                     record = symbols[key]
                     support = [{"source": record["source"], "start": record["start"],
                                 "end": record["end"]}]
@@ -634,7 +775,9 @@ def _build_bare_mentions(sources, symbols, assertions, claim_spans, seen, text_i
                                    "candidate": key}
                     assertion = {"proposition": proposition, "source": s["id"], "start": start, "end": end,
                                  "resolution": {"expression": leaf, "rule": "name_match_proposed_v1",
-                                                "support": support},
+                                                "support": support,
+                                                "qualification": {"document_frequency": round(frequency, 4),
+                                                                  "signals": signals}},
                                  "producer": PROFILE,
                                  "status": "proposed_ambiguous" if len(candidates) > 1 else "proposed"}
                     assertion["id"] = identity("assertion", assertion)

@@ -280,16 +280,16 @@ class ReferenceTests(unittest.TestCase):
         self.assertTrue(proposed["corroborated"])
         self.assertEqual(compile_impact(self.store, "mid.py::transform")["impacts"], [])
 
-    def test_ambiguous_bare_names_stay_proposals(self):
+    def test_ambiguous_bare_names_become_reviewable_candidates(self):
         self.write("worker.py", "def process(value):\n    return value\n")
         self.write("notes.md", "# Design\n\nThe process needs review.\n")
         self.store.ingest(self.root)
+        from tunic.compiler import compile_review
         mentions = compile_mentions(self.store, "service.py::process")
-        self.assertEqual(len(mentions["mentions"]), 1)
-        proposal = mentions["mentions"][0]
-        self.assertEqual(proposal["status"], "proposed_ambiguous")
-        self.assertEqual(proposal["candidate"], "service.py::process")
-        self.assertFalse(proposal["corroborated"])
+        self.assertEqual(mentions["mentions"], [])
+        candidates = compile_review(self.store, "notes.md")["candidates"]
+        self.assertEqual({c["callee"] for c in candidates},
+                         {"service.py::process", "worker.py::process"})
         self.assertNotIn("worker.py::process",
                          [i["symbol"] for i in compile_impact(self.store, "core.py::calculate")["impacts"]])
 

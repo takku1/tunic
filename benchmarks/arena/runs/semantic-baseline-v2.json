@@ -1,0 +1,2216 @@
+{
+  "arms": [
+    "bm25-only",
+    "bm25-plus-embeddings",
+    "embeddings-only",
+    "full-hybrid"
+  ],
+  "benchmark": "semantic-baseline-v1",
+  "cache": {
+    "chunking_version": "chunk-v1",
+    "hit_rate": 0.8833333333333333,
+    "hits": 212,
+    "misses": 28,
+    "model_digest": "sha256:970aa74c0a90ef7482477cf803618e776e173c007bf957f635f1015bfcfef0e6",
+    "preprocessing_version": "pre-v1"
+  },
+  "chunking": {
+    "description": "Candidate texts built as symbol plus sorted token set, exactly as Memory.answer constructs them.",
+    "version": "chunk-v1"
+  },
+  "endpoint": "http://127.0.0.1:11434",
+  "limitations": [
+    "14 small synthetic tasks; not a general semantic-retrieval claim.",
+    "Semantic candidates are proposals only; graph edges unchanged.",
+    "Cold model load is included in max latency, not in means after warmup."
+  ],
+  "model": {
+    "architecture": "nomic-bert",
+    "blob_digest": "sha256:970aa74c0a90ef7482477cf803618e776e173c007bf957f635f1015bfcfef0e6",
+    "context_length": 2048,
+    "embedding_length": 768,
+    "license": "Apache-2.0",
+    "name": "nomic-embed-text:latest",
+    "ollama_id": "0a109f422b47",
+    "parameters": "137M",
+    "parameters_override": {
+      "num_ctx": 8192
+    },
+    "quantization": "F16",
+    "size_mb": 274
+  },
+  "note": "Post-gate verification: reran all 14 tasks after the precision gate; predictions and scores identical to v1 (recall 1.0 held on every semantic arm, no OOV loss). Latencies carried from v1; per-run timing varies.",
+  "preprocessing": {
+    "description": "Raw text as constructed; no normalization, truncation, or stopword removal.",
+    "version": "pre-v1"
+  },
+  "run": "semantic-baseline-v2",
+  "summary": {
+    "bm25-only": {
+      "exact_tasks": 2,
+      "max_latency_ms": 12.2,
+      "mean_latency_ms": 5.9,
+      "micro_f1": 0.6086956521739131,
+      "micro_precision": 0.4666666666666667,
+      "micro_recall": 0.875
+    },
+    "bm25-plus-embeddings": {
+      "exact_tasks": 0,
+      "max_latency_ms": 85.6,
+      "mean_latency_ms": 67.5,
+      "micro_f1": 0.41025641025641024,
+      "micro_precision": 0.25806451612903225,
+      "micro_recall": 1.0
+    },
+    "embeddings-only": {
+      "exact_tasks": 0,
+      "max_latency_ms": 10204.2,
+      "mean_latency_ms": 1826.3,
+      "micro_f1": 0.41025641025641024,
+      "micro_precision": 0.25806451612903225,
+      "micro_recall": 1.0
+    },
+    "full-hybrid": {
+      "exact_tasks": 0,
+      "max_latency_ms": 68.7,
+      "mean_latency_ms": 60.8,
+      "micro_f1": 0.41025641025641024,
+      "micro_precision": 0.25806451612903225,
+      "micro_recall": 1.0
+    }
+  },
+  "tasks": [
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 6.7,
+          "outcome": "complete",
+          "predicted": [
+            "cart.py::total",
+            "checkout.py::place_order",
+            "pricing.py::discount"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "checkout.py::place_order"
+            ],
+            "f1": 0.5,
+            "fn": 0,
+            "fp": 2,
+            "missing": [],
+            "precision": 0.3333333333333333,
+            "predicted": [
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "cart.py::total",
+              "pricing.py::discount"
+            ]
+          },
+          "semantic_candidates": null
+        },
+        "bm25-plus-embeddings": {
+          "latency_ms": 78.1,
+          "outcome": "complete",
+          "predicted": [
+            "cart.py::add_item",
+            "cart.py::total",
+            "checkout.py::place_order",
+            "pricing.py::discount",
+            "pricing.py::round_total"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "checkout.py::place_order"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ]
+          },
+          "semantic_candidates": 5
+        },
+        "embeddings-only": {
+          "latency_ms": 10204.2,
+          "outcome": "complete",
+          "predicted": [
+            "cart.py::add_item",
+            "cart.py::total",
+            "checkout.py::place_order",
+            "pricing.py::discount",
+            "pricing.py::round_total"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "checkout.py::place_order"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ]
+          },
+          "semantic_candidates": 5
+        },
+        "full-hybrid": {
+          "latency_ms": 68.7,
+          "outcome": "complete",
+          "predicted": [
+            "cart.py::add_item",
+            "cart.py::total",
+            "checkout.py::place_order",
+            "pricing.py::discount",
+            "pricing.py::round_total"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "checkout.py::place_order"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ]
+          },
+          "semantic_candidates": 5
+        }
+      },
+      "experimental": false,
+      "gold": [
+        "checkout.py::place_order"
+      ],
+      "id": "code-task",
+      "question": "Which functions break if total changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 3.3,
+          "outcome": "complete",
+          "predicted": [
+            "checkout.py::place_order",
+            "pricing.py::round_total"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "pricing.py::round_total"
+            ],
+            "f1": 0.6666666666666666,
+            "fn": 0,
+            "fp": 1,
+            "missing": [],
+            "precision": 0.5,
+            "predicted": [
+              "checkout.py::place_order",
+              "pricing.py::round_total"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "checkout.py::place_order"
+            ]
+          },
+          "semantic_candidates": null
+        },
+        "bm25-plus-embeddings": {
+          "latency_ms": 61.6,
+          "outcome": "complete",
+          "predicted": [
+            "cart.py::add_item",
+            "cart.py::total",
+            "checkout.py::place_order",
+            "pricing.py::discount",
+            "pricing.py::round_total"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "pricing.py::round_total"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount"
+            ]
+          },
+          "semantic_candidates": 5
+        },
+        "embeddings-only": {
+          "latency_ms": 2045.5,
+          "outcome": "complete",
+          "predicted": [
+            "cart.py::add_item",
+            "cart.py::total",
+            "checkout.py::place_order",
+            "pricing.py::discount",
+            "pricing.py::round_total"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "pricing.py::round_total"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount"
+            ]
+          },
+          "semantic_candidates": 5
+        },
+        "full-hybrid": {
+          "latency_ms": 41.1,
+          "outcome": "complete",
+          "predicted": [
+            "cart.py::add_item",
+            "cart.py::total",
+            "checkout.py::place_order",
+            "pricing.py::discount",
+            "pricing.py::round_total"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "pricing.py::round_total"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount"
+            ]
+          },
+          "semantic_candidates": 5
+        }
+      },
+      "experimental": false,
+      "gold": [
+        "pricing.py::round_total"
+      ],
+      "id": "decision-task",
+      "question": "What did we decide about round_total?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 3.2,
+          "outcome": "complete",
+          "predicted": [
+            "checkout.py::place_order",
+            "pricing.py::round_total"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "checkout.py::place_order"
+            ],
+            "f1": 0.6666666666666666,
+            "fn": 0,
+            "fp": 1,
+            "missing": [],
+            "precision": 0.5,
+            "predicted": [
+              "checkout.py::place_order",
+              "pricing.py::round_total"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "pricing.py::round_total"
+            ]
+          },
+          "semantic_candidates": null
+        },
+        "bm25-plus-embeddings": {
+          "latency_ms": 75.5,
+          "outcome": "complete",
+          "predicted": [
+            "cart.py::add_item",
+            "cart.py::total",
+            "checkout.py::place_order",
+            "pricing.py::discount",
+            "pricing.py::round_total"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "checkout.py::place_order"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ]
+          },
+          "semantic_candidates": 5
+        },
+        "embeddings-only": {
+          "latency_ms": 1890.9,
+          "outcome": "complete",
+          "predicted": [
+            "cart.py::add_item",
+            "cart.py::total",
+            "checkout.py::place_order",
+            "pricing.py::discount",
+            "pricing.py::round_total"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "checkout.py::place_order"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ]
+          },
+          "semantic_candidates": 5
+        },
+        "full-hybrid": {
+          "latency_ms": 62.7,
+          "outcome": "complete",
+          "predicted": [
+            "cart.py::add_item",
+            "cart.py::total",
+            "checkout.py::place_order",
+            "pricing.py::discount",
+            "pricing.py::round_total"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "checkout.py::place_order"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ]
+          },
+          "semantic_candidates": 5
+        }
+      },
+      "experimental": false,
+      "gold": [
+        "checkout.py::place_order"
+      ],
+      "id": "outcome-task",
+      "question": "What else must change if round_total changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 5.0,
+          "outcome": "complete",
+          "predicted": [
+            "checkout.py::place_order"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": true,
+            "expected": [
+              "checkout.py::place_order"
+            ],
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "missing": [],
+            "precision": 1.0,
+            "predicted": [
+              "checkout.py::place_order"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": []
+          },
+          "semantic_candidates": null
+        },
+        "bm25-plus-embeddings": {
+          "latency_ms": 81.2,
+          "outcome": "complete",
+          "predicted": [
+            "cart.py::add_item",
+            "cart.py::total",
+            "checkout.py::place_order",
+            "pricing.py::discount",
+            "pricing.py::round_total"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "checkout.py::place_order"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ]
+          },
+          "semantic_candidates": 5
+        },
+        "embeddings-only": {
+          "latency_ms": 91.9,
+          "outcome": "complete",
+          "predicted": [
+            "cart.py::add_item",
+            "cart.py::total",
+            "checkout.py::place_order",
+            "pricing.py::discount",
+            "pricing.py::round_total"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "checkout.py::place_order"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ]
+          },
+          "semantic_candidates": 5
+        },
+        "full-hybrid": {
+          "latency_ms": 60.0,
+          "outcome": "complete",
+          "predicted": [
+            "cart.py::add_item",
+            "cart.py::total",
+            "checkout.py::place_order",
+            "pricing.py::discount",
+            "pricing.py::round_total"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "checkout.py::place_order"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ]
+          },
+          "semantic_candidates": 5
+        }
+      },
+      "experimental": false,
+      "gold": [
+        "checkout.py::place_order"
+      ],
+      "id": "lexical-task",
+      "question": "Which checkout step finalizes the order?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 3.0,
+          "outcome": "complete",
+          "predicted": [
+            "api.py::handle_legacy",
+            "api.py::route"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "api.py::handle_legacy"
+            ],
+            "f1": 0.6666666666666666,
+            "fn": 0,
+            "fp": 1,
+            "missing": [],
+            "precision": 0.5,
+            "predicted": [
+              "api.py::handle_legacy",
+              "api.py::route"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "api.py::route"
+            ]
+          },
+          "semantic_candidates": null
+        },
+        "bm25-plus-embeddings": {
+          "latency_ms": 58.5,
+          "outcome": "complete",
+          "predicted": [
+            "api.py::handle_legacy",
+            "api.py::handle_modern",
+            "api.py::route"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "api.py::handle_legacy"
+            ],
+            "f1": 0.5,
+            "fn": 0,
+            "fp": 2,
+            "missing": [],
+            "precision": 0.3333333333333333,
+            "predicted": [
+              "api.py::handle_legacy",
+              "api.py::handle_modern",
+              "api.py::route"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "api.py::handle_modern",
+              "api.py::route"
+            ]
+          },
+          "semantic_candidates": 3
+        },
+        "embeddings-only": {
+          "latency_ms": 183.8,
+          "outcome": "complete",
+          "predicted": [
+            "api.py::handle_legacy",
+            "api.py::handle_modern",
+            "api.py::route"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "api.py::handle_legacy"
+            ],
+            "f1": 0.5,
+            "fn": 0,
+            "fp": 2,
+            "missing": [],
+            "precision": 0.3333333333333333,
+            "predicted": [
+              "api.py::handle_legacy",
+              "api.py::handle_modern",
+              "api.py::route"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "api.py::handle_modern",
+              "api.py::route"
+            ]
+          },
+          "semantic_candidates": 3
+        },
+        "full-hybrid": {
+          "latency_ms": 64.8,
+          "outcome": "complete",
+          "predicted": [
+            "api.py::handle_legacy",
+            "api.py::handle_modern",
+            "api.py::route"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "api.py::handle_legacy"
+            ],
+            "f1": 0.5,
+            "fn": 0,
+            "fp": 2,
+            "missing": [],
+            "precision": 0.3333333333333333,
+            "predicted": [
+              "api.py::handle_legacy",
+              "api.py::handle_modern",
+              "api.py::route"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "api.py::handle_modern",
+              "api.py::route"
+            ]
+          },
+          "semantic_candidates": 3
+        }
+      },
+      "experimental": false,
+      "gold": [
+        "api.py::handle_legacy"
+      ],
+      "id": "stale-task",
+      "question": "Which functions break if handle_legacy changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 6.6,
+          "outcome": "complete",
+          "predicted": [
+            "api.py::handle_modern",
+            "api.py::route"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "api.py::route"
+            ],
+            "f1": 0.6666666666666666,
+            "fn": 0,
+            "fp": 1,
+            "missing": [],
+            "precision": 0.5,
+            "predicted": [
+              "api.py::handle_modern",
+              "api.py::route"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "api.py::handle_modern"
+            ]
+          },
+          "semantic_candidates": null
+        },
+        "bm25-plus-embeddings": {
+          "latency_ms": 58.5,
+          "outcome": "complete",
+          "predicted": [
+            "api.py::handle_legacy",
+            "api.py::handle_modern",
+            "api.py::route"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "api.py::route"
+            ],
+            "f1": 0.5,
+            "fn": 0,
+            "fp": 2,
+            "missing": [],
+            "precision": 0.3333333333333333,
+            "predicted": [
+              "api.py::handle_legacy",
+              "api.py::handle_modern",
+              "api.py::route"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "api.py::handle_legacy",
+              "api.py::handle_modern"
+            ]
+          },
+          "semantic_candidates": 3
+        },
+        "embeddings-only": {
+          "latency_ms": 98.5,
+          "outcome": "complete",
+          "predicted": [
+            "api.py::handle_legacy",
+            "api.py::handle_modern",
+            "api.py::route"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "api.py::route"
+            ],
+            "f1": 0.5,
+            "fn": 0,
+            "fp": 2,
+            "missing": [],
+            "precision": 0.3333333333333333,
+            "predicted": [
+              "api.py::handle_legacy",
+              "api.py::handle_modern",
+              "api.py::route"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "api.py::handle_legacy",
+              "api.py::handle_modern"
+            ]
+          },
+          "semantic_candidates": 3
+        },
+        "full-hybrid": {
+          "latency_ms": 65.5,
+          "outcome": "complete",
+          "predicted": [
+            "api.py::handle_legacy",
+            "api.py::handle_modern",
+            "api.py::route"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "api.py::route"
+            ],
+            "f1": 0.5,
+            "fn": 0,
+            "fp": 2,
+            "missing": [],
+            "precision": 0.3333333333333333,
+            "predicted": [
+              "api.py::handle_legacy",
+              "api.py::handle_modern",
+              "api.py::route"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "api.py::handle_legacy",
+              "api.py::handle_modern"
+            ]
+          },
+          "semantic_candidates": 3
+        }
+      },
+      "experimental": false,
+      "gold": [
+        "api.py::route"
+      ],
+      "id": "conflict-task",
+      "question": "Which functions break if handle_modern changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 3.9,
+          "outcome": "complete",
+          "predicted": [
+            "api.py::route"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": true,
+            "expected": [
+              "api.py::route"
+            ],
+            "f1": 1.0,
+            "fn": 0,
+            "fp": 0,
+            "missing": [],
+            "precision": 1.0,
+            "predicted": [
+              "api.py::route"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": []
+          },
+          "semantic_candidates": null
+        },
+        "bm25-plus-embeddings": {
+          "latency_ms": 55.3,
+          "outcome": "complete",
+          "predicted": [
+            "api.py::handle_legacy",
+            "api.py::handle_modern",
+            "api.py::route"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "api.py::route"
+            ],
+            "f1": 0.5,
+            "fn": 0,
+            "fp": 2,
+            "missing": [],
+            "precision": 0.3333333333333333,
+            "predicted": [
+              "api.py::handle_legacy",
+              "api.py::handle_modern",
+              "api.py::route"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "api.py::handle_legacy",
+              "api.py::handle_modern"
+            ]
+          },
+          "semantic_candidates": 3
+        },
+        "embeddings-only": {
+          "latency_ms": 102.7,
+          "outcome": "complete",
+          "predicted": [
+            "api.py::handle_legacy",
+            "api.py::handle_modern",
+            "api.py::route"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "api.py::route"
+            ],
+            "f1": 0.5,
+            "fn": 0,
+            "fp": 2,
+            "missing": [],
+            "precision": 0.3333333333333333,
+            "predicted": [
+              "api.py::handle_legacy",
+              "api.py::handle_modern",
+              "api.py::route"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "api.py::handle_legacy",
+              "api.py::handle_modern"
+            ]
+          },
+          "semantic_candidates": 3
+        },
+        "full-hybrid": {
+          "latency_ms": 55.7,
+          "outcome": "complete",
+          "predicted": [
+            "api.py::handle_legacy",
+            "api.py::handle_modern",
+            "api.py::route"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "api.py::route"
+            ],
+            "f1": 0.5,
+            "fn": 0,
+            "fp": 2,
+            "missing": [],
+            "precision": 0.3333333333333333,
+            "predicted": [
+              "api.py::handle_legacy",
+              "api.py::handle_modern",
+              "api.py::route"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "api.py::handle_legacy",
+              "api.py::handle_modern"
+            ]
+          },
+          "semantic_candidates": 3
+        }
+      },
+      "experimental": false,
+      "gold": [
+        "api.py::route"
+      ],
+      "id": "irrelevant-task",
+      "question": "Which functions break if route changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 12.2,
+          "outcome": "complete",
+          "predicted": [
+            "catalog.py::find_book",
+            "loans.py::checkout_book",
+            "loans.py::overdue_fine",
+            "loans.py::return_book"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "loans.py::checkout_book",
+              "loans.py::return_book"
+            ],
+            "f1": 0.6666666666666666,
+            "fn": 0,
+            "fp": 2,
+            "missing": [],
+            "precision": 0.5,
+            "predicted": [
+              "catalog.py::find_book",
+              "loans.py::checkout_book",
+              "loans.py::overdue_fine",
+              "loans.py::return_book"
+            ],
+            "recall": 1.0,
+            "tp": 2,
+            "unexpected": [
+              "catalog.py::find_book",
+              "loans.py::overdue_fine"
+            ]
+          },
+          "semantic_candidates": null
+        },
+        "bm25-plus-embeddings": {
+          "latency_ms": 73.4,
+          "outcome": "complete",
+          "predicted": [
+            "catalog.py::add_book",
+            "catalog.py::find_book",
+            "loans.py::checkout_book",
+            "loans.py::overdue_fine",
+            "loans.py::return_book"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "loans.py::checkout_book",
+              "loans.py::return_book"
+            ],
+            "f1": 0.5714285714285714,
+            "fn": 0,
+            "fp": 3,
+            "missing": [],
+            "precision": 0.4,
+            "predicted": [
+              "catalog.py::add_book",
+              "catalog.py::find_book",
+              "loans.py::checkout_book",
+              "loans.py::overdue_fine",
+              "loans.py::return_book"
+            ],
+            "recall": 1.0,
+            "tp": 2,
+            "unexpected": [
+              "catalog.py::add_book",
+              "catalog.py::find_book",
+              "loans.py::overdue_fine"
+            ]
+          },
+          "semantic_candidates": 5
+        },
+        "embeddings-only": {
+          "latency_ms": 7745.7,
+          "outcome": "complete",
+          "predicted": [
+            "catalog.py::add_book",
+            "catalog.py::find_book",
+            "loans.py::checkout_book",
+            "loans.py::overdue_fine",
+            "loans.py::return_book"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "loans.py::checkout_book",
+              "loans.py::return_book"
+            ],
+            "f1": 0.5714285714285714,
+            "fn": 0,
+            "fp": 3,
+            "missing": [],
+            "precision": 0.4,
+            "predicted": [
+              "catalog.py::add_book",
+              "catalog.py::find_book",
+              "loans.py::checkout_book",
+              "loans.py::overdue_fine",
+              "loans.py::return_book"
+            ],
+            "recall": 1.0,
+            "tp": 2,
+            "unexpected": [
+              "catalog.py::add_book",
+              "catalog.py::find_book",
+              "loans.py::overdue_fine"
+            ]
+          },
+          "semantic_candidates": 5
+        },
+        "full-hybrid": {
+          "latency_ms": 58.9,
+          "outcome": "complete",
+          "predicted": [
+            "catalog.py::add_book",
+            "catalog.py::find_book",
+            "loans.py::checkout_book",
+            "loans.py::overdue_fine",
+            "loans.py::return_book"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "loans.py::checkout_book",
+              "loans.py::return_book"
+            ],
+            "f1": 0.5714285714285714,
+            "fn": 0,
+            "fp": 3,
+            "missing": [],
+            "precision": 0.4,
+            "predicted": [
+              "catalog.py::add_book",
+              "catalog.py::find_book",
+              "loans.py::checkout_book",
+              "loans.py::overdue_fine",
+              "loans.py::return_book"
+            ],
+            "recall": 1.0,
+            "tp": 2,
+            "unexpected": [
+              "catalog.py::add_book",
+              "catalog.py::find_book",
+              "loans.py::overdue_fine"
+            ]
+          },
+          "semantic_candidates": 5
+        }
+      },
+      "experimental": false,
+      "gold": [
+        "loans.py::checkout_book",
+        "loans.py::return_book"
+      ],
+      "id": "lib-impact",
+      "question": "Which functions break if find_book changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 7.3,
+          "outcome": "complete",
+          "predicted": [
+            "catalog.py::find_book",
+            "loans.py::checkout_book",
+            "loans.py::overdue_fine",
+            "loans.py::return_book"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "loans.py::checkout_book"
+            ],
+            "f1": 0.4,
+            "fn": 0,
+            "fp": 3,
+            "missing": [],
+            "precision": 0.25,
+            "predicted": [
+              "catalog.py::find_book",
+              "loans.py::checkout_book",
+              "loans.py::overdue_fine",
+              "loans.py::return_book"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "catalog.py::find_book",
+              "loans.py::overdue_fine",
+              "loans.py::return_book"
+            ]
+          },
+          "semantic_candidates": null
+        },
+        "bm25-plus-embeddings": {
+          "latency_ms": 61.0,
+          "outcome": "complete",
+          "predicted": [
+            "catalog.py::add_book",
+            "catalog.py::find_book",
+            "loans.py::checkout_book",
+            "loans.py::overdue_fine",
+            "loans.py::return_book"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "loans.py::checkout_book"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "catalog.py::add_book",
+              "catalog.py::find_book",
+              "loans.py::checkout_book",
+              "loans.py::overdue_fine",
+              "loans.py::return_book"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "catalog.py::add_book",
+              "catalog.py::find_book",
+              "loans.py::overdue_fine",
+              "loans.py::return_book"
+            ]
+          },
+          "semantic_candidates": 5
+        },
+        "embeddings-only": {
+          "latency_ms": 2718.7,
+          "outcome": "complete",
+          "predicted": [
+            "catalog.py::add_book",
+            "loans.py::checkout_book",
+            "loans.py::overdue_fine",
+            "loans.py::return_book",
+            "members.py::register_member"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "loans.py::checkout_book"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "catalog.py::add_book",
+              "loans.py::checkout_book",
+              "loans.py::overdue_fine",
+              "loans.py::return_book",
+              "members.py::register_member"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "catalog.py::add_book",
+              "loans.py::overdue_fine",
+              "loans.py::return_book",
+              "members.py::register_member"
+            ]
+          },
+          "semantic_candidates": 5
+        },
+        "full-hybrid": {
+          "latency_ms": 64.9,
+          "outcome": "complete",
+          "predicted": [
+            "catalog.py::add_book",
+            "catalog.py::find_book",
+            "loans.py::checkout_book",
+            "loans.py::overdue_fine",
+            "loans.py::return_book"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "loans.py::checkout_book"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "catalog.py::add_book",
+              "catalog.py::find_book",
+              "loans.py::checkout_book",
+              "loans.py::overdue_fine",
+              "loans.py::return_book"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "catalog.py::add_book",
+              "catalog.py::find_book",
+              "loans.py::overdue_fine",
+              "loans.py::return_book"
+            ]
+          },
+          "semantic_candidates": 5
+        }
+      },
+      "experimental": false,
+      "gold": [
+        "loans.py::checkout_book"
+      ],
+      "id": "lib-outcome",
+      "question": "What else must change if overdue_fine changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 9.4,
+          "outcome": "complete",
+          "predicted": [
+            "cart.py::total",
+            "checkout.py::place_order",
+            "pricing.py::discount"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "checkout.py::place_order"
+            ],
+            "f1": 0.5,
+            "fn": 0,
+            "fp": 2,
+            "missing": [],
+            "precision": 0.3333333333333333,
+            "predicted": [
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "cart.py::total",
+              "pricing.py::discount"
+            ]
+          },
+          "semantic_candidates": null
+        },
+        "bm25-plus-embeddings": {
+          "latency_ms": 54.0,
+          "outcome": "complete",
+          "predicted": [
+            "cart.py::add_item",
+            "cart.py::total",
+            "checkout.py::place_order",
+            "pricing.py::discount",
+            "pricing.py::round_total"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "checkout.py::place_order"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ]
+          },
+          "semantic_candidates": 5
+        },
+        "embeddings-only": {
+          "latency_ms": 80.8,
+          "outcome": "complete",
+          "predicted": [
+            "cart.py::add_item",
+            "cart.py::total",
+            "checkout.py::place_order",
+            "pricing.py::discount",
+            "pricing.py::round_total"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "checkout.py::place_order"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ]
+          },
+          "semantic_candidates": 5
+        },
+        "full-hybrid": {
+          "latency_ms": 63.8,
+          "outcome": "complete",
+          "predicted": [
+            "cart.py::add_item",
+            "cart.py::total",
+            "checkout.py::place_order",
+            "pricing.py::discount",
+            "pricing.py::round_total"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "checkout.py::place_order"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ]
+          },
+          "semantic_candidates": 5
+        }
+      },
+      "experimental": false,
+      "gold": [
+        "checkout.py::place_order"
+      ],
+      "id": "shop-para",
+      "question": "If the batch total shifts, what breaks?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 4.8,
+          "outcome": "complete",
+          "predicted": [
+            "api.py::handle_legacy",
+            "api.py::route"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "api.py::handle_legacy"
+            ],
+            "f1": 0.6666666666666666,
+            "fn": 0,
+            "fp": 1,
+            "missing": [],
+            "precision": 0.5,
+            "predicted": [
+              "api.py::handle_legacy",
+              "api.py::route"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "api.py::route"
+            ]
+          },
+          "semantic_candidates": null
+        },
+        "bm25-plus-embeddings": {
+          "latency_ms": 58.6,
+          "outcome": "complete",
+          "predicted": [
+            "api.py::handle_legacy",
+            "api.py::handle_modern",
+            "api.py::route"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "api.py::handle_legacy"
+            ],
+            "f1": 0.5,
+            "fn": 0,
+            "fp": 2,
+            "missing": [],
+            "precision": 0.3333333333333333,
+            "predicted": [
+              "api.py::handle_legacy",
+              "api.py::handle_modern",
+              "api.py::route"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "api.py::handle_modern",
+              "api.py::route"
+            ]
+          },
+          "semantic_candidates": 3
+        },
+        "embeddings-only": {
+          "latency_ms": 99.9,
+          "outcome": "complete",
+          "predicted": [
+            "api.py::handle_legacy",
+            "api.py::handle_modern",
+            "api.py::route"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "api.py::handle_legacy"
+            ],
+            "f1": 0.5,
+            "fn": 0,
+            "fp": 2,
+            "missing": [],
+            "precision": 0.3333333333333333,
+            "predicted": [
+              "api.py::handle_legacy",
+              "api.py::handle_modern",
+              "api.py::route"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "api.py::handle_modern",
+              "api.py::route"
+            ]
+          },
+          "semantic_candidates": 3
+        },
+        "full-hybrid": {
+          "latency_ms": 58.4,
+          "outcome": "complete",
+          "predicted": [
+            "api.py::handle_legacy",
+            "api.py::handle_modern",
+            "api.py::route"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "api.py::handle_legacy"
+            ],
+            "f1": 0.5,
+            "fn": 0,
+            "fp": 2,
+            "missing": [],
+            "precision": 0.3333333333333333,
+            "predicted": [
+              "api.py::handle_legacy",
+              "api.py::handle_modern",
+              "api.py::route"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "api.py::handle_modern",
+              "api.py::route"
+            ]
+          },
+          "semantic_candidates": 3
+        }
+      },
+      "experimental": false,
+      "gold": [
+        "api.py::handle_legacy"
+      ],
+      "id": "evolve-para",
+      "question": "If the legacy handler shifts, what breaks?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 12.1,
+          "outcome": "complete",
+          "predicted": [
+            "catalog.py::find_book",
+            "loans.py::checkout_book",
+            "loans.py::overdue_fine",
+            "loans.py::return_book"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "loans.py::checkout_book",
+              "loans.py::return_book"
+            ],
+            "f1": 0.6666666666666666,
+            "fn": 0,
+            "fp": 2,
+            "missing": [],
+            "precision": 0.5,
+            "predicted": [
+              "catalog.py::find_book",
+              "loans.py::checkout_book",
+              "loans.py::overdue_fine",
+              "loans.py::return_book"
+            ],
+            "recall": 1.0,
+            "tp": 2,
+            "unexpected": [
+              "catalog.py::find_book",
+              "loans.py::overdue_fine"
+            ]
+          },
+          "semantic_candidates": null
+        },
+        "bm25-plus-embeddings": {
+          "latency_ms": 62.1,
+          "outcome": "complete",
+          "predicted": [
+            "catalog.py::add_book",
+            "catalog.py::find_book",
+            "loans.py::checkout_book",
+            "loans.py::overdue_fine",
+            "loans.py::return_book"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "loans.py::checkout_book",
+              "loans.py::return_book"
+            ],
+            "f1": 0.5714285714285714,
+            "fn": 0,
+            "fp": 3,
+            "missing": [],
+            "precision": 0.4,
+            "predicted": [
+              "catalog.py::add_book",
+              "catalog.py::find_book",
+              "loans.py::checkout_book",
+              "loans.py::overdue_fine",
+              "loans.py::return_book"
+            ],
+            "recall": 1.0,
+            "tp": 2,
+            "unexpected": [
+              "catalog.py::add_book",
+              "catalog.py::find_book",
+              "loans.py::overdue_fine"
+            ]
+          },
+          "semantic_candidates": 5
+        },
+        "embeddings-only": {
+          "latency_ms": 93.2,
+          "outcome": "complete",
+          "predicted": [
+            "catalog.py::add_book",
+            "catalog.py::find_book",
+            "loans.py::checkout_book",
+            "loans.py::overdue_fine",
+            "loans.py::return_book"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "loans.py::checkout_book",
+              "loans.py::return_book"
+            ],
+            "f1": 0.5714285714285714,
+            "fn": 0,
+            "fp": 3,
+            "missing": [],
+            "precision": 0.4,
+            "predicted": [
+              "catalog.py::add_book",
+              "catalog.py::find_book",
+              "loans.py::checkout_book",
+              "loans.py::overdue_fine",
+              "loans.py::return_book"
+            ],
+            "recall": 1.0,
+            "tp": 2,
+            "unexpected": [
+              "catalog.py::add_book",
+              "catalog.py::find_book",
+              "loans.py::overdue_fine"
+            ]
+          },
+          "semantic_candidates": 5
+        },
+        "full-hybrid": {
+          "latency_ms": 56.4,
+          "outcome": "complete",
+          "predicted": [
+            "catalog.py::add_book",
+            "catalog.py::find_book",
+            "loans.py::checkout_book",
+            "loans.py::overdue_fine",
+            "loans.py::return_book"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "loans.py::checkout_book",
+              "loans.py::return_book"
+            ],
+            "f1": 0.5714285714285714,
+            "fn": 0,
+            "fp": 3,
+            "missing": [],
+            "precision": 0.4,
+            "predicted": [
+              "catalog.py::add_book",
+              "catalog.py::find_book",
+              "loans.py::checkout_book",
+              "loans.py::overdue_fine",
+              "loans.py::return_book"
+            ],
+            "recall": 1.0,
+            "tp": 2,
+            "unexpected": [
+              "catalog.py::add_book",
+              "catalog.py::find_book",
+              "loans.py::overdue_fine"
+            ]
+          },
+          "semantic_candidates": 5
+        }
+      },
+      "experimental": false,
+      "gold": [
+        "loans.py::checkout_book",
+        "loans.py::return_book"
+      ],
+      "id": "lib-para",
+      "question": "If find_book shifts, which routines fail?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 1.8,
+          "outcome": "empty",
+          "predicted": [],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "checkout.py::place_order"
+            ],
+            "f1": 0.0,
+            "fn": 1,
+            "fp": 0,
+            "missing": [
+              "checkout.py::place_order"
+            ],
+            "precision": null,
+            "predicted": [],
+            "recall": 0.0,
+            "tp": 0,
+            "unexpected": []
+          },
+          "semantic_candidates": null
+        },
+        "bm25-plus-embeddings": {
+          "latency_ms": 82.3,
+          "outcome": "complete",
+          "predicted": [
+            "cart.py::add_item",
+            "cart.py::total",
+            "checkout.py::place_order",
+            "pricing.py::discount",
+            "pricing.py::round_total"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "checkout.py::place_order"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ]
+          },
+          "semantic_candidates": 5
+        },
+        "embeddings-only": {
+          "latency_ms": 123.8,
+          "outcome": "complete",
+          "predicted": [
+            "cart.py::add_item",
+            "cart.py::total",
+            "checkout.py::place_order",
+            "pricing.py::discount",
+            "pricing.py::round_total"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "checkout.py::place_order"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ]
+          },
+          "semantic_candidates": 5
+        },
+        "full-hybrid": {
+          "latency_ms": 68.6,
+          "outcome": "complete",
+          "predicted": [
+            "cart.py::add_item",
+            "cart.py::total",
+            "checkout.py::place_order",
+            "pricing.py::discount",
+            "pricing.py::round_total"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "checkout.py::place_order"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "checkout.py::place_order",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "cart.py::add_item",
+              "cart.py::total",
+              "pricing.py::discount",
+              "pricing.py::round_total"
+            ]
+          },
+          "semantic_candidates": 5
+        }
+      },
+      "experimental": true,
+      "gold": [
+        "checkout.py::place_order"
+      ],
+      "id": "shop-semantic",
+      "question": "Who finalizes the purchase?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 2.9,
+          "outcome": "empty",
+          "predicted": [],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "loans.py::overdue_fine"
+            ],
+            "f1": 0.0,
+            "fn": 1,
+            "fp": 0,
+            "missing": [
+              "loans.py::overdue_fine"
+            ],
+            "precision": null,
+            "predicted": [],
+            "recall": 0.0,
+            "tp": 0,
+            "unexpected": []
+          },
+          "semantic_candidates": null
+        },
+        "bm25-plus-embeddings": {
+          "latency_ms": 85.6,
+          "outcome": "complete",
+          "predicted": [
+            "catalog.py::add_book",
+            "loans.py::checkout_book",
+            "loans.py::overdue_fine",
+            "loans.py::return_book",
+            "members.py::register_member"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "loans.py::overdue_fine"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "catalog.py::add_book",
+              "loans.py::checkout_book",
+              "loans.py::overdue_fine",
+              "loans.py::return_book",
+              "members.py::register_member"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "catalog.py::add_book",
+              "loans.py::checkout_book",
+              "loans.py::return_book",
+              "members.py::register_member"
+            ]
+          },
+          "semantic_candidates": 5
+        },
+        "embeddings-only": {
+          "latency_ms": 88.8,
+          "outcome": "complete",
+          "predicted": [
+            "catalog.py::add_book",
+            "loans.py::checkout_book",
+            "loans.py::overdue_fine",
+            "loans.py::return_book",
+            "members.py::register_member"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "loans.py::overdue_fine"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "catalog.py::add_book",
+              "loans.py::checkout_book",
+              "loans.py::overdue_fine",
+              "loans.py::return_book",
+              "members.py::register_member"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "catalog.py::add_book",
+              "loans.py::checkout_book",
+              "loans.py::return_book",
+              "members.py::register_member"
+            ]
+          },
+          "semantic_candidates": 5
+        },
+        "full-hybrid": {
+          "latency_ms": 61.9,
+          "outcome": "complete",
+          "predicted": [
+            "catalog.py::add_book",
+            "loans.py::checkout_book",
+            "loans.py::overdue_fine",
+            "loans.py::return_book",
+            "members.py::register_member"
+          ],
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "loans.py::overdue_fine"
+            ],
+            "f1": 0.3333333333333333,
+            "fn": 0,
+            "fp": 4,
+            "missing": [],
+            "precision": 0.2,
+            "predicted": [
+              "catalog.py::add_book",
+              "loans.py::checkout_book",
+              "loans.py::overdue_fine",
+              "loans.py::return_book",
+              "members.py::register_member"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "catalog.py::add_book",
+              "loans.py::checkout_book",
+              "loans.py::return_book",
+              "members.py::register_member"
+            ]
+          },
+          "semantic_candidates": 5
+        }
+      },
+      "experimental": true,
+      "gold": [
+        "loans.py::overdue_fine"
+      ],
+      "id": "lib-semantic",
+      "question": "Who computes late fees?"
+    }
+  ]
+}
