@@ -1,0 +1,42 @@
+{
+ "benchmark": "model-ab-s2-dispatch-repeats",
+ "runs": [
+  "model-ab-s2-dispatch-replay.json",
+  "model-ab-s2-dispatch-rep1.json",
+  "model-ab-s2-dispatch-rep2.json",
+  "model-ab-s2-dispatch-rep3.json"
+ ],
+ "n": 4,
+ "lexical": {
+  "commit_rate": 1.0,
+  "apply_rate": 0.0,
+  "commits": [
+   true,
+   true,
+   true,
+   true
+  ],
+  "applies": [
+   false,
+   false,
+   false,
+   false
+  ]
+ },
+ "tunic-select": {
+  "commit_rate": 1.0,
+  "apply_rate": 1.0,
+  "commits": [
+   true,
+   true,
+   true,
+   true
+  ],
+  "applies": [
+   true,
+   true,
+   true,
+   true
+  ]
+ }
+}
