@@ -1,0 +1,1073 @@
+{
+ "benchmark": "model-ab-acq-v1-batch4",
+ "protocol": "frozen ACQ v1: 10 seeded scenarios x 5 reps x 3 arms; product commit_proposal path, exact-triple scorer; abstain scenarios pass on no-commit plus frontier entry; reps are robustness probes, not independent tasks; held-out PyQuifer tasks untouched",
+ "model": "qwen3:4b",
+ "decoding": {
+  "temperature": 0,
+  "seed": 0
+ },
+ "context_cap": 4000,
+ "tunic_commit": "ddfd284c7c4615748154f78a0694f51c5473a0ca",
+ "dry_run": false,
+ "scenarios": [
+  "correct",
+  "irrelevant"
+ ],
+ "summary": {
+  "correct/lexical": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": 1.0,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 5,
+   "prompt_tokens": 1156,
+   "completion_tokens": 15665
+  },
+  "correct/select": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": 1.0,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 5,
+   "prompt_tokens": 2235,
+   "completion_tokens": 9823
+  },
+  "correct/select-a3": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": 1.0,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 5,
+   "prompt_tokens": 2235,
+   "completion_tokens": 10323
+  },
+  "irrelevant/lexical": {
+   "n": 5,
+   "pass_rate": 1.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 10,
+   "prompt_tokens": 1150,
+   "completion_tokens": 9825
+  },
+  "irrelevant/select": {
+   "n": 5,
+   "pass_rate": 1.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 10,
+   "prompt_tokens": 2345,
+   "completion_tokens": 12330
+  },
+  "irrelevant/select-a3": {
+   "n": 5,
+   "pass_rate": 1.0,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 10,
+   "prompt_tokens": 2345,
+   "completion_tokens": 12330
+  }
+ },
+ "tasks": [
+  {
+   "id": "correct-rep0-setup",
+   "arm": "lexical",
+   "scenario": "correct",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "t2.py::round_total"
+   ],
+   "stale": [
+    "depends_on",
+    "buyer.py::place_order",
+    "t1.py::old_fn"
+   ],
+   "model_calls": 0,
+   "setup_only": true
+  },
+  {
+   "id": "correct-rep0-apply",
+   "arm": "lexical",
+   "scenario": "correct",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "buyer.py::place_order"
+   ],
+   "obsolete": [
+    "t1.py::old_fn"
+   ],
+   "parsed": [
+    "buyer.py::place_order"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 232,
+   "completion_tokens": 2856,
+   "latency_ms": 14030.0
+  },
+  {
+   "id": "correct-rep0-setup",
+   "arm": "select",
+   "scenario": "correct",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "t2.py::round_total"
+   ],
+   "stale": [
+    "depends_on",
+    "buyer.py::place_order",
+    "t1.py::old_fn"
+   ],
+   "model_calls": 0,
+   "setup_only": true
+  },
+  {
+   "id": "correct-rep0-apply",
+   "arm": "select",
+   "scenario": "correct",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "buyer.py::place_order"
+   ],
+   "obsolete": [
+    "t1.py::old_fn"
+   ],
+   "parsed": [
+    "buyer.py::place_order"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 449,
+   "completion_tokens": 1786,
+   "latency_ms": 8613.9
+  },
+  {
+   "id": "correct-rep0-setup",
+   "arm": "select-a3",
+   "scenario": "correct",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "t2.py::round_total"
+   ],
+   "stale": [
+    "depends_on",
+    "buyer.py::place_order",
+    "t1.py::old_fn"
+   ],
+   "model_calls": 0,
+   "setup_only": true
+  },
+  {
+   "id": "correct-rep0-apply",
+   "arm": "select-a3",
+   "scenario": "correct",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "buyer.py::place_order"
+   ],
+   "obsolete": [
+    "t1.py::old_fn"
+   ],
+   "parsed": [
+    "buyer.py::place_order"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 449,
+   "completion_tokens": 2438,
+   "latency_ms": 11765.6
+  },
+  {
+   "id": "correct-rep1-setup",
+   "arm": "lexical",
+   "scenario": "correct",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "stale": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::old_fn"
+   ],
+   "model_calls": 0,
+   "setup_only": true
+  },
+  {
+   "id": "correct-rep1-apply",
+   "arm": "lexical",
+   "scenario": "correct",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "shop.py::checkout"
+   ],
+   "obsolete": [
+    "shop.py::old_fn"
+   ],
+   "parsed": [
+    "shop.py::checkout"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 229,
+   "completion_tokens": 2126,
+   "latency_ms": 10156.0
+  },
+  {
+   "id": "correct-rep1-setup",
+   "arm": "select",
+   "scenario": "correct",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "stale": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::old_fn"
+   ],
+   "model_calls": 0,
+   "setup_only": true
+  },
+  {
+   "id": "correct-rep1-apply",
+   "arm": "select",
+   "scenario": "correct",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "shop.py::checkout"
+   ],
+   "obsolete": [
+    "shop.py::old_fn"
+   ],
+   "parsed": [
+    "shop.py::checkout"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 443,
+   "completion_tokens": 2181,
+   "latency_ms": 10289.7
+  },
+  {
+   "id": "correct-rep1-setup",
+   "arm": "select-a3",
+   "scenario": "correct",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "stale": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::old_fn"
+   ],
+   "model_calls": 0,
+   "setup_only": true
+  },
+  {
+   "id": "correct-rep1-apply",
+   "arm": "select-a3",
+   "scenario": "correct",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "shop.py::checkout"
+   ],
+   "obsolete": [
+    "shop.py::old_fn"
+   ],
+   "parsed": [
+    "shop.py::checkout"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 443,
+   "completion_tokens": 2374,
+   "latency_ms": 11138.3
+  },
+  {
+   "id": "correct-rep2-setup",
+   "arm": "lexical",
+   "scenario": "correct",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "t2.py::quantize"
+   ],
+   "stale": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "t1.py::old_fn"
+   ],
+   "model_calls": 0,
+   "setup_only": true
+  },
+  {
+   "id": "correct-rep2-apply",
+   "arm": "lexical",
+   "scenario": "correct",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "buyer.py::submit_cart"
+   ],
+   "obsolete": [
+    "t1.py::old_fn"
+   ],
+   "parsed": [
+    "buyer.py::submit_cart"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 234,
+   "completion_tokens": 4123,
+   "latency_ms": 20071.4
+  },
+  {
+   "id": "correct-rep2-setup",
+   "arm": "select",
+   "scenario": "correct",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "t2.py::quantize"
+   ],
+   "stale": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "t1.py::old_fn"
+   ],
+   "model_calls": 0,
+   "setup_only": true
+  },
+  {
+   "id": "correct-rep2-apply",
+   "arm": "select",
+   "scenario": "correct",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "buyer.py::submit_cart"
+   ],
+   "obsolete": [
+    "t1.py::old_fn"
+   ],
+   "parsed": [
+    "buyer.py::submit_cart"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 451,
+   "completion_tokens": 1951,
+   "latency_ms": 9571.9
+  },
+  {
+   "id": "correct-rep2-setup",
+   "arm": "select-a3",
+   "scenario": "correct",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "t2.py::quantize"
+   ],
+   "stale": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "t1.py::old_fn"
+   ],
+   "model_calls": 0,
+   "setup_only": true
+  },
+  {
+   "id": "correct-rep2-apply",
+   "arm": "select-a3",
+   "scenario": "correct",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "buyer.py::submit_cart"
+   ],
+   "obsolete": [
+    "t1.py::old_fn"
+   ],
+   "parsed": [
+    "buyer.py::submit_cart"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 451,
+   "completion_tokens": 2210,
+   "latency_ms": 10641.9
+  },
+  {
+   "id": "correct-rep3-setup",
+   "arm": "lexical",
+   "scenario": "correct",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "stale": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::old_fn"
+   ],
+   "model_calls": 0,
+   "setup_only": true
+  },
+  {
+   "id": "correct-rep3-apply",
+   "arm": "lexical",
+   "scenario": "correct",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "shop.py::confirm_buy"
+   ],
+   "obsolete": [
+    "shop.py::old_fn"
+   ],
+   "parsed": [
+    "shop.py::confirm_buy"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 228,
+   "completion_tokens": 2390,
+   "latency_ms": 11586.2
+  },
+  {
+   "id": "correct-rep3-setup",
+   "arm": "select",
+   "scenario": "correct",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "stale": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::old_fn"
+   ],
+   "model_calls": 0,
+   "setup_only": true
+  },
+  {
+   "id": "correct-rep3-apply",
+   "arm": "select",
+   "scenario": "correct",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "shop.py::confirm_buy"
+   ],
+   "obsolete": [
+    "shop.py::old_fn"
+   ],
+   "parsed": [
+    "shop.py::confirm_buy"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 445,
+   "completion_tokens": 2793,
+   "latency_ms": 13283.0
+  },
+  {
+   "id": "correct-rep3-setup",
+   "arm": "select-a3",
+   "scenario": "correct",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "stale": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::old_fn"
+   ],
+   "model_calls": 0,
+   "setup_only": true
+  },
+  {
+   "id": "correct-rep3-apply",
+   "arm": "select-a3",
+   "scenario": "correct",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "shop.py::confirm_buy"
+   ],
+   "obsolete": [
+    "shop.py::old_fn"
+   ],
+   "parsed": [
+    "shop.py::confirm_buy"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 445,
+   "completion_tokens": 2189,
+   "latency_ms": 10526.5
+  },
+  {
+   "id": "correct-rep4-setup",
+   "arm": "lexical",
+   "scenario": "correct",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "t2.py::ceil_total"
+   ],
+   "stale": [
+    "depends_on",
+    "buyer.py::finalize",
+    "t1.py::old_fn"
+   ],
+   "model_calls": 0,
+   "setup_only": true
+  },
+  {
+   "id": "correct-rep4-apply",
+   "arm": "lexical",
+   "scenario": "correct",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "buyer.py::finalize"
+   ],
+   "obsolete": [
+    "t1.py::old_fn"
+   ],
+   "parsed": [
+    "buyer.py::finalize"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 233,
+   "completion_tokens": 4170,
+   "latency_ms": 20266.9
+  },
+  {
+   "id": "correct-rep4-setup",
+   "arm": "select",
+   "scenario": "correct",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "t2.py::ceil_total"
+   ],
+   "stale": [
+    "depends_on",
+    "buyer.py::finalize",
+    "t1.py::old_fn"
+   ],
+   "model_calls": 0,
+   "setup_only": true
+  },
+  {
+   "id": "correct-rep4-apply",
+   "arm": "select",
+   "scenario": "correct",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "buyer.py::finalize"
+   ],
+   "obsolete": [
+    "t1.py::old_fn"
+   ],
+   "parsed": [
+    "buyer.py::finalize"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 447,
+   "completion_tokens": 1112,
+   "latency_ms": 5313.9
+  },
+  {
+   "id": "correct-rep4-setup",
+   "arm": "select-a3",
+   "scenario": "correct",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "t2.py::ceil_total"
+   ],
+   "stale": [
+    "depends_on",
+    "buyer.py::finalize",
+    "t1.py::old_fn"
+   ],
+   "model_calls": 0,
+   "setup_only": true
+  },
+  {
+   "id": "correct-rep4-apply",
+   "arm": "select-a3",
+   "scenario": "correct",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "buyer.py::finalize"
+   ],
+   "obsolete": [
+    "t1.py::old_fn"
+   ],
+   "parsed": [
+    "buyer.py::finalize"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 447,
+   "completion_tokens": 1112,
+   "latency_ms": 5206.6
+  },
+  {
+   "id": "irrelevant-rep0-propose",
+   "arm": "lexical",
+   "scenario": "irrelevant",
+   "rep": 0,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 230,
+   "completion_tokens": 1965,
+   "latency_ms": 9301.2,
+   "fixture_digest": "a11ce306df1a",
+   "no_commit": true,
+   "frontier_ok": true,
+   "frontier_coalesced": false,
+   "pass": true
+  },
+  {
+   "id": "irrelevant-rep0-propose",
+   "arm": "select",
+   "scenario": "irrelevant",
+   "rep": 0,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 469,
+   "completion_tokens": 2466,
+   "latency_ms": 11825.7,
+   "fixture_digest": "a11ce306df1a",
+   "no_commit": true,
+   "frontier_ok": true,
+   "frontier_coalesced": true,
+   "pass": true
+  },
+  {
+   "id": "irrelevant-rep0-propose",
+   "arm": "select-a3",
+   "scenario": "irrelevant",
+   "rep": 0,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 469,
+   "completion_tokens": 2466,
+   "latency_ms": 11808.7,
+   "fixture_digest": "a11ce306df1a",
+   "no_commit": true,
+   "frontier_ok": true,
+   "frontier_coalesced": true,
+   "pass": true
+  },
+  {
+   "id": "irrelevant-rep1-propose",
+   "arm": "lexical",
+   "scenario": "irrelevant",
+   "rep": 1,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 230,
+   "completion_tokens": 1965,
+   "latency_ms": 9295.1,
+   "fixture_digest": "7b89eabe8e2f",
+   "no_commit": true,
+   "frontier_ok": true,
+   "frontier_coalesced": false,
+   "pass": true
+  },
+  {
+   "id": "irrelevant-rep1-propose",
+   "arm": "select",
+   "scenario": "irrelevant",
+   "rep": 1,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 469,
+   "completion_tokens": 2466,
+   "latency_ms": 11783.1,
+   "fixture_digest": "7b89eabe8e2f",
+   "no_commit": true,
+   "frontier_ok": true,
+   "frontier_coalesced": true,
+   "pass": true
+  },
+  {
+   "id": "irrelevant-rep1-propose",
+   "arm": "select-a3",
+   "scenario": "irrelevant",
+   "rep": 1,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 469,
+   "completion_tokens": 2466,
+   "latency_ms": 11729.9,
+   "fixture_digest": "7b89eabe8e2f",
+   "no_commit": true,
+   "frontier_ok": true,
+   "frontier_coalesced": true,
+   "pass": true
+  },
+  {
+   "id": "irrelevant-rep2-propose",
+   "arm": "lexical",
+   "scenario": "irrelevant",
+   "rep": 2,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 230,
+   "completion_tokens": 1965,
+   "latency_ms": 9295.7,
+   "fixture_digest": "744f75980689",
+   "no_commit": true,
+   "frontier_ok": true,
+   "frontier_coalesced": false,
+   "pass": true
+  },
+  {
+   "id": "irrelevant-rep2-propose",
+   "arm": "select",
+   "scenario": "irrelevant",
+   "rep": 2,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 469,
+   "completion_tokens": 2466,
+   "latency_ms": 11749.2,
+   "fixture_digest": "744f75980689",
+   "no_commit": true,
+   "frontier_ok": true,
+   "frontier_coalesced": true,
+   "pass": true
+  },
+  {
+   "id": "irrelevant-rep2-propose",
+   "arm": "select-a3",
+   "scenario": "irrelevant",
+   "rep": 2,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 469,
+   "completion_tokens": 2466,
+   "latency_ms": 11834.3,
+   "fixture_digest": "744f75980689",
+   "no_commit": true,
+   "frontier_ok": true,
+   "frontier_coalesced": true,
+   "pass": true
+  },
+  {
+   "id": "irrelevant-rep3-propose",
+   "arm": "lexical",
+   "scenario": "irrelevant",
+   "rep": 3,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 230,
+   "completion_tokens": 1965,
+   "latency_ms": 9340.2,
+   "fixture_digest": "253abc7bda29",
+   "no_commit": true,
+   "frontier_ok": true,
+   "frontier_coalesced": false,
+   "pass": true
+  },
+  {
+   "id": "irrelevant-rep3-propose",
+   "arm": "select",
+   "scenario": "irrelevant",
+   "rep": 3,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 469,
+   "completion_tokens": 2466,
+   "latency_ms": 11769.5,
+   "fixture_digest": "253abc7bda29",
+   "no_commit": true,
+   "frontier_ok": true,
+   "frontier_coalesced": true,
+   "pass": true
+  },
+  {
+   "id": "irrelevant-rep3-propose",
+   "arm": "select-a3",
+   "scenario": "irrelevant",
+   "rep": 3,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 469,
+   "completion_tokens": 2466,
+   "latency_ms": 11703.3,
+   "fixture_digest": "253abc7bda29",
+   "no_commit": true,
+   "frontier_ok": true,
+   "frontier_coalesced": true,
+   "pass": true
+  },
+  {
+   "id": "irrelevant-rep4-propose",
+   "arm": "lexical",
+   "scenario": "irrelevant",
+   "rep": 4,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 230,
+   "completion_tokens": 1965,
+   "latency_ms": 9275.1,
+   "fixture_digest": "38b062d22a08",
+   "no_commit": true,
+   "frontier_ok": true,
+   "frontier_coalesced": false,
+   "pass": true
+  },
+  {
+   "id": "irrelevant-rep4-propose",
+   "arm": "select",
+   "scenario": "irrelevant",
+   "rep": 4,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 469,
+   "completion_tokens": 2466,
+   "latency_ms": 11852.9,
+   "fixture_digest": "38b062d22a08",
+   "no_commit": true,
+   "frontier_ok": true,
+   "frontier_coalesced": true,
+   "pass": true
+  },
+  {
+   "id": "irrelevant-rep4-propose",
+   "arm": "select-a3",
+   "scenario": "irrelevant",
+   "rep": 4,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 469,
+   "completion_tokens": 2466,
+   "latency_ms": 11767.2,
+   "fixture_digest": "38b062d22a08",
+   "no_commit": true,
+   "frontier_ok": true,
+   "frontier_coalesced": true,
+   "pass": true
+  }
+ ],
+ "limitations": [
+  "n=5 reps per cell; temperature 0; directional evidence only."
+ ]
+}

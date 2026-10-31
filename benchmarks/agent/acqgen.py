@@ -175,7 +175,7 @@ def build(scenario, rep):
             e2 = ("depends_on", key("shop.py", caller), key("shop.py", target))
         return {"files": files, "question": ask(target), "gold": e2, "stale": e1,
                 "static": "visible",
-                "apply": [{"question": ask(target), "gold": [e2[1]], "obsolete": [e1[1]]}],
+                "apply": [{"question": ask(target), "gold": [e2[1]], "obsolete": [e1[2]]}],
                 "a3_expected": False, "kind": "correct"}
     if scenario == "irrelevant":
         target = n["target"]

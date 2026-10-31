@@ -170,8 +170,17 @@ def propose_cell(work, arm, scenario, rep, dry=False):
                                        prop, check))
     elif spec["kind"] in ("abstain", "contra"):
         prop["no_commit"] = not committed
-        prop["frontier_ok"] = frontier_ok
-        prop["pass"] = (not committed) and frontier_ok
+        # Ledger dedupe coalesces a same-question acquisition abstention
+        # into an already-filed retrieval abstention (identical dedupe
+        # key); either one records this cell's open gap. Accept the
+        # coalesced entry only when the model itself abstained (claim None),
+        # never as cover for a committed or invalid proposal.
+        entries = memory.frontier_list()
+        same_gap = any(e.get("task") == question and e.get("status") == "open"
+                       for e in entries)
+        prop["frontier_ok"] = frontier_ok or (claim is None and same_gap)
+        prop["frontier_coalesced"] = (not frontier_ok) and prop["frontier_ok"]
+        prop["pass"] = (not committed) and prop["frontier_ok"]
     if spec["kind"] == "positive":
         exact = (claim is not None
                  and (claim.get("rel"), claim.get("subject"), claim.get("object"))
@@ -215,11 +224,13 @@ def summarize_acq(rows):
                      and ("-propose" in r["id"] or "-setup" in r["id"])]
             if not cells:
                 continue
+            rated = [r for r in cells if "pass" in r]
             applies = [r for r in rows if r.get("scenario") == scenario
                        and r.get("arm") == arm and "-apply" in r["id"]]
             summary["%s/%s" % (scenario, arm)] = {
                 "n": len(cells),
-                "pass_rate": sum(1 for r in cells if r.get("pass")) / len(cells),
+                "pass_rate": (sum(1 for r in rated if r.get("pass")) / len(rated)
+                              if rated else None),
                 "apply_pass_rate": (sum(1 for r in applies if r.get("pass")) / len(applies)
                                     if applies else None),
                 "commits": sum(1 for r in cells if r.get("committed")),

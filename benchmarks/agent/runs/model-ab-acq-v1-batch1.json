@@ -1,0 +1,1609 @@
+{
+ "benchmark": "model-ab-acq-v1-batch1",
+ "protocol": "frozen ACQ v1: 10 seeded scenarios x 5 reps x 3 arms; product commit_proposal path, exact-triple scorer; abstain scenarios pass on no-commit plus frontier entry; reps are robustness probes, not independent tasks; held-out PyQuifer tasks untouched",
+ "model": "qwen3:4b",
+ "decoding": {
+  "temperature": 0,
+  "seed": 0
+ },
+ "context_cap": 4000,
+ "tunic_commit": "ddfd284c7c4615748154f78a0694f51c5473a0ca",
+ "dry_run": false,
+ "scenarios": [
+  "direct",
+  "dict"
+ ],
+ "summary": {
+  "direct/lexical": {
+   "n": 5,
+   "pass_rate": 0.2,
+   "apply_pass_rate": 0.2,
+   "commits": 1,
+   "false_promotions": 0,
+   "model_calls": 15,
+   "prompt_tokens": 1637,
+   "completion_tokens": 21413
+  },
+  "direct/select": {
+   "n": 5,
+   "pass_rate": 0.8,
+   "apply_pass_rate": 0.8,
+   "commits": 4,
+   "false_promotions": 0,
+   "model_calls": 15,
+   "prompt_tokens": 4377,
+   "completion_tokens": 25471
+  },
+  "direct/select-a3": {
+   "n": 5,
+   "pass_rate": 0.8,
+   "apply_pass_rate": 0.8,
+   "commits": 4,
+   "false_promotions": 0,
+   "model_calls": 15,
+   "prompt_tokens": 4377,
+   "completion_tokens": 26345
+  },
+  "dict/lexical": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": 0.0,
+   "commits": 0,
+   "false_promotions": 0,
+   "model_calls": 15,
+   "prompt_tokens": 1607,
+   "completion_tokens": 26187
+  },
+  "dict/select": {
+   "n": 5,
+   "pass_rate": 0.0,
+   "apply_pass_rate": 0.4,
+   "commits": 2,
+   "false_promotions": 2,
+   "model_calls": 15,
+   "prompt_tokens": 4468,
+   "completion_tokens": 30402
+  },
+  "dict/select-a3": {
+   "n": 5,
+   "pass_rate": 1.0,
+   "apply_pass_rate": 1.0,
+   "commits": 5,
+   "false_promotions": 0,
+   "model_calls": 15,
+   "prompt_tokens": 4856,
+   "completion_tokens": 25834
+  }
+ },
+ "tasks": [
+  {
+   "id": "direct-rep0-propose",
+   "arm": "lexical",
+   "scenario": "direct",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 238,
+   "completion_tokens": 2067,
+   "latency_ms": 9522.2,
+   "fixture_digest": "f5db07180c07",
+   "proposal_exact": false,
+   "committed_correct": false,
+   "false_promotion": false,
+   "pass": false
+  },
+  {
+   "id": "direct-rep0-apply",
+   "arm": "lexical",
+   "scenario": "direct",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "buyer.py::place_order"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "buyer.py::place_order"
+   ],
+   "stale": [],
+   "pass": false,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 87,
+   "completion_tokens": 1183,
+   "latency_ms": 5522.9
+  },
+  {
+   "id": "direct-rep0-propose",
+   "arm": "select",
+   "scenario": "direct",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "buyer.py::place_order",
+    "object": "target.py::round_total"
+   },
+   "proposal_error": null,
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": 501,
+   "completion_tokens": 2225,
+   "latency_ms": 10630.2,
+   "fixture_digest": "f5db07180c07",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "pass": true
+  },
+  {
+   "id": "direct-rep0-apply",
+   "arm": "select",
+   "scenario": "direct",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "buyer.py::place_order"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "buyer.py::place_order"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": 379,
+   "completion_tokens": 1513,
+   "latency_ms": 7155.8
+  },
+  {
+   "id": "direct-rep0-propose",
+   "arm": "select-a3",
+   "scenario": "direct",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "buyer.py::place_order",
+    "object": "target.py::round_total"
+   },
+   "proposal_error": null,
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": 501,
+   "completion_tokens": 2225,
+   "latency_ms": 10584.8,
+   "fixture_digest": "f5db07180c07",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "pass": true
+  },
+  {
+   "id": "direct-rep0-apply",
+   "arm": "select-a3",
+   "scenario": "direct",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "buyer.py::place_order"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "buyer.py::place_order"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": 379,
+   "completion_tokens": 1513,
+   "latency_ms": 7081.1
+  },
+  {
+   "id": "direct-rep1-propose",
+   "arm": "lexical",
+   "scenario": "direct",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "shop.py::checkout",
+    "object": "shop.py::round_down"
+   },
+   "proposal_error": null,
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": 240,
+   "completion_tokens": 1835,
+   "latency_ms": 8625.1,
+   "fixture_digest": "65153b182fd6",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "pass": true
+  },
+  {
+   "id": "direct-rep1-apply",
+   "arm": "lexical",
+   "scenario": "direct",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "shop.py::checkout"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "shop.py::checkout"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": 89,
+   "completion_tokens": 1571,
+   "latency_ms": 7353.2
+  },
+  {
+   "id": "direct-rep1-propose",
+   "arm": "select",
+   "scenario": "direct",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "shop.py::checkout",
+    "object": "shop.py::round_down"
+   },
+   "proposal_error": null,
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": 502,
+   "completion_tokens": 2265,
+   "latency_ms": 10653.3,
+   "fixture_digest": "65153b182fd6",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "pass": true
+  },
+  {
+   "id": "direct-rep1-apply",
+   "arm": "select",
+   "scenario": "direct",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "shop.py::checkout"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "shop.py::checkout"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": 379,
+   "completion_tokens": 3541,
+   "latency_ms": 17190.1
+  },
+  {
+   "id": "direct-rep1-propose",
+   "arm": "select-a3",
+   "scenario": "direct",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "shop.py::checkout",
+    "object": "shop.py::round_down"
+   },
+   "proposal_error": null,
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": 502,
+   "completion_tokens": 2265,
+   "latency_ms": 10891.4,
+   "fixture_digest": "65153b182fd6",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "pass": true
+  },
+  {
+   "id": "direct-rep1-apply",
+   "arm": "select-a3",
+   "scenario": "direct",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "shop.py::checkout"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "shop.py::checkout"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": 379,
+   "completion_tokens": 3541,
+   "latency_ms": 17015.6
+  },
+  {
+   "id": "direct-rep2-propose",
+   "arm": "lexical",
+   "scenario": "direct",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 240,
+   "completion_tokens": 3023,
+   "latency_ms": 14422.1,
+   "fixture_digest": "0ae458a7db49",
+   "proposal_exact": false,
+   "committed_correct": false,
+   "false_promotion": false,
+   "pass": false
+  },
+  {
+   "id": "direct-rep2-apply",
+   "arm": "lexical",
+   "scenario": "direct",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "buyer.py::submit_cart"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "buyer.py::submit_cart"
+   ],
+   "stale": [],
+   "pass": false,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 89,
+   "completion_tokens": 3074,
+   "latency_ms": 14690.1
+  },
+  {
+   "id": "direct-rep2-propose",
+   "arm": "select",
+   "scenario": "direct",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 503,
+   "completion_tokens": 5466,
+   "latency_ms": 27057.7,
+   "fixture_digest": "0ae458a7db49",
+   "proposal_exact": false,
+   "committed_correct": false,
+   "false_promotion": false,
+   "pass": false
+  },
+  {
+   "id": "direct-rep2-apply",
+   "arm": "select",
+   "scenario": "direct",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "buyer.py::submit_cart"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "buyer.py::submit_cart"
+   ],
+   "stale": [],
+   "pass": false,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 352,
+   "completion_tokens": 1683,
+   "latency_ms": 8050.2
+  },
+  {
+   "id": "direct-rep2-propose",
+   "arm": "select-a3",
+   "scenario": "direct",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 503,
+   "completion_tokens": 5466,
+   "latency_ms": 26630.2,
+   "fixture_digest": "0ae458a7db49",
+   "proposal_exact": false,
+   "committed_correct": false,
+   "false_promotion": false,
+   "pass": false
+  },
+  {
+   "id": "direct-rep2-apply",
+   "arm": "select-a3",
+   "scenario": "direct",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "buyer.py::submit_cart"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "buyer.py::submit_cart"
+   ],
+   "stale": [],
+   "pass": false,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 352,
+   "completion_tokens": 1683,
+   "latency_ms": 7792.0
+  },
+  {
+   "id": "direct-rep3-propose",
+   "arm": "lexical",
+   "scenario": "direct",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 238,
+   "completion_tokens": 2162,
+   "latency_ms": 10365.4,
+   "fixture_digest": "3e20566b355c",
+   "proposal_exact": false,
+   "committed_correct": false,
+   "false_promotion": false,
+   "pass": false
+  },
+  {
+   "id": "direct-rep3-apply",
+   "arm": "lexical",
+   "scenario": "direct",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "shop.py::confirm_buy"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "shop.py::confirm_buy"
+   ],
+   "stale": [],
+   "pass": false,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 87,
+   "completion_tokens": 1096,
+   "latency_ms": 5163.7
+  },
+  {
+   "id": "direct-rep3-propose",
+   "arm": "select",
+   "scenario": "direct",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "shop.py::confirm_buy",
+    "object": "shop.py::floor_price"
+   },
+   "proposal_error": null,
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": 501,
+   "completion_tokens": 2417,
+   "latency_ms": 30475.1,
+   "fixture_digest": "3e20566b355c",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "pass": true
+  },
+  {
+   "id": "direct-rep3-apply",
+   "arm": "select",
+   "scenario": "direct",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "shop.py::confirm_buy"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "shop.py::confirm_buy"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": 379,
+   "completion_tokens": 1233,
+   "latency_ms": 11583.6
+  },
+  {
+   "id": "direct-rep3-propose",
+   "arm": "select-a3",
+   "scenario": "direct",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "shop.py::confirm_buy",
+    "object": "shop.py::floor_price"
+   },
+   "proposal_error": null,
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": 501,
+   "completion_tokens": 4662,
+   "latency_ms": 43066.2,
+   "fixture_digest": "3e20566b355c",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "pass": true
+  },
+  {
+   "id": "direct-rep3-apply",
+   "arm": "select-a3",
+   "scenario": "direct",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "shop.py::confirm_buy"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "shop.py::confirm_buy"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": 379,
+   "completion_tokens": 1208,
+   "latency_ms": 13289.3
+  },
+  {
+   "id": "direct-rep4-propose",
+   "arm": "lexical",
+   "scenario": "direct",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 240,
+   "completion_tokens": 3280,
+   "latency_ms": 31665.7,
+   "fixture_digest": "20371ebb0451",
+   "proposal_exact": false,
+   "committed_correct": false,
+   "false_promotion": false,
+   "pass": false
+  },
+  {
+   "id": "direct-rep4-apply",
+   "arm": "lexical",
+   "scenario": "direct",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "buyer.py::finalize"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "buyer.py::finalize"
+   ],
+   "stale": [],
+   "pass": false,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 89,
+   "completion_tokens": 2122,
+   "latency_ms": 17085.8
+  },
+  {
+   "id": "direct-rep4-propose",
+   "arm": "select",
+   "scenario": "direct",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "buyer.py::finalize",
+    "object": "target.py::ceil_total"
+   },
+   "proposal_error": null,
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": 502,
+   "completion_tokens": 3898,
+   "latency_ms": 32905.5,
+   "fixture_digest": "20371ebb0451",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "pass": true
+  },
+  {
+   "id": "direct-rep4-apply",
+   "arm": "select",
+   "scenario": "direct",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "buyer.py::finalize"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "buyer.py::finalize"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": 379,
+   "completion_tokens": 1230,
+   "latency_ms": 15264.4
+  },
+  {
+   "id": "direct-rep4-propose",
+   "arm": "select-a3",
+   "scenario": "direct",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "a3_present": false,
+   "a3_count": 0,
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "buyer.py::finalize",
+    "object": "target.py::ceil_total"
+   },
+   "proposal_error": null,
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": 502,
+   "completion_tokens": 2774,
+   "latency_ms": 42126.0,
+   "fixture_digest": "20371ebb0451",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "pass": true
+  },
+  {
+   "id": "direct-rep4-apply",
+   "arm": "select-a3",
+   "scenario": "direct",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "buyer.py::finalize"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "buyer.py::finalize"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": 379,
+   "completion_tokens": 1008,
+   "latency_ms": 12075.7
+  },
+  {
+   "id": "dict-rep0-propose",
+   "arm": "lexical",
+   "scenario": "dict",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "reg.py::run",
+    "target.py::round_total"
+   ],
+   "a3_present": true,
+   "a3_count": 1,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 237,
+   "completion_tokens": 2361,
+   "latency_ms": 22889.2,
+   "fixture_digest": "3ff8a1729229",
+   "proposal_exact": false,
+   "committed_correct": false,
+   "false_promotion": false,
+   "pass": false
+  },
+  {
+   "id": "dict-rep0-apply",
+   "arm": "lexical",
+   "scenario": "dict",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "reg.py::run"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "reg.py::run"
+   ],
+   "stale": [],
+   "pass": false,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 86,
+   "completion_tokens": 1615,
+   "latency_ms": 15115.1
+  },
+  {
+   "id": "dict-rep0-propose",
+   "arm": "select",
+   "scenario": "dict",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "reg.py::run",
+    "target.py::round_total"
+   ],
+   "a3_present": true,
+   "a3_count": 1,
+   "proposal": null,
+   "proposal_error": "no tunic-claims fence",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 520,
+   "completion_tokens": 2122,
+   "latency_ms": 20787.7,
+   "fixture_digest": "3ff8a1729229",
+   "proposal_exact": false,
+   "committed_correct": false,
+   "false_promotion": false,
+   "pass": false
+  },
+  {
+   "id": "dict-rep0-apply",
+   "arm": "select",
+   "scenario": "dict",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "reg.py::run"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "reg.py::run"
+   ],
+   "stale": [],
+   "pass": false,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 369,
+   "completion_tokens": 970,
+   "latency_ms": 14332.0
+  },
+  {
+   "id": "dict-rep0-propose",
+   "arm": "select-a3",
+   "scenario": "dict",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "reg.py::run",
+    "target.py::round_total"
+   ],
+   "a3_present": true,
+   "a3_count": 1,
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "reg.py::run",
+    "object": "target.py::round_total"
+   },
+   "proposal_error": null,
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": 577,
+   "completion_tokens": 2868,
+   "latency_ms": 32365.4,
+   "fixture_digest": "3ff8a1729229",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "pass": true
+  },
+  {
+   "id": "dict-rep0-apply",
+   "arm": "select-a3",
+   "scenario": "dict",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "reg.py::run"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "reg.py::run"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": 403,
+   "completion_tokens": 1231,
+   "latency_ms": 13543.0
+  },
+  {
+   "id": "dict-rep1-propose",
+   "arm": "lexical",
+   "scenario": "dict",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::run",
+    "shop.py::round_down"
+   ],
+   "a3_present": true,
+   "a3_count": 1,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 234,
+   "completion_tokens": 2806,
+   "latency_ms": 31233.4,
+   "fixture_digest": "088ad04ff87c",
+   "proposal_exact": false,
+   "committed_correct": false,
+   "false_promotion": false,
+   "pass": false
+  },
+  {
+   "id": "dict-rep1-apply",
+   "arm": "lexical",
+   "scenario": "dict",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "shop.py::run"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "shop.py::round_down"
+   ],
+   "stale": [],
+   "pass": false,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 83,
+   "completion_tokens": 3114,
+   "latency_ms": 21236.6
+  },
+  {
+   "id": "dict-rep1-propose",
+   "arm": "select",
+   "scenario": "dict",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::run",
+    "shop.py::round_down"
+   ],
+   "a3_present": true,
+   "a3_count": 1,
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "shop.py::round_down",
+    "object": "shop.py::run"
+   },
+   "proposal_error": null,
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": 508,
+   "completion_tokens": 3676,
+   "latency_ms": 35134.4,
+   "fixture_digest": "088ad04ff87c",
+   "proposal_exact": false,
+   "committed_correct": false,
+   "false_promotion": true,
+   "pass": false
+  },
+  {
+   "id": "dict-rep1-apply",
+   "arm": "select",
+   "scenario": "dict",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "shop.py::run"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "shop.py::run"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": 389,
+   "completion_tokens": 3791,
+   "latency_ms": 29049.5
+  },
+  {
+   "id": "dict-rep1-propose",
+   "arm": "select-a3",
+   "scenario": "dict",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::run",
+    "shop.py::round_down"
+   ],
+   "a3_present": true,
+   "a3_count": 1,
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "shop.py::run",
+    "object": "shop.py::round_down"
+   },
+   "proposal_error": null,
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": 565,
+   "completion_tokens": 2686,
+   "latency_ms": 22368.5,
+   "fixture_digest": "088ad04ff87c",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "pass": true
+  },
+  {
+   "id": "dict-rep1-apply",
+   "arm": "select-a3",
+   "scenario": "dict",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "shop.py::run"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "shop.py::run"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": 391,
+   "completion_tokens": 2766,
+   "latency_ms": 16873.4
+  },
+  {
+   "id": "dict-rep2-propose",
+   "arm": "lexical",
+   "scenario": "dict",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "reg.py::run",
+    "target.py::quantize"
+   ],
+   "a3_present": true,
+   "a3_count": 1,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 239,
+   "completion_tokens": 2707,
+   "latency_ms": 29164.2,
+   "fixture_digest": "cd9418445ff6",
+   "proposal_exact": false,
+   "committed_correct": false,
+   "false_promotion": false,
+   "pass": false
+  },
+  {
+   "id": "dict-rep2-apply",
+   "arm": "lexical",
+   "scenario": "dict",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "reg.py::run"
+   ],
+   "obsolete": [],
+   "parsed": [],
+   "stale": [],
+   "pass": false,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 88,
+   "completion_tokens": 1814,
+   "latency_ms": 13645.2
+  },
+  {
+   "id": "dict-rep2-propose",
+   "arm": "select",
+   "scenario": "dict",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "reg.py::run",
+    "target.py::quantize"
+   ],
+   "a3_present": true,
+   "a3_count": 1,
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "target.py::quantize",
+    "object": "reg.py::run"
+   },
+   "proposal_error": null,
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": 522,
+   "completion_tokens": 4397,
+   "latency_ms": 32642.0,
+   "fixture_digest": "cd9418445ff6",
+   "proposal_exact": false,
+   "committed_correct": false,
+   "false_promotion": true,
+   "pass": false
+  },
+  {
+   "id": "dict-rep2-apply",
+   "arm": "select",
+   "scenario": "dict",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "reg.py::run"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "reg.py::run"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": 406,
+   "completion_tokens": 4095,
+   "latency_ms": 30302.5
+  },
+  {
+   "id": "dict-rep2-propose",
+   "arm": "select-a3",
+   "scenario": "dict",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "reg.py::run",
+    "target.py::quantize"
+   ],
+   "a3_present": true,
+   "a3_count": 1,
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "reg.py::run",
+    "object": "target.py::quantize"
+   },
+   "proposal_error": null,
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": 579,
+   "completion_tokens": 4581,
+   "latency_ms": 34512.9,
+   "fixture_digest": "cd9418445ff6",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "pass": true
+  },
+  {
+   "id": "dict-rep2-apply",
+   "arm": "select-a3",
+   "scenario": "dict",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "reg.py::run"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "reg.py::run"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": 405,
+   "completion_tokens": 2353,
+   "latency_ms": 28624.3
+  },
+  {
+   "id": "dict-rep3-propose",
+   "arm": "lexical",
+   "scenario": "dict",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::run",
+    "shop.py::floor_price"
+   ],
+   "a3_present": true,
+   "a3_count": 1,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 231,
+   "completion_tokens": 3321,
+   "latency_ms": 28007.1,
+   "fixture_digest": "a1b266124578",
+   "proposal_exact": false,
+   "committed_correct": false,
+   "false_promotion": false,
+   "pass": false
+  },
+  {
+   "id": "dict-rep3-apply",
+   "arm": "lexical",
+   "scenario": "dict",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "shop.py::run"
+   ],
+   "obsolete": [],
+   "parsed": [],
+   "stale": [],
+   "pass": false,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 80,
+   "completion_tokens": 2651,
+   "latency_ms": 19507.5
+  },
+  {
+   "id": "dict-rep3-propose",
+   "arm": "select",
+   "scenario": "dict",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::run",
+    "shop.py::floor_price"
+   ],
+   "a3_present": true,
+   "a3_count": 1,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 505,
+   "completion_tokens": 4530,
+   "latency_ms": 34851.1,
+   "fixture_digest": "a1b266124578",
+   "proposal_exact": false,
+   "committed_correct": false,
+   "false_promotion": false,
+   "pass": false
+  },
+  {
+   "id": "dict-rep3-apply",
+   "arm": "select",
+   "scenario": "dict",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "shop.py::run"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "shop.py::run"
+   ],
+   "stale": [],
+   "pass": false,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 354,
+   "completion_tokens": 1432,
+   "latency_ms": 15131.5
+  },
+  {
+   "id": "dict-rep3-propose",
+   "arm": "select-a3",
+   "scenario": "dict",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::run",
+    "shop.py::floor_price"
+   ],
+   "a3_present": true,
+   "a3_count": 1,
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "shop.py::run",
+    "object": "shop.py::floor_price"
+   },
+   "proposal_error": null,
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": 562,
+   "completion_tokens": 2951,
+   "latency_ms": 26882.2,
+   "fixture_digest": "a1b266124578",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "pass": true
+  },
+  {
+   "id": "dict-rep3-apply",
+   "arm": "select-a3",
+   "scenario": "dict",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "shop.py::run"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "shop.py::run"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": 388,
+   "completion_tokens": 1644,
+   "latency_ms": 22563.4
+  },
+  {
+   "id": "dict-rep4-propose",
+   "arm": "lexical",
+   "scenario": "dict",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "reg.py::run",
+    "target.py::ceil_total"
+   ],
+   "a3_present": true,
+   "a3_count": 1,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 240,
+   "completion_tokens": 3601,
+   "latency_ms": 28074.2,
+   "fixture_digest": "42ebea927140",
+   "proposal_exact": false,
+   "committed_correct": false,
+   "false_promotion": false,
+   "pass": false
+  },
+  {
+   "id": "dict-rep4-apply",
+   "arm": "lexical",
+   "scenario": "dict",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "reg.py::run"
+   ],
+   "obsolete": [],
+   "parsed": [],
+   "stale": [],
+   "pass": false,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 89,
+   "completion_tokens": 2197,
+   "latency_ms": 24026.5
+  },
+  {
+   "id": "dict-rep4-propose",
+   "arm": "select",
+   "scenario": "dict",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "reg.py::run",
+    "target.py::ceil_total"
+   ],
+   "a3_present": true,
+   "a3_count": 1,
+   "proposal": null,
+   "proposal_error": "claims fence is empty",
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": 523,
+   "completion_tokens": 4366,
+   "latency_ms": 35170.8,
+   "fixture_digest": "42ebea927140",
+   "proposal_exact": false,
+   "committed_correct": false,
+   "false_promotion": false,
+   "pass": false
+  },
+  {
+   "id": "dict-rep4-apply",
+   "arm": "select",
+   "scenario": "dict",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "reg.py::run"
+   ],
+   "obsolete": [],
+   "parsed": [],
+   "stale": [],
+   "pass": false,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": 372,
+   "completion_tokens": 1023,
+   "latency_ms": 13143.2
+  },
+  {
+   "id": "dict-rep4-propose",
+   "arm": "select-a3",
+   "scenario": "dict",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "reg.py::run",
+    "target.py::ceil_total"
+   ],
+   "a3_present": true,
+   "a3_count": 1,
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "reg.py::run",
+    "object": "target.py::ceil_total"
+   },
+   "proposal_error": null,
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": 580,
+   "completion_tokens": 3193,
+   "latency_ms": 29389.0,
+   "fixture_digest": "42ebea927140",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "pass": true
+  },
+  {
+   "id": "dict-rep4-apply",
+   "arm": "select-a3",
+   "scenario": "dict",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "reg.py::run"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "reg.py::run"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": 406,
+   "completion_tokens": 1561,
+   "latency_ms": 19381.6
+  }
+ ],
+ "limitations": [
+  "n=5 reps per cell; temperature 0; directional evidence only."
+ ]
+}
