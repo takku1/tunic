@@ -7,35 +7,43 @@
   "seed": 0
  },
  "context_cap": 4000,
- "tunic_commit": "7fbfddc18d48da7e6a846843bde78a820fa1eaee",
+ "tunic_commit": "ee9162bcf6ca09a942c09f96adda1d847e946371",
+ "sources": {
+  "tunic": {
+   "path": "Z:\\tunic",
+   "commit": "ee9162bcf6ca09a942c09f96adda1d847e946371",
+   "status": "M tests/test_render_answer.py\n M tunic/render.py",
+   "error": null
+  }
+ },
  "summary": {
   "none": {
    "passed": 2,
    "n": 4,
    "stale_tasks": 0,
    "hallucinated_tasks": 0,
-   "mean_latency_ms": 6797.7
+   "mean_latency_ms": 6590.1
   },
   "lexical": {
    "passed": 3,
    "n": 4,
    "stale_tasks": 1,
    "hallucinated_tasks": 0,
-   "mean_latency_ms": 8397.6
+   "mean_latency_ms": 6390.3
   },
   "tunic": {
    "passed": 4,
    "n": 4,
    "stale_tasks": 0,
    "hallucinated_tasks": 0,
-   "mean_latency_ms": 8020.6
+   "mean_latency_ms": 10225.4
   },
   "tunic-select": {
-   "passed": 3,
+   "passed": 4,
    "n": 4,
-   "stale_tasks": 1,
+   "stale_tasks": 0,
    "hallucinated_tasks": 0,
-   "mean_latency_ms": 9558.6
+   "mean_latency_ms": 10492.6
   }
  },
  "tasks": [
@@ -58,8 +66,8 @@
      "exact": false,
      "response": "```symbols\n\n```",
      "prompt_tokens": 79,
-     "completion_tokens": 1115,
-     "latency_ms": 5433.9
+     "completion_tokens": 1081,
+     "latency_ms": 7362.4
     },
     "lexical": {
      "context_chars": 436,
@@ -73,38 +81,38 @@
      "exact": true,
      "response": "```symbols\ncheckout.py::place_order\n```",
      "prompt_tokens": 206,
-     "completion_tokens": 671,
-     "latency_ms": 3126.2
+     "completion_tokens": 697,
+     "latency_ms": 3303.0
     },
     "tunic": {
-     "context_chars": 1094,
+     "context_chars": 1290,
      "parsed": [
       "checkout.py::place_order"
      ],
-     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  pricing.py::round_total [best match: name; stages: name,lexical]\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  checkout.py::place_order\nASSERTED CLAIMS (source text; do not present as verified fact):\n  depends_on checkout.py::place_order pricing.py::round_total [authority=None status=asserted_in_source supports=1 retractions=0]\nDISPUTED (contested; do not treat as settled either way):\n  (none)\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  notes/decisions.md::document -> None [syntactic_observation]\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
+     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  pricing.py::round_total [best match: name; stages: name,lexical]\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  checkout.py::place_order\nASSERTED CLAIMS (source text; do not present as verified fact):\n  depends_on checkout.py::place_order pricing.py::round_total [authority=None status=asserted_in_source supports=1 retractions=0]\nCORRECTIONS (graph operations; the named knowledge was removed):\n  (none)\nDISPUTED (contested; do not treat as settled either way):\n  (none)\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  notes/decisions.md::document -> None [syntactic_observation]\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. CORRECTIONS describe removed or replaced knowledge; never list a corrected, retracted, or superseded symbol as an answer. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
      "hallucinated": [],
      "stale": [],
      "pass": true,
      "exact": true,
      "response": "```symbols\ncheckout.py::place_order\n```",
-     "prompt_tokens": 332,
-     "completion_tokens": 158,
-     "latency_ms": 781.6
+     "prompt_tokens": 374,
+     "completion_tokens": 1532,
+     "latency_ms": 7226.3
     },
     "tunic-select": {
-     "context_chars": 1094,
+     "context_chars": 1290,
      "parsed": [
       "checkout.py::place_order"
      ],
-     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  pricing.py::round_total [best match: name; stages: name,lexical]\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  checkout.py::place_order\nASSERTED CLAIMS (source text; do not present as verified fact):\n  depends_on checkout.py::place_order pricing.py::round_total [authority=None status=asserted_in_source supports=1 retractions=0]\nDISPUTED (contested; do not treat as settled either way):\n  (none)\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  notes/decisions.md::document -> None [syntactic_observation]\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
+     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  pricing.py::round_total [best match: name; stages: name,lexical]\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  checkout.py::place_order\nASSERTED CLAIMS (source text; do not present as verified fact):\n  depends_on checkout.py::place_order pricing.py::round_total [authority=None status=asserted_in_source supports=1 retractions=0]\nCORRECTIONS (graph operations; the named knowledge was removed):\n  (none)\nDISPUTED (contested; do not treat as settled either way):\n  (none)\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  notes/decisions.md::document -> None [syntactic_observation]\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. CORRECTIONS describe removed or replaced knowledge; never list a corrected, retracted, or superseded symbol as an answer. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
      "hallucinated": [],
      "stale": [],
      "pass": true,
      "exact": true,
      "response": "```symbols\ncheckout.py::place_order\n```",
-     "prompt_tokens": 332,
-     "completion_tokens": 2508,
-     "latency_ms": 12170.4
+     "prompt_tokens": 374,
+     "completion_tokens": 1617,
+     "latency_ms": 7606.1
     }
    }
   },
@@ -127,8 +135,8 @@
      "exact": false,
      "response": "```symbols\n\n```",
      "prompt_tokens": 78,
-     "completion_tokens": 2089,
-     "latency_ms": 10127.8
+     "completion_tokens": 1382,
+     "latency_ms": 6493.3
     },
     "lexical": {
      "context_chars": 436,
@@ -142,38 +150,38 @@
      "exact": true,
      "response": "```symbols\npricing.py::round_total\n```",
      "prompt_tokens": 205,
-     "completion_tokens": 2113,
-     "latency_ms": 10057.8
+     "completion_tokens": 1549,
+     "latency_ms": 7273.8
     },
     "tunic": {
-     "context_chars": 1094,
+     "context_chars": 1290,
      "parsed": [
       "pricing.py::round_total"
      ],
-     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  pricing.py::round_total [best match: name; stages: name,lexical]\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  checkout.py::place_order\nASSERTED CLAIMS (source text; do not present as verified fact):\n  depends_on checkout.py::place_order pricing.py::round_total [authority=None status=asserted_in_source supports=1 retractions=0]\nDISPUTED (contested; do not treat as settled either way):\n  (none)\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  notes/decisions.md::document -> None [syntactic_observation]\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
+     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  pricing.py::round_total [best match: name; stages: name,lexical]\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  checkout.py::place_order\nASSERTED CLAIMS (source text; do not present as verified fact):\n  depends_on checkout.py::place_order pricing.py::round_total [authority=None status=asserted_in_source supports=1 retractions=0]\nCORRECTIONS (graph operations; the named knowledge was removed):\n  (none)\nDISPUTED (contested; do not treat as settled either way):\n  (none)\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  notes/decisions.md::document -> None [syntactic_observation]\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. CORRECTIONS describe removed or replaced knowledge; never list a corrected, retracted, or superseded symbol as an answer. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
      "hallucinated": [],
      "stale": [],
      "pass": true,
      "exact": true,
      "response": "```symbols\npricing.py::round_total\n```",
-     "prompt_tokens": 331,
-     "completion_tokens": 1448,
-     "latency_ms": 6820.9
+     "prompt_tokens": 373,
+     "completion_tokens": 2036,
+     "latency_ms": 9674.9
     },
     "tunic-select": {
-     "context_chars": 1094,
+     "context_chars": 1290,
      "parsed": [
       "pricing.py::round_total"
      ],
-     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  pricing.py::round_total [best match: name; stages: name,lexical]\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  checkout.py::place_order\nASSERTED CLAIMS (source text; do not present as verified fact):\n  depends_on checkout.py::place_order pricing.py::round_total [authority=None status=asserted_in_source supports=1 retractions=0]\nDISPUTED (contested; do not treat as settled either way):\n  (none)\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  notes/decisions.md::document -> None [syntactic_observation]\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
+     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  pricing.py::round_total [best match: name; stages: name,lexical]\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  checkout.py::place_order\nASSERTED CLAIMS (source text; do not present as verified fact):\n  depends_on checkout.py::place_order pricing.py::round_total [authority=None status=asserted_in_source supports=1 retractions=0]\nCORRECTIONS (graph operations; the named knowledge was removed):\n  (none)\nDISPUTED (contested; do not treat as settled either way):\n  (none)\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  notes/decisions.md::document -> None [syntactic_observation]\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. CORRECTIONS describe removed or replaced knowledge; never list a corrected, retracted, or superseded symbol as an answer. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
      "hallucinated": [],
      "stale": [],
      "pass": true,
      "exact": true,
      "response": "```symbols\npricing.py::round_total\n```",
-     "prompt_tokens": 331,
-     "completion_tokens": 1257,
-     "latency_ms": 5851.1
+     "prompt_tokens": 373,
+     "completion_tokens": 1983,
+     "latency_ms": 9493.1
     }
    }
   },
@@ -196,8 +204,8 @@
      "exact": true,
      "response": "```symbols\n\n```",
      "prompt_tokens": 79,
-     "completion_tokens": 1115,
-     "latency_ms": 5178.1
+     "completion_tokens": 1081,
+     "latency_ms": 5123.7
     },
     "lexical": {
      "context_chars": 753,
@@ -213,38 +221,34 @@
      "exact": false,
      "response": "```symbols\ncheckout.py::place_order\n```",
      "prompt_tokens": 301,
-     "completion_tokens": 2562,
-     "latency_ms": 12189.8
+     "completion_tokens": 1561,
+     "latency_ms": 7340.0
     },
     "tunic": {
-     "context_chars": 1204,
+     "context_chars": 1453,
      "parsed": [],
-     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  pricing.py::round_total [best match: name; stages: name,lexical]\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  (none)\nASSERTED CLAIMS (source text; do not present as verified fact):\n  retracts checkout.py::place_order pricing.py::round_total [authority=agent-outcome status=asserted_in_source supports=0 retractions=0]\nDISPUTED (contested; do not treat as settled either way):\n  depends_on checkout.py::place_order pricing.py::round_total [authority=None status=asserted_in_source supports=1 retractions=1]\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  notes/decisions.md::document -> None [syntactic_observation]\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
+     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  pricing.py::round_total [best match: name; stages: name,lexical]\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  (none)\nASSERTED CLAIMS (source text; do not present as verified fact):\n  (none)\nCORRECTIONS (graph operations; the named knowledge was removed):\n  retracts checkout.py::place_order pricing.py::round_total [authority=agent-outcome status=asserted_in_source supports=0 retractions=0] [obsolete depends_on; neither endpoint is an answer]\nDISPUTED (contested; do not treat as settled either way):\n  depends_on checkout.py::place_order pricing.py::round_total [authority=None status=asserted_in_source supports=1 retractions=1]\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  notes/decisions.md::document -> None [syntactic_observation]\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. CORRECTIONS describe removed or replaced knowledge; never list a corrected, retracted, or superseded symbol as an answer. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
      "hallucinated": [],
      "stale": [],
      "pass": true,
      "exact": true,
-     "response": "```symbols\n\n```",
-     "prompt_tokens": 358,
-     "completion_tokens": 3119,
-     "latency_ms": 14870.5
+     "response": "```\n```",
+     "prompt_tokens": 411,
+     "completion_tokens": 3211,
+     "latency_ms": 15584.1
     },
     "tunic-select": {
-     "context_chars": 1204,
-     "parsed": [
-      "checkout.py::place_order"
-     ],
-     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  pricing.py::round_total [best match: name; stages: name,lexical]\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  (none)\nASSERTED CLAIMS (source text; do not present as verified fact):\n  retracts checkout.py::place_order pricing.py::round_total [authority=agent-outcome status=asserted_in_source supports=0 retractions=0]\nDISPUTED (contested; do not treat as settled either way):\n  depends_on checkout.py::place_order pricing.py::round_total [authority=None status=asserted_in_source supports=1 retractions=1]\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  notes/decisions.md::document -> None [syntactic_observation]\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
+     "context_chars": 1453,
+     "parsed": [],
+     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  pricing.py::round_total [best match: name; stages: name,lexical]\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  (none)\nASSERTED CLAIMS (source text; do not present as verified fact):\n  (none)\nCORRECTIONS (graph operations; the named knowledge was removed):\n  retracts checkout.py::place_order pricing.py::round_total [authority=agent-outcome status=asserted_in_source supports=0 retractions=0] [obsolete depends_on; neither endpoint is an answer]\nDISPUTED (contested; do not treat as settled either way):\n  depends_on checkout.py::place_order pricing.py::round_total [authority=None status=asserted_in_source supports=1 retractions=1]\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  notes/decisions.md::document -> None [syntactic_observation]\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. CORRECTIONS describe removed or replaced knowledge; never list a corrected, retracted, or superseded symbol as an answer. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
      "hallucinated": [],
-     "stale": [
-      "checkout.py::place_order"
-     ],
-     "pass": false,
-     "exact": false,
-     "response": "```symbols\ncheckout.py::place_order\n```",
-     "prompt_tokens": 358,
-     "completion_tokens": 1890,
-     "latency_ms": 8826.1
+     "stale": [],
+     "pass": true,
+     "exact": true,
+     "response": "```\n\n```",
+     "prompt_tokens": 411,
+     "completion_tokens": 2402,
+     "latency_ms": 11506.5
     }
    }
   },
@@ -265,8 +269,8 @@
      "exact": true,
      "response": "```\n\n```",
      "prompt_tokens": 77,
-     "completion_tokens": 1398,
-     "latency_ms": 6451.1
+     "completion_tokens": 1571,
+     "latency_ms": 7381.0
     },
     "lexical": {
      "context_chars": 21,
@@ -276,36 +280,36 @@
      "stale": [],
      "pass": true,
      "exact": true,
-     "response": "```symbols\n\n```",
+     "response": "```\n\n```",
      "prompt_tokens": 77,
-     "completion_tokens": 1773,
-     "latency_ms": 8216.7
+     "completion_tokens": 1623,
+     "latency_ms": 7644.3
     },
     "tunic": {
-     "context_chars": 843,
+     "context_chars": 1039,
      "parsed": [],
-     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  (none)\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  (none)\nASSERTED CLAIMS (source text; do not present as verified fact):\n  (none)\nDISPUTED (contested; do not treat as settled either way):\n  (none)\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  (none)\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
-     "hallucinated": [],
-     "stale": [],
-     "pass": true,
-     "exact": true,
-     "response": "```symbols\n\n```",
-     "prompt_tokens": 274,
-     "completion_tokens": 1989,
-     "latency_ms": 9609.6
-    },
-    "tunic-select": {
-     "context_chars": 843,
-     "parsed": [],
-     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  (none)\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  (none)\nASSERTED CLAIMS (source text; do not present as verified fact):\n  (none)\nDISPUTED (contested; do not treat as settled either way):\n  (none)\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  (none)\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
+     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  (none)\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  (none)\nASSERTED CLAIMS (source text; do not present as verified fact):\n  (none)\nCORRECTIONS (graph operations; the named knowledge was removed):\n  (none)\nDISPUTED (contested; do not treat as settled either way):\n  (none)\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  (none)\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. CORRECTIONS describe removed or replaced knowledge; never list a corrected, retracted, or superseded symbol as an answer. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
      "hallucinated": [],
      "stale": [],
      "pass": true,
      "exact": true,
      "response": "```\n\n```",
-     "prompt_tokens": 274,
-     "completion_tokens": 2377,
-     "latency_ms": 11386.8
+     "prompt_tokens": 316,
+     "completion_tokens": 1763,
+     "latency_ms": 8416.2
+    },
+    "tunic-select": {
+     "context_chars": 1039,
+     "parsed": [],
+     "context": "CANDIDATES (discovery only; listing here asserts nothing):\n  (none)\nOBSERVED DEPENDENCIES (verified by static code extraction):\n  (none)\nASSERTED DEPENDENCIES (source claims, NOT independently verified):\n  (none)\nASSERTED CLAIMS (source text; do not present as verified fact):\n  (none)\nCORRECTIONS (graph operations; the named knowledge was removed):\n  (none)\nDISPUTED (contested; do not treat as settled either way):\n  (none)\nWITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):\n  (none)\nTEXT MENTIONS (lexical co-occurrence, not a code relationship):\n  (none)\nTRUST RULE: OBSERVED lines are verified static-code facts. ASSERTED lines are session-recorded claims with their authority shown: usable as answers when relevant, but they are records, not code proofs. CORRECTIONS describe removed or replaced knowledge; never list a corrected, retracted, or superseded symbol as an answer. DISPUTED lines are contested: do not rely on one alone when an undisputed alternative answers the question. WITHHELD lines are not evidence.",
+     "hallucinated": [],
+     "stale": [],
+     "pass": true,
+     "exact": true,
+     "response": "```\n\n```",
+     "prompt_tokens": 316,
+     "completion_tokens": 2744,
+     "latency_ms": 13364.8
     }
    }
   }

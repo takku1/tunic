@@ -118,6 +118,44 @@ class AnswerRetrievalTests(unittest.TestCase):
                           limit=-1)
 
 
+class LexicalCacheTest(unittest.TestCase):
+    def test_index_reused_until_tree_changes(self):
+        import time
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        (root / "a.py").write_text("def alpha():\n    return 1\n", encoding="utf-8")
+        memory = Memory(str(root / "c.sqlite"), root)
+        self.addCleanup(memory.close)
+        memory.ingest()
+        first = memory.answer("which code mentions alpha", limit=5,
+                             budget={"exact": 0, "name": 0, "semantic": 0})
+        index = memory._lexical_index(memory.store.current())
+        second = memory.answer("which code mentions alpha", limit=5,
+                              budget={"exact": 0, "name": 0, "semantic": 0})
+        self.assertIs(memory._lexical_index(memory.store.current()), index)
+        self.assertEqual(first["candidates"], second["candidates"])
+        time.sleep(0.01)
+        (root / "a.py").write_text("def alpha():\n    return 1\n\n\ndef beta():\n    return 2\n",
+                                   encoding="utf-8")
+        # Touch mtime explicitly: coarse filesystems may keep the stamp.
+        import os
+        stamp = time.time() + 5
+        os.utime(root / "a.py", (stamp, stamp))
+        memory.answer("which code mentions beta", limit=5,
+                        budget={"exact": 0, "name": 0, "semantic": 0})
+        # Un-ingested code is never a candidate (unknown to the graph), but
+        # the changed tree must still trigger a re-parse for parity with a
+        # fresh BM25 build.
+        self.assertIsNot(memory._lexical_index(memory.store.current()), index)
+        from tunic.baselines import BM25
+        fresh = BM25(root)
+        cached = memory._lexical_index(memory.store.current())
+        self.assertEqual(
+            sorted(d["symbol"] for d in cached.documents),
+            sorted(d["symbol"] for d in fresh.documents))
+
+
 class TextNotesTest(unittest.TestCase):
     def test_notes_are_retrievable_and_code_is_not(self):
         tmp = tempfile.TemporaryDirectory()

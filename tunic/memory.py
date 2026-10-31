@@ -35,6 +35,28 @@ class Memory:
         self.root = Path(root)
         self.store = GraphStore(db)
         self.principal = principal
+        self._bm25 = None
+        self._bm25_key = None
+
+    def _lexical_index(self, snapshot):
+        """Cached BM25 over the worktree; rebuilt only when the snapshot or
+        any Python file changes. A stat walk is far cheaper than re-parsing
+        1600+ files per answer() call, and the key guarantees the cached
+        index reflects exactly what a fresh build would see."""
+        newest, count = 0, 0
+        for path in self.root.rglob("*.py"):
+            if "__pycache__" in path.parts or path.is_symlink():
+                continue
+            try:
+                newest = max(newest, path.stat().st_mtime_ns)
+            except OSError:
+                continue
+            count += 1
+        key = (snapshot, newest, count)
+        if self._bm25 is None or self._bm25_key != key:
+            self._bm25 = BM25(self.root)
+            self._bm25_key = key
+        return self._bm25
 
     def close(self):
         self.store.close()
@@ -197,7 +219,7 @@ class Memory:
         index = None
         if mode == "hybrid" and caps["lexical"] > 0:
             started = time.perf_counter()
-            index = BM25(self.root)
+            index = self._lexical_index(snapshot)
             lexical = [hit["symbol"] for hit in
                        index.search_text(task, top_k=caps["lexical"])]
             stages["lexical"] = {"candidates": len(lexical),
@@ -212,7 +234,7 @@ class Memory:
         if mode == "hybrid" and caps["semantic"] > 0 and provider.available():
             try:
                 if index is None:
-                    index = BM25(self.root)
+                    index = self._lexical_index(snapshot)
                 texts, order = [], []
                 for document in index.documents:
                     text = document["symbol"] + " " + " ".join(sorted(document["tokens"]))

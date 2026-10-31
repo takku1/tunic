@@ -143,7 +143,7 @@ def render_answer_text(result, *, cap=4000, receipt=None):
         verification = (entry.get("derivation") or {}).get("verification", "")
         (observed if verification == "syntactic_path_only" else asserted).append(
             entry.get("symbol", "?"))
-    disputed, claims = [], []
+    disputed, claims, corrections = [], [], []
     for claim in result.get("claims") or []:
         relation = claim.get("relation", "?")
         text = "%s %s %s [authority=%s status=%s supports=%s retractions=%s]" % (
@@ -151,7 +151,14 @@ def render_answer_text(result, *, cap=4000, receipt=None):
             claim.get("callee") or claim.get("candidate") or "?",
             claim.get("authority", "?"), claim.get("status", "?"),
             claim.get("supports", 0), claim.get("retractions", 0))
-        if relation == "contradicts" or (claim.get("retractions") or 0) > 0:
+        if relation in ("retracts", "corrects", "supersedes"):
+            # Meta-operations on the graph, not object-level evidence: a
+            # retracts/corrects/supersedes line explains removed knowledge.
+            # Rendering it as an asserted claim lets a model re-list the
+            # obsolete symbol as an answer (MS-correct regression).
+            corrections.append(text + " [obsolete %s; neither endpoint is an answer]" %
+                               (claim.get("retract") or relation))
+        elif relation == "contradicts" or (claim.get("retractions") or 0) > 0:
             disputed.append(text)
         else:
             claims.append(text)
@@ -172,8 +179,10 @@ def render_answer_text(result, *, cap=4000, receipt=None):
     trust = ("TRUST RULE: OBSERVED lines are verified static-code facts. "
              "ASSERTED lines are session-recorded claims with their authority "
              "shown: usable as answers when relevant, but they are records, "
-             "not code proofs. DISPUTED lines are contested: do not rely on "
-             "one alone when an undisputed alternative answers the question. "
+             "not code proofs. CORRECTIONS describe removed or replaced "
+             "knowledge; never list a corrected, retracted, or superseded "
+             "symbol as an answer. DISPUTED lines are contested: do not rely "
+             "on one alone when an undisputed alternative answers the question. "
              "WITHHELD lines are not evidence.")
     sections = [
         ("candidates", "CANDIDATES (discovery only; listing here asserts nothing):",
@@ -184,6 +193,8 @@ def render_answer_text(result, *, cap=4000, receipt=None):
          ["  " + symbol for symbol in asserted] or ["  (none)"], False),
         ("asserted_claims", "ASSERTED CLAIMS (source text; do not present as verified fact):",
          ["  " + text for text in dedup(claims)] or ["  (none)"], False),
+        ("corrections", "CORRECTIONS (graph operations; the named knowledge was removed):",
+         ["  " + text for text in dedup(corrections)] or ["  (none)"], False),
         ("disputed", "DISPUTED (contested; do not treat as settled either way):",
          ["  " + text for text in dedup(disputed)] or ["  (none)"], False),
         ("withheld", "WITHHELD AS INSUFFICIENT (discovered but excluded; not evidence):",

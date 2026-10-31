@@ -108,6 +108,24 @@ class RenderAnswerTrustTest(unittest.TestCase):
         self.assertTrue(small["truncated"])
         self.assertTrue(small["sections_dropped"])
 
+    def test_corrections_are_not_asserted_claims(self):
+        # Repro for the MS-correct stale-memory regression: a retracts
+        # meta-operation rendered under ASSERTED CLAIMS lets the model
+        # re-list the obsolete symbol as an answer.
+        claim = {"relation": "retracts", "caller": "checkout.py::place_order",
+                 "callee": "pricing.py::round_total", "authority": "agent-outcome",
+                 "status": "asserted_in_source", "supports": 0, "retractions": 0,
+                 "retract": "depends_on"}
+        result = {"candidates": [], "impacts": [], "mentions": [],
+                  "claims": [dict(claim)], "selection": None}
+        text = render_answer_text(result)
+        asserted = text.split("ASSERTED CLAIMS")[1].split("CORRECTIONS")[0]
+        self.assertNotIn("retracts", asserted)
+        self.assertIn("CORRECTIONS", text)
+        corrections = text.split("CORRECTIONS")[1].split("DISPUTED")[0]
+        self.assertIn("retracts checkout.py::place_order", corrections)
+        self.assertIn("obsolete", corrections)
+
     def test_zero_cap_returns_empty(self):
         receipt = {}
         self.assertEqual(render_answer_text({"candidates": []}, cap=0, receipt=receipt), "")
