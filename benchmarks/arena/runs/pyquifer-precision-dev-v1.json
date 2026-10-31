@@ -1,0 +1,3623 @@
+{
+  "benchmark": "pyquifer-precision-dev-v1",
+  "conditions": {
+    "dev": "pyquifer-precision-dev-v1 (disjoint from held-out)",
+    "top_k": 5
+  },
+  "dev_summary": {
+    "bm25-only": {
+      "exact_tasks": 0,
+      "junk_symbols": [
+        "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+        "tests/benchmarks/bench_penrose_chess.py::main",
+        "tests/benchmarks/bench_penrose_chess.py::minimax",
+        "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+        "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+      ],
+      "latency_ms": {
+        "max": 29440.7,
+        "mean": 25311.165,
+        "min": 15776.1,
+        "n": 20,
+        "p50": 26109.75
+      },
+      "mean_ndcg_at_5": 0.5004561803550784,
+      "mean_recall_at_1": 0.29166666666666663,
+      "mean_recall_at_3": 0.5033333333333333,
+      "micro_f1": 0.25125628140703515,
+      "micro_precision": 0.15432098765432098,
+      "micro_recall": 0.6756756756756757,
+      "mrr": 0.48666666666666664
+    },
+    "full-hybrid": {
+      "exact_tasks": 0,
+      "junk_symbols": [
+        "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+        "tests/benchmarks/bench_penrose_chess.py::main",
+        "tests/benchmarks/bench_penrose_chess.py::minimax",
+        "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+        "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+      ],
+      "latency_ms": {
+        "max": 95555.7,
+        "mean": 31830.03,
+        "min": 17492.6,
+        "n": 20,
+        "p50": 29547.8
+      },
+      "mean_ndcg_at_5": 0.38680916466051396,
+      "mean_recall_at_1": 0.0,
+      "mean_recall_at_3": 0.49333333333333335,
+      "micro_f1": 0.35406698564593303,
+      "micro_precision": 0.21511627906976744,
+      "micro_recall": 1.0,
+      "mrr": 0.34172619047619046
+    },
+    "hybrid-select": {
+      "exact_tasks": 0,
+      "junk_symbols": [
+        "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+        "tests/benchmarks/bench_penrose_chess.py::main",
+        "tests/benchmarks/bench_penrose_chess.py::minimax",
+        "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+        "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+      ],
+      "latency_ms": {
+        "max": 36016.7,
+        "mean": 24305.405,
+        "min": 16137.8,
+        "n": 20,
+        "p50": 24047.199999999997
+      },
+      "mean_ndcg_at_5": 0.45824610092144596,
+      "mean_recall_at_1": 0.0,
+      "mean_recall_at_3": 0.5433333333333333,
+      "micro_f1": 0.37948717948717947,
+      "micro_precision": 0.23417721518987342,
+      "micro_recall": 1.0,
+      "mrr": 0.3608928571428571
+    }
+  },
+  "dev_tasks": [
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 26802.2,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "src/pyquifer/cognition/control/deliberation.py::SelfCorrectionLoop.forward",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": null,
+            "mrr": 0.0,
+            "ndcg_at_5": 0.0,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward"
+            ],
+            "f1": 0.0,
+            "fn": 1,
+            "fp": 8,
+            "missing": [
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward"
+            ],
+            "precision": 0.0,
+            "predicted": [
+              "src/pyquifer/cognition/control/deliberation.py::SelfCorrectionLoop.forward",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 0.0,
+            "tp": 0,
+            "unexpected": [
+              "src/pyquifer/cognition/control/deliberation.py::SelfCorrectionLoop.forward",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "full-hybrid": {
+          "latency_ms": 95555.7,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.generate",
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
+            "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 6,
+            "mrr": 0.16666666666666666,
+            "ndcg_at_5": 0.0,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward"
+            ],
+            "f1": 0.18181818181818182,
+            "fn": 0,
+            "fp": 9,
+            "missing": [],
+            "precision": 0.1,
+            "predicted": [
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward",
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.generate",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.generate",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "hybrid-select": {
+          "latency_ms": 22132.8,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.generate",
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
+            "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 5,
+            "mrr": 0.2,
+            "ndcg_at_5": 0.38685280723454163,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward"
+            ],
+            "f1": 0.2,
+            "fn": 0,
+            "fp": 8,
+            "missing": [],
+            "precision": 0.1111111111111111,
+            "predicted": [
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward",
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.generate",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.generate",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        }
+      },
+      "gold": [
+        "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward"
+      ],
+      "id": "pyq-dev-01",
+      "question": "Which functions break if generate changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 25767.7,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire._unconstrained_repertoire",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+            "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_concept",
+            "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mic",
+            "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mie",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 6,
+            "mrr": 0.16666666666666666,
+            "ndcg_at_5": 0.0,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mic",
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mie"
+            ],
+            "f1": 0.3076923076923077,
+            "fn": 0,
+            "fp": 9,
+            "missing": [],
+            "precision": 0.18181818181818182,
+            "predicted": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire._unconstrained_repertoire",
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_concept",
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mic",
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mie",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 2,
+            "unexpected": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire._unconstrained_repertoire",
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_concept",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "full-hybrid": {
+          "latency_ms": 29095.8,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire._unconstrained_repertoire",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+            "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_concept",
+            "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mic",
+            "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mie",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 6,
+            "mrr": 0.16666666666666666,
+            "ndcg_at_5": 0.0,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mic",
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mie"
+            ],
+            "f1": 0.3076923076923077,
+            "fn": 0,
+            "fp": 9,
+            "missing": [],
+            "precision": 0.18181818181818182,
+            "predicted": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire._unconstrained_repertoire",
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_concept",
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mic",
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mie",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 2,
+            "unexpected": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire._unconstrained_repertoire",
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_concept",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "hybrid-select": {
+          "latency_ms": 19890.2,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire._unconstrained_repertoire",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_concept",
+            "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mic",
+            "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mie",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 4,
+            "mrr": 0.25,
+            "ndcg_at_5": 0.5012658353418871,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mic",
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mie"
+            ],
+            "f1": 0.36363636363636365,
+            "fn": 0,
+            "fp": 7,
+            "missing": [],
+            "precision": 0.2222222222222222,
+            "predicted": [
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire._unconstrained_repertoire",
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_concept",
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mic",
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mie",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 2,
+            "unexpected": [
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire._unconstrained_repertoire",
+              "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_concept",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        }
+      },
+      "gold": [
+        "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mic",
+        "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mie"
+      ],
+      "id": "pyq-dev-02",
+      "question": "Which functions break if _unconstrained_repertoire changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 22117.2,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.compute_fitness",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "src/pyquifer/identity/neural_darwinism.py::SelectionArena.compute_fitness",
+            "src/pyquifer/identity/neural_darwinism.py::SelectionArena.forward",
+            "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.forward",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 5,
+            "mrr": 0.2,
+            "ndcg_at_5": 0.38685280723454163,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/identity/neural_darwinism.py::SelectionArena.forward"
+            ],
+            "f1": 0.18181818181818182,
+            "fn": 0,
+            "fp": 9,
+            "missing": [],
+            "precision": 0.1,
+            "predicted": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/identity/neural_darwinism.py::SelectionArena.compute_fitness",
+              "src/pyquifer/identity/neural_darwinism.py::SelectionArena.forward",
+              "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.compute_fitness",
+              "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.forward",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/identity/neural_darwinism.py::SelectionArena.compute_fitness",
+              "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.compute_fitness",
+              "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.forward",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "full-hybrid": {
+          "latency_ms": 23414.7,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.compute_fitness",
+            "src/pyquifer/identity/neural_darwinism.py::SelectionArena.compute_fitness",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "src/pyquifer/identity/neural_darwinism.py::SelectionArena.forward",
+            "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.forward",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 5,
+            "mrr": 0.2,
+            "ndcg_at_5": 0.38685280723454163,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/identity/neural_darwinism.py::SelectionArena.forward"
+            ],
+            "f1": 0.18181818181818182,
+            "fn": 0,
+            "fp": 9,
+            "missing": [],
+            "precision": 0.1,
+            "predicted": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/identity/neural_darwinism.py::SelectionArena.compute_fitness",
+              "src/pyquifer/identity/neural_darwinism.py::SelectionArena.forward",
+              "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.compute_fitness",
+              "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.forward",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/identity/neural_darwinism.py::SelectionArena.compute_fitness",
+              "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.compute_fitness",
+              "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.forward",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "hybrid-select": {
+          "latency_ms": 24204.8,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.compute_fitness",
+            "src/pyquifer/identity/neural_darwinism.py::SelectionArena.compute_fitness",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/identity/neural_darwinism.py::SelectionArena.forward",
+            "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.forward",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 4,
+            "mrr": 0.25,
+            "ndcg_at_5": 0.43067655807339306,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/identity/neural_darwinism.py::SelectionArena.forward"
+            ],
+            "f1": 0.2,
+            "fn": 0,
+            "fp": 8,
+            "missing": [],
+            "precision": 0.1111111111111111,
+            "predicted": [
+              "src/pyquifer/identity/neural_darwinism.py::SelectionArena.compute_fitness",
+              "src/pyquifer/identity/neural_darwinism.py::SelectionArena.forward",
+              "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.compute_fitness",
+              "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.forward",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/identity/neural_darwinism.py::SelectionArena.compute_fitness",
+              "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.compute_fitness",
+              "src/pyquifer/identity/neural_darwinism.py::SpeciatedSelectionArena.forward",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        }
+      },
+      "gold": [
+        "src/pyquifer/identity/neural_darwinism.py::SelectionArena.forward"
+      ],
+      "id": "pyq-dev-03",
+      "question": "Which functions break if compute_fitness changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 23782.8,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/learning/continual.py::MESU.apply_modulation",
+            "src/pyquifer/learning/continual.py::MESU.get_learning_rates",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 1,
+            "mrr": 1.0,
+            "ndcg_at_5": 1.0,
+            "recall_at_1": 1.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/learning/continual.py::MESU.apply_modulation"
+            ],
+            "f1": 0.2222222222222222,
+            "fn": 0,
+            "fp": 7,
+            "missing": [],
+            "precision": 0.125,
+            "predicted": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/learning/continual.py::MESU.apply_modulation",
+              "src/pyquifer/learning/continual.py::MESU.get_learning_rates",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/learning/continual.py::MESU.get_learning_rates",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "full-hybrid": {
+          "latency_ms": 27225.4,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/learning/continual.py::MESU.get_learning_rates",
+            "src/pyquifer/learning/continual.py::MESU.apply_modulation",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6309297535714575,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/learning/continual.py::MESU.apply_modulation"
+            ],
+            "f1": 0.2222222222222222,
+            "fn": 0,
+            "fp": 7,
+            "missing": [],
+            "precision": 0.125,
+            "predicted": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/learning/continual.py::MESU.apply_modulation",
+              "src/pyquifer/learning/continual.py::MESU.get_learning_rates",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/learning/continual.py::MESU.get_learning_rates",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "hybrid-select": {
+          "latency_ms": 17692.5,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/learning/continual.py::MESU.get_learning_rates",
+            "src/pyquifer/learning/continual.py::MESU.apply_modulation",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6309297535714575,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/learning/continual.py::MESU.apply_modulation"
+            ],
+            "f1": 0.25,
+            "fn": 0,
+            "fp": 6,
+            "missing": [],
+            "precision": 0.14285714285714285,
+            "predicted": [
+              "src/pyquifer/learning/continual.py::MESU.apply_modulation",
+              "src/pyquifer/learning/continual.py::MESU.get_learning_rates",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/learning/continual.py::MESU.get_learning_rates",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        }
+      },
+      "gold": [
+        "src/pyquifer/learning/continual.py::MESU.apply_modulation"
+      ],
+      "id": "pyq-dev-04",
+      "question": "Which functions break if get_learning_rates changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 28036.6,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.get_frequencies",
+            "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 1,
+            "mrr": 1.0,
+            "ndcg_at_5": 1.0,
+            "recall_at_1": 0.5,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+              "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.get_frequencies"
+            ],
+            "f1": 0.4,
+            "fn": 0,
+            "fp": 6,
+            "missing": [],
+            "precision": 0.25,
+            "predicted": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+              "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.get_frequencies",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 2,
+            "unexpected": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "full-hybrid": {
+          "latency_ms": 30206.6,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/dynamics/oscillators/spherical.py::_params_to_skew_symmetric",
+            "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.get_frequencies",
+            "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6934264036172708,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+              "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.get_frequencies"
+            ],
+            "f1": 0.4,
+            "fn": 0,
+            "fp": 6,
+            "missing": [],
+            "precision": 0.25,
+            "predicted": [
+              "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+              "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.get_frequencies",
+              "src/pyquifer/dynamics/oscillators/spherical.py::_params_to_skew_symmetric",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 2,
+            "unexpected": [
+              "src/pyquifer/dynamics/oscillators/spherical.py::_params_to_skew_symmetric",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "hybrid-select": {
+          "latency_ms": 30825.9,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/dynamics/oscillators/spherical.py::_params_to_skew_symmetric",
+            "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.get_frequencies",
+            "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6934264036172708,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+              "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.get_frequencies"
+            ],
+            "f1": 0.4,
+            "fn": 0,
+            "fp": 6,
+            "missing": [],
+            "precision": 0.25,
+            "predicted": [
+              "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+              "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.get_frequencies",
+              "src/pyquifer/dynamics/oscillators/spherical.py::_params_to_skew_symmetric",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 2,
+            "unexpected": [
+              "src/pyquifer/dynamics/oscillators/spherical.py::_params_to_skew_symmetric",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        }
+      },
+      "gold": [
+        "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+        "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.get_frequencies"
+      ],
+      "id": "pyq-dev-05",
+      "question": "Which functions break if _params_to_skew_symmetric changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 15776.1,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/memory/perturbation.py::PerlinNoise.noise2d",
+            "src/pyquifer/memory/perturbation.py::PerlinNoise._lerp"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 1,
+            "mrr": 1.0,
+            "ndcg_at_5": 1.0,
+            "recall_at_1": 1.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/memory/perturbation.py::PerlinNoise.noise2d"
+            ],
+            "f1": 0.6666666666666666,
+            "fn": 0,
+            "fp": 1,
+            "missing": [],
+            "precision": 0.5,
+            "predicted": [
+              "src/pyquifer/memory/perturbation.py::PerlinNoise._lerp",
+              "src/pyquifer/memory/perturbation.py::PerlinNoise.noise2d"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/memory/perturbation.py::PerlinNoise._lerp"
+            ]
+          }
+        },
+        "full-hybrid": {
+          "latency_ms": 17492.6,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/memory/perturbation.py::PerlinNoise._lerp",
+            "src/pyquifer/memory/perturbation.py::PerlinNoise.noise2d"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6309297535714575,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/memory/perturbation.py::PerlinNoise.noise2d"
+            ],
+            "f1": 0.6666666666666666,
+            "fn": 0,
+            "fp": 1,
+            "missing": [],
+            "precision": 0.5,
+            "predicted": [
+              "src/pyquifer/memory/perturbation.py::PerlinNoise._lerp",
+              "src/pyquifer/memory/perturbation.py::PerlinNoise.noise2d"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/memory/perturbation.py::PerlinNoise._lerp"
+            ]
+          }
+        },
+        "hybrid-select": {
+          "latency_ms": 16451.1,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/memory/perturbation.py::PerlinNoise._lerp",
+            "src/pyquifer/memory/perturbation.py::PerlinNoise.noise2d"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6309297535714575,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/memory/perturbation.py::PerlinNoise.noise2d"
+            ],
+            "f1": 0.6666666666666666,
+            "fn": 0,
+            "fp": 1,
+            "missing": [],
+            "precision": 0.5,
+            "predicted": [
+              "src/pyquifer/memory/perturbation.py::PerlinNoise._lerp",
+              "src/pyquifer/memory/perturbation.py::PerlinNoise.noise2d"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/memory/perturbation.py::PerlinNoise._lerp"
+            ]
+          }
+        }
+      },
+      "gold": [
+        "src/pyquifer/memory/perturbation.py::PerlinNoise.noise2d"
+      ],
+      "id": "pyq-dev-06",
+      "question": "Which functions break if _lerp changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 23266.9,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward",
+            "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.probabilities",
+            "src/pyquifer/embodiment/developmental.py::DevelopmentalStageDetector.forward",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.measure",
+            "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.soft_measure",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": null,
+            "mrr": 0.0,
+            "ndcg_at_5": 0.0,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/experimental/quantum.py::QuantumState.entropy"
+            ],
+            "f1": 0.0,
+            "fn": 1,
+            "fp": 10,
+            "missing": [
+              "src/pyquifer/experimental/quantum.py::QuantumState.entropy"
+            ],
+            "precision": 0.0,
+            "predicted": [
+              "src/pyquifer/embodiment/developmental.py::DevelopmentalStageDetector.forward",
+              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.measure",
+              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.probabilities",
+              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.soft_measure",
+              "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 0.0,
+            "tp": 0,
+            "unexpected": [
+              "src/pyquifer/embodiment/developmental.py::DevelopmentalStageDetector.forward",
+              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.measure",
+              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.probabilities",
+              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.soft_measure",
+              "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "full-hybrid": {
+          "latency_ms": 26848.4,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.probabilities",
+            "src/pyquifer/experimental/quantum.py::QuantumState.probabilities",
+            "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward",
+            "src/pyquifer/embodiment/developmental.py::DevelopmentalStageDetector.forward",
+            "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.measure",
+            "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.soft_measure",
+            "src/pyquifer/experimental/quantum.py::QuantumState.entropy"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 7,
+            "mrr": 0.14285714285714285,
+            "ndcg_at_5": 0.0,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/experimental/quantum.py::QuantumState.entropy"
+            ],
+            "f1": 0.25,
+            "fn": 0,
+            "fp": 6,
+            "missing": [],
+            "precision": 0.14285714285714285,
+            "predicted": [
+              "src/pyquifer/embodiment/developmental.py::DevelopmentalStageDetector.forward",
+              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.measure",
+              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.probabilities",
+              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.soft_measure",
+              "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward",
+              "src/pyquifer/experimental/quantum.py::QuantumState.entropy",
+              "src/pyquifer/experimental/quantum.py::QuantumState.probabilities"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/embodiment/developmental.py::DevelopmentalStageDetector.forward",
+              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.measure",
+              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.probabilities",
+              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.soft_measure",
+              "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward",
+              "src/pyquifer/experimental/quantum.py::QuantumState.probabilities"
+            ]
+          }
+        },
+        "hybrid-select": {
+          "latency_ms": 26873.9,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.probabilities",
+            "src/pyquifer/experimental/quantum.py::QuantumState.probabilities",
+            "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward",
+            "src/pyquifer/embodiment/developmental.py::DevelopmentalStageDetector.forward",
+            "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.measure",
+            "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.soft_measure",
+            "src/pyquifer/experimental/quantum.py::QuantumState.entropy"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 7,
+            "mrr": 0.14285714285714285,
+            "ndcg_at_5": 0.0,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/experimental/quantum.py::QuantumState.entropy"
+            ],
+            "f1": 0.25,
+            "fn": 0,
+            "fp": 6,
+            "missing": [],
+            "precision": 0.14285714285714285,
+            "predicted": [
+              "src/pyquifer/embodiment/developmental.py::DevelopmentalStageDetector.forward",
+              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.measure",
+              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.probabilities",
+              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.soft_measure",
+              "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward",
+              "src/pyquifer/experimental/quantum.py::QuantumState.entropy",
+              "src/pyquifer/experimental/quantum.py::QuantumState.probabilities"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/embodiment/developmental.py::DevelopmentalStageDetector.forward",
+              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.measure",
+              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.probabilities",
+              "src/pyquifer/experimental/quantum.py::ProjectiveMeasurement.soft_measure",
+              "src/pyquifer/experimental/quantum.py::QuantumDecisionMaker.forward",
+              "src/pyquifer/experimental/quantum.py::QuantumState.probabilities"
+            ]
+          }
+        }
+      },
+      "gold": [
+        "src/pyquifer/experimental/quantum.py::QuantumState.entropy"
+      ],
+      "id": "pyq-dev-07",
+      "question": "Which functions break if probabilities changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 26533.6,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/experimental/quantum.py::QuantumInterference.select_context",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+            "src/pyquifer/experimental/quantum.py::QuantumInterference.forward",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 5,
+            "mrr": 0.2,
+            "ndcg_at_5": 0.38685280723454163,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/experimental/quantum.py::QuantumInterference.forward"
+            ],
+            "f1": 0.2,
+            "fn": 0,
+            "fp": 8,
+            "missing": [],
+            "precision": 0.1111111111111111,
+            "predicted": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+              "src/pyquifer/experimental/quantum.py::QuantumInterference.forward",
+              "src/pyquifer/experimental/quantum.py::QuantumInterference.select_context",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+              "src/pyquifer/experimental/quantum.py::QuantumInterference.select_context",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "full-hybrid": {
+          "latency_ms": 30717.0,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/experimental/quantum.py::QuantumInterference.select_context",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+            "src/pyquifer/experimental/quantum.py::QuantumInterference.forward",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 5,
+            "mrr": 0.2,
+            "ndcg_at_5": 0.38685280723454163,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/experimental/quantum.py::QuantumInterference.forward"
+            ],
+            "f1": 0.2,
+            "fn": 0,
+            "fp": 8,
+            "missing": [],
+            "precision": 0.1111111111111111,
+            "predicted": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+              "src/pyquifer/experimental/quantum.py::QuantumInterference.forward",
+              "src/pyquifer/experimental/quantum.py::QuantumInterference.select_context",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+              "src/pyquifer/experimental/quantum.py::QuantumInterference.select_context",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "hybrid-select": {
+          "latency_ms": 16137.8,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/experimental/quantum.py::QuantumInterference.select_context",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/experimental/quantum.py::QuantumInterference.forward",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 3,
+            "mrr": 0.3333333333333333,
+            "ndcg_at_5": 0.5,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/experimental/quantum.py::QuantumInterference.forward"
+            ],
+            "f1": 0.25,
+            "fn": 0,
+            "fp": 6,
+            "missing": [],
+            "precision": 0.14285714285714285,
+            "predicted": [
+              "src/pyquifer/experimental/quantum.py::QuantumInterference.forward",
+              "src/pyquifer/experimental/quantum.py::QuantumInterference.select_context",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/experimental/quantum.py::QuantumInterference.select_context",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        }
+      },
+      "gold": [
+        "src/pyquifer/experimental/quantum.py::QuantumInterference.forward"
+      ],
+      "id": "pyq-dev-08",
+      "question": "Which functions break if select_context changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 16543.5,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.generate_neighbor",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 1,
+            "mrr": 1.0,
+            "ndcg_at_5": 1.0,
+            "recall_at_1": 1.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize"
+            ],
+            "f1": 0.2222222222222222,
+            "fn": 0,
+            "fp": 7,
+            "missing": [],
+            "precision": 0.125,
+            "predicted": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.generate_neighbor",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.generate_neighbor",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "full-hybrid": {
+          "latency_ms": 28824.9,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.generate_neighbor",
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6309297535714575,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize"
+            ],
+            "f1": 0.2222222222222222,
+            "fn": 0,
+            "fp": 7,
+            "missing": [],
+            "precision": 0.125,
+            "predicted": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.generate_neighbor",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.generate_neighbor",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "hybrid-select": {
+          "latency_ms": 22093.9,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.generate_neighbor",
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6309297535714575,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize"
+            ],
+            "f1": 0.25,
+            "fn": 0,
+            "fp": 6,
+            "missing": [],
+            "precision": 0.14285714285714285,
+            "predicted": [
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.generate_neighbor",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.generate_neighbor",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        }
+      },
+      "gold": [
+        "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize"
+      ],
+      "id": "pyq-dev-09",
+      "question": "Which functions break if generate_neighbor changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 25961.0,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/experimental/quantum.py::UnitaryTransform.forward",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/experimental/quantum.py::UnitaryTransform.get_unitary",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 1,
+            "mrr": 1.0,
+            "ndcg_at_5": 1.0,
+            "recall_at_1": 1.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/experimental/quantum.py::UnitaryTransform.forward"
+            ],
+            "f1": 0.2222222222222222,
+            "fn": 0,
+            "fp": 7,
+            "missing": [],
+            "precision": 0.125,
+            "predicted": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/experimental/quantum.py::UnitaryTransform.forward",
+              "src/pyquifer/experimental/quantum.py::UnitaryTransform.get_unitary",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/experimental/quantum.py::UnitaryTransform.get_unitary",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "full-hybrid": {
+          "latency_ms": 28622.1,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/experimental/quantum.py::UnitaryTransform.get_unitary",
+            "src/pyquifer/experimental/quantum.py::UnitaryTransform.forward",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6309297535714575,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/experimental/quantum.py::UnitaryTransform.forward"
+            ],
+            "f1": 0.2222222222222222,
+            "fn": 0,
+            "fp": 7,
+            "missing": [],
+            "precision": 0.125,
+            "predicted": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/experimental/quantum.py::UnitaryTransform.forward",
+              "src/pyquifer/experimental/quantum.py::UnitaryTransform.get_unitary",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/experimental/quantum.py::UnitaryTransform.get_unitary",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "hybrid-select": {
+          "latency_ms": 21714.3,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/experimental/quantum.py::UnitaryTransform.get_unitary",
+            "src/pyquifer/experimental/quantum.py::UnitaryTransform.forward",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6309297535714575,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/experimental/quantum.py::UnitaryTransform.forward"
+            ],
+            "f1": 0.25,
+            "fn": 0,
+            "fp": 6,
+            "missing": [],
+            "precision": 0.14285714285714285,
+            "predicted": [
+              "src/pyquifer/experimental/quantum.py::UnitaryTransform.forward",
+              "src/pyquifer/experimental/quantum.py::UnitaryTransform.get_unitary",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/experimental/quantum.py::UnitaryTransform.get_unitary",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        }
+      },
+      "gold": [
+        "src/pyquifer/experimental/quantum.py::UnitaryTransform.forward"
+      ],
+      "id": "pyq-dev-10",
+      "question": "Which functions break if get_unitary changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 28838.2,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/embodiment/safety.py::ReflexToStrategy._get_stage",
+            "src/pyquifer/embodiment/safety.py::ReflexToStrategy.forward",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6309297535714575,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/embodiment/safety.py::ReflexToStrategy.forward"
+            ],
+            "f1": 0.2222222222222222,
+            "fn": 0,
+            "fp": 7,
+            "missing": [],
+            "precision": 0.125,
+            "predicted": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/embodiment/safety.py::ReflexToStrategy._get_stage",
+              "src/pyquifer/embodiment/safety.py::ReflexToStrategy.forward",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/embodiment/safety.py::ReflexToStrategy._get_stage",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "full-hybrid": {
+          "latency_ms": 30068.6,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/embodiment/safety.py::ReflexToStrategy._get_stage",
+            "src/pyquifer/embodiment/safety.py::ReflexToStrategy.forward",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6309297535714575,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/embodiment/safety.py::ReflexToStrategy.forward"
+            ],
+            "f1": 0.2222222222222222,
+            "fn": 0,
+            "fp": 7,
+            "missing": [],
+            "precision": 0.125,
+            "predicted": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/embodiment/safety.py::ReflexToStrategy._get_stage",
+              "src/pyquifer/embodiment/safety.py::ReflexToStrategy.forward",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/embodiment/safety.py::ReflexToStrategy._get_stage",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "hybrid-select": {
+          "latency_ms": 19268.5,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/embodiment/safety.py::ReflexToStrategy._get_stage",
+            "src/pyquifer/embodiment/safety.py::ReflexToStrategy.forward",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6309297535714575,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/embodiment/safety.py::ReflexToStrategy.forward"
+            ],
+            "f1": 0.25,
+            "fn": 0,
+            "fp": 6,
+            "missing": [],
+            "precision": 0.14285714285714285,
+            "predicted": [
+              "src/pyquifer/embodiment/safety.py::ReflexToStrategy._get_stage",
+              "src/pyquifer/embodiment/safety.py::ReflexToStrategy.forward",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/embodiment/safety.py::ReflexToStrategy._get_stage",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        }
+      },
+      "gold": [
+        "src/pyquifer/embodiment/safety.py::ReflexToStrategy.forward"
+      ],
+      "id": "pyq-dev-11",
+      "question": "Which functions break if _get_stage changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 24193.5,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/learning/continual.py::ExperienceReplay.add",
+            "src/pyquifer/learning/continual.py::ExperienceReplay._add_single",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 1,
+            "mrr": 1.0,
+            "ndcg_at_5": 1.0,
+            "recall_at_1": 1.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/learning/continual.py::ExperienceReplay.add"
+            ],
+            "f1": 0.2222222222222222,
+            "fn": 0,
+            "fp": 7,
+            "missing": [],
+            "precision": 0.125,
+            "predicted": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/learning/continual.py::ExperienceReplay._add_single",
+              "src/pyquifer/learning/continual.py::ExperienceReplay.add",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/learning/continual.py::ExperienceReplay._add_single",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "full-hybrid": {
+          "latency_ms": 26727.3,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/learning/continual.py::ExperienceReplay._add_single",
+            "src/pyquifer/learning/continual.py::ExperienceReplay.add",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6309297535714575,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/learning/continual.py::ExperienceReplay.add"
+            ],
+            "f1": 0.2222222222222222,
+            "fn": 0,
+            "fp": 7,
+            "missing": [],
+            "precision": 0.125,
+            "predicted": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/learning/continual.py::ExperienceReplay._add_single",
+              "src/pyquifer/learning/continual.py::ExperienceReplay.add",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/learning/continual.py::ExperienceReplay._add_single",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "hybrid-select": {
+          "latency_ms": 25297.5,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/learning/continual.py::ExperienceReplay._add_single",
+            "src/pyquifer/learning/continual.py::ExperienceReplay.add",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6309297535714575,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/learning/continual.py::ExperienceReplay.add"
+            ],
+            "f1": 0.25,
+            "fn": 0,
+            "fp": 6,
+            "missing": [],
+            "precision": 0.14285714285714285,
+            "predicted": [
+              "src/pyquifer/learning/continual.py::ExperienceReplay._add_single",
+              "src/pyquifer/learning/continual.py::ExperienceReplay.add",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/learning/continual.py::ExperienceReplay._add_single",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        }
+      },
+      "gold": [
+        "src/pyquifer/learning/continual.py::ExperienceReplay.add"
+      ],
+      "id": "pyq-dev-12",
+      "question": "Which functions break if _add_single changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 25882.3,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/memory/cls.py::ForgettingCurve.retention",
+            "src/pyquifer/memory/cls.py::ForgettingCurve.should_forget",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6309297535714575,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/memory/cls.py::ForgettingCurve.should_forget"
+            ],
+            "f1": 0.2222222222222222,
+            "fn": 0,
+            "fp": 7,
+            "missing": [],
+            "precision": 0.125,
+            "predicted": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/memory/cls.py::ForgettingCurve.retention",
+              "src/pyquifer/memory/cls.py::ForgettingCurve.should_forget",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/memory/cls.py::ForgettingCurve.retention",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "full-hybrid": {
+          "latency_ms": 27004.2,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/memory/cls.py::ForgettingCurve.retention",
+            "src/pyquifer/memory/cls.py::ForgettingCurve.should_forget",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6309297535714575,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/memory/cls.py::ForgettingCurve.should_forget"
+            ],
+            "f1": 0.2222222222222222,
+            "fn": 0,
+            "fp": 7,
+            "missing": [],
+            "precision": 0.125,
+            "predicted": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/memory/cls.py::ForgettingCurve.retention",
+              "src/pyquifer/memory/cls.py::ForgettingCurve.should_forget",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/memory/cls.py::ForgettingCurve.retention",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "hybrid-select": {
+          "latency_ms": 23889.6,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/memory/cls.py::ForgettingCurve.retention",
+            "src/pyquifer/memory/cls.py::ForgettingCurve.should_forget",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6309297535714575,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/memory/cls.py::ForgettingCurve.should_forget"
+            ],
+            "f1": 0.25,
+            "fn": 0,
+            "fp": 6,
+            "missing": [],
+            "precision": 0.14285714285714285,
+            "predicted": [
+              "src/pyquifer/memory/cls.py::ForgettingCurve.retention",
+              "src/pyquifer/memory/cls.py::ForgettingCurve.should_forget",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 1,
+            "unexpected": [
+              "src/pyquifer/memory/cls.py::ForgettingCurve.retention",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        }
+      },
+      "gold": [
+        "src/pyquifer/memory/cls.py::ForgettingCurve.should_forget"
+      ],
+      "id": "pyq-dev-13",
+      "question": "Which functions break if retention changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 28646.1,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/cognition/binding/visual.py::_reshape_to_groups",
+            "src/pyquifer/cognition/binding/visual.py::AKOrNLayer._kuramoto_step",
+            "src/pyquifer/cognition/binding/visual.py::_normalize_to_sphere",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/binding/visual.py::AKOrNLayer.forward",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6934264036172708,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/cognition/binding/visual.py::AKOrNLayer._kuramoto_step",
+              "src/pyquifer/cognition/binding/visual.py::_normalize_to_sphere"
+            ],
+            "f1": 0.36363636363636365,
+            "fn": 0,
+            "fp": 7,
+            "missing": [],
+            "precision": 0.2222222222222222,
+            "predicted": [
+              "src/pyquifer/cognition/binding/visual.py::AKOrNLayer._kuramoto_step",
+              "src/pyquifer/cognition/binding/visual.py::AKOrNLayer.forward",
+              "src/pyquifer/cognition/binding/visual.py::_normalize_to_sphere",
+              "src/pyquifer/cognition/binding/visual.py::_reshape_to_groups",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 2,
+            "unexpected": [
+              "src/pyquifer/cognition/binding/visual.py::AKOrNLayer.forward",
+              "src/pyquifer/cognition/binding/visual.py::_reshape_to_groups",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "full-hybrid": {
+          "latency_ms": 31078.2,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/cognition/binding/visual.py::_reshape_to_groups",
+            "src/pyquifer/cognition/binding/visual.py::AKOrNLayer._kuramoto_step",
+            "src/pyquifer/cognition/binding/visual.py::_normalize_to_sphere",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/binding/visual.py::AKOrNLayer.forward",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6934264036172708,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/cognition/binding/visual.py::AKOrNLayer._kuramoto_step",
+              "src/pyquifer/cognition/binding/visual.py::_normalize_to_sphere"
+            ],
+            "f1": 0.36363636363636365,
+            "fn": 0,
+            "fp": 7,
+            "missing": [],
+            "precision": 0.2222222222222222,
+            "predicted": [
+              "src/pyquifer/cognition/binding/visual.py::AKOrNLayer._kuramoto_step",
+              "src/pyquifer/cognition/binding/visual.py::AKOrNLayer.forward",
+              "src/pyquifer/cognition/binding/visual.py::_normalize_to_sphere",
+              "src/pyquifer/cognition/binding/visual.py::_reshape_to_groups",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 2,
+            "unexpected": [
+              "src/pyquifer/cognition/binding/visual.py::AKOrNLayer.forward",
+              "src/pyquifer/cognition/binding/visual.py::_reshape_to_groups",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "hybrid-select": {
+          "latency_ms": 26903.8,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/cognition/binding/visual.py::_reshape_to_groups",
+            "src/pyquifer/cognition/binding/visual.py::AKOrNLayer._kuramoto_step",
+            "src/pyquifer/cognition/binding/visual.py::_normalize_to_sphere",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/binding/visual.py::AKOrNLayer.forward",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.6934264036172708,
+            "recall_at_1": 0.0,
+            "recall_at_3": 1.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/cognition/binding/visual.py::AKOrNLayer._kuramoto_step",
+              "src/pyquifer/cognition/binding/visual.py::_normalize_to_sphere"
+            ],
+            "f1": 0.36363636363636365,
+            "fn": 0,
+            "fp": 7,
+            "missing": [],
+            "precision": 0.2222222222222222,
+            "predicted": [
+              "src/pyquifer/cognition/binding/visual.py::AKOrNLayer._kuramoto_step",
+              "src/pyquifer/cognition/binding/visual.py::AKOrNLayer.forward",
+              "src/pyquifer/cognition/binding/visual.py::_normalize_to_sphere",
+              "src/pyquifer/cognition/binding/visual.py::_reshape_to_groups",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 2,
+            "unexpected": [
+              "src/pyquifer/cognition/binding/visual.py::AKOrNLayer.forward",
+              "src/pyquifer/cognition/binding/visual.py::_reshape_to_groups",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        }
+      },
+      "gold": [
+        "src/pyquifer/cognition/binding/visual.py::AKOrNLayer._kuramoto_step",
+        "src/pyquifer/cognition/binding/visual.py::_normalize_to_sphere"
+      ],
+      "id": "pyq-dev-14",
+      "question": "Which functions break if _reshape_to_groups changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 22378.5,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/experimental/hyperdimensional.py::HypervectorMemory.retrieve",
+            "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.unbind_role",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 1,
+            "mrr": 1.0,
+            "ndcg_at_5": 0.7653606369886217,
+            "recall_at_1": 0.3333333333333333,
+            "recall_at_3": 0.6666666666666666
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.analogy",
+              "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.unbind_role",
+              "src/pyquifer/experimental/hyperdimensional.py::HypervectorMemory.retrieve"
+            ],
+            "f1": 0.36363636363636365,
+            "fn": 1,
+            "fp": 6,
+            "missing": [
+              "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.analogy"
+            ],
+            "precision": 0.25,
+            "predicted": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.unbind_role",
+              "src/pyquifer/experimental/hyperdimensional.py::HypervectorMemory.retrieve",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 0.6666666666666666,
+            "tp": 2,
+            "unexpected": [
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "full-hybrid": {
+          "latency_ms": 26710.3,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/experimental/hyperdimensional.py::circular_correlation",
+            "src/pyquifer/experimental/hyperdimensional.py::HypervectorMemory.retrieve",
+            "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.unbind_role",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.analogy",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.7122630665145961,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.6666666666666666
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.analogy",
+              "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.unbind_role",
+              "src/pyquifer/experimental/hyperdimensional.py::HypervectorMemory.retrieve"
+            ],
+            "f1": 0.5,
+            "fn": 0,
+            "fp": 6,
+            "missing": [],
+            "precision": 0.3333333333333333,
+            "predicted": [
+              "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.analogy",
+              "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.unbind_role",
+              "src/pyquifer/experimental/hyperdimensional.py::HypervectorMemory.retrieve",
+              "src/pyquifer/experimental/hyperdimensional.py::circular_correlation",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 3,
+            "unexpected": [
+              "src/pyquifer/experimental/hyperdimensional.py::circular_correlation",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "hybrid-select": {
+          "latency_ms": 27857.4,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/experimental/hyperdimensional.py::circular_correlation",
+            "src/pyquifer/experimental/hyperdimensional.py::HypervectorMemory.retrieve",
+            "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.unbind_role",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.analogy",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.7122630665145961,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.6666666666666666
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.analogy",
+              "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.unbind_role",
+              "src/pyquifer/experimental/hyperdimensional.py::HypervectorMemory.retrieve"
+            ],
+            "f1": 0.5,
+            "fn": 0,
+            "fp": 6,
+            "missing": [],
+            "precision": 0.3333333333333333,
+            "predicted": [
+              "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.analogy",
+              "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.unbind_role",
+              "src/pyquifer/experimental/hyperdimensional.py::HypervectorMemory.retrieve",
+              "src/pyquifer/experimental/hyperdimensional.py::circular_correlation",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 3,
+            "unexpected": [
+              "src/pyquifer/experimental/hyperdimensional.py::circular_correlation",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        }
+      },
+      "gold": [
+        "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.analogy",
+        "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.unbind_role",
+        "src/pyquifer/experimental/hyperdimensional.py::HypervectorMemory.retrieve"
+      ],
+      "id": "pyq-dev-15",
+      "question": "Which functions break if circular_correlation changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 28362.5,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/dynamics/continuous/ode_solvers.py::BaseSolver.solve",
+            "src/pyquifer/dynamics/continuous/ode_solvers.py::BaseSolver._integrate",
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize",
+            "src/pyquifer/cognition/control/deliberation.py::SelfCorrectionLoop.forward",
+            "src/pyquifer/dynamics/continuous/ode_solvers.py::BaseSolver.forward"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": null,
+            "mrr": 0.0,
+            "ndcg_at_5": 0.0,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.anneal",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.find_synchronized_state",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.forward"
+            ],
+            "f1": 0.0,
+            "fn": 3,
+            "fp": 5,
+            "missing": [
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.anneal",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.find_synchronized_state",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.forward"
+            ],
+            "precision": 0.0,
+            "predicted": [
+              "src/pyquifer/cognition/control/deliberation.py::SelfCorrectionLoop.forward",
+              "src/pyquifer/dynamics/continuous/ode_solvers.py::BaseSolver._integrate",
+              "src/pyquifer/dynamics/continuous/ode_solvers.py::BaseSolver.forward",
+              "src/pyquifer/dynamics/continuous/ode_solvers.py::BaseSolver.solve",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize"
+            ],
+            "recall": 0.0,
+            "tp": 0,
+            "unexpected": [
+              "src/pyquifer/cognition/control/deliberation.py::SelfCorrectionLoop.forward",
+              "src/pyquifer/dynamics/continuous/ode_solvers.py::BaseSolver._integrate",
+              "src/pyquifer/dynamics/continuous/ode_solvers.py::BaseSolver.forward",
+              "src/pyquifer/dynamics/continuous/ode_solvers.py::BaseSolver.solve",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize"
+            ]
+          }
+        },
+        "full-hybrid": {
+          "latency_ms": 29999.8,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/api/bridge.py::PyQuiferBridge.step",
+            "src/pyquifer/api/bridge.py::SteppedModulator.step",
+            "src/pyquifer/dynamics/basal_ganglia.py::BasalGangliaLoop.step",
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.step",
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.step",
+            "src/pyquifer/api/bridge.py::PyQuiferBridge.profile_step",
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.forward",
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.anneal",
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.find_synchronized_state",
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.forward"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 8,
+            "mrr": 0.125,
+            "ndcg_at_5": 0.0,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.anneal",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.find_synchronized_state",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.forward"
+            ],
+            "f1": 0.46153846153846156,
+            "fn": 0,
+            "fp": 7,
+            "missing": [],
+            "precision": 0.3,
+            "predicted": [
+              "src/pyquifer/api/bridge.py::PyQuiferBridge.profile_step",
+              "src/pyquifer/api/bridge.py::PyQuiferBridge.step",
+              "src/pyquifer/api/bridge.py::SteppedModulator.step",
+              "src/pyquifer/dynamics/basal_ganglia.py::BasalGangliaLoop.step",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.forward",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.step",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.anneal",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.find_synchronized_state",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.forward",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.step"
+            ],
+            "recall": 1.0,
+            "tp": 3,
+            "unexpected": [
+              "src/pyquifer/api/bridge.py::PyQuiferBridge.profile_step",
+              "src/pyquifer/api/bridge.py::PyQuiferBridge.step",
+              "src/pyquifer/api/bridge.py::SteppedModulator.step",
+              "src/pyquifer/dynamics/basal_ganglia.py::BasalGangliaLoop.step",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.forward",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.step",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.step"
+            ]
+          }
+        },
+        "hybrid-select": {
+          "latency_ms": 30872.7,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/api/bridge.py::PyQuiferBridge.step",
+            "src/pyquifer/api/bridge.py::SteppedModulator.step",
+            "src/pyquifer/dynamics/basal_ganglia.py::BasalGangliaLoop.step",
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.step",
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.step",
+            "src/pyquifer/api/bridge.py::PyQuiferBridge.profile_step",
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.forward",
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.anneal",
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.find_synchronized_state",
+            "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.forward"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 8,
+            "mrr": 0.125,
+            "ndcg_at_5": 0.0,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.anneal",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.find_synchronized_state",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.forward"
+            ],
+            "f1": 0.46153846153846156,
+            "fn": 0,
+            "fp": 7,
+            "missing": [],
+            "precision": 0.3,
+            "predicted": [
+              "src/pyquifer/api/bridge.py::PyQuiferBridge.profile_step",
+              "src/pyquifer/api/bridge.py::PyQuiferBridge.step",
+              "src/pyquifer/api/bridge.py::SteppedModulator.step",
+              "src/pyquifer/dynamics/basal_ganglia.py::BasalGangliaLoop.step",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.forward",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.step",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.anneal",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.find_synchronized_state",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.forward",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.step"
+            ],
+            "recall": 1.0,
+            "tp": 3,
+            "unexpected": [
+              "src/pyquifer/api/bridge.py::PyQuiferBridge.profile_step",
+              "src/pyquifer/api/bridge.py::PyQuiferBridge.step",
+              "src/pyquifer/api/bridge.py::SteppedModulator.step",
+              "src/pyquifer/dynamics/basal_ganglia.py::BasalGangliaLoop.step",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.forward",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::LangevinDynamics.step",
+              "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.step"
+            ]
+          }
+        }
+      },
+      "gold": [
+        "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.anneal",
+        "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.find_synchronized_state",
+        "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.forward"
+      ],
+      "id": "pyq-dev-16",
+      "question": "Which functions break if step changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 26258.5,
+          "outcome": "complete",
+          "ranked": [
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+            "src/pyquifer/cognition/control/motivation.py::CoherenceReward.__init__",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": null,
+            "mrr": 0.0,
+            "ndcg_at_5": 0.0,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind"
+            ],
+            "f1": 0.0,
+            "fn": 3,
+            "fp": 8,
+            "missing": [
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind"
+            ],
+            "precision": 0.0,
+            "predicted": [
+              "src/pyquifer/cognition/control/motivation.py::CoherenceReward.__init__",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 0.0,
+            "tp": 0,
+            "unexpected": [
+              "src/pyquifer/cognition/control/motivation.py::CoherenceReward.__init__",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "full-hybrid": {
+          "latency_ms": 31016.1,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/cognition/predictive/deep_active_inference.py::DeepAIF.encode",
+            "src/pyquifer/dynamics/continuous/linoss.py::LinOSSEncoder.encode",
+            "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.encode",
+            "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.encode",
+            "src/pyquifer/workspace/organ_base.py::PreGWAdapter.encode",
+            "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+            "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+            "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind",
+            "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 6,
+            "mrr": 0.16666666666666666,
+            "ndcg_at_5": 0.0,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind"
+            ],
+            "f1": 0.5,
+            "fn": 0,
+            "fp": 6,
+            "missing": [],
+            "precision": 0.3333333333333333,
+            "predicted": [
+              "src/pyquifer/cognition/predictive/deep_active_inference.py::DeepAIF.encode",
+              "src/pyquifer/dynamics/continuous/linoss.py::LinOSSEncoder.encode",
+              "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.encode",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.encode",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind",
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss",
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.encode"
+            ],
+            "recall": 1.0,
+            "tp": 3,
+            "unexpected": [
+              "src/pyquifer/cognition/predictive/deep_active_inference.py::DeepAIF.encode",
+              "src/pyquifer/dynamics/continuous/linoss.py::LinOSSEncoder.encode",
+              "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.encode",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.encode",
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss",
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.encode"
+            ]
+          }
+        },
+        "hybrid-select": {
+          "latency_ms": 29686.6,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/cognition/predictive/deep_active_inference.py::DeepAIF.encode",
+            "src/pyquifer/dynamics/continuous/linoss.py::LinOSSEncoder.encode",
+            "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.encode",
+            "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.encode",
+            "src/pyquifer/workspace/organ_base.py::PreGWAdapter.encode",
+            "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+            "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+            "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind",
+            "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 6,
+            "mrr": 0.16666666666666666,
+            "ndcg_at_5": 0.0,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind"
+            ],
+            "f1": 0.5,
+            "fn": 0,
+            "fp": 6,
+            "missing": [],
+            "precision": 0.3333333333333333,
+            "predicted": [
+              "src/pyquifer/cognition/predictive/deep_active_inference.py::DeepAIF.encode",
+              "src/pyquifer/dynamics/continuous/linoss.py::LinOSSEncoder.encode",
+              "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.encode",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.encode",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind",
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss",
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.encode"
+            ],
+            "recall": 1.0,
+            "tp": 3,
+            "unexpected": [
+              "src/pyquifer/cognition/predictive/deep_active_inference.py::DeepAIF.encode",
+              "src/pyquifer/dynamics/continuous/linoss.py::LinOSSEncoder.encode",
+              "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.encode",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.encode",
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss",
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.encode"
+            ]
+          }
+        }
+      },
+      "gold": [
+        "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+        "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+        "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind"
+      ],
+      "id": "pyq-dev-17",
+      "question": "Which functions break if encode changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 29070.8,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/dynamics/oscillators/spherical.py::reshape_from_groups",
+            "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.kuramoto_update",
+            "src/pyquifer/dynamics/oscillators/spherical.py::exponential_map",
+            "src/pyquifer/dynamics/oscillators/spherical.py::reshape_to_groups",
+            "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+            "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank.__init__",
+            "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank._normalize_states",
+            "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.forward",
+            "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.get_order_parameter",
+            "src/pyquifer/dynamics/oscillators/spherical.py::normalize_oscillators"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 2,
+            "mrr": 0.5,
+            "ndcg_at_5": 0.5147714448836774,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.4
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.get_order_parameter",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.kuramoto_update",
+              "src/pyquifer/dynamics/oscillators/spherical.py::exponential_map",
+              "src/pyquifer/dynamics/oscillators/spherical.py::normalize_oscillators"
+            ],
+            "f1": 0.6666666666666666,
+            "fn": 0,
+            "fp": 5,
+            "missing": [],
+            "precision": 0.5,
+            "predicted": [
+              "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank.__init__",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank._normalize_states",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.forward",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.get_order_parameter",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.kuramoto_update",
+              "src/pyquifer/dynamics/oscillators/spherical.py::exponential_map",
+              "src/pyquifer/dynamics/oscillators/spherical.py::normalize_oscillators",
+              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_from_groups",
+              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_to_groups"
+            ],
+            "recall": 1.0,
+            "tp": 5,
+            "unexpected": [
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank.__init__",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank._normalize_states",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.forward",
+              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_from_groups",
+              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_to_groups"
+            ]
+          }
+        },
+        "full-hybrid": {
+          "latency_ms": 31032.1,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/dynamics/oscillators/spherical.py::reshape_to_groups",
+            "src/pyquifer/dynamics/oscillators/spherical.py::reshape_from_groups",
+            "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.kuramoto_update",
+            "src/pyquifer/dynamics/oscillators/spherical.py::exponential_map",
+            "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+            "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank.__init__",
+            "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank._normalize_states",
+            "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.forward",
+            "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.get_order_parameter",
+            "src/pyquifer/dynamics/oscillators/spherical.py::normalize_oscillators"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 3,
+            "mrr": 0.3333333333333333,
+            "ndcg_at_5": 0.4468535299918563,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.2
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.get_order_parameter",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.kuramoto_update",
+              "src/pyquifer/dynamics/oscillators/spherical.py::exponential_map",
+              "src/pyquifer/dynamics/oscillators/spherical.py::normalize_oscillators"
+            ],
+            "f1": 0.6666666666666666,
+            "fn": 0,
+            "fp": 5,
+            "missing": [],
+            "precision": 0.5,
+            "predicted": [
+              "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank.__init__",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank._normalize_states",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.forward",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.get_order_parameter",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.kuramoto_update",
+              "src/pyquifer/dynamics/oscillators/spherical.py::exponential_map",
+              "src/pyquifer/dynamics/oscillators/spherical.py::normalize_oscillators",
+              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_from_groups",
+              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_to_groups"
+            ],
+            "recall": 1.0,
+            "tp": 5,
+            "unexpected": [
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank.__init__",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank._normalize_states",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.forward",
+              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_from_groups",
+              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_to_groups"
+            ]
+          }
+        },
+        "hybrid-select": {
+          "latency_ms": 29286.4,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/dynamics/oscillators/spherical.py::reshape_to_groups",
+            "src/pyquifer/dynamics/oscillators/spherical.py::reshape_from_groups",
+            "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.kuramoto_update",
+            "src/pyquifer/dynamics/oscillators/spherical.py::exponential_map",
+            "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+            "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank.__init__",
+            "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank._normalize_states",
+            "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.forward",
+            "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.get_order_parameter",
+            "src/pyquifer/dynamics/oscillators/spherical.py::normalize_oscillators"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 3,
+            "mrr": 0.3333333333333333,
+            "ndcg_at_5": 0.4468535299918563,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.2
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.get_order_parameter",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.kuramoto_update",
+              "src/pyquifer/dynamics/oscillators/spherical.py::exponential_map",
+              "src/pyquifer/dynamics/oscillators/spherical.py::normalize_oscillators"
+            ],
+            "f1": 0.6666666666666666,
+            "fn": 0,
+            "fp": 5,
+            "missing": [],
+            "precision": 0.5,
+            "predicted": [
+              "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank.__init__",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank._normalize_states",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.forward",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.get_order_parameter",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.kuramoto_update",
+              "src/pyquifer/dynamics/oscillators/spherical.py::exponential_map",
+              "src/pyquifer/dynamics/oscillators/spherical.py::normalize_oscillators",
+              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_from_groups",
+              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_to_groups"
+            ],
+            "recall": 1.0,
+            "tp": 5,
+            "unexpected": [
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank.__init__",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoBank._normalize_states",
+              "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.forward",
+              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_from_groups",
+              "src/pyquifer/dynamics/oscillators/spherical.py::reshape_to_groups"
+            ]
+          }
+        }
+      },
+      "gold": [
+        "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+        "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.get_order_parameter",
+        "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.kuramoto_update",
+        "src/pyquifer/dynamics/oscillators/spherical.py::exponential_map",
+        "src/pyquifer/dynamics/oscillators/spherical.py::normalize_oscillators"
+      ],
+      "id": "pyq-dev-18",
+      "question": "Which functions break if reshape_to_groups changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 29440.7,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.decode",
+            "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.decode",
+            "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss",
+            "src/pyquifer/experimental/fhrr.py::LatencyEncoder.decode",
+            "src/pyquifer/experimental/fhrr.py::SpikeVSAOps.resonator_decode",
+            "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+            "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+            "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 6,
+            "mrr": 0.16666666666666666,
+            "ndcg_at_5": 0.0,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind"
+            ],
+            "f1": 0.5454545454545454,
+            "fn": 0,
+            "fp": 5,
+            "missing": [],
+            "precision": 0.375,
+            "predicted": [
+              "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.decode",
+              "src/pyquifer/experimental/fhrr.py::LatencyEncoder.decode",
+              "src/pyquifer/experimental/fhrr.py::SpikeVSAOps.resonator_decode",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.decode",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind",
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss"
+            ],
+            "recall": 1.0,
+            "tp": 3,
+            "unexpected": [
+              "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.decode",
+              "src/pyquifer/experimental/fhrr.py::LatencyEncoder.decode",
+              "src/pyquifer/experimental/fhrr.py::SpikeVSAOps.resonator_decode",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.decode",
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss"
+            ]
+          }
+        },
+        "full-hybrid": {
+          "latency_ms": 34150.7,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.decode",
+            "src/pyquifer/experimental/fhrr.py::LatencyEncoder.decode",
+            "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.decode",
+            "src/pyquifer/workspace/organ_base.py::PreGWAdapter.decode",
+            "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss",
+            "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+            "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+            "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 6,
+            "mrr": 0.16666666666666666,
+            "ndcg_at_5": 0.0,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind"
+            ],
+            "f1": 0.5454545454545454,
+            "fn": 0,
+            "fp": 5,
+            "missing": [],
+            "precision": 0.375,
+            "predicted": [
+              "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.decode",
+              "src/pyquifer/experimental/fhrr.py::LatencyEncoder.decode",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.decode",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind",
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss",
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.decode"
+            ],
+            "recall": 1.0,
+            "tp": 3,
+            "unexpected": [
+              "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.decode",
+              "src/pyquifer/experimental/fhrr.py::LatencyEncoder.decode",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.decode",
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss",
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.decode"
+            ]
+          }
+        },
+        "hybrid-select": {
+          "latency_ms": 36016.7,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.decode",
+            "src/pyquifer/experimental/fhrr.py::LatencyEncoder.decode",
+            "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.decode",
+            "src/pyquifer/workspace/organ_base.py::PreGWAdapter.decode",
+            "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss",
+            "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+            "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+            "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 6,
+            "mrr": 0.16666666666666666,
+            "ndcg_at_5": 0.0,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind"
+            ],
+            "f1": 0.5454545454545454,
+            "fn": 0,
+            "fp": 5,
+            "missing": [],
+            "precision": 0.375,
+            "predicted": [
+              "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.decode",
+              "src/pyquifer/experimental/fhrr.py::LatencyEncoder.decode",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.decode",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind",
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss",
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.decode"
+            ],
+            "recall": 1.0,
+            "tp": 3,
+            "unexpected": [
+              "src/pyquifer/dynamics/oscillators/coupling.py::PhaseEncoder.decode",
+              "src/pyquifer/experimental/fhrr.py::LatencyEncoder.decode",
+              "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.decode",
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.cycle_consistency_loss",
+              "src/pyquifer/workspace/organ_base.py::PreGWAdapter.decode"
+            ]
+          }
+        }
+      },
+      "gold": [
+        "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+        "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+        "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind"
+      ],
+      "id": "pyq-dev-19",
+      "question": "Which functions break if decode changes?"
+    },
+    {
+      "arms": {
+        "bm25-only": {
+          "latency_ms": 28564.6,
+          "outcome": "complete",
+          "ranked": [
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+            "src/pyquifer/cognition/control/motivation.py::CoherenceReward.__init__",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": null,
+            "mrr": 0.0,
+            "ndcg_at_5": 0.0,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward",
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.select_action",
+              "src/pyquifer/cognition/predictive/active_inference.py::PredictiveEncoder.sample"
+            ],
+            "f1": 0.0,
+            "fn": 3,
+            "fp": 8,
+            "missing": [
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward",
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.select_action",
+              "src/pyquifer/cognition/predictive/active_inference.py::PredictiveEncoder.sample"
+            ],
+            "precision": 0.0,
+            "predicted": [
+              "src/pyquifer/cognition/control/motivation.py::CoherenceReward.__init__",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 0.0,
+            "tp": 0,
+            "unexpected": [
+              "src/pyquifer/cognition/control/motivation.py::CoherenceReward.__init__",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "full-hybrid": {
+          "latency_ms": 30810.1,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/cognition/predictive/active_inference.py::reparameterize",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+            "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+            "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
+            "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward",
+            "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.select_action",
+            "src/pyquifer/cognition/predictive/active_inference.py::PredictiveEncoder.sample",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 6,
+            "mrr": 0.16666666666666666,
+            "ndcg_at_5": 0.0,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward",
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.select_action",
+              "src/pyquifer/cognition/predictive/active_inference.py::PredictiveEncoder.sample"
+            ],
+            "f1": 0.4,
+            "fn": 0,
+            "fp": 9,
+            "missing": [],
+            "precision": 0.25,
+            "predicted": [
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward",
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.select_action",
+              "src/pyquifer/cognition/predictive/active_inference.py::PredictiveEncoder.sample",
+              "src/pyquifer/cognition/predictive/active_inference.py::reparameterize",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 3,
+            "unexpected": [
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
+              "src/pyquifer/cognition/predictive/active_inference.py::reparameterize",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_after",
+              "src/pyquifer/cognition/reasoning/temporal_graph.py::EventTimeline.get_before",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        },
+        "hybrid-select": {
+          "latency_ms": 19011.7,
+          "outcome": "complete",
+          "ranked": [
+            "src/pyquifer/cognition/predictive/active_inference.py::reparameterize",
+            "tests/benchmarks/bench_penrose_chess.py::minimax",
+            "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
+            "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward",
+            "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.select_action",
+            "src/pyquifer/cognition/predictive/active_inference.py::PredictiveEncoder.sample",
+            "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+            "tests/benchmarks/bench_penrose_chess.py::main",
+            "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+            "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+          ],
+          "ranked_metrics": {
+            "first_hit_rank": 4,
+            "mrr": 0.25,
+            "ndcg_at_5": 0.38364913903790027,
+            "recall_at_1": 0.0,
+            "recall_at_3": 0.0
+          },
+          "scores": {
+            "available": true,
+            "exact_match": false,
+            "expected": [
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward",
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.select_action",
+              "src/pyquifer/cognition/predictive/active_inference.py::PredictiveEncoder.sample"
+            ],
+            "f1": 0.46153846153846156,
+            "fn": 0,
+            "fp": 7,
+            "missing": [],
+            "precision": 0.3,
+            "predicted": [
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward",
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.select_action",
+              "src/pyquifer/cognition/predictive/active_inference.py::PredictiveEncoder.sample",
+              "src/pyquifer/cognition/predictive/active_inference.py::reparameterize",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ],
+            "recall": 1.0,
+            "tp": 3,
+            "unexpected": [
+              "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.compute_loss",
+              "src/pyquifer/cognition/predictive/active_inference.py::reparameterize",
+              "tests/benchmarks/bench_penrose_chess.py::TestPenroseChess.test_minimax_fails_to_find_draw",
+              "tests/benchmarks/bench_penrose_chess.py::main",
+              "tests/benchmarks/bench_penrose_chess.py::minimax",
+              "tests/benchmarks/bench_penrose_chess.py::run_minimax_baseline",
+              "tests/benchmarks/bench_penrose_chess.py::run_three_column_suite"
+            ]
+          }
+        }
+      },
+      "gold": [
+        "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward",
+        "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.select_action",
+        "src/pyquifer/cognition/predictive/active_inference.py::PredictiveEncoder.sample"
+      ],
+      "id": "pyq-dev-20",
+      "question": "Which functions break if reparameterize changes?"
+    }
+  ],
+  "environment": {
+    "chunking": {
+      "description": "Candidate texts built as symbol plus sorted token set, exactly as Memory.answer constructs them.",
+      "version": "chunk-v1"
+    },
+    "cpu_count": 32,
+    "dev_digest": "c4146528f9135b0e0f67ae8a0305812e1c216cb85743656cfa7189d16745f69e",
+    "endpoint": "http://127.0.0.1:11434",
+    "model": {
+      "architecture": "nomic-bert",
+      "blob_digest": "sha256:970aa74c0a90ef7482477cf803618e776e173c007bf957f635f1015bfcfef0e6",
+      "context_length": 2048,
+      "embedding_length": 768,
+      "license": "Apache-2.0",
+      "name": "nomic-embed-text:latest",
+      "ollama_id": "0a109f422b47",
+      "parameters": "137M",
+      "parameters_override": {
+        "num_ctx": 8192
+      },
+      "quantization": "F16",
+      "size_mb": 274
+    },
+    "platform": "Windows-11-10.0.26200-SP0",
+    "preprocessing": {
+      "description": "Raw text as constructed; no normalization, truncation, or stopword removal.",
+      "version": "pre-v1"
+    },
+    "python": "3.12.10",
+    "tunic_commit": "a15c68b21c1345e271c210842204403475b75cad"
+  },
+  "limitations": [
+    "20 dev tasks, 1-hop impact phrasing; retrieval only, no model loop.",
+    "Server-side embedding time and RAM not instrumented."
+  ],
+  "protocol": "dev-only retrieval scoring; tune freely; held-out stays untouched",
+  "tracemalloc_peak_mb": 151.1
+}

@@ -1,0 +1,185 @@
+{
+ "benchmark": "pyquifer-precision-dev-v1",
+ "split": "dev",
+ "protocol": "same protocol as the held-out impact set (query names the changed leaf); gold is the exact 1-hop reverse static_call set. DEV SET: tune retrieval against this freely; never tune against pyquifer-impact-v1 (held-out). Callees are disjoint from the held-out 20. Scored with set precision/recall/F1 so junk symbols count as false positives.",
+ "n": 20,
+ "tasks": [
+  {
+   "id": "pyq-dev-01",
+   "question": "Which functions break if generate changes?",
+   "callee": "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.generate",
+   "gold": [
+    "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward"
+   ]
+  },
+  {
+   "id": "pyq-dev-02",
+   "question": "Which functions break if _unconstrained_repertoire changes?",
+   "callee": "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire._unconstrained_repertoire",
+   "gold": [
+    "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mic",
+    "src/pyquifer/identity/iit_metrics.py::CauseEffectRepertoire.compute_mie"
+   ]
+  },
+  {
+   "id": "pyq-dev-03",
+   "question": "Which functions break if compute_fitness changes?",
+   "callee": "src/pyquifer/identity/neural_darwinism.py::SelectionArena.compute_fitness",
+   "gold": [
+    "src/pyquifer/identity/neural_darwinism.py::SelectionArena.forward"
+   ]
+  },
+  {
+   "id": "pyq-dev-04",
+   "question": "Which functions break if get_learning_rates changes?",
+   "callee": "src/pyquifer/learning/continual.py::MESU.get_learning_rates",
+   "gold": [
+    "src/pyquifer/learning/continual.py::MESU.apply_modulation"
+   ]
+  },
+  {
+   "id": "pyq-dev-05",
+   "question": "Which functions break if _params_to_skew_symmetric changes?",
+   "callee": "src/pyquifer/dynamics/oscillators/spherical.py::_params_to_skew_symmetric",
+   "gold": [
+    "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+    "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.get_frequencies"
+   ]
+  },
+  {
+   "id": "pyq-dev-06",
+   "question": "Which functions break if _lerp changes?",
+   "callee": "src/pyquifer/memory/perturbation.py::PerlinNoise._lerp",
+   "gold": [
+    "src/pyquifer/memory/perturbation.py::PerlinNoise.noise2d"
+   ]
+  },
+  {
+   "id": "pyq-dev-07",
+   "question": "Which functions break if probabilities changes?",
+   "callee": "src/pyquifer/experimental/quantum.py::QuantumState.probabilities",
+   "gold": [
+    "src/pyquifer/experimental/quantum.py::QuantumState.entropy"
+   ]
+  },
+  {
+   "id": "pyq-dev-08",
+   "question": "Which functions break if select_context changes?",
+   "callee": "src/pyquifer/experimental/quantum.py::QuantumInterference.select_context",
+   "gold": [
+    "src/pyquifer/experimental/quantum.py::QuantumInterference.forward"
+   ]
+  },
+  {
+   "id": "pyq-dev-09",
+   "question": "Which functions break if generate_neighbor changes?",
+   "callee": "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.generate_neighbor",
+   "gold": [
+    "src/pyquifer/dynamics/continuous/thermodynamic.py::SimulatedAnnealing.optimize"
+   ]
+  },
+  {
+   "id": "pyq-dev-10",
+   "question": "Which functions break if get_unitary changes?",
+   "callee": "src/pyquifer/experimental/quantum.py::UnitaryTransform.get_unitary",
+   "gold": [
+    "src/pyquifer/experimental/quantum.py::UnitaryTransform.forward"
+   ]
+  },
+  {
+   "id": "pyq-dev-11",
+   "question": "Which functions break if _get_stage changes?",
+   "callee": "src/pyquifer/embodiment/safety.py::ReflexToStrategy._get_stage",
+   "gold": [
+    "src/pyquifer/embodiment/safety.py::ReflexToStrategy.forward"
+   ]
+  },
+  {
+   "id": "pyq-dev-12",
+   "question": "Which functions break if _add_single changes?",
+   "callee": "src/pyquifer/learning/continual.py::ExperienceReplay._add_single",
+   "gold": [
+    "src/pyquifer/learning/continual.py::ExperienceReplay.add"
+   ]
+  },
+  {
+   "id": "pyq-dev-13",
+   "question": "Which functions break if retention changes?",
+   "callee": "src/pyquifer/memory/cls.py::ForgettingCurve.retention",
+   "gold": [
+    "src/pyquifer/memory/cls.py::ForgettingCurve.should_forget"
+   ]
+  },
+  {
+   "id": "pyq-dev-14",
+   "question": "Which functions break if _reshape_to_groups changes?",
+   "callee": "src/pyquifer/cognition/binding/visual.py::_reshape_to_groups",
+   "gold": [
+    "src/pyquifer/cognition/binding/visual.py::AKOrNLayer._kuramoto_step",
+    "src/pyquifer/cognition/binding/visual.py::_normalize_to_sphere"
+   ]
+  },
+  {
+   "id": "pyq-dev-15",
+   "question": "Which functions break if circular_correlation changes?",
+   "callee": "src/pyquifer/experimental/hyperdimensional.py::circular_correlation",
+   "gold": [
+    "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.analogy",
+    "src/pyquifer/experimental/hyperdimensional.py::HDCReasoner.unbind_role",
+    "src/pyquifer/experimental/hyperdimensional.py::HypervectorMemory.retrieve"
+   ]
+  },
+  {
+   "id": "pyq-dev-16",
+   "question": "Which functions break if step changes?",
+   "callee": "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.step",
+   "gold": [
+    "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.anneal",
+    "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.find_synchronized_state",
+    "src/pyquifer/dynamics/continuous/thermodynamic.py::ThermodynamicOscillatorSystem.forward"
+   ]
+  },
+  {
+   "id": "pyq-dev-17",
+   "question": "Which functions break if encode changes?",
+   "callee": "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.encode",
+   "gold": [
+    "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+    "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+    "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind"
+   ]
+  },
+  {
+   "id": "pyq-dev-18",
+   "question": "Which functions break if reshape_to_groups changes?",
+   "callee": "src/pyquifer/dynamics/oscillators/spherical.py::reshape_to_groups",
+   "gold": [
+    "src/pyquifer/dynamics/oscillators/spherical.py::LearnableOmega.forward",
+    "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.get_order_parameter",
+    "src/pyquifer/dynamics/oscillators/spherical.py::SphericalKuramotoLayer.kuramoto_update",
+    "src/pyquifer/dynamics/oscillators/spherical.py::exponential_map",
+    "src/pyquifer/dynamics/oscillators/spherical.py::normalize_oscillators"
+   ]
+  },
+  {
+   "id": "pyq-dev-19",
+   "question": "Which functions break if decode changes?",
+   "callee": "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.decode",
+   "gold": [
+    "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.bind",
+    "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.superpose",
+    "src/pyquifer/experimental/hyperdimensional.py::ResonantBinding.unbind"
+   ]
+  },
+  {
+   "id": "pyq-dev-20",
+   "question": "Which functions break if reparameterize changes?",
+   "callee": "src/pyquifer/cognition/predictive/active_inference.py::reparameterize",
+   "gold": [
+    "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.forward",
+    "src/pyquifer/cognition/predictive/active_inference.py::ActiveInferenceAgent.select_action",
+    "src/pyquifer/cognition/predictive/active_inference.py::PredictiveEncoder.sample"
+   ]
+  }
+ ]
+}
