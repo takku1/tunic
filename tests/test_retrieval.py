@@ -103,6 +103,37 @@ class AnswerRetrievalTests(unittest.TestCase):
         self.assertTrue(all(entry["derivation"]["rule"] == "reverse_static_reachability_v1"
                             for entry in result["impacts"]))
 
+    def test_bare_names_match_across_underscore_and_space(self):
+        (self.root / "stats.py").write_bytes(
+            b"def avalanche_statistics(signal):\n    return signal\n")
+        memory = Memory(str(self.tmp / "graph.sqlite"), self.root)
+        self.addCleanup(memory.close)
+        memory.ingest()
+        name_only = memory.answer(
+            "Which function computes avalanche statistics?",
+            budget={"exact": 0, "lexical": 0, "semantic": 0})
+        self.assertEqual(
+            [c["symbol"] for c in name_only["candidates"]],
+            ["stats.py::avalanche_statistics"])
+        mixed = memory.answer(
+            "Which function computes avalanche_statistics?",
+            budget={"exact": 0, "lexical": 0, "semantic": 0})
+        self.assertEqual(
+            [c["symbol"] for c in mixed["candidates"]],
+            ["stats.py::avalanche_statistics"])
+
+    def test_bare_name_word_boundaries_still_hold(self):
+        (self.root / "stats.py").write_bytes(
+            b"def beta_functional(x):\n    return x\n")
+        memory = Memory(str(self.tmp / "graph.sqlite"), self.root)
+        self.addCleanup(memory.close)
+        memory.ingest()
+        result = memory.answer(
+            "Which beta function handles this?",
+            budget={"exact": 0, "lexical": 0, "semantic": 0})
+        self.assertEqual(result["candidates"], [])
+        self.assertEqual(result["outcome"], "empty")
+
     def test_bad_budget_limit_and_provider_shape_rejected(self):
         memory = Memory(str(self.tmp / "graph.sqlite"), self.root)
         self.addCleanup(memory.close)

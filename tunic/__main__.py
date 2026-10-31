@@ -51,6 +51,10 @@ def main(argv=None):
     frontier.add_argument("--export-regression", default=None, metavar="ENTRY_ID",
                           help="export a resolved entry as a durable regression case")
     frontier.add_argument("--out", default=None, help="output path for --export-regression")
+    frontier.add_argument("--record-miss", default=None, metavar="SYMBOL",
+                          help="file an audited retrieval miss for a verified symbol")
+    frontier.add_argument("--question", default=None, help="question the system answered wrong")
+    frontier.add_argument("--authority", default=None, help="audit authority filing the miss")
     draft = commands.add_parser("draft", help="propose claim blocks for co-mentioned entities (review input only)")
     draft.add_argument("document", help="repository-relative document path, e.g. notes.md")
     review = commands.add_parser("review", help="structured acquisition report for one document (read-only)")
@@ -140,6 +144,14 @@ def main(argv=None):
                     status, verification = memory.frontier_replay(args.replay)
                     result = {"entry": args.replay, "status": status,
                               "verification": verification}
+                elif args.record_miss:
+                    if not args.question or not args.authority:
+                        parser.error("--record-miss requires --question and --authority")
+                    entry_id, _ = memory.frontier_record_miss(
+                        args.question, args.record_miss, authority=args.authority)
+                    result = {"recorded": entry_id,
+                              "retrieval": [e for e in memory.frontier_list(status="open")
+                                            if e["id"] == entry_id][0]["retrieval"]}
                 elif args.export_regression:
                     if not args.out:
                         parser.error("--export-regression requires --out")

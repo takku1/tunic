@@ -1,0 +1,43 @@
+# Tunic implementation status (single authoritative tracker)
+
+Date: 2026-10-31. Scope: local reference implementation on `main`.
+Full suite: 246 tests green (`python -m unittest discover -s tests`, ~16 s).
+This file records what is shipped, tested, and demonstrated — not what the
+architecture documents propose. For target architecture, see
+[overview.md](overview.md); for frozen evidence, see the benchmark
+artifacts cited below. Update this file, not scattered headers, when
+capabilities land.
+
+## Release gates
+
+| Gate | Bar | Standing |
+| ---- | --- | -------- |
+| Core 1.0: reliable evidence ingestion, grounded retrieval, corrections, context compilation, regression-tested real-repository answers | Avalanche-class closure committed; selection wins a frozen suite; numeric acceptance targets pinned (D-16) | Not met: selection still opt-in, D-16 open, one real-repo closure done |
+| Memory 1.0: durable multi-session semantic/episodic/procedural memory with safe acquisition, consolidation, lifecycle | Multi-session benchmarks + ACQ v1 exist; consolidation/forgetting absent | Partial: acquisition measured, lifecycle incomplete |
+| Platform 1.0: authenticated multi-user deployment, isolation, recovery, field-validated reliability | Single-principal local system today | Not started (by design) |
+
+## Subsystem matrix
+
+| Subsystem | Shipped and tested | Known limitations | Exit criteria |
+| --------- | ------------------ | ----------------- | ------------- |
+| Evidence ingestion and provenance | Python AST extraction (static profile v7: functions, methods, self/cls, imports) with byte-exact spans; doc mentions + typed claims; source digests, snapshots, manifest integrity; incremental refresh with rebuild-equivalence tests (`test_reference.py`, `test_incremental.py`, `test_refresh.py`) | Python only; dynamic dispatch (registry indirection, callbacks, attribute calls, `torch.__call__`) invisible; class-symbol gaps (e.g. `TickResult` NamedTuple missed on PyQuifer) | Callback/attribute candidate generation with negative controls; class extraction diagnostics |
+| Semantic graph and truth maintenance | Typed assertions, bitemporal timeline, corrects/supersedes/retracts with support-minus-retraction arithmetic, dispute surfacing (`test_temporal.py`, `test_memory.py` correction tests) | Lazy re-exports and attribute-mediated relations have no relationship type; entity/ontology semantics unresolved | Relation vocabulary for re-export/attribute edges; merge/split identity rules |
+| Retrieval and evidence selection | Hybrid exact/name/lexical/semantic stages with RRF fusion, budgets, abstention; pinned local embeddings with persistent cache; opt-in selection layer with traces (`test_retrieval.py`, `test_selection.py`, `test_embedcache.py`, `test_precision.py`) | Dense/hybrid F1 trails BM25 (0.41 vs 0.61 on the 14-task semantic suite) while leading Recall@1/MRR; selection stays opt-in (frozen-suite wins not met); confident wrong answers on large repos (PyQuifer misses) | Selection wins a frozen suite; rank-based regression coverage; calibrated abstention |
+| Context compiler and typed IR | Versioned W1 IR, three traversal policies, trust-labeled rendering, truncation receipts (`test_eval.py`, `test_render_answer.py`, `test_policy_contract.py`) | Full target IR and richer derivations remain proposed | Portability checks for the full IR obligation set |
+| Agent memory and acquisition | Persistent multi-session API, MCP stdio server (8 tools), proposals with deterministic reconcile, corrections, multi-session + ACQ v1 benchmarks (`test_memory.py`, `test_mcp.py`, `benchmarks/agent/`) | ACQ v1: callback scenarios 0/5 on every arm; lexical never acquires indirection; autonomous write path still reviewer-gated | Callback candidate generation; turn a held-out slice green without tuning on it |
+| Frontier and learning loop | Auto-filing (ingest diagnostics, abstentions, refused proposals), structured proof receipts, kind-dispatched replay, regression export, `retrieval_miss` records with rank-1 predicates, CLI (`test_memory.py` Frontier* classes) | 10,783 open entries on PyQuifer with no prioritization/categorization; no scheduler; one real-repo closure exported (`benchmarks/frontier/closures/avalanche-rank1-v1.json`) | Miss-entry prioritization and dedup accounting; second real-repo closure on a ranking gap |
+| Runtime memory integration | Ollama continuation path with support checking and segment boundaries; KV/prefetch isolated as research | No prefetch, no adaptive triggers, no KV fusion | Demonstrated quality or cost win before any fusion work |
+| Security and governance | Workspace path containment, single-principal authorization gate, guarded promotion, adversarial/poison tests (`test_adversarial.py`, `test_policy_contract.py`) | No multi-tenant ACL, revocation, erasure, or hostile-input isolation; MCP takes a caller-supplied principal | Threat-model acceptance backlog; authenticated-principal interface |
+| Storage and operations | SQLite + snapshots + manifests; deterministic local tests; no external services required | No backup/recovery/migration story; no observability; Ollama keeps ~8 GB resident during model benchmarks | Backup/restore and migration tests before any deployment claim |
+| Evaluation and benchmarks | Frozen suites and runs: W1/memory/agent suites, mention-precision split, Arena semantic/selection runs, frozen Cognee/Mem0 competitors, model A/Bs (incl. PyQuifer 17/20 select), multi-session v1–v4, S2 replays, conflict branch, ACQ v1 (240 rows, dry + batches + merge) | Small synthetic cores (n=14/20); model variance across reruns; no confidence intervals; held-out PyQuifer 20 must stay untouched | Pinned numeric targets (D-16); one more real-repo closure; selection A/B on frozen suites |
+
+## Doc conventions (binding)
+
+- This file is the only completion/progress tracker. Architecture docs
+  describe contracts and targets; they must link here instead of
+  restating status.
+- A shipped capability lands here with its tests and artifacts in the
+  same commit that implements it. Headers elsewhere saying
+  "unimplemented" for shipped work are bugs.
+- Numbers in this file come from committed artifacts or the suite run,
+  never from memory. No new completion percentages.

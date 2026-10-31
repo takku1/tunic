@@ -2,10 +2,12 @@
 
 Decision contract for the query-aware selection layer: which
 candidates enter agent context, with what evidence, and why the rest
-do not. Status: **target contract, not yet implemented**. The current
-pipeline (fusion scores + global threshold + budgets) is the baseline
-this contract must beat on the frozen suites before it changes any
-default. Do not tune it on the 14-task development probes; validate
+do not. Status: **selection layer implemented as opt-in**
+(`tunic/selection.py`, `tests/test_selection.py`, `select=True`);
+the default stays fusion-only until it beats the baseline on the
+frozen suites per the acceptance clause below. The current pipeline
+(fusion scores + global threshold + budgets) is that baseline.
+Do not tune it on the 14-task development probes; validate
 on positives, negatives, and the held-out split.
 
 ## Ordering invariant

@@ -1,10 +1,15 @@
 # Frontier Ledger: remembering what Tunic cannot yet understand
 
-Status: v0 implemented (ledger table, record/list/transition, dedupe,
-answer-abstention hook, commit_proposal refusal filing, `frontier` and
-`candidates` CLI reads, S2 open→resolved cycle demonstrated). Pending:
-ingest-diagnostic auto-wiring, zero-config `tunic <path>` ingest (spec
-below, not built), investigation scheduling.
+Status: v1 implemented (ledger table, record/list/transition with
+dedupe, answer-abstention hook, commit_proposal refusal filing,
+ingest-diagnostic auto-wiring, structured proof receipts for resolution,
+replay with per-kind rules, regression export, `retrieval_miss` records
+with rank-1 replay predicates; `frontier` CLI reads plus `--replay`,
+`--export-regression`, `--record-miss`). Demonstrated: S2
+open→resolved cycle, PyQuifer avalanche `retrieval_miss` closure with an
+exported regression case (`benchmarks/frontier/closures/`). Pending:
+zero-config `tunic <path>` ingest (spec below, not built),
+investigation scheduling, miss-entry prioritization at scale.
 Motivation: the v4 acquisition benchmark (S2, 0/6 commits on every
 protocol) proved models will not synthesize an edge through registry
 indirection even with the evidence in context, and probes of real
@@ -146,6 +151,16 @@ required evidence (read path for the future investigation scheduler).
   `symbols_present`) re-checkable via `replay_regression_case`.
   Acceptance: resolve → export → replay passes; retract evidence →
   replay fails; `frontier --replay` / `--export-regression` on the CLI.
+- v1.1 (implemented): audited `retrieval_miss` records. A human audit
+  files the verified target, observed rank, config, and snapshot for a
+  complete-but-wrong answer; replay resolves only when the target ranks
+  first under the recorded config, and the proof must pin the target
+  span. First real-repo closure exported to
+  `benchmarks/frontier/closures/avalanche-rank1-v1.json` (bare-name
+  stage now matches snake_case against spaced prose; break-tested by
+  zeroing the name budget). `frontier --record-miss` files;
+  `frontier_miss_summary` reports counts plus the false-confidence rate
+  over audited misses.
 - Later: MochiOS-scheduled investigation, procedural learning records,
   sandboxed system-improvement proposals.
 

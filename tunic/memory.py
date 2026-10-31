@@ -78,15 +78,18 @@ def _dispatch_covering(view, table, as_of):
 PROOF_FIELDS = ("snapshot", "assertions", "spans", "tests", "reviewer", "note")
 
 
-def replay_regression_case(memory, case):
+def replay_regression_case(memory, case, config_override=None):
     """Re-evaluate an exported frontier regression case against live state.
 
     Returns (passed, detail). Predicates mirror frontier_replay rules:
     answer_nonempty re-runs the recorded question, dispatch_covered
     requires an asserted edge over a registry candidate for the table,
-    symbols_present requires symbols at the recorded path. Unknown
-    predicate types and malformed cases raise; a resolved-then-retracted
-    evidence set must fail, not pass vacuously.
+    symbols_present requires symbols at the recorded path, target_rank_1
+    requires the verified target to rank first under the recorded
+    retrieval config. config_override replaces that config for
+    break-testing in scratch environments only. Unknown predicate types
+    and malformed cases raise; a resolved-then-retracted evidence set
+    must fail, not pass vacuously.
     """
     predicate = (case or {}).get("predicate") or {}
     kind = predicate.get("type")
@@ -96,6 +99,16 @@ def replay_regression_case(memory, case):
             raise ValueError("answer_nonempty predicate needs a question")
         outcome = memory.answer(question).get("outcome")
         return outcome != "empty", "question %r -> %s" % (question, outcome)
+    if kind == "target_rank_1":
+        question, target = predicate.get("question"), predicate.get("target")
+        if not question or not target:
+            raise ValueError("target_rank_1 predicate needs a question and target")
+        config = (dict(config_override) if config_override is not None
+                  else dict((case or {}).get("config") or {}))
+        rank, recall, rr, _top = Memory._miss_rank(
+            memory, question, target, config)
+        return rank == 1, ("target %s ranks %s (recall@10 %.1f, RR %.3f)"
+                           % (target, rank, recall, rr))
     snapshot, view = memory.store.view()
     if kind == "dispatch_covered":
         table = predicate.get("table")
@@ -467,7 +480,39 @@ class Memory:
         Fail-closed wrapper over the resolved transition: dangling
         snapshots, assertions, or sources, evidence-free proofs, and
         free-text resolutions all raise and leave the entry open.
+        Retrieval-miss entries additionally require the proof to pin the
+        verified target span and the target to rank first under the
+        recorded config right now — a valid target the system still
+        does not retrieve stays open.
         """
+        authorize(self.principal, "review")
+        row = self.store.connection.execute(
+            "SELECT record FROM frontier WHERE id=?", (entry_id,)).fetchone()
+        if row is None:
+            raise ValueError("unknown frontier entry: " + entry_id)
+        record = json.loads(row[0])
+        if record.get("status") in ("resolved", "dismissed"):
+            raise ValueError("entry %s is terminal (%s)"
+                             % (entry_id, record.get("status")))
+        if record.get("failure") == "retrieval_miss" and isinstance(proof, dict):
+            retrieval = record.get("retrieval") or {}
+            target_key = record.get("target")
+            _snap, _view = self.store.view(proof.get("snapshot"))
+            symbols = [s for s in _view.get("symbols", [])
+                       if s.get("key") == target_key]
+            if not symbols:
+                raise ValueError("verified target not in proof snapshot")
+            sym = symbols[0]
+            pinned = {(sp.get("source"), sp.get("start"), sp.get("end"))
+                      for sp in proof.get("spans", [])}
+            if (sym.get("source"), sym.get("start"),
+                    sym.get("end")) not in pinned:
+                raise ValueError("proof must pin the verified target span")
+            rank, _recall, _rr, _top = self._miss_rank(
+                self, record.get("task", ""), target_key,
+                retrieval.get("config"))
+            if rank != 1:
+                raise ValueError("verified target ranks %s, not 1" % (rank,))
         return self.frontier_transition(entry_id, "resolved", resolution=proof,
                                         resolved_by=resolved_by)
 
@@ -562,6 +607,31 @@ class Memory:
                     resolved_by="frontier_replay")
                 return "resolved", note
             return record["status"], "task still abstains"
+        if failure == "retrieval_miss":
+            retrieval = record.get("retrieval") or {}
+            target_key = record.get("target")
+            rank, recall, rr, _top = self._miss_rank(
+                self, record.get("task", ""), target_key,
+                retrieval.get("config"))
+            detail = ("target %s ranks %s (recall@10 %.1f, RR %.3f)"
+                      % (target_key, rank, recall, rr))
+            if rank == 1:
+                _snap, _view = self.store.view()
+                symbols = [s for s in _view.get("symbols", [])
+                           if s.get("key") == target_key]
+                if not symbols:
+                    return record["status"], "verified target left the graph"
+                sym = symbols[0]
+                note = "verified target ranks first: %s" % detail
+                self.frontier_transition(
+                    entry_id, "resolved",
+                    resolution=proof_for(note, spans=[{
+                        "source": sym.get("source"),
+                        "start": sym.get("start", 0),
+                        "end": sym.get("end", 0)}]),
+                    resolved_by="frontier_replay")
+                return "resolved", note
+            return record["status"], detail + "; needs rank 1"
         if failure in ("static_edge_unresolved", "ingest_dispatch_unresolved"):
             if not target:
                 return record["status"], "no replayable target recorded"
@@ -607,6 +677,97 @@ class Memory:
             return "investigating", "diagnostic gone; resolving edge not confirmed"
         return record["status"], "no replay rule for this failure kind"
 
+    @staticmethod
+    def _miss_rank(memory, question, target, config):
+        """Rank a verified target in a replayed retrieval (1-based, None if absent).
+
+        Returns (rank, recall_at_10, reciprocal_rank, top_symbols) using the
+        recorded retrieval configuration so replays measure the same pipeline
+        the audit observed. recall@10 and RR are diagnostic only; the
+        resolution predicate is rank == 1.
+        """
+        config = dict(config or {})
+        found = memory.answer(
+            question, mode=config.get("mode", "hybrid"),
+            policy=config.get("policy", "transparent"),
+            select=config.get("select", False),
+            limit=config.get("limit", 3), budget=config.get("budget"))
+        top = [c["symbol"] for c in found.get("candidates", [])]
+        rank = top.index(target) + 1 if target in top else None
+        recall = 1.0 if (rank is not None and rank <= 10) else 0.0
+        rr = 1.0 / rank if rank else 0.0
+        return rank, recall, rr, top[:5]
+
+    def frontier_record_miss(self, question, verified_target, authority,
+                             config=None):
+        """File an audited retrieval miss: the system answered, but wrong.
+
+        The audit authority must be a human (or a test harness acting for
+        one): a model's own unsupported claim that a result is wrong never
+        becomes ground truth. The verified target must be a known symbol,
+        and the observed outcome must be complete-but-wrong — an empty
+        outcome is an abstention, a different entry kind. Captures the
+        observed rank, top candidates, config, and snapshot so replay can
+        measure the same pipeline.
+        """
+        if not authority:
+            raise ValueError("a retrieval miss needs an audit authority")
+        authorize(self.principal, "review")
+        _snapshot, view = self.store.view()
+        if verified_target not in {s.get("key") for s in view.get("symbols", [])}:
+            raise ValueError("unknown verified target: %r" % (verified_target,))
+        config = {"mode": "hybrid", "policy": "transparent", "select": False,
+                  "limit": 3, "budget": None, **(config or {})}
+        found = self.answer(
+            question, mode=config["mode"], policy=config["policy"],
+            select=config["select"], limit=config["limit"],
+            budget=config["budget"])
+        if found.get("outcome") == "empty":
+            raise ValueError("empty outcome is an abstention, not a miss")
+        top = [c["symbol"] for c in found.get("candidates", [])]
+        rank = top.index(verified_target) + 1 if verified_target in top else None
+        entry_id, created = self._frontier_upsert(
+            "unsupported", question, "retrieval_miss", target=verified_target,
+            required_evidence=("verified target ranks first on replay",),
+            candidate_explanations=tuple(top[:5]))
+        row = self.store.connection.execute(
+            "SELECT record FROM frontier WHERE id=?", (entry_id,)).fetchone()
+        record = json.loads(row[0])
+        record["retrieval"] = {"question": question,
+                               "verified_target": verified_target,
+                               "observed_rank": rank,
+                               "observed_top": top[:5],
+                               "outcome": found.get("outcome"),
+                               "config": config, "authority": authority,
+                               "snapshot": self.store.current()}
+        self.store.connection.execute(
+            "UPDATE frontier SET record=? WHERE id=?",
+            (json.dumps(record, sort_keys=True), entry_id))
+        self.store.connection.commit()
+        return entry_id, created
+
+    def frontier_miss_summary(self):
+        """Counts over audited retrieval misses plus the false-confidence rate.
+
+        The rate is the share of audited misses that were returned as
+        apparently successful retrievals. Miss records only file on
+        complete outcomes, so the rate is 1.0 until correct-answer audits
+        are also tracked; it is reported explicitly rather than assumed.
+        """
+        rows = self.store.connection.execute(
+            "SELECT record FROM frontier").fetchall()
+        misses = [json.loads(text) for (text,) in rows
+                  if json.loads(text).get("failure") == "retrieval_miss"]
+        by_status = {}
+        for entry in misses:
+            by_status[entry.get("status")] = by_status.get(entry.get("status"), 0) + 1
+        complete = sum(1 for entry in misses
+                       if (entry.get("retrieval") or {}).get("outcome") != "empty")
+        summary = {"total": len(misses), "false_confidence_rate":
+                   (complete / len(misses) if misses else None)}
+        summary.update(by_status)
+        return summary
+
     def frontier_export_regression(self, entry_id, path):
         """Export a resolved entry as a durable regression case file.
 
@@ -641,12 +802,18 @@ class Memory:
             if not target:
                 raise ValueError("parse entry %s has no replayable path" % entry_id)
             predicate = {"type": "symbols_present", "path": target}
+        elif failure == "retrieval_miss":
+            if not target:
+                raise ValueError("miss entry %s has no verified target" % entry_id)
+            predicate = {"type": "target_rank_1", "question": task,
+                         "target": target}
         else:
             raise ValueError("no exportable predicate for failure kind: %r" % (failure,))
         case = {"version": 1,
                 "entry": {"id": record.get("id"), "kind": record.get("kind"),
                           "failure": failure, "task": task, "target": target},
                 "proof": proof, "predicate": predicate,
+                "config": (record.get("retrieval") or {}).get("config"),
                 "snapshot": proof.get("snapshot"),
                 "exported_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
         out = Path(path)
@@ -792,9 +959,18 @@ class Memory:
                            "ms": (time.perf_counter() - started) * 1000.0,
                            "skipped": False}
         started = time.perf_counter()
+
+        def _name_pattern(leaf):
+            # snake_case symbols match prose with spaces: "avalanche
+            # statistics" finds avalanche_statistics. Word boundaries are
+            # preserved, so "beta function" still does not match
+            # beta_functional.
+            return (r"\b" + r"[\s_]+".join(re.escape(part)
+                                           for part in leaf.split("_")) + r"\b")
+
         names = sorted(key for key, leaf in code
                        if len(leaf) >= 2
-                       and re.search(r"\b" + re.escape(leaf) + r"\b", task,
+                       and re.search(_name_pattern(leaf), task,
                                      flags=re.IGNORECASE))[:caps["name"]]
         stages["name"] = {"candidates": len(names),
                           "ms": (time.perf_counter() - started) * 1000.0,

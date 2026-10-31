@@ -1,0 +1,39 @@
+{
+ "config": {
+  "budget": null,
+  "limit": 3,
+  "mode": "hybrid",
+  "policy": "transparent",
+  "select": false
+ },
+ "entry": {
+  "failure": "retrieval_miss",
+  "id": "frontier-7d8dca6f1f9e",
+  "kind": "unsupported",
+  "target": "src/pyquifer/diagnostics/neuroscience.py::avalanche_statistics",
+  "task": "Which function computes avalanche statistics?"
+ },
+ "exported_at": "2026-10-31T21:16:39Z",
+ "predicate": {
+  "question": "Which function computes avalanche statistics?",
+  "target": "src/pyquifer/diagnostics/neuroscience.py::avalanche_statistics",
+  "type": "target_rank_1"
+ },
+ "proof": {
+  "assertions": [],
+  "current": true,
+  "note": "verified target ranks first: target src/pyquifer/diagnostics/neuroscience.py::avalanche_statistics ranks 1 (recall@10 1.0, RR 1.000)",
+  "reviewer": null,
+  "snapshot": "snapshot:5d84a59dec98d84a5c3a596a49c3bbf6167caf1cf97aa42987737134be627f37",
+  "spans": [
+   {
+    "end": 10725,
+    "source": "source:724a30cd5f314d3c25a3572c9c1cea9b1433c976049759f267cb068364231bf0",
+    "start": 7285
+   }
+  ],
+  "tests": []
+ },
+ "snapshot": "snapshot:5d84a59dec98d84a5c3a596a49c3bbf6167caf1cf97aa42987737134be627f37",
+ "version": 1
+}

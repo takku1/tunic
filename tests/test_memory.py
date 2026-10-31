@@ -990,5 +990,132 @@ class FrontierRegressionTests(unittest.TestCase):
         self.assertFalse(passed)
 
 
+class FrontierMissTests(unittest.TestCase):
+    """Audited retrieval misses: record, rank-gated resolve, regression."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.root = self.tmp / "repo"
+        self.root.mkdir()
+        self.rank_two_budget = {"exact": 0, "lexical": 0, "semantic": 0}
+        self.rank_two_config = {"budget": self.rank_two_budget}
+
+    def _memory(self, *files):
+        for name, text in files:
+            (self.root / name).write_bytes(text)
+        memory = Memory(str(self.tmp / "memory.sqlite"), self.root)
+        self.addCleanup(memory.close)
+        memory.ingest()
+        return memory
+
+    def test_record_miss_rejects_unaudited_unknown_and_empty(self):
+        memory = self._memory(("a.py", b"def alpha():\n    return 1\n"))
+        with self.assertRaises(ValueError):
+            memory.frontier_record_miss("which code mentions alpha",
+                                        "a.py::alpha", authority="")
+        with self.assertRaises(ValueError):
+            memory.frontier_record_miss("which code mentions alpha",
+                                        "a.py::missing", authority="audit")
+        with self.assertRaises(ValueError):
+            memory.frontier_record_miss("Zebra xylophone quark jigsaw zephyr quandary?",
+                                        "a.py::alpha", authority="audit")
+
+    def test_record_miss_captures_rank_and_config(self):
+        memory = self._memory(("a.py", b"def alpha():\n    return 1\n\n\n"
+                                             b"def alpha_beta():\n    return 2\n"))
+        entry_id, created = memory.frontier_record_miss(
+            "alpha beta", "a.py::alpha_beta", authority="human-audit",
+            config=self.rank_two_config)
+        self.assertTrue(created)
+        record = memory.frontier_list(status="open")[0]
+        self.assertEqual(record["id"], entry_id)
+        self.assertEqual(record["failure"], "retrieval_miss")
+        retrieval = record["retrieval"]
+        self.assertEqual(retrieval["verified_target"], "a.py::alpha_beta")
+        self.assertEqual(retrieval["observed_rank"], 2)
+        self.assertEqual(retrieval["authority"], "human-audit")
+        self.assertEqual(retrieval["config"]["budget"], self.rank_two_budget)
+        self.assertIn("snapshot", retrieval)
+
+    def test_replay_stays_open_when_target_not_first(self):
+        memory = self._memory(("a.py", b"def alpha():\n    return 1\n\n\n"
+                                             b"def alpha_beta():\n    return 2\n"))
+        entry_id, _ = memory.frontier_record_miss(
+            "alpha beta", "a.py::alpha_beta", authority="human-audit",
+            config=self.rank_two_config)
+        status, verification = memory.frontier_replay(entry_id)
+        self.assertEqual(status, "open")
+        self.assertIn("ranks 2", verification)
+        self.assertEqual(memory.frontier_list(status="open")[0]["id"], entry_id)
+
+    def test_resolve_gate_requires_live_rank_1_and_pinned_target(self):
+        memory = self._memory(("a.py", b"def alpha():\n    return 1\n\n\n"
+                                             b"def alpha_beta():\n    return 2\n"))
+        entry_id, _ = memory.frontier_record_miss(
+            "alpha beta", "a.py::alpha_beta", authority="human-audit",
+            config=self.rank_two_config)
+        snap = memory.store.current()
+        _, view = memory.store.view(snap)
+        other = [s for s in view["symbols"] if s["key"] == "a.py::alpha"][0]
+        with self.assertRaises(ValueError):
+            memory.frontier_resolve(entry_id, {
+                "snapshot": snap,
+                "spans": [{"source": other["source"], "start": other["start"],
+                           "end": other["end"]}],
+                "note": "pins the wrong symbol"})
+        target = [s for s in view["symbols"] if s["key"] == "a.py::alpha_beta"][0]
+        with self.assertRaises(ValueError):
+            memory.frontier_resolve(entry_id, {
+                "snapshot": snap,
+                "spans": [{"source": target["source"], "start": target["start"],
+                           "end": target["end"]}],
+                "note": "target pinned but ranks second"})
+
+    def test_replay_resolves_export_regresses_and_break_fails(self):
+        from tunic.memory import replay_regression_case
+        memory = self._memory(("a.py", b"def alpha_beta():\n    # alpha beta helper\n    return 2\n"))
+        entry_id, _ = memory.frontier_record_miss(
+            "alpha beta", "a.py::alpha_beta", authority="human-audit",
+            config=self.rank_two_config)
+        status, verification = memory.frontier_replay(entry_id)
+        self.assertEqual(status, "resolved")
+        self.assertIn("ranks 1", verification)
+        record = memory.frontier_list(status="resolved")[0]
+        self.assertEqual(record["resolution"]["proof"]["snapshot"],
+                         memory.store.current())
+        case_path = str(self.tmp / "miss-case.json")
+        case = memory.frontier_export_regression(entry_id, case_path)
+        self.assertEqual(case["predicate"]["type"], "target_rank_1")
+        passed, _ = replay_regression_case(memory, case)
+        self.assertTrue(passed)
+        broken = dict(case, config=dict(
+            case["config"], budget={"exact": 0, "lexical": 0,
+                                    "semantic": 0, "name": 0}))
+        passed, detail = replay_regression_case(memory, broken)
+        self.assertFalse(passed)
+        self.assertIn("rank", detail)
+        passed, _ = replay_regression_case(memory, case)
+        self.assertTrue(passed)
+
+    def test_miss_summary_counts_and_false_confidence(self):
+        memory = self._memory(("a.py", b"def alpha_beta():\n    # alpha beta helper\n    return 2\n"))
+        memory.frontier_record_miss("alpha beta", "a.py::alpha_beta",
+                                    authority="human-audit",
+                                    config=self.rank_two_config)
+        memory.frontier_record_miss("second query alpha beta", "a.py::alpha_beta",
+                                    authority="human-audit",
+                                    config=self.rank_two_config)
+        summary = memory.frontier_miss_summary()
+        self.assertEqual(summary["total"], 2)
+        self.assertEqual(summary["open"], 2)
+        self.assertEqual(summary["false_confidence_rate"], 1.0)
+        for entry in memory.frontier_list(status="open"):
+            memory.frontier_replay(entry["id"])
+        summary = memory.frontier_miss_summary()
+        self.assertEqual(summary["resolved"], 2)
+        self.assertEqual(summary["false_confidence_rate"], 1.0)
+
+
 if __name__ == "__main__":
     unittest.main()
