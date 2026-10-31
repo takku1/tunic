@@ -20,6 +20,18 @@ CREATE TABLE IF NOT EXISTS vectors(
 CREATE TABLE IF NOT EXISTS meta(key TEXT PRIMARY KEY, value TEXT NOT NULL);
 """
 
+SQLITE_VARIABLE_BATCH = 500
+
+
+def check_vector(vector):
+    """Vectors are non-empty lists of finite numbers; anything else is corrupt."""
+    import math
+    if (not isinstance(vector, list) or not vector
+            or any(isinstance(value, bool) or not isinstance(value, (int, float))
+                   or not math.isfinite(value) for value in vector)):
+        raise ValueError("embedding vector must be a non-empty list of finite numbers")
+    return vector
+
 
 def text_hash(text):
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
@@ -49,30 +61,46 @@ class EmbeddingCache:
                          self.preprocessing_version, digest))
 
     def get_many(self, texts):
-        """Split texts into cached vectors and cache misses, in order."""
+        """Split texts into cached vectors and cache misses, in order.
+
+        Every requested occurrence counts: duplicates score a hit each.
+        Batches stay under the SQLite variable limit; corrupt rows are
+        treated as misses so they can be overwritten on the next put.
+        """
+        texts = list(texts)
         digests = [text_hash(text) for text in texts]
-        rows = self.connection.execute(
-            "SELECT key, vector FROM vectors WHERE key IN (%s)" % ",".join("?" * len(digests)),
-            [self._key(digest) for digest in digests]).fetchall() if digests else []
-        cached = {key: json.loads(vector) for key, vector in rows}
-        found, missing = {}, []
+        cached = {}
+        for start in range(0, len(digests), SQLITE_VARIABLE_BATCH):
+            batch = [self._key(digest) for digest in digests[start:start + SQLITE_VARIABLE_BATCH]]
+            rows = self.connection.execute(
+                "SELECT key, vector FROM vectors WHERE key IN (%s)" % ",".join("?" * len(batch)),
+                batch).fetchall()
+            for key, raw in rows:
+                try:
+                    cached[key] = check_vector(json.loads(raw))
+                except (ValueError, TypeError):
+                    continue
+        found, missing, seen_missing = {}, [], set()
         for text, digest in zip(texts, digests):
             vector = cached.get(self._key(digest))
             if vector is None:
-                missing.append(text)
+                self.misses += 1
+                if digest not in seen_missing:
+                    seen_missing.add(digest)
+                    missing.append(text)
             else:
+                self.hits += 1
                 found[text] = vector
-        self.hits += len(found)
-        self.misses += len(missing)
         return found, missing
 
     def put_many(self, pairs):
         """Store {text: vector} pairs under the current key versions."""
+        checked = {text: check_vector(vector) for text, vector in pairs.items()}
         with self.connection:
             self.connection.executemany(
                 "INSERT OR REPLACE INTO vectors VALUES (?,?)",
                 [(self._key(text_hash(text)), json.dumps(vector))
-                 for text, vector in pairs.items()])
+                 for text, vector in checked.items()])
 
     def stats(self):
         total = self.hits + self.misses

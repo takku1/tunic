@@ -90,6 +90,48 @@ class CacheTests(unittest.TestCase):
         self.assertNotEqual(digest, text_hash("abd"))
         self.assertTrue(all(c in "0123456789abcdef" for c in digest))
 
+    def test_duplicates_count_every_occurrence(self):
+        inner, provider = self._cached()
+        provider.embed_texts(["alpha", "alpha", "beta"])
+        self.assertEqual(inner.calls, 1)
+        self.assertEqual(provider.cache.stats()["misses"], 3)
+        provider.embed_texts(["alpha", "alpha", "beta"])
+        self.assertEqual(inner.calls, 1)
+        self.assertEqual(provider.cache.stats()["hits"], 3)
+
+    def test_large_batches_stay_under_variable_limit(self):
+        inner, provider = self._cached()
+        texts = ["text-%d" % i for i in range(1200)]
+        provider.embed_texts(texts)
+        self.assertEqual(inner.calls, 1)
+        again = provider.embed_texts(list(reversed(texts)))
+        self.assertEqual(inner.calls, 1)
+        self.assertEqual(len(again), 1200)
+
+    def test_corrupt_rows_are_misses_not_crashes(self):
+        _, provider = self._cached()
+        provider.embed_texts(["alpha"])
+        key = provider.cache._key(text_hash("alpha"))
+        provider.cache.connection.execute(
+            "UPDATE vectors SET vector='{\"broken\"' WHERE key=?", (key,))
+        provider.cache.connection.commit()
+        found, missing = provider.cache.get_many(["alpha"])
+        self.assertEqual(found, {})
+        self.assertEqual(missing, ["alpha"])
+        provider.embed_texts(["alpha"])
+        found, _ = provider.cache.get_many(["alpha"])
+        self.assertEqual(len(found["alpha"]), 8)
+
+    def test_bad_vectors_rejected_on_write(self):
+        _, provider = self._cached()
+        with self.assertRaises(ValueError):
+            provider.cache.put_many({"x": ["a", "b"]})
+        with self.assertRaises(ValueError):
+            provider.cache.put_many({"x": []})
+        with self.assertRaises(ValueError):
+            provider.cache.put_many({"x": [1.0, True]})
+        self.assertEqual(provider.cache.get_many(["x"]), ({}, ["x"]))
+
     def test_unavailable_inner_stays_unavailable(self):
         _, provider = self._cached()
         provider.inner = EmbeddingProvider()
