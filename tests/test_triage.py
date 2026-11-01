@@ -3,6 +3,7 @@
 import io
 import json
 import shutil
+import sqlite3
 import tempfile
 import unittest
 from contextlib import redirect_stdout
@@ -83,6 +84,46 @@ class TriageTests(unittest.TestCase):
             with self.assertRaises(AssertionError):
                 analyze(self.db, root=str(self.root))
 
+    def test_non_frontier_write_by_another_connection_fails_closed(self):
+        # data_version brackets the whole database: a write to an
+        # unrelated table from a separate connection is caught even
+        # though the frontier digest is untouched.
+        real = Memory.frontier_list
+        db = self.db
+
+        def tampering(self, status=None):
+            other = sqlite3.connect(db)
+            try:
+                other.execute("CREATE TABLE triage_tamper (x)")
+                other.commit()
+            finally:
+                other.close()
+            return real(self, status=status)
+
+        with mock.patch.object(Memory, "frontier_list", tampering):
+            with self.assertRaises(AssertionError):
+                analyze(self.db, root=str(self.root))
+        # the refusal is fail-closed only if the report dies; the ledger
+        # itself was not touched by analysis.
+        memory = Memory(self.db, self.root)
+        self.addCleanup(memory.close)
+        self.assertEqual(len(memory.frontier_list()), 3)
+
+    def test_fully_terminal_cluster_drops_out_of_active_report(self):
+        # Dismiss every parse-error entry: the cluster keeps contributing
+        # to historical counts but must not rank, queue, or recommend.
+        for entry in self.memory.frontier_list(status="open"):
+            if entry["failure"] == "ingest_parse_error":
+                self.memory.frontier_transition(
+                    entry["id"], "dismissed",
+                    resolution="upstream syntax noise")
+        report = analyze(self.db, root=str(self.root))
+        self.assertNotIn("parse_error", [r["kind"] for r in report["top"]])
+        self.assertEqual(report["counts"]["by_kind"]["parse_error"], 1)
+        self.assertEqual(report["counts"]["active_clusters"],
+                         report["counts"]["clusters"] - 1)
+        self.assertEqual(report["queues"]["investigable"]["clusters"], 2)
+
     def test_external_stdlib_call_is_blocked_not_actionable(self):
         self.memory.frontier_record(
             "unresolved", "resolve call os.path.join",
@@ -98,6 +139,30 @@ class TriageTests(unittest.TestCase):
         # cluster, never a fabricated proof.
         self.assertEqual(report["top"][0]["queue"], "investigable")
         self.assertIsNone(report["recommendation"]["verifiable_target"])
+
+
+class TriageSiteClusterTests(unittest.TestCase):
+    """The same unresolved expression at distinct call sites is not one gap."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.root = self.tmp / "repo"
+        self.root.mkdir()
+        body = b"def run(handler, value):\n    return handler(value)\n"
+        (self.root / "first.py").write_bytes(body)
+        (self.root / "second.py").write_bytes(body)
+        self.db = str(self.tmp / "memory.sqlite")
+
+    def test_same_expression_at_two_sites_clusters_separately(self):
+        memory = Memory(self.db, self.root)
+        self.addCleanup(memory.close)
+        memory.ingest()
+        report = analyze(self.db, root=str(self.root))
+        calls = [c for c in report["top"] if c["kind"] == "unresolved_call"]
+        self.assertEqual(len(calls), 2)
+        self.assertTrue(all(c["occurrences"] == 1 for c in calls))
+        self.assertEqual(report["counts"]["by_kind"]["unresolved_call"], 2)
 
 
 class TriageDispatchTests(unittest.TestCase):
@@ -142,6 +207,29 @@ class TriageDispatchTests(unittest.TestCase):
         self.assertEqual(recommendation["verifiable_target"],
                          "dispatch.py::STRATEGIES")
         self.assertIn("frontier_replay", recommendation["plan"])
+
+    def test_recommendation_survives_a_small_top_cutoff(self):
+        # A recurring abstention outranks the covered dispatch table, so
+        # --top 1 truncates it from display; the recommendation must
+        # still select it from the full active cluster set.
+        memory = Memory(self.db, self.root)
+        self.addCleanup(memory.close)
+        memory.ingest()
+        committed, action, _ = memory.commit_proposal(
+            "checkout.py::place_order", "pricing.py::round_total")
+        self.assertEqual((committed, action), (True, "add"))
+        memory.ingest()
+        question = "Zebra xylophone quark jigsaw zephyr quandary?"
+        for _ in range(12):
+            self.assertEqual(memory.answer(question)["outcome"], "empty")
+        report = analyze(self.db, root=str(self.root), top=1)
+        self.assertEqual(len(report["top"]), 1)
+        self.assertEqual(report["top"][0]["kind"], "retrieval_abstention")
+        recommendation = report["recommendation"]
+        self.assertEqual(recommendation["candidate"]["kind"],
+                         "unresolved_dispatch")
+        self.assertEqual(recommendation["verifiable_target"],
+                         "dispatch.py::STRATEGIES")
 
 
 class TriageCLITests(unittest.TestCase):

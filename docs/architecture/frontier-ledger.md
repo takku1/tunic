@@ -115,9 +115,24 @@ capability), and `blocked` (missing capability or external noise — a
 stdlib call names no graph action). A blocked entry at the top of the
 ranking generates a capability task, never a fabricated proof; the
 recommendation field names the closest verifiable second closure or
-states what it would take. Entries already in a terminal state
-(resolved/dismissed) stop contributing occurrences but stay in cluster
-counts.
+states what it would take.
+
+Hardening rules from the v1.2 review:
+- Clusters whose entries are all terminal (resolved/dismissed) carry
+  zero active occurrences: they stay in historical counts but are
+  excluded from rankings, queues, and the recommendation — a closed
+  cluster must not be recommended again.
+- The recommendation selects from the full active cluster set ranked by
+  the base weighting, never from the top-N display truncation, so a
+  low-ranked but immediately closable cluster survives `--top 1`.
+- Unresolved calls cluster by observation site (task path + line), not
+  expression text: identical content in different files shares a
+  content digest and would silently merge into one "recurring" gap.
+- The mutation check pairs the frontier-record digest with
+  `PRAGMA data_version` before/after, so a write to any table by any
+  connection fails closed, not just ledger tampering (review finding:
+  a ledger-only digest does not prove the rest of the database was
+  untouched).
 
 ## Prioritization (heuristic, not calibrated)
 
