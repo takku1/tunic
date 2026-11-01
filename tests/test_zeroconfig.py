@@ -57,7 +57,9 @@ class ZeroConfigIngestTests(unittest.TestCase):
         summary = self._run(str(self.root))
         db = self.root / ".tunic" / "graph.sqlite"
         self.assertTrue(db.is_file())
-        self.assertEqual(summary["db"], str(db))
+        # resolve() both sides: Windows temp dirs may use 8.3 short names
+        # (RUNNER~1) while the summary reports the resolved long form.
+        self.assertEqual(summary["db"], str(db.resolve()))
         self.assertEqual(summary["root"], str(self.root.resolve()))
         self.assertEqual(summary["files"], 4)
         self.assertEqual(summary["symbols"], 3)
