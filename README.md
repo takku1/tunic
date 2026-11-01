@@ -47,7 +47,7 @@ For another repository, pass its Python source root (for example `repository/src
 
 ## Proposed candidates and the frontier ledger
 
-Closed registry tables (`STRATEGIES = {"standard": func}` with one static assignment, indexed by literals) and callback parameters invoked directly in the function body (`def run(handler, value): return handler(value)`, called with a statically resolvable bare function at that parameter index) produce `proposed` dependency candidates with derivation chains. Unresolvable, shadowed, keyword-only, non-name, and self-recursive callback arguments propose nothing. Candidates never traverse, corroborate, or render as evidence:
+Closed registry tables (`STRATEGIES = {"standard": func}` with one static assignment, indexed by literals) callback parameters invoked directly in the function body (`def run(handler, value): return handler(value)`, called with a statically resolvable bare function at that parameter index), and methods on provably known receivers (`t = Tool()` bound exactly once, then `t.work(...)` after the binding) produce `proposed` dependency candidates with derivation chains. Unresolvable, shadowed, keyword-only, non-name, and self-recursive callback arguments propose nothing; reassigned, unknown, and use-before-binding receivers likewise stay unresolved — receiver types are never guessed. Candidates never traverse, corroborate, or render as evidence:
 
 ```powershell
 python -m tunic --db .tunic/example.sqlite candidates

@@ -183,6 +183,14 @@ an input; independently measurable signals are.
 
 The last three are integration roles, not existing interfaces.
 
+Measured distinction (keep it explicit): triage-guided development is
+demonstrated — Tunic surfaces, deduplicates, and prioritizes its own
+uncertainty, and that ranking has now selected real defects and one
+real-repo closure (`benchmarks/frontier/closures/pyquifer-attrdispatch-v1.json`).
+Autonomous learning is NOT demonstrated: diagnosis, implementation,
+testing, and promotion approval remain developer-owned. The ledger
+feeds learning; it performs none of it.
+
 ## Zero-config ingest (specified with v0)
 
 `python -m tunic <path>` with no subcommand must: resolve `<path>` as
@@ -208,6 +216,11 @@ required evidence (read path for the future investigation scheduler).
   `symbols_present`) re-checkable via `replay_regression_case`.
   Acceptance: resolve → export → replay passes; retract evidence →
   replay fails; `frontier --replay` / `--export-regression` on the CLI.
+  A fifth predicate, `candidate_present` (v1.5), replays authored
+  extraction-gap closures: a live proposed `depends_on` candidate with
+  the recorded (via, caller, callee) must exist — the fail-before /
+  pass-after shape for extractor milestones (see
+  `benchmarks/frontier/closures/pyquifer-attrdispatch-v1.json`).
 - v1.1 (implemented): audited `retrieval_miss` records. A human audit
   files the verified target, observed rank, config, and snapshot for a
   complete-but-wrong answer; replay resolves only when the target ranks
@@ -246,6 +259,19 @@ required evidence (read path for the future investigation scheduler).
   with a discriminating ranking (`benchmarks/frontier/pyquifer-triage-v1.json`).
   Acceptance: same-line calls file separately; cluster keys visible in
   report rows; blocked requires every member target external.
+- v1.5 (implemented): known-receiver attribute-dispatch candidates
+  (`known_receiver_method_candidate_v1`): a variable provably bound once
+  to a resolvable constructor call, used after the binding, proposes a
+  depends_on candidate with binding + constructor + call derivation;
+  reassigned, shadowed, unknown, unknown-method, and use-before-binding
+  receivers propose nothing. Second audited real-repo closure:
+  `benchmarks/frontier/closures/pyquifer-attrdispatch-v1.json`
+  (CausalGraph.interventional_graph -> add_edge/add_variable, verified
+  by source inspection; `candidate_present` regression predicates replay
+  green and fail on the frozen v1.4 baseline). Scope discipline:
+  third-party receivers stay unresolved (never guessed) and constructor
+  calls are the separate class-extraction problem — neither is counted
+  as an attribute-dispatch success.
 - Later: MochiOS-scheduled investigation, procedural learning records,
   sandboxed system-improvement proposals.
 

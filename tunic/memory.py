@@ -109,7 +109,9 @@ def replay_regression_case(memory, case, config_override=None):
     requires an asserted edge over a registry candidate for the table,
     symbols_present requires symbols at the recorded path, target_rank_1
     requires the verified target to rank first under the recorded
-    retrieval config. config_override replaces that config for
+    retrieval config, candidate_present requires a live proposed
+    depends_on candidate with the recorded (via, caller, callee) — the
+    fail-before/pass-after shape for extraction-gap closures. config_override replaces that config for
     break-testing in scratch environments only. Unknown predicate types
     and malformed cases raise; a resolved-then-retracted evidence set
     must fail, not pass vacuously.
@@ -149,6 +151,20 @@ def replay_regression_case(memory, case, config_override=None):
         found = sorted({s.get("key") for s in view.get("symbols", [])
                         if s.get("path") == path})
         return bool(found), "path %s symbols %s" % (path, found)
+    if kind == "candidate_present":
+        via = predicate.get("via")
+        caller = predicate.get("caller")
+        callee = predicate.get("callee")
+        if not via or not caller or not callee:
+            raise ValueError("candidate_present predicate needs via, caller, callee")
+        matches = [a for a in view.get("assertions", [])
+                   if a.get("status") == "proposed"
+                   and (a.get("proposition") or {}).get("relation") == "depends_on"
+                   and a.get("proposition", {}).get("via") == via
+                   and a.get("proposition", {}).get("caller") == caller
+                   and a.get("proposition", {}).get("callee") == callee]
+        return bool(matches), "%s -> %s via %s: %d proposed candidate(s)" % (
+            caller, callee, via, len(matches))
     raise ValueError("unknown regression predicate: %r" % (kind,))
 
 

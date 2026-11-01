@@ -1,0 +1,62 @@
+{
+  "after": {
+    "attribute_dispatch_candidates": 2,
+    "unresolved_call_diagnostics": 11063,
+    "unresolved_ledger_entries": 10887
+  },
+  "baseline": {
+    "artifact": "benchmarks/frontier/pyquifer-triage-v1.json",
+    "attribute_dispatch_candidates": 0,
+    "unresolved_call_diagnostics": 11065,
+    "unresolved_ledger_entries": 10889
+  },
+  "closed_at": "2026-11-01T08:40:40Z",
+  "closure": {
+    "file": "src/pyquifer/cognition/reasoning/causal_reasoning.py",
+    "inspected": "lines 213-220: new_graph = CausalGraph() then new_graph.add_variable(...) and new_graph.add_edge(...); receiver type proven by the single constructor binding; verified by reading the source",
+    "predicates": [
+      {
+        "callee": "src/pyquifer/cognition/reasoning/causal_reasoning.py::CausalGraph.add_edge",
+        "caller": "src/pyquifer/cognition/reasoning/causal_reasoning.py::CausalGraph.interventional_graph",
+        "type": "candidate_present",
+        "via": "attribute_dispatch"
+      },
+      {
+        "callee": "src/pyquifer/cognition/reasoning/causal_reasoning.py::CausalGraph.add_variable",
+        "caller": "src/pyquifer/cognition/reasoning/causal_reasoning.py::CausalGraph.interventional_graph",
+        "type": "candidate_present",
+        "via": "attribute_dispatch"
+      }
+    ]
+  },
+  "id": "pyquifer-attrdispatch-v1",
+  "replay": [
+    {
+      "detail": "src/pyquifer/cognition/reasoning/causal_reasoning.py::CausalGraph.interventional_graph -> src/pyquifer/cognition/reasoning/causal_reasoning.py::CausalGraph.add_edge via attribute_dispatch: 1 proposed candidate(s)",
+      "passed": true,
+      "predicate": {
+        "callee": "src/pyquifer/cognition/reasoning/causal_reasoning.py::CausalGraph.add_edge",
+        "caller": "src/pyquifer/cognition/reasoning/causal_reasoning.py::CausalGraph.interventional_graph",
+        "type": "candidate_present",
+        "via": "attribute_dispatch"
+      }
+    },
+    {
+      "detail": "src/pyquifer/cognition/reasoning/causal_reasoning.py::CausalGraph.interventional_graph -> src/pyquifer/cognition/reasoning/causal_reasoning.py::CausalGraph.add_variable via attribute_dispatch: 1 proposed candidate(s)",
+      "passed": true,
+      "predicate": {
+        "callee": "src/pyquifer/cognition/reasoning/causal_reasoning.py::CausalGraph.add_variable",
+        "caller": "src/pyquifer/cognition/reasoning/causal_reasoning.py::CausalGraph.interventional_graph",
+        "type": "candidate_present",
+        "via": "attribute_dispatch"
+      }
+    }
+  ],
+  "repo": {
+    "commit": "1eb4a95",
+    "name": "PyQuifer"
+  },
+  "scope_note": "PyQuifer's dominant unresolved patterns are third-party receivers (F.softmax, Rs.mean, R.detach) which correctly stay unresolved: receiver types are never guessed. Constructor calls (FractalPatternLearner(...)) are the separate class-extraction problem and are NOT counted as attribute-dispatch successes.",
+  "snapshot": "snapshot:3bf20b55e4423d20d64c0f9993dbe7e66f6d5cb1dbb5d9f51e8f1a4437f62963",
+  "tunic_commit": "74a5ef2"
+}

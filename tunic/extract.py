@@ -361,6 +361,60 @@ def _resolve_bare_function(s, name, imports, modules):
     return None
 
 
+def _class_methods(s, name, imports, modules, local, star):
+    """Methods table {method: key} for a visible class name, or None.
+
+    Local classes resolve through the source's own table; imported ones
+    through the module table (single candidate only, same rule as static
+    calls). Shadowed or star-imported names resolve to None.
+    """
+    if name in local or name in s["bindings"] or star:
+        return None
+    if name in s["classes"]:
+        return s["classes"][name]
+    if name in imports:
+        parts = imports[name].split(".")
+        candidates = modules.get(".".join(parts[:-1]), [])
+        if len(candidates) == 1:
+            return candidates[0].get("classes", {}).get(parts[-1])
+    return None
+
+
+def _constructor_bindings(s, body, imports, modules, local, star):
+    """Variables provably bound once to a resolvable constructor call.
+
+    Conservative proof obligations: exactly one Store binding of the name
+    in the function (reassignment, loop targets, aug-assign all exclude),
+    an Assign whose value is a direct constructor call naming a visible
+    class, and — checked at the call site — the method call sits after
+    the binding. Receiver names failing any obligation stay unresolved:
+    unknown receiver types are never guessed.
+    """
+    counts = {}
+    for name in _bound_names(body):
+        counts[name] = counts.get(name, 0) + 1
+    bindings = {}
+    for assign in (n for n in ast.walk(body) if isinstance(n, ast.Assign)):
+        if len(assign.targets) != 1 or not isinstance(assign.targets[0], ast.Name):
+            continue
+        var = assign.targets[0].id
+        if counts.get(var, 0) != 1 or not isinstance(assign.value, ast.Call) \
+                or not isinstance(assign.value.func, ast.Name):
+            continue
+        methods = _class_methods(s, assign.value.func.id, imports, modules,
+                                 local, star)
+        if not methods:
+            continue
+        start, end = _span(s["data"], assign)
+        call_start, call_end = _span(s["data"], assign.value)
+        bindings[var] = {"methods": methods, "class": assign.value.func.id,
+                         "binding": {"source": s["id"], "start": start, "end": end},
+                         "constructor": {"source": s["id"], "start": call_start,
+                                           "end": call_end},
+                         "line": assign.lineno}
+    return bindings
+
+
 def _code_targets(s):
     """Top-level functions and methods of one parsed code source."""
     targets = []
@@ -413,10 +467,45 @@ def _resolve_code(sources, modules, symbols, assertions, diagnostics, known_site
                 continue
             ordered_params = [a.arg for a in node.args.posonlyargs] + [a.arg for a in node.args.args]
             body = ast.Module(body=node.body, type_ignores=[])
+            ctor_bindings = _constructor_bindings(s, body, imports,
+                                                  modules, local, star)
             for call in (n for n in ast.walk(body) if isinstance(n, ast.Call)):
                 target, expression, head = _resolve_call_target(
                     s, call, imports, modules, local, star, self_class, rebound)
                 start, end = _span(s["data"], call)
+                receiver = None
+                if target is None and ctor_bindings \
+                        and isinstance(call.func, ast.Attribute) \
+                        and isinstance(call.func.value, ast.Name):
+                    receiver = ctor_bindings.get(call.func.value.id)
+                if target is None and receiver is not None \
+                        and call.lineno > receiver["line"]:
+                    callee = receiver["methods"].get(call.func.attr)
+                    if callee is not None:
+                        # The receiver type is proven by the single
+                        # constructor binding: emit a candidate, not a
+                        # diagnostic — the gap is bridged, pending
+                        # verification. Never asserted automatically.
+                        definition = symbols[callee]
+                        call_ref = {"source": s["id"], "start": start, "end": end}
+                        proposition = {"relation": "depends_on", "caller": caller,
+                                       "callee": callee, "via": "attribute_dispatch"}
+                        assertion = {"proposition": proposition, "source": s["id"],
+                                     "start": start, "end": end,
+                                     "resolution": {"expression": expression,
+                                                    "rule": "known_receiver_method_candidate_v1",
+                                                    "support": [receiver["binding"],
+                                                                {k: definition[k] for k in ("source", "start", "end")}]},
+                                     "derivation": {"receiver": call.func.value.id,
+                                                    "class": receiver["class"],
+                                                    "binding": receiver["binding"],
+                                                    "constructor": receiver["constructor"],
+                                                    "method": call.func.attr,
+                                                    "call": call_ref},
+                                     "producer": PROFILE, "status": "proposed"}
+                        assertion["id"] = identity("assertion", assertion)
+                        assertions.append(assertion)
+                        continue
                 if target:
                     proposition = {"relation": "static_call", "caller": caller, "callee": target}
                     definition = symbols[target]
