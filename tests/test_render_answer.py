@@ -25,6 +25,61 @@ def build_repo(root, with_claim=True):
         + "\n```\n", encoding="utf-8")
 
 
+class MethodContainerAnnotationTests(unittest.TestCase):
+    """Method candidates carry their class so renderings bridge
+    method questions to the class (and through it to construction
+    candidates) — the ACQ v2 constructor-gap link."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        (self.root / "shop.py").write_text(
+            "class Gadget:\n"
+            "    def start(self):\n"
+            "        return 1\n"
+            "\n\n"
+            "def create():\n"
+            "    return Gadget()\n", encoding="utf-8")
+        self.memory = Memory(str(self.root / "t.sqlite"), self.root)
+        self.memory.ingest()
+
+    def tearDown(self):
+        self.memory.close()
+        self.tmp.cleanup()
+
+    def test_method_candidate_carries_container(self):
+        result = self.memory.answer("what uses start", policy="current")
+        method = next(c for c in result["candidates"]
+                      if c["symbol"] == "shop.py::Gadget.start")
+        self.assertEqual(method.get("container"), "shop.py::Gadget")
+
+    def test_render_annotates_method_of_class(self):
+        text = render_answer_text(
+            self.memory.answer("what uses start", policy="current"))
+        self.assertIn("shop.py::Gadget.start [best match: name; stages: name,lexical; "
+                      "method of shop.py::Gadget]", text)
+
+    def test_plain_function_has_no_container(self):
+        result = self.memory.answer("what uses create", policy="current")
+        func = next(c for c in result["candidates"]
+                    if c["symbol"] == "shop.py::create")
+        self.assertNotIn("container", func)
+
+    def test_nested_function_never_a_candidate(self):
+        # nested scopes are excluded from the static profile entirely
+        # (nested_scope diagnostic), so a dotted non-method key cannot
+        # arise and the container annotation can only name classes
+        (self.root / "nest.py").write_text(
+            "def outer():\n"
+            "    def inner():\n"
+            "        return 1\n"
+            "    return inner()\n", encoding="utf-8")
+        self.memory.ingest()
+        result = self.memory.answer("what uses inner", policy="current")
+        self.assertNotIn("nest.py::outer.inner",
+                         [c["symbol"] for c in result["candidates"]])
+
+
 class RenderAnswerTrustTest(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()

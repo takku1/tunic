@@ -16,6 +16,12 @@ behavior. Precision and recall are reported separately.
 
 Usage:
   python run_acq_v2.py <out.json> [suite] [scen,...] [--dry-run] [--arms a,b]
+      [--backend=ollama|kimi-cli] [--kimi-model=NAME] [--kimi-timeout=SEC]
+
+Backend: ollama (default) serves the frozen qwen3:4b comparison arms;
+kimi-cli shells out to the installed Kimi Code CLI in tool-less print mode,
+riding the authenticated subscription (no API keys). kimi-cli results must
+be written to their own artifacts -- never overwrite the qwen3 runs.
 """
 import json
 import shutil
@@ -29,9 +35,31 @@ sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "benchmarks/agent"))
 
 from run_model_ab_v1 import MODEL  # noqa: E402
+import run_model_ab_multisession_v2 as _ms_v2  # noqa: E402
 from run_model_ab_multisession_v2 import (  # noqa: E402
     CONTEXT_CAP, PROPOSE_PROMPT, chat, parse_proposal, parse_symbols, run_arm)
 from run_model_ab_multisession_v4 import static_edge_visible  # noqa: E402
+
+from kimi_cli_backend import model_identity as _kimi_identity  # noqa: E402
+
+# Inference backend. The frozen qwen3:4b Ollama arm is the default; the
+# kimi-cli backend rides the user's authenticated Kimi Code subscription
+# (subprocess per call, tool-less agent). run_arm resolves `chat` at call
+# time from its own module globals, so switching backends patches that
+# global; nothing in the frozen v1/v2 modules is modified.
+_BACKEND = {"name": "ollama", "model": MODEL, "chat": chat}
+
+
+def use_backend(name, kimi_model=None, kimi_timeout=None):
+    if name == _BACKEND["name"]:
+        return
+    if name != "kimi-cli":
+        raise SystemExit("unknown --backend %r (ollama|kimi-cli)" % name)
+    import kimi_cli_backend
+    kimi_cli_backend.configure(model=kimi_model, timeout_s=kimi_timeout)
+    _BACKEND.update(name=name, model=kimi_cli_backend.model_identity(),
+                    chat=kimi_cli_backend.chat)
+    _ms_v2.chat = kimi_cli_backend.chat
 
 from acqgen2 import SCENARIOS, build, digest  # noqa: E402
 from tunic.memory import Memory  # noqa: E402
@@ -55,6 +83,11 @@ relationship with the mechanical observation that produced it (via/rule, with
 derivation spans). Judge each candidate's caller/callee pair against the task:
 pick the ONE candidate whose relationship answers the task. Selecting records
 that candidate as a reviewed claim through the governed commit path.
+
+Dependency semantics: a candidate whose callee is a CLASS also answers tasks
+about that class's methods or attributes â€” constructing a class embeds its
+behavior, so a change to a member reaches every function that constructs the
+class.
 
 Reply with ONE of:
 SELECT <candidate-id, copied exactly from the 'id' field of the chosen
@@ -98,12 +131,36 @@ def resolve_candidate_id(selected, candidates):
     return None
 
 
-def candidates_block(candidates):
-    return "\n".join(
-        "- id %s | %s %s %s [via %s; rule %s; UNVERIFIED; derivation %s]" % (
-            c["id"], c["caller"], c["relation"], c["callee"], c.get("via"),
-            c.get("rule"), json.dumps(c.get("derivation"), sort_keys=True))
-        for c in candidates)
+def _class_methods(memory, class_key):
+    """Mechanically derived member list for a class symbol (methods the
+    extraction keyed under path::Class.name). Capped: the block is
+    evidence, not documentation."""
+    _snap, view = memory.store.view()
+    prefix = class_key + "."
+    methods = sorted(s["key"][len(prefix):].split(".", 1)[0]
+                     for s in view.get("symbols", [])
+                     if s["key"].startswith(prefix))
+    return methods[:5]
+
+
+def candidates_block(candidates, memory=None):
+    """One line per candidate. Constructor-call candidates name the class
+    they construct; without the class's method list the model cannot
+    connect a method-named task to a class-level candidate (the ACQ v2
+    constructor gap), so the mechanical member list rides along."""
+    lines = []
+    for c in candidates:
+        methods = ""
+        if memory is not None and c.get("via") == "constructor_call":
+            members = _class_methods(memory, c.get("callee"))
+            if members:
+                methods = "; class methods: %s" % ", ".join(members)
+        lines.append(
+            "- id %s | %s %s %s [via %s; rule %s%s; UNVERIFIED; derivation %s]" % (
+                c["id"], c["caller"], c["relation"], c["callee"], c.get("via"),
+                c.get("rule"), methods,
+                json.dumps(c.get("derivation"), sort_keys=True)))
+    return "\n".join(lines)
 
 
 def setup_cell(memory, spec):
@@ -135,17 +192,21 @@ def propose_cell(work, arm, suite, scenario, rep, dry=False):
     memory = Memory(str(root.parent / "sessions.sqlite"), root)
     memory.ingest()
     setup_cell(memory, spec)
-    calls, tokens = [0], [0, 0]
+    calls, tokens = [0], [None, None]
 
     def tracked(prompt_text, select_prompt=False):
-        response = chat(prompt_text)
+        response = _BACKEND["chat"](prompt_text)
         calls[0] += 1
-        tokens[0] += response.get("prompt_tokens") or 0
-        tokens[1] += response.get("completion_tokens") or 0
+        for i, key in enumerate(("prompt_tokens", "completion_tokens")):
+            value = response.get(key)
+            if value is not None:
+                tokens[i] = (tokens[i] or 0) + value
         return response
 
     code_index, notes_index = BM25(root), TextNotes(root)
     question = spec["question"]
+    candidates = case_candidates(memory)
+    present_vias = {c.get("via") for c in candidates}
     misbuilt, why = False, ""
     if spec["kind"] in ("positive", "contra") and spec["gold"] is not None:
         rel, subj, obj = spec["gold"]
@@ -153,8 +214,6 @@ def propose_cell(work, arm, suite, scenario, rep, dry=False):
         want = spec.get("static", "invisible") == "visible"
         if visible != want:
             misbuilt, why = True, "scenario-misbuilt: gold static visibility=%s" % visible
-    candidates = case_candidates(memory)
-    present_vias = {c.get("via") for c in candidates}
     for via in spec.get("expected_vias", ()):
         if via not in present_vias:
             misbuilt, why = True, "scenario-misbuilt: expected %s candidate absent" % via
@@ -183,7 +242,7 @@ def propose_cell(work, arm, suite, scenario, rep, dry=False):
         _resp, context = run_arm(memory, code_index, notes_index,
                                  "tunic-select", question)
         calls[0] += 1
-        block = candidates_block(candidates) or "(no candidates)"
+        block = candidates_block(candidates, memory) or "(no candidates)"
         response = tracked(SELECT_PROMPT % (question, context, block))
         text = response.get("text", "")
         if text.strip().upper().startswith("ABSTAIN") or not candidates:
@@ -233,7 +292,7 @@ def propose_cell(work, arm, suite, scenario, rep, dry=False):
             context = (context + "\n\nProposed relationship candidates "
                        "(mechanically derived, UNVERIFIED - the candidate list is "
                        "evidence to evaluate, not facts):\n"
-                       + candidates_block(candidates))
+                       + candidates_block(candidates, memory))
         elif arm == "tunic-candidates":
             context += "\n\n(no mechanical candidates for this task)"
         response = tracked(PROPOSE_PROMPT % (question, context))
@@ -334,12 +393,20 @@ def apply_stage(memory, code_index, notes_index, arm, prop, check):
            "pass": apply_pass(prop["scenario"], passed,
                               prop.get("committed", True)),
            "had_commit": prop.get("committed", False), "model_calls": 1,
-           "prompt_tokens": response.get("prompt_tokens") or 0,
-           "completion_tokens": response.get("completion_tokens") or 0,
+           "prompt_tokens": response.get("prompt_tokens"),
+           "completion_tokens": response.get("completion_tokens"),
            "latency_ms": round(response.get("latency_ms", 0.0), 1)}
     print("%s/%s apply pass=%s parsed=%s" % (out["id"], prop["arm"], out["pass"], parsed),
           flush=True)
     return out
+
+
+def _sum_optional(rows, key):
+    """Sum a token field across rows; None when no row reported it (the
+    kimi-cli backend cannot see usage and never fabricates counts)."""
+    vals = [r.get(key) for r in rows]
+    vals = [v for v in vals if v is not None]
+    return sum(vals) if vals else None
 
 
 def summarize_acq(rows):
@@ -373,9 +440,9 @@ def summarize_acq(rows):
                     "false_promotions": sum(1 for r in cells if r.get("false_promotion")),
                     "decoy_commits": sum(1 for r in cells if r.get("decoy_committed")),
                     "model_calls": sum(r.get("model_calls", 0) for r in cells + app),
-                    "prompt_tokens": sum(r.get("prompt_tokens", 0) for r in cells + app),
-                    "completion_tokens": sum(r.get("completion_tokens", 0)
-                                             for r in cells + app)}
+                    "prompt_tokens": _sum_optional(cells + app, "prompt_tokens"),
+                    "completion_tokens": _sum_optional(cells + app, "completion_tokens")
+                                        }
     return summary
 
 
@@ -386,10 +453,20 @@ def main():
     suite = args[1] if len(args) > 1 else "dev"
     scenarios = args[2].split(",") if len(args) > 2 else list(SCENARIOS)
     arms = None
+    backend = "ollama"
+    kimi_model = None
+    kimi_timeout = None
     for a in sys.argv:
         if a.startswith("--arms="):
             arms = a.split("=", 1)[1].split(",")
+        elif a.startswith("--backend="):
+            backend = a.split("=", 1)[1]
+        elif a.startswith("--kimi-model="):
+            kimi_model = a.split("=", 1)[1]
+        elif a.startswith("--kimi-timeout="):
+            kimi_timeout = int(a.split("=", 1)[1])
     arms = arms or list(ARMS)
+    use_backend(backend, kimi_model=kimi_model, kimi_timeout=kimi_timeout)
     tunic_commit = subprocess.run(
         ["git", "rev-parse", "HEAD"], capture_output=True, text=True,
         cwd=str(REPO)).stdout.strip()
@@ -404,18 +481,35 @@ def main():
                 print("%s/%s/%s pass=%s %s" %
                       (prop["id"], arm, "dry" if dry else "live",
                        prop.get("pass"), prop.get("commit_reason", "")), flush=True)
+    decoding = ({"temperature": 0, "seed": 0} if backend == "ollama" else
+                {"temperature": "server-side (not exposed by kimi-cli)",
+                 "seed": None})
+    limitations = ["n=5 reps per cell; directional evidence only; heldout run "
+                   "once, not tuned against"]
+    if backend == "ollama":
+        limitations[0] = "n=5 reps per cell; temperature 0; " + limitations[0]
+    else:
+        # Model swap: the kimi-cli arm differs from the frozen qwen3 run in
+        # model, decoding, and latency regime, so arm deltas conflate those.
+        limitations.append("kimi-cli backend: decoding is server-side "
+                           "(temperature not pinned); token usage not reported "
+                           "by the CLI (null, never fabricated); each call is a "
+                           "fresh subprocess + session so trials are independent "
+                           "but startup latency is included in latency_ms")
+        limitations.append("cross-model comparisons with the frozen qwen3 "
+                           "artifacts are directional only, not controlled")
     record = {"benchmark": out_name.replace(".json", ""),
               "protocol": ("ACQ v2: candidate-aided acquisition; 5 arms "
                            "(none/lexical/tunic/tunic-candidates/tunic-commit-cand); "
                            "product commit paths; exact-triple scorer; precision and "
                            "recall reported separately; a candidate being present is "
                            "not an acquisition success"),
-              "model": MODEL, "decoding": {"temperature": 0, "seed": 0},
+              "model": _BACKEND["model"], "backend": _BACKEND["name"],
+              "decoding": decoding,
               "context_cap": CONTEXT_CAP, "tunic_commit": tunic_commit,
               "dry_run": dry, "suite": suite, "scenarios": scenarios, "arms": arms,
               "summary": summarize_acq(rows), "tasks": rows,
-              "limitations": ["n=5 reps per cell; temperature 0; directional "
-                              "evidence only; heldout run once, not tuned against"]}
+              "limitations": limitations}
     out = REPO / "benchmarks/agent/runs" / out_name
     out.write_text(json.dumps(record, indent=1), encoding="utf-8")
     print("summary:", json.dumps(record["summary"]))

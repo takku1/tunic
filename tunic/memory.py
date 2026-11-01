@@ -1236,13 +1236,34 @@ class Memory:
                 mentions.append(mention)
         mentions.sort(key=lambda m: (m["evidence"]["path"], m["evidence"]["start"], m["status"]))
         claims.sort(key=lambda c: (c["relation"], c["caller"], c["callee"] or ""))
+        symbols_by_key = {row["key"]: row for row in view["symbols"]}
+
+        def _container_of(key):
+            # Method-of-class annotation: a dotted symbol whose dotted
+            # prefix resolves to a class symbol is a method of that class.
+            # The render uses it to bridge method questions to the class
+            # (and through it to construction candidates).
+            path, _, name = key.partition("::")
+            if "." not in name:
+                return None
+            container_key = "%s::%s" % (path, name.rsplit(".", 1)[0])
+            if symbols_by_key.get(container_key, {}).get("kind") == "class":
+                return container_key
+            return None
+
+        cand_entries = []
+        for key in top:
+            entry = {"symbol": key, "score": scores[key],
+                     "match": min(origins[key], key=order.__getitem__),
+                     "origins": origins[key]}
+            container = _container_of(key)
+            if container:
+                entry["container"] = container
+            cand_entries.append(entry)
         result = {"task": task, "snapshot": snapshot, "policy": policy,
                 "fusion": "weighted_rrf_k60", "provider": provider.name,
                 "budget": caps, "threshold": threshold, "stages": stages,
-                "candidates": [{"symbol": key,
-                                "score": scores[key],
-                                "match": min(origins[key], key=order.__getitem__),
-                                "origins": origins[key]} for key in top],
+                "candidates": cand_entries,
                 "impacts": [impacts[key] for key in sorted(impacts)],
                 "mentions": mentions, "claims": claims,
                 "selection": selection,

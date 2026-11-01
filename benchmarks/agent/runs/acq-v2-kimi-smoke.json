@@ -1,0 +1,366 @@
+{
+ "benchmark": "acq-v2-kimi-smoke",
+ "protocol": "ACQ v2: candidate-aided acquisition; 5 arms (none/lexical/tunic/tunic-candidates/tunic-commit-cand); product commit paths; exact-triple scorer; precision and recall reported separately; a candidate being present is not an acquisition success",
+ "model": "kimi-cli:kimi-code/kimi-for-coding (managed subscription)",
+ "backend": "kimi-cli",
+ "decoding": {
+  "temperature": "server-side (not exposed by kimi-cli)",
+  "seed": null
+ },
+ "context_cap": 4000,
+ "tunic_commit": "580a391b5bc700891c8ea823b1f365a8ddf01808",
+ "dry_run": false,
+ "suite": "dev",
+ "scenarios": [
+  "callback"
+ ],
+ "arms": [
+  "tunic-commit-cand"
+ ],
+ "summary": {
+  "dev/callback/tunic-commit-cand": {
+   "n": 5,
+   "pass_rate": 1.0,
+   "apply_pass_rate": 0.8,
+   "commits": 5,
+   "committed_correct": 5,
+   "acquisition_precision": 1.0,
+   "acquisition_recall": 1.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 15,
+   "prompt_tokens": null,
+   "completion_tokens": null
+  }
+ },
+ "tasks": [
+  {
+   "id": "dev-callback-rep0-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 0,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "lure": null,
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "proposal": null,
+   "receipt": {
+    "candidate_id": "assertion:539e8968ea9293164853138a9b5dab529c730220134b1d25660c86e64a7bb35e",
+    "justification": "main.py::entry passes ops.py::process as a callback parameter (\"fn\"), so entry depends on process and would break if process changes; consistent with the asserted claim depends_on main.py::entry ops.py::process.",
+    "proposition": {
+     "caller": "main.py::entry",
+     "callee": "ops.py::process",
+     "via": "callback_parameter"
+    },
+    "committed": true,
+    "action": "add",
+    "reason": "no duplicate, conflict, or endpoint problem found"
+   },
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 5969.0,
+   "fixture_digest": "86c2e42164c6",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "decoy_committed": false,
+   "pass": true
+  },
+  {
+   "id": "dev-callback-rep0-apply",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 0,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "main.py::entry"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "main.py::entry"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 5719.0
+  },
+  {
+   "id": "dev-callback-rep1-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 1,
+   "question": "What must change if handle changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::ignite",
+    "shop.py::handle"
+   ],
+   "lure": null,
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "proposal": null,
+   "receipt": {
+    "candidate_id": "assertion:0040c154d8623102ae9d7ff59a8d93e038922397726470a2e8e7192c0c78e786",
+    "justification": "ignite depends_on handle via callback_parameter (fn binding), so a change to handle must be reflected wherever ignite receives/calls it as that callback.",
+    "proposition": {
+     "caller": "shop.py::ignite",
+     "callee": "shop.py::handle",
+     "via": "callback_parameter"
+    },
+    "committed": true,
+    "action": "add",
+    "reason": "no duplicate, conflict, or endpoint problem found"
+   },
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 7203.0,
+   "fixture_digest": "e512abc142ef",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "decoy_committed": false,
+   "pass": true
+  },
+  {
+   "id": "dev-callback-rep1-apply",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 1,
+   "question": "What must change if handle changes, and why?",
+   "gold": [
+    "shop.py::ignite"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "shop.py::ignite"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 9812.0
+  },
+  {
+   "id": "dev-callback-rep2-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 2,
+   "question": "If compute changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "main.py::trigger",
+    "ops.py::compute"
+   ],
+   "lure": null,
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "proposal": null,
+   "receipt": {
+    "candidate_id": "assertion:0dc27cbf459ae426d4d882de4766a4757cea4e55498c63e65af7d4f07d39fd98",
+    "justification": "Candidate pairs main.py::trigger -> ops.py::compute via callback_parameter (fn binding, index 0), matching the asserted claim that trigger depends_on compute, so trigger is affected if compute changes.",
+    "proposition": {
+     "caller": "main.py::trigger",
+     "callee": "ops.py::compute",
+     "via": "callback_parameter"
+    },
+    "committed": true,
+    "action": "add",
+    "reason": "no duplicate, conflict, or endpoint problem found"
+   },
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 7734.0,
+   "fixture_digest": "1f7c8461e614",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "decoy_committed": false,
+   "pass": true
+  },
+  {
+   "id": "dev-callback-rep2-apply",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 2,
+   "question": "If compute changes, what else is affected?",
+   "gold": [
+    "main.py::trigger"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "main.py::trigger"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 6141.0
+  },
+  {
+   "id": "dev-callback-rep3-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 3,
+   "question": "Which functions break if score changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::launch",
+    "shop.py::score"
+   ],
+   "lure": null,
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "proposal": null,
+   "receipt": {
+    "candidate_id": "assertion:597c591f5a7f710119fe1cc157722facdbd2f1e44685d7200efaea4817a0f1b2",
+    "justification": "shop.py::launch passes shop.py::score as a callback parameter, so launch depends on score and would break if score changes (consistent with the asserted dependency claim).",
+    "proposition": {
+     "caller": "shop.py::launch",
+     "callee": "shop.py::score",
+     "via": "callback_parameter"
+    },
+    "committed": true,
+    "action": "add",
+    "reason": "no duplicate, conflict, or endpoint problem found"
+   },
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 5250.0,
+   "fixture_digest": "e3815b2d719a",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "decoy_committed": false,
+   "pass": true
+  },
+  {
+   "id": "dev-callback-rep3-apply",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 3,
+   "question": "Which functions break if score changes?",
+   "gold": [
+    "shop.py::launch"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "shop.py::launch"
+   ],
+   "stale": [],
+   "pass": true,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 6109.0
+  },
+  {
+   "id": "dev-callback-rep4-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 4,
+   "question": "What must change if pack changes, and why?",
+   "gold": [
+    "depends_on",
+    "main.py::boot",
+    "ops.py::pack"
+   ],
+   "lure": null,
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "proposal": null,
+   "receipt": {
+    "candidate_id": "assertion:cf20eeab8b06f16f524bed639e46e139c2234fe7964b0e331deff4bcaadf0345",
+    "justification": "If ops.py::pack changes, main.py::boot must change because boot passes a callback (parameter \"fn\") to pack at the observed call/binding spans (derivation source offsets 62-67 and 58-72), making boot the direct caller of pack \ufffd consistent with the session-asserted depends_on claim (authority=None, status=proposed).",
+    "proposition": {
+     "caller": "main.py::boot",
+     "callee": "ops.py::pack",
+     "via": "callback_parameter"
+    },
+    "committed": true,
+    "action": "add",
+    "reason": "no duplicate, conflict, or endpoint problem found"
+   },
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 7953.0,
+   "fixture_digest": "ef60d07f52e0",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "decoy_committed": false,
+   "pass": true
+  },
+  {
+   "id": "dev-callback-rep4-apply",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 4,
+   "question": "What must change if pack changes, and why?",
+   "gold": [
+    "main.py::boot"
+   ],
+   "obsolete": [],
+   "parsed": [],
+   "stale": [],
+   "pass": false,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 4547.0
+  }
+ ],
+ "limitations": [
+  "n=5 reps per cell; directional evidence only; heldout run once, not tuned against",
+  "kimi-cli backend: decoding is server-side (temperature not pinned); token usage not reported by the CLI (null, never fabricated); each call is a fresh subprocess + session so trials are independent but startup latency is included in latency_ms",
+  "cross-model comparisons with the frozen qwen3 artifacts are directional only, not controlled"
+ ]
+}

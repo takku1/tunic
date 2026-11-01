@@ -135,9 +135,11 @@ def render_answer_text(result, *, cap=4000, receipt=None):
                 unique.append(item)
         return unique
     candidates = result.get("candidates") or []
-    cand_lines = ["  %s [best match: %s; stages: %s]" % (
+    cand_lines = ["  %s [best match: %s; stages: %s%s]" % (
         entry.get("symbol", "?"), entry.get("match", "?"),
-        ",".join(entry.get("origins") or [])) for entry in candidates]
+        ",".join(entry.get("origins") or []),
+        "; method of %s" % entry["container"] if entry.get("container") else "")
+        for entry in candidates]
     observed, asserted = [], []
     for entry in result.get("impacts") or []:
         verification = (entry.get("derivation") or {}).get("verification", "")
