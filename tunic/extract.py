@@ -727,7 +727,12 @@ def _emit_callback_candidates(sources, modules, callback_sites, assertions):
                     if resolved is None or resolved == site["callee"]:
                         continue
                     call_ref = {"source": s["id"], "start": start, "end": end}
-                    proposition = {"relation": "depends_on", "caller": site["callee"],
+                    # The caller is the CALL-SITE function (the one whose
+                    # behavior depends on the callee), matching the
+                    # registry-dispatch candidate shape; the parameter-call
+                    # binding in the dispatcher stays in the derivation as
+                    # evidence.
+                    proposition = {"relation": "depends_on", "caller": _caller,
                                    "callee": resolved, "via": "callback_parameter"}
                     assertion = {"proposition": proposition, "source": s["id"], "start": start, "end": end,
                                  "resolution": {"expression": arg.id,

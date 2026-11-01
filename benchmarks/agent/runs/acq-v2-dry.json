@@ -1,0 +1,4993 @@
+{
+ "benchmark": "acq-v2-dry",
+ "protocol": "ACQ v2: candidate-aided acquisition; 5 arms (none/lexical/tunic/tunic-candidates/tunic-commit-cand); product commit paths; exact-triple scorer; precision and recall reported separately; a candidate being present is not an acquisition success",
+ "model": "qwen3:4b",
+ "decoding": {
+  "temperature": 0,
+  "seed": 0
+ },
+ "context_cap": 4000,
+ "tunic_commit": "ecd97c3d3f321fc2563897cb9bf68fe7bfec790b",
+ "dry_run": true,
+ "suite": "dev",
+ "scenarios": [
+  "callback",
+  "registry",
+  "attribute",
+  "constructor",
+  "correction",
+  "duplicate",
+  "conflict",
+  "irrelevant-note",
+  "poisoned-evidence"
+ ],
+ "arms": [
+  "none",
+  "lexical",
+  "tunic",
+  "tunic-candidates",
+  "tunic-commit-cand"
+ ],
+ "summary": {
+  "dev/callback/none": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/callback/lexical": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/callback/tunic": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/callback/tunic-candidates": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/callback/tunic-commit-cand": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/registry/none": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/registry/lexical": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/registry/tunic": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/registry/tunic-candidates": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/registry/tunic-commit-cand": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/attribute/none": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/attribute/lexical": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/attribute/tunic": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/attribute/tunic-candidates": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/attribute/tunic-commit-cand": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/constructor/none": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/constructor/lexical": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/constructor/tunic": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/constructor/tunic-candidates": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/constructor/tunic-commit-cand": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/correction/none": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/correction/lexical": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/correction/tunic": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/correction/tunic-candidates": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/correction/tunic-commit-cand": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/duplicate/none": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/duplicate/lexical": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/duplicate/tunic": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/duplicate/tunic-candidates": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/duplicate/tunic-commit-cand": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/conflict/none": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/conflict/lexical": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/conflict/tunic": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/conflict/tunic-candidates": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/conflict/tunic-commit-cand": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/irrelevant-note/none": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/irrelevant-note/lexical": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/irrelevant-note/tunic": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/irrelevant-note/tunic-candidates": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/irrelevant-note/tunic-commit-cand": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/poisoned-evidence/none": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/poisoned-evidence/lexical": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/poisoned-evidence/tunic": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/poisoned-evidence/tunic-candidates": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  },
+  "dev/poisoned-evidence/tunic-commit-cand": {
+   "n": 5,
+   "pass_rate": null,
+   "apply_pass_rate": null,
+   "commits": 0,
+   "committed_correct": 0,
+   "acquisition_precision": null,
+   "acquisition_recall": 0.0,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 0,
+   "prompt_tokens": 0,
+   "completion_tokens": 0
+  }
+ },
+ "tasks": [
+  {
+   "id": "dev-callback-rep0-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 0,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "86c2e42164c6",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep0-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 0,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "86c2e42164c6",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep0-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 0,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "86c2e42164c6",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep0-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 0,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "86c2e42164c6",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep0-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 0,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "86c2e42164c6",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep1-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 1,
+   "question": "What must change if handle changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::ignite",
+    "shop.py::handle"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "e512abc142ef",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep1-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 1,
+   "question": "What must change if handle changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::ignite",
+    "shop.py::handle"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "e512abc142ef",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep1-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 1,
+   "question": "What must change if handle changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::ignite",
+    "shop.py::handle"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "e512abc142ef",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep1-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 1,
+   "question": "What must change if handle changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::ignite",
+    "shop.py::handle"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "e512abc142ef",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep1-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 1,
+   "question": "What must change if handle changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::ignite",
+    "shop.py::handle"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "e512abc142ef",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep2-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 2,
+   "question": "If compute changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "main.py::trigger",
+    "ops.py::compute"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "1f7c8461e614",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep2-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 2,
+   "question": "If compute changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "main.py::trigger",
+    "ops.py::compute"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "1f7c8461e614",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep2-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 2,
+   "question": "If compute changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "main.py::trigger",
+    "ops.py::compute"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "1f7c8461e614",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep2-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 2,
+   "question": "If compute changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "main.py::trigger",
+    "ops.py::compute"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "1f7c8461e614",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep2-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 2,
+   "question": "If compute changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "main.py::trigger",
+    "ops.py::compute"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "1f7c8461e614",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep3-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 3,
+   "question": "Which functions break if score changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::launch",
+    "shop.py::score"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "e3815b2d719a",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep3-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 3,
+   "question": "Which functions break if score changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::launch",
+    "shop.py::score"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "e3815b2d719a",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep3-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 3,
+   "question": "Which functions break if score changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::launch",
+    "shop.py::score"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "e3815b2d719a",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep3-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 3,
+   "question": "Which functions break if score changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::launch",
+    "shop.py::score"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "e3815b2d719a",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep3-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 3,
+   "question": "Which functions break if score changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::launch",
+    "shop.py::score"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "e3815b2d719a",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep4-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 4,
+   "question": "What must change if pack changes, and why?",
+   "gold": [
+    "depends_on",
+    "main.py::boot",
+    "ops.py::pack"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "ef60d07f52e0",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep4-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 4,
+   "question": "What must change if pack changes, and why?",
+   "gold": [
+    "depends_on",
+    "main.py::boot",
+    "ops.py::pack"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "ef60d07f52e0",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep4-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 4,
+   "question": "What must change if pack changes, and why?",
+   "gold": [
+    "depends_on",
+    "main.py::boot",
+    "ops.py::pack"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "ef60d07f52e0",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep4-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 4,
+   "question": "What must change if pack changes, and why?",
+   "gold": [
+    "depends_on",
+    "main.py::boot",
+    "ops.py::pack"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "ef60d07f52e0",
+   "dry": true
+  },
+  {
+   "id": "dev-callback-rep4-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "callback",
+   "rep": 4,
+   "question": "What must change if pack changes, and why?",
+   "gold": [
+    "depends_on",
+    "main.py::boot",
+    "ops.py::pack"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "ef60d07f52e0",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep0-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "bea307b3bfbb",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep0-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "bea307b3bfbb",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep0-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "bea307b3bfbb",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep0-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "bea307b3bfbb",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep0-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "bea307b3bfbb",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep1-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "3e112c7544a8",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep1-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "3e112c7544a8",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep1-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "3e112c7544a8",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep1-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "3e112c7544a8",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep1-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "3e112c7544a8",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep2-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "4dc621386754",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep2-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "4dc621386754",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep2-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "4dc621386754",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep2-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "4dc621386754",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep2-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "4dc621386754",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep3-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "8c1782042be8",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep3-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "8c1782042be8",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep3-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "8c1782042be8",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep3-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "8c1782042be8",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep3-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "8c1782042be8",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep4-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "126336b27f2d",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep4-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "126336b27f2d",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep4-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "126336b27f2d",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep4-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "126336b27f2d",
+   "dry": true
+  },
+  {
+   "id": "dev-registry-rep4-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "registry",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "126336b27f2d",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep0-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 0,
+   "question": "Which functions break if render changes?",
+   "gold": [
+    "depends_on",
+    "use.py::drive",
+    "tool.py::Widget.render"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "31bcb0186f0b",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep0-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 0,
+   "question": "Which functions break if render changes?",
+   "gold": [
+    "depends_on",
+    "use.py::drive",
+    "tool.py::Widget.render"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "31bcb0186f0b",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep0-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 0,
+   "question": "Which functions break if render changes?",
+   "gold": [
+    "depends_on",
+    "use.py::drive",
+    "tool.py::Widget.render"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "31bcb0186f0b",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep0-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 0,
+   "question": "Which functions break if render changes?",
+   "gold": [
+    "depends_on",
+    "use.py::drive",
+    "tool.py::Widget.render"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "31bcb0186f0b",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep0-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 0,
+   "question": "Which functions break if render changes?",
+   "gold": [
+    "depends_on",
+    "use.py::drive",
+    "tool.py::Widget.render"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "31bcb0186f0b",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep1-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 1,
+   "question": "What must change if polish changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::drive",
+    "shop.py::Gadget.polish"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "84b14d94a0a8",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep1-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 1,
+   "question": "What must change if polish changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::drive",
+    "shop.py::Gadget.polish"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "84b14d94a0a8",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep1-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 1,
+   "question": "What must change if polish changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::drive",
+    "shop.py::Gadget.polish"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "84b14d94a0a8",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep1-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 1,
+   "question": "What must change if polish changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::drive",
+    "shop.py::Gadget.polish"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "84b14d94a0a8",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep1-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 1,
+   "question": "What must change if polish changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::drive",
+    "shop.py::Gadget.polish"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "84b14d94a0a8",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep2-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 2,
+   "question": "If tune changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "use.py::drive",
+    "tool.py::Gizmo.tune"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "0978f282bccd",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep2-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 2,
+   "question": "If tune changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "use.py::drive",
+    "tool.py::Gizmo.tune"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "0978f282bccd",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep2-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 2,
+   "question": "If tune changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "use.py::drive",
+    "tool.py::Gizmo.tune"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "0978f282bccd",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep2-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 2,
+   "question": "If tune changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "use.py::drive",
+    "tool.py::Gizmo.tune"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "0978f282bccd",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep2-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 2,
+   "question": "If tune changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "use.py::drive",
+    "tool.py::Gizmo.tune"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "0978f282bccd",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep3-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 3,
+   "question": "Which functions break if shape changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::drive",
+    "shop.py::Doohickey.shape"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "a8ed3b7be061",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep3-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 3,
+   "question": "Which functions break if shape changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::drive",
+    "shop.py::Doohickey.shape"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "a8ed3b7be061",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep3-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 3,
+   "question": "Which functions break if shape changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::drive",
+    "shop.py::Doohickey.shape"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "a8ed3b7be061",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep3-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 3,
+   "question": "Which functions break if shape changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::drive",
+    "shop.py::Doohickey.shape"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "a8ed3b7be061",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep3-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 3,
+   "question": "Which functions break if shape changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::drive",
+    "shop.py::Doohickey.shape"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "a8ed3b7be061",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep4-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 4,
+   "question": "What must change if finish changes, and why?",
+   "gold": [
+    "depends_on",
+    "use.py::drive",
+    "tool.py::Thingamajig.finish"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "dac8d6249f58",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep4-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 4,
+   "question": "What must change if finish changes, and why?",
+   "gold": [
+    "depends_on",
+    "use.py::drive",
+    "tool.py::Thingamajig.finish"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "dac8d6249f58",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep4-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 4,
+   "question": "What must change if finish changes, and why?",
+   "gold": [
+    "depends_on",
+    "use.py::drive",
+    "tool.py::Thingamajig.finish"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "dac8d6249f58",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep4-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 4,
+   "question": "What must change if finish changes, and why?",
+   "gold": [
+    "depends_on",
+    "use.py::drive",
+    "tool.py::Thingamajig.finish"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "dac8d6249f58",
+   "dry": true
+  },
+  {
+   "id": "dev-attribute-rep4-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "attribute",
+   "rep": 4,
+   "question": "What must change if finish changes, and why?",
+   "gold": [
+    "depends_on",
+    "use.py::drive",
+    "tool.py::Thingamajig.finish"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "attribute_dispatch",
+    "constructor_call"
+   ],
+   "fixture_digest": "dac8d6249f58",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep0-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 0,
+   "question": "Which functions break if start changes?",
+   "gold": [
+    "depends_on",
+    "use.py::create",
+    "lib.py::Widget"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "a10f26976b5b",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep0-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 0,
+   "question": "Which functions break if start changes?",
+   "gold": [
+    "depends_on",
+    "use.py::create",
+    "lib.py::Widget"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "a10f26976b5b",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep0-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 0,
+   "question": "Which functions break if start changes?",
+   "gold": [
+    "depends_on",
+    "use.py::create",
+    "lib.py::Widget"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "a10f26976b5b",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep0-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 0,
+   "question": "Which functions break if start changes?",
+   "gold": [
+    "depends_on",
+    "use.py::create",
+    "lib.py::Widget"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "a10f26976b5b",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep0-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 0,
+   "question": "Which functions break if start changes?",
+   "gold": [
+    "depends_on",
+    "use.py::create",
+    "lib.py::Widget"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "a10f26976b5b",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep1-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 1,
+   "question": "What must change if start changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::create",
+    "shop.py::Gadget"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "5f8dfb4afa37",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep1-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 1,
+   "question": "What must change if start changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::create",
+    "shop.py::Gadget"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "5f8dfb4afa37",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep1-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 1,
+   "question": "What must change if start changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::create",
+    "shop.py::Gadget"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "5f8dfb4afa37",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep1-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 1,
+   "question": "What must change if start changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::create",
+    "shop.py::Gadget"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "5f8dfb4afa37",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep1-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 1,
+   "question": "What must change if start changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::create",
+    "shop.py::Gadget"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "5f8dfb4afa37",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep2-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 2,
+   "question": "If start changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "use.py::create",
+    "lib.py::Gizmo"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "901f200083ae",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep2-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 2,
+   "question": "If start changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "use.py::create",
+    "lib.py::Gizmo"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "901f200083ae",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep2-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 2,
+   "question": "If start changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "use.py::create",
+    "lib.py::Gizmo"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "901f200083ae",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep2-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 2,
+   "question": "If start changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "use.py::create",
+    "lib.py::Gizmo"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "901f200083ae",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep2-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 2,
+   "question": "If start changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "use.py::create",
+    "lib.py::Gizmo"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "901f200083ae",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep3-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 3,
+   "question": "Which functions break if start changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::create",
+    "shop.py::Doohickey"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "ddf3aba6d5d5",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep3-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 3,
+   "question": "Which functions break if start changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::create",
+    "shop.py::Doohickey"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "ddf3aba6d5d5",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep3-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 3,
+   "question": "Which functions break if start changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::create",
+    "shop.py::Doohickey"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "ddf3aba6d5d5",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep3-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 3,
+   "question": "Which functions break if start changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::create",
+    "shop.py::Doohickey"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "ddf3aba6d5d5",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep3-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 3,
+   "question": "Which functions break if start changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::create",
+    "shop.py::Doohickey"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "ddf3aba6d5d5",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep4-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 4,
+   "question": "What must change if start changes, and why?",
+   "gold": [
+    "depends_on",
+    "use.py::create",
+    "lib.py::Thingamajig"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "8409609f687f",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep4-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 4,
+   "question": "What must change if start changes, and why?",
+   "gold": [
+    "depends_on",
+    "use.py::create",
+    "lib.py::Thingamajig"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "8409609f687f",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep4-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 4,
+   "question": "What must change if start changes, and why?",
+   "gold": [
+    "depends_on",
+    "use.py::create",
+    "lib.py::Thingamajig"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "8409609f687f",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep4-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 4,
+   "question": "What must change if start changes, and why?",
+   "gold": [
+    "depends_on",
+    "use.py::create",
+    "lib.py::Thingamajig"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "8409609f687f",
+   "dry": true
+  },
+  {
+   "id": "dev-constructor-rep4-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 4,
+   "question": "What must change if start changes, and why?",
+   "gold": [
+    "depends_on",
+    "use.py::create",
+    "lib.py::Thingamajig"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "fixture_digest": "8409609f687f",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep0-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "t2.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "df762ffba1e4",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep0-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "t2.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "df762ffba1e4",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep0-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "t2.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "df762ffba1e4",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep0-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "t2.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "df762ffba1e4",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep0-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "t2.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "df762ffba1e4",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep1-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "bdcaed6a21da",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep1-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "bdcaed6a21da",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep1-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "bdcaed6a21da",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep1-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "bdcaed6a21da",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep1-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "bdcaed6a21da",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep2-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "t2.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "06918e6c0172",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep2-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "t2.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "06918e6c0172",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep2-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "t2.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "06918e6c0172",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep2-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "t2.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "06918e6c0172",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep2-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "t2.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "06918e6c0172",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep3-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "df7362f22d7b",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep3-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "df7362f22d7b",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep3-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "df7362f22d7b",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep3-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "df7362f22d7b",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep3-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "df7362f22d7b",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep4-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "t2.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "a1f350aef5b2",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep4-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "t2.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "a1f350aef5b2",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep4-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "t2.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "a1f350aef5b2",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep4-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "t2.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "a1f350aef5b2",
+   "dry": true
+  },
+  {
+   "id": "dev-correction-rep4-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "correction",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "t2.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "a1f350aef5b2",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep0-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 0,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "86c2e42164c6",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep0-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 0,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "86c2e42164c6",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep0-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 0,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "86c2e42164c6",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep0-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 0,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "86c2e42164c6",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep0-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 0,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "86c2e42164c6",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep1-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 1,
+   "question": "What must change if handle changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::ignite",
+    "shop.py::handle"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "e512abc142ef",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep1-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 1,
+   "question": "What must change if handle changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::ignite",
+    "shop.py::handle"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "e512abc142ef",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep1-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 1,
+   "question": "What must change if handle changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::ignite",
+    "shop.py::handle"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "e512abc142ef",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep1-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 1,
+   "question": "What must change if handle changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::ignite",
+    "shop.py::handle"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "e512abc142ef",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep1-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 1,
+   "question": "What must change if handle changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::ignite",
+    "shop.py::handle"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "e512abc142ef",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep2-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 2,
+   "question": "If compute changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "main.py::trigger",
+    "ops.py::compute"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "1f7c8461e614",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep2-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 2,
+   "question": "If compute changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "main.py::trigger",
+    "ops.py::compute"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "1f7c8461e614",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep2-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 2,
+   "question": "If compute changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "main.py::trigger",
+    "ops.py::compute"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "1f7c8461e614",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep2-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 2,
+   "question": "If compute changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "main.py::trigger",
+    "ops.py::compute"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "1f7c8461e614",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep2-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 2,
+   "question": "If compute changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "main.py::trigger",
+    "ops.py::compute"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "1f7c8461e614",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep3-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 3,
+   "question": "Which functions break if score changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::launch",
+    "shop.py::score"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "e3815b2d719a",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep3-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 3,
+   "question": "Which functions break if score changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::launch",
+    "shop.py::score"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "e3815b2d719a",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep3-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 3,
+   "question": "Which functions break if score changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::launch",
+    "shop.py::score"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "e3815b2d719a",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep3-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 3,
+   "question": "Which functions break if score changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::launch",
+    "shop.py::score"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "e3815b2d719a",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep3-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 3,
+   "question": "Which functions break if score changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::launch",
+    "shop.py::score"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "e3815b2d719a",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep4-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 4,
+   "question": "What must change if pack changes, and why?",
+   "gold": [
+    "depends_on",
+    "main.py::boot",
+    "ops.py::pack"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "ef60d07f52e0",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep4-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 4,
+   "question": "What must change if pack changes, and why?",
+   "gold": [
+    "depends_on",
+    "main.py::boot",
+    "ops.py::pack"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "ef60d07f52e0",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep4-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 4,
+   "question": "What must change if pack changes, and why?",
+   "gold": [
+    "depends_on",
+    "main.py::boot",
+    "ops.py::pack"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "ef60d07f52e0",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep4-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 4,
+   "question": "What must change if pack changes, and why?",
+   "gold": [
+    "depends_on",
+    "main.py::boot",
+    "ops.py::pack"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "ef60d07f52e0",
+   "dry": true
+  },
+  {
+   "id": "dev-duplicate-rep4-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "duplicate",
+   "rep": 4,
+   "question": "What must change if pack changes, and why?",
+   "gold": [
+    "depends_on",
+    "main.py::boot",
+    "ops.py::pack"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "ef60d07f52e0",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep0-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "bea307b3bfbb",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep0-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "bea307b3bfbb",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep0-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "bea307b3bfbb",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep0-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "bea307b3bfbb",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep0-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 0,
+   "question": "Which functions break if round_total changes?",
+   "gold": [
+    "depends_on",
+    "buyer.py::place_order",
+    "target.py::round_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "bea307b3bfbb",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep1-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "3e112c7544a8",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep1-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "3e112c7544a8",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep1-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "3e112c7544a8",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep1-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "3e112c7544a8",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep1-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 1,
+   "question": "What must change if round_down changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::checkout",
+    "shop.py::round_down"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "3e112c7544a8",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep2-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "4dc621386754",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep2-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "4dc621386754",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep2-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "4dc621386754",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep2-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "4dc621386754",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep2-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 2,
+   "question": "If quantize changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "buyer.py::submit_cart",
+    "target.py::quantize"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "4dc621386754",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep3-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "8c1782042be8",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep3-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "8c1782042be8",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep3-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "8c1782042be8",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep3-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "8c1782042be8",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep3-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 3,
+   "question": "Which functions break if floor_price changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::confirm_buy",
+    "shop.py::floor_price"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "8c1782042be8",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep4-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "126336b27f2d",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep4-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "126336b27f2d",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep4-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "126336b27f2d",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep4-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "126336b27f2d",
+   "dry": true
+  },
+  {
+   "id": "dev-conflict-rep4-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "conflict",
+   "rep": 4,
+   "question": "What must change if ceil_total changes, and why?",
+   "gold": [
+    "depends_on",
+    "buyer.py::finalize",
+    "target.py::ceil_total"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "registry_dispatch"
+   ],
+   "fixture_digest": "126336b27f2d",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep0-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 0,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "309ae039b566",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep0-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 0,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "309ae039b566",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep0-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 0,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "309ae039b566",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep0-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 0,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "309ae039b566",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep0-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 0,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "309ae039b566",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep1-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 1,
+   "question": "What must change if frobnicate changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "2d174f6fcd96",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep1-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 1,
+   "question": "What must change if frobnicate changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "2d174f6fcd96",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep1-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 1,
+   "question": "What must change if frobnicate changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "2d174f6fcd96",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep1-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 1,
+   "question": "What must change if frobnicate changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "2d174f6fcd96",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep1-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 1,
+   "question": "What must change if frobnicate changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "2d174f6fcd96",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep2-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 2,
+   "question": "If frobnicate changes, what else is affected?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "5cd5256e4802",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep2-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 2,
+   "question": "If frobnicate changes, what else is affected?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "5cd5256e4802",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep2-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 2,
+   "question": "If frobnicate changes, what else is affected?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "5cd5256e4802",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep2-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 2,
+   "question": "If frobnicate changes, what else is affected?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "5cd5256e4802",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep2-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 2,
+   "question": "If frobnicate changes, what else is affected?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "5cd5256e4802",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep3-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 3,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "7785bd06d127",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep3-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 3,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "7785bd06d127",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep3-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 3,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "7785bd06d127",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep3-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 3,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "7785bd06d127",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep3-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 3,
+   "question": "Which functions break if frobnicate changes?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "7785bd06d127",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep4-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 4,
+   "question": "What must change if frobnicate changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "90939cbe6ffd",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep4-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 4,
+   "question": "What must change if frobnicate changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "90939cbe6ffd",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep4-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 4,
+   "question": "What must change if frobnicate changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "90939cbe6ffd",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep4-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 4,
+   "question": "What must change if frobnicate changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "90939cbe6ffd",
+   "dry": true
+  },
+  {
+   "id": "dev-irrelevant-note-rep4-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "irrelevant-note",
+   "rep": 4,
+   "question": "What must change if frobnicate changes, and why?",
+   "gold": null,
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [],
+   "fixture_digest": "90939cbe6ffd",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep0-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 0,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "a3838fa80d18",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep0-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 0,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "a3838fa80d18",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep0-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 0,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "a3838fa80d18",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep0-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 0,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "a3838fa80d18",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep0-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 0,
+   "question": "Which functions break if process changes?",
+   "gold": [
+    "depends_on",
+    "main.py::entry",
+    "ops.py::process"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "a3838fa80d18",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep1-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 1,
+   "question": "What must change if handle changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::ignite",
+    "shop.py::handle"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "98a5fabdb4d5",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep1-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 1,
+   "question": "What must change if handle changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::ignite",
+    "shop.py::handle"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "98a5fabdb4d5",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep1-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 1,
+   "question": "What must change if handle changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::ignite",
+    "shop.py::handle"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "98a5fabdb4d5",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep1-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 1,
+   "question": "What must change if handle changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::ignite",
+    "shop.py::handle"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "98a5fabdb4d5",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep1-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 1,
+   "question": "What must change if handle changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::ignite",
+    "shop.py::handle"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "98a5fabdb4d5",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep2-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 2,
+   "question": "If compute changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "main.py::trigger",
+    "ops.py::compute"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "afe6f8e22aff",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep2-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 2,
+   "question": "If compute changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "main.py::trigger",
+    "ops.py::compute"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "afe6f8e22aff",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep2-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 2,
+   "question": "If compute changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "main.py::trigger",
+    "ops.py::compute"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "afe6f8e22aff",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep2-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 2,
+   "question": "If compute changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "main.py::trigger",
+    "ops.py::compute"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "afe6f8e22aff",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep2-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 2,
+   "question": "If compute changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "main.py::trigger",
+    "ops.py::compute"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "afe6f8e22aff",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep3-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 3,
+   "question": "Which functions break if score changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::launch",
+    "shop.py::score"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "172c9d9e7034",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep3-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 3,
+   "question": "Which functions break if score changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::launch",
+    "shop.py::score"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "172c9d9e7034",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep3-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 3,
+   "question": "Which functions break if score changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::launch",
+    "shop.py::score"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "172c9d9e7034",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep3-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 3,
+   "question": "Which functions break if score changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::launch",
+    "shop.py::score"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "172c9d9e7034",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep3-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 3,
+   "question": "Which functions break if score changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::launch",
+    "shop.py::score"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "172c9d9e7034",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep4-propose",
+   "arm": "none",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 4,
+   "question": "What must change if pack changes, and why?",
+   "gold": [
+    "depends_on",
+    "main.py::boot",
+    "ops.py::pack"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "7ca221496ad0",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep4-propose",
+   "arm": "lexical",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 4,
+   "question": "What must change if pack changes, and why?",
+   "gold": [
+    "depends_on",
+    "main.py::boot",
+    "ops.py::pack"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "7ca221496ad0",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep4-propose",
+   "arm": "tunic",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 4,
+   "question": "What must change if pack changes, and why?",
+   "gold": [
+    "depends_on",
+    "main.py::boot",
+    "ops.py::pack"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "7ca221496ad0",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep4-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 4,
+   "question": "What must change if pack changes, and why?",
+   "gold": [
+    "depends_on",
+    "main.py::boot",
+    "ops.py::pack"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "7ca221496ad0",
+   "dry": true
+  },
+  {
+   "id": "dev-poisoned-evidence-rep4-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "poisoned-evidence",
+   "rep": 4,
+   "question": "What must change if pack changes, and why?",
+   "gold": [
+    "depends_on",
+    "main.py::boot",
+    "ops.py::pack"
+   ],
+   "misbuilt": false,
+   "misbuilt_reason": "",
+   "candidate_vias": [
+    "callback_parameter"
+   ],
+   "fixture_digest": "7ca221496ad0",
+   "dry": true
+  }
+ ],
+ "limitations": [
+  "n=5 reps per cell; temperature 0; directional evidence only; heldout run once, not tuned against"
+ ]
+}

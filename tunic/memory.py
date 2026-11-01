@@ -335,6 +335,54 @@ class Memory:
         authorize(self.principal, "review")
         return compiler.compile_candidates(self.store, **kwargs)
 
+    def commit_candidate(self, candidate_id, justification, task=None):
+        """Bounded candidate-aided acquisition path (ACQ v2).
+
+        The agent selects ONE live proposed candidate and justifies it;
+        the candidate's proposition is then committed through the SAME
+        governed path as any proposal (reconcile first, promote clean
+        ADDs only). Candidate evidence never promotes directly: inspect
+        and selection are read-only, the reconcile gates stay
+        authoritative, and DUPLICATE/CONFLICT/INVALID outcomes behave
+        exactly as commit_proposal defines — including frontier filing
+        for refusals. Abstention (candidate_id None) files the standard
+        acquisition-abstention entry.
+
+        Returns a receipt dict: candidate id, justification, the
+        proposition attempted, and the resulting (committed, action,
+        reason). Raises ValueError for empty justifications or
+        candidate ids that are not live proposed candidates.
+        """
+        authorize(self.principal, "review")
+        if not justification or not justification.strip():
+            raise ValueError("commit_candidate requires an explicit justification")
+        if candidate_id is None:
+            committed, action, reason = self.commit_proposal(None, None, task=task)
+            return {"candidate_id": None, "justification": justification,
+                    "proposition": None, "committed": committed,
+                    "action": action, "reason": reason}
+        snapshot, view = self.store.view()
+        matches = [a for a in view.get("assertions", [])
+                   if a.get("id") == candidate_id
+                   and a.get("status") == "proposed"]
+        if len(matches) != 1:
+            raise ValueError("candidate %r is not a live proposed candidate"
+                             % (candidate_id,))
+        proposition = matches[0]["proposition"]
+        if proposition.get("relation") != "depends_on":
+            raise ValueError("commit_candidate supports depends_on candidates only: %r"
+                             % (proposition.get("relation"),))
+        committed, action, reason = self.commit_proposal(
+            proposition.get("caller"), proposition.get("callee"),
+            rel="depends_on", task=task,
+            note="candidate-aided: %s" % justification.strip())
+        return {"candidate_id": candidate_id,
+                "justification": justification.strip(),
+                "proposition": {"caller": proposition.get("caller"),
+                                "callee": proposition.get("callee"),
+                                "via": proposition.get("via")},
+                "committed": committed, "action": action, "reason": reason}
+
     def commit_proposal(self, subject, object, rel="depends_on", document="notes/proposed.md",
                         authority="agent-proposal", note=None, task=None):
         """One-shot propose, deterministic reconcile, explicit promote.

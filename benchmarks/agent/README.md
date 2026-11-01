@@ -40,6 +40,73 @@ ingest → apply, exact-triple scorer). Batches ran separately and merged:
 Key result: select+A3 exact 5/5 on dict/registry with 0 false
 promotions; callback 0/5 on every arm (queued capability gap).
 
+## Candidate-aided acquisition (ACQ v2, frozen spec)
+
+Does mechanically derived candidate evidence let a model acquire exactly
+the edges ACQ v1 could not? Same nine scenario kinds over two seeded,
+byte-stable suites (`acqgen2.py`): callback, registry, attribute,
+constructor positives plus correction, duplicate, conflict,
+irrelevant-note, poisoned-evidence controls. Dev suite is the tuning
+surface; the heldout suite runs once, never tuned against. Five arms:
+none / lexical / tunic / tunic-candidates (candidate evidence blocks in
+context) / tunic-commit-cand (the model SELECTs one live candidate id +
+justification, committed via the bounded `Memory.commit_candidate`
+path — same governed reconcile/promote as any proposal, refusals file
+frontier entries). Product commit path, exact-triple scorer, precision
+and recall reported separately; a candidate being present is not an
+acquisition success.
+
+Artifacts:
+
+- `runs/acq-v2-dry.json` — 225-cell dry run, 0 misbuilds (CI re-checks
+  fixture integrity in `tests/test_acq_v2.py`).
+- `runs/acq-v2-dev.json` — dev live run, qwen3:4b, temperature 0.
+- `runs/acq-v2-heldout.json` — heldout live run (once).
+
+Key results, by metric class (dev / heldout, tunic-commit-cand unless
+noted):
+
+Positive acquisition (exact committed triple, pass@5):
+
+- callback 5/5 and 5/5 (ACQ v1: 0/5 on every arm) — the v1 gap is
+  closed and generalizes.
+- registry 5/5 and 5/5; attribute 5/5 and 5/5. (Plain tunic reaches only
+  0.4–0.6 on dev attribute/registry with 3 false promotions each; both
+  candidates arms match commit-cand on callback/registry dev.)
+- constructor 0/5 and 0/5 on every arm — the question names a class
+  method while the candidate edge targets the class; bridging the two
+  is beyond qwen3:4b today (next gap).
+
+Safe refusal / gate behavior (no-commit plus the right reconcile
+outcome):
+
+- conflict, irrelevant-note, duplicate: 5/5 and 5/5 on every arm,
+  both suites.
+- poisoned-evidence: 5/5 and 5/5; zero decoy commits anywhere in either
+  suite, any arm.
+- acquisition precision (correct / committed): 1.0 and 1.0 for
+  commit-cand.
+
+Correction application (apply stage must list the post-correction
+caller and not the retracted callee):
+
+- 0/5 dev and 0/5 heldout on every arm (one 0.2 apply blip for the
+  candidates arm on heldout) — models do not reliably apply
+  retract-and-reassert corrections; the next architectural risk.
+
+Retrieval after acquisition: the apply stage re-queries the graph after
+each commit (post-commit memory must surface the acquired caller), and
+`tests/test_acq_v2.py::test_commit_candidate_acquires_exact_gold_edge`
+compiles impact across a fresh ingest to prove the committed edge is
+traversable in a later session.
+
+Arm-hardening notes (both predate the frozen artifacts): the SELECT
+prompt must frame selection as REVIEW of mechanically observed
+evidence — with candidates labeled UNVERIFIED and no review
+instruction the model abstained on every cell; the runner resolves
+model-echoed candidate ids tolerantly (exact, unique suffix, unique
+caller/callee symbol; ambiguous or unknown still refused).
+
 ## Replays (deterministic, no model)
 
 - `replay_s2_dispatch.py` — S2 registry-indirection write→read→frontier

@@ -51,7 +51,10 @@ class CallbackCandidateTests(unittest.TestCase):
         self.assertEqual(len(candidates), 1)
         candidate = candidates[0]
         self.assertEqual(candidate["relation"], "depends_on")
-        self.assertEqual(candidate["caller"], "hooks.py::run")
+        # caller is the call-site function (ACQ-scored shape, matching
+        # registry candidates); the dispatcher's parameter call is the
+        # binding evidence in the derivation
+        self.assertEqual(candidate["caller"], "main.py::main")
         self.assertEqual(candidate["callee"], "core.py::process")
         self.assertEqual(candidate["status"], "proposed")
         self.assertEqual(candidate["rule"], "callback_parameter_candidate_v1")
