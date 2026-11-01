@@ -15,7 +15,7 @@ Read [architecture overview](architecture/overview.md), [semantic graph contract
 | What does compilation produce and validate? | [Context IR](architecture/context-ir.md) |
 | Which types and relations can the graph hold? | [Graph schema](architecture/graph-schema.md) |
 | What decides what becomes knowledge, is shown, and is acted on? | [Policy contract](architecture/policy-contract.md) |
-| Which evidence reaches an agent for a query, and why? | [Evidence selection](architecture/evidence-selection.md) (target, unimplemented) |
+| Which evidence reaches an agent for a query, and why? | [Evidence selection](architecture/evidence-selection.md) (implemented, opt-in `select=True`) |
 | How are inputs lowered and execution/cache compatibility checked? | [Lowering and runtime](architecture/runtime.md) |
 | How might retrieval continue during an inference session? | [Runtime memory controller](architecture/runtime-memory.md) and [bounded implementation](architecture/continuation-reference.md) |
 | Where are security and authority boundaries enforced? | [Security requirements and limits](architecture/security.md) |

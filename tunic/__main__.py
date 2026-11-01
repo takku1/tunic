@@ -15,8 +15,104 @@ from .continuation import compare_continuation
 from .benchmark import run_benchmark, run_memory_suite
 from .eval import run_agent_suite
 
+# Subcommands recognized by the parser. A single positional token that is
+# not one of these activates zero-config ingest (`tunic <path>`); the
+# command names are therefore reserved.
+COMMANDS = {"ingest", "refresh", "impact", "mentions", "claims", "related",
+            "timeline", "note", "candidates", "frontier", "triage", "draft",
+            "review", "validate", "render", "models", "pin", "experiment",
+            "benchmark", "mcp"}
+
+
+def _zero_config_target(argv):
+    """Return the workspace path for `tunic <path>`, or None.
+
+    Exactly one positional token (after skipping option flags and their
+    values, currently only --db) that names no known subcommand means the
+    zero-config form. Anything else falls through to normal parsing.
+    """
+    positional = []
+    skip_next = False
+    for token in argv:
+        if skip_next:
+            skip_next = False
+            continue
+        if token == "--db":
+            skip_next = True
+            continue
+        if token.startswith("-"):
+            continue
+        positional.append(token)
+    if len(positional) == 1 and positional[0] not in COMMANDS:
+        return positional[0]
+    return None
+
+
+def _zero_config_db(argv):
+    for index, token in enumerate(argv):
+        if token == "--db" and index + 1 < len(argv):
+            return argv[index + 1]
+        if token.startswith("--db="):
+            return token.split("=", 1)[1]
+    return None
+
+
+def _run_zero_config(target, argv):
+    """Ingest a workspace with zero configuration (frontier-ledger.md spec).
+
+    `<path>` resolves as the workspace root; the database defaults to
+    `<root>/.tunic/graph.sqlite` (--db overrides). The summary's open
+    frontier counts are the user-visible proof that unknowns are kept,
+    not dropped. Existing databases re-ingest instead of rebuilding.
+    """
+    try:
+        db = _zero_config_db(argv)
+        root = Path(target).resolve(strict=True)
+        if db is None:
+            db_path = root / ".tunic" / "graph.sqlite"
+            db_path.parent.mkdir(parents=True, exist_ok=True)
+            db = str(db_path)
+        elif str(Path(db).parent) not in ("", "."):
+            Path(db).parent.mkdir(parents=True, exist_ok=True)
+        from .memory import Memory
+        memory = Memory(db, str(root))
+        try:
+            result = memory.ingest()
+            _snapshot, manifest = memory.store.view()
+            assertions_by_status = {}
+            for assertion in manifest.get("assertions", []):
+                status = assertion.get("status", "?")
+                assertions_by_status[status] = assertions_by_status.get(status, 0) + 1
+            diagnostics_by_kind = {}
+            for diagnostic in result.get("diagnostics", []):
+                kind = diagnostic.get("kind", "?")
+                diagnostics_by_kind[kind] = diagnostics_by_kind.get(kind, 0) + 1
+            open_frontier_by_kind = {}
+            for entry in memory.frontier_list(status="open"):
+                kind = entry.get("kind", "?")
+                open_frontier_by_kind[kind] = open_frontier_by_kind.get(kind, 0) + 1
+            summary = {"root": str(root), "db": db,
+                       "snapshot": result["snapshot"],
+                       "files": result["sources"], "symbols": result["symbols"],
+                       "assertions_by_status": assertions_by_status,
+                       "diagnostics_by_kind": diagnostics_by_kind,
+                       "open_frontier_by_kind": open_frontier_by_kind,
+                       "frontier_filed": result["frontier_filed"],
+                       "coverage": result["coverage"]}
+        finally:
+            memory.close()
+        print(json.dumps(summary, ensure_ascii=True, sort_keys=True, indent=2))
+        return 0
+    except (OSError, ValueError, KeyError, TypeError, sqlite3.Error) as error:
+        print(json.dumps({"outcome": "failed", "error": str(error)}), file=sys.stderr)
+        return 2
+
 
 def main(argv=None):
+    argv = list(sys.argv[1:] if argv is None else argv)
+    shortcut = _zero_config_target(argv)
+    if shortcut is not None:
+        return _run_zero_config(shortcut, argv)
     parser = argparse.ArgumentParser(prog="tunic")
     parser.add_argument("--db", help="SQLite database path (required for graph/render/experiment commands)")
     commands = parser.add_subparsers(dest="command", required=True)

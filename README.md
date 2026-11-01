@@ -8,6 +8,8 @@ Status: Python/SQLite ingestion with methods and self/cls receivers, static impa
 
 ## Run the reference slice
 
+Zero-config: `python -m tunic <path>` ingests a workspace with no setup — the database defaults to `<path>/.tunic/graph.sqlite` (`--db` overrides) — and prints a summary of files, symbols, assertions by status, diagnostics by kind, and open frontier entries by kind. The long form below exposes every step explicitly.
+
 Requires Python 3.11 or newer; no third-party runtime dependencies. From this repository:
 
 ```powershell

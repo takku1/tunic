@@ -10,8 +10,8 @@ with rank-1 replay predicates; `frontier` CLI reads plus `--replay`,
 with sensitivity passes, `triage` CLI; see "Triage" below).
 Demonstrated: S2
 open→resolved cycle, PyQuifer avalanche `retrieval_miss` closure with an
-exported regression case (`benchmarks/frontier/closures/`). Pending:
-zero-config `tunic <path>` ingest (spec below, not built),
+exported regression case (`benchmarks/frontier/closures/`). Zero-config
+`tunic <path>` ingest implemented (v1.3, spec below). Pending:
 investigation scheduling, triage ranking validated against a second
 real-repo closure.
 Motivation: the v4 acquisition benchmark (S2, 0/6 commits on every
@@ -212,6 +212,14 @@ required evidence (read path for the future investigation scheduler).
   weightings, ranked list with reasons, a recommendation that never
   fabricates proof for blocked entries, and a digest-anchored mutation
   check proven by a tamper test; `triage` CLI.
+- v1.3 (implemented): zero-config ingest (see spec below). Acceptance:
+  `tunic <path>` with no subcommand resolves the workspace root,
+  defaults the database to `<root>/.tunic/graph.sqlite` (`--db`
+  overrides), ingests, and prints the summary: files, symbols,
+  assertions by status, diagnostics by kind, and open frontier entries
+  by kind; rerunning re-ingests and bumps recurrence instead of
+  duplicating. Subcommand names are reserved: a workspace directory
+  named like a command is parsed as that command, not a path.
 - Later: MochiOS-scheduled investigation, procedural learning records,
   sandboxed system-improvement proposals.
 
