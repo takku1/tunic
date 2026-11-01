@@ -1,0 +1,611 @@
+﻿{
+  "counts": {
+    "active_clusters": 125,
+    "by_failure": {
+      "ingest_dispatch_unresolved": 17,
+      "ingest_unresolved_call": 10889
+    },
+    "by_kind": {
+      "unresolved_call": 108,
+      "unresolved_dispatch": 17
+    },
+    "by_status": {
+      "open": 10906
+    },
+    "clusters": 125,
+    "entries": 10906
+  },
+  "generated_at": "2026-11-01T08:18:05Z",
+  "mutation_check": {
+    "after": [
+      "d31900be106c95433b0801ba0128da21906a6763617a9ba3cf8076eec2c3ca6b",
+      10906,
+      1
+    ],
+    "before": [
+      "d31900be106c95433b0801ba0128da21906a6763617a9ba3cf8076eec2c3ca6b",
+      10906,
+      1
+    ],
+    "writes": 0
+  },
+  "queues": {
+    "blocked": {
+      "clusters": 17,
+      "occurrences": 17
+    },
+    "investigable": {
+      "clusters": 108,
+      "occurrences": 11065
+    }
+  },
+  "rankings_overlap_vs_base": {
+    "base": 1.0,
+    "effort_averse": 1.0,
+    "impact_first": 1.0,
+    "recall_heavy": 1.0
+  },
+  "recommendation": {
+    "candidate": {
+      "key": [
+        "unresolved_call",
+        "src/pyquifer/identity/strange_attractor.py"
+      ],
+      "kind": "unresolved_call",
+      "occurrences": 313,
+      "targets": [
+        "FractalPatternLearner",
+        "FractalSelfModel",
+        "MultiScaleFractalPersonality",
+        "PersonalityAttractor",
+        "abs"
+      ]
+    },
+    "plan": "no closable_now cluster: closest needs 310 unresolved call site(s) in the file; needs investigation",
+    "verifiable_target": null
+  },
+  "snapshot": "snapshot:8d36c0befca634254d4da51c3e7c7fa21355c800fac9172c23a1161fdc3d4a60",
+  "top": [
+    {
+      "closability": 0.4,
+      "effort": 4,
+      "example_ids": [
+        "frontier-2e538332c747",
+        "frontier-2443696cec16",
+        "frontier-201b09aff676"
+      ],
+      "impact": 1.0,
+      "key": [
+        "unresolved_call",
+        "src/pyquifer/identity/strange_attractor.py"
+      ],
+      "kind": "unresolved_call",
+      "occurrences": 313,
+      "queue": "investigable",
+      "rank": 1,
+      "reason": "310 unresolved call site(s) in the file; needs investigation",
+      "score": 31.3,
+      "targets": [
+        "FractalPatternLearner",
+        "FractalSelfModel",
+        "MultiScaleFractalPersonality",
+        "PersonalityAttractor",
+        "abs"
+      ]
+    },
+    {
+      "closability": 0.4,
+      "effort": 4,
+      "example_ids": [
+        "frontier-5f7cfb0697cd",
+        "frontier-c646728ec4f6",
+        "frontier-ff5a03fe4a1e"
+      ],
+      "impact": 1.0,
+      "key": [
+        "unresolved_call",
+        "tests/benchmarks/bench_penrose_chess.py"
+      ],
+      "kind": "unresolved_call",
+      "occurrences": 270,
+      "queue": "investigable",
+      "rank": 2,
+      "reason": "266 unresolved call site(s) in the file; needs investigation",
+      "score": 27.0,
+      "targets": [
+        "BenchmarkSuite",
+        "CompetitorResult",
+        "FORTRESS_FENS.items",
+        "GeneralizationResult",
+        "LearnableKuramotoBank"
+      ]
+    },
+    {
+      "closability": 0.4,
+      "effort": 4,
+      "example_ids": [
+        "frontier-777788c0d86c",
+        "frontier-3ff4af0978e4",
+        "frontier-df54a0ca6ce9"
+      ],
+      "impact": 1.0,
+      "key": [
+        "unresolved_call",
+        "src/pyquifer/embodiment/ecology.py"
+      ],
+      "kind": "unresolved_call",
+      "occurrences": 264,
+      "queue": "investigable",
+      "rank": 3,
+      "reason": "260 unresolved call site(s) in the file; needs investigation",
+      "score": 26.4,
+      "targets": [
+        "AgencyMaintenance",
+        "ChronobiologicalSystem",
+        "F.linear",
+        "ImmunologicalLayer",
+        "SynapticHomeostasis"
+      ]
+    },
+    {
+      "closability": 0.4,
+      "effort": 4,
+      "example_ids": [
+        "frontier-9390c334f875",
+        "frontier-e813d8f1bc41",
+        "frontier-2ae1b9bd67f7"
+      ],
+      "impact": 1.0,
+      "key": [
+        "unresolved_call",
+        "src/pyquifer/runtime/cycle.py"
+      ],
+      "kind": "unresolved_call",
+      "occurrences": 237,
+      "queue": "investigable",
+      "rank": 4,
+      "reason": "235 unresolved call site(s) in the file; needs investigation",
+      "score": 23.7,
+      "targets": [
+        "AKOrNEncoder",
+        "ActionJEPA",
+        "AdaptiveStochasticResonance",
+        "AppraisalChain",
+        "AttentionAsPrecision"
+      ]
+    },
+    {
+      "closability": 0.4,
+      "effort": 4,
+      "example_ids": [
+        "frontier-f716cae11b3d",
+        "frontier-7199510e5552",
+        "frontier-1d4bbc0f4b31"
+      ],
+      "impact": 1.0,
+      "key": [
+        "unresolved_call",
+        "src/pyquifer/embodiment/social.py"
+      ],
+      "kind": "unresolved_call",
+      "occurrences": 234,
+      "queue": "investigable",
+      "rank": 5,
+      "reason": "230 unresolved call site(s) in the file; needs investigation",
+      "score": 23.4,
+      "targets": [
+        "F.softmax",
+        "K.abs",
+        "K.fill_diagonal_",
+        "action.squeeze",
+        "action_freq.expand"
+      ]
+    },
+    {
+      "closability": 0.4,
+      "effort": 4,
+      "example_ids": [
+        "frontier-716d6f669365",
+        "frontier-cf3160254a89",
+        "frontier-9693d7250da5"
+      ],
+      "impact": 1.0,
+      "key": [
+        "unresolved_call",
+        "src/pyquifer/identity/neural_darwinism.py"
+      ],
+      "kind": "unresolved_call",
+      "occurrences": 228,
+      "queue": "investigable",
+      "rank": 6,
+      "reason": "227 unresolved call site(s) in the file; needs investigation",
+      "score": 22.8,
+      "targets": [
+        "NeuronalGroup",
+        "adjusted.mean",
+        "combined.dim",
+        "correlations.mean",
+        "cos_sim.item"
+      ]
+    },
+    {
+      "closability": 0.4,
+      "effort": 4,
+      "example_ids": [
+        "frontier-c5ee48fca723",
+        "frontier-78dfbbd1b6a9",
+        "frontier-e8308cccce75"
+      ],
+      "impact": 1.0,
+      "key": [
+        "unresolved_call",
+        "src/pyquifer/cognition/predictive/deep_active_inference.py"
+      ],
+      "kind": "unresolved_call",
+      "occurrences": 227,
+      "queue": "investigable",
+      "rank": 7,
+      "reason": "217 unresolved call site(s) in the file; needs investigation",
+      "score": 22.7,
+      "targets": [
+        "Categorical",
+        "ExpectedFreeEnergy",
+        "F.log_softmax",
+        "F.mse_loss",
+        "F.one_hot"
+      ]
+    },
+    {
+      "closability": 0.4,
+      "effort": 4,
+      "example_ids": [
+        "frontier-20b1730b71e0",
+        "frontier-fe7b8ec8e33d",
+        "frontier-3514246505cd"
+      ],
+      "impact": 1.0,
+      "key": [
+        "unresolved_call",
+        "src/pyquifer/learning/synaptic.py"
+      ],
+      "kind": "unresolved_call",
+      "occurrences": 225,
+      "queue": "investigable",
+      "rank": 8,
+      "reason": "223 unresolved call site(s) in the file; needs investigation",
+      "score": 22.5,
+      "targets": [
+        "EligibilityTrace",
+        "activity.dim",
+        "cast",
+        "decay.item",
+        "delta_hh.norm"
+      ]
+    },
+    {
+      "closability": 0.4,
+      "effort": 4,
+      "example_ids": [
+        "frontier-6e5e4ca6aff3",
+        "frontier-1b5ca7530d80",
+        "frontier-bddd526b311f"
+      ],
+      "impact": 1.0,
+      "key": [
+        "unresolved_call",
+        "src/pyquifer/dynamics/oscillators/kuramoto.py"
+      ],
+      "kind": "unresolved_call",
+      "occurrences": 212,
+      "queue": "investigable",
+      "rank": 9,
+      "reason": "211 unresolved call site(s) in the file; needs investigation",
+      "score": 21.2,
+      "targets": [
+        "R_trajectory.append",
+        "Rs.append",
+        "Rs.mean",
+        "Rs.var",
+        "ValueError"
+      ]
+    },
+    {
+      "closability": 0.4,
+      "effort": 4,
+      "example_ids": [
+        "frontier-1a8a20ad7fd0",
+        "frontier-0487498234bf",
+        "frontier-cfc325e35d6e"
+      ],
+      "impact": 1.0,
+      "key": [
+        "unresolved_call",
+        "src/pyquifer/learning/continual.py"
+      ],
+      "kind": "unresolved_call",
+      "occurrences": 189,
+      "queue": "investigable",
+      "rank": 10,
+      "reason": "186 unresolved call site(s) in the file; needs investigation",
+      "score": 18.9,
+      "targets": [
+        "ElasticWeightConsolidation",
+        "ExperienceReplay",
+        "F.log_softmax",
+        "F.mse_loss",
+        "MESU"
+      ]
+    },
+    {
+      "closability": 0.4,
+      "effort": 4,
+      "example_ids": [
+        "frontier-c2f9dffff186",
+        "frontier-f9d29cb55979",
+        "frontier-55119b70cc9f"
+      ],
+      "impact": 1.0,
+      "key": [
+        "unresolved_call",
+        "src/pyquifer/identity/iit_metrics.py"
+      ],
+      "kind": "unresolved_call",
+      "occurrences": 188,
+      "queue": "investigable",
+      "rank": 11,
+      "reason": "188 unresolved call site(s) in the file; needs investigation",
+      "score": 18.8,
+      "targets": [
+        "CauseEffectRepertoire",
+        "Concept",
+        "EarthMoverDistance",
+        "InformationDensity",
+        "IntegratedInformation"
+      ]
+    },
+    {
+      "closability": 0.4,
+      "effort": 4,
+      "example_ids": [
+        "frontier-4d83f1fae42d",
+        "frontier-af1fe1418eac",
+        "frontier-bf5684beeb69"
+      ],
+      "impact": 1.0,
+      "key": [
+        "unresolved_call",
+        "src/pyquifer/embodiment/developmental.py"
+      ],
+      "kind": "unresolved_call",
+      "occurrences": 186,
+      "queue": "investigable",
+      "rank": 12,
+      "reason": "183 unresolved call site(s) in the file; needs investigation",
+      "score": 18.6,
+      "targets": [
+        "DynamicalSignatureDetector",
+        "EvolutionaryAttractor",
+        "F.softmax",
+        "KindchenschemaDetector",
+        "ProtectiveDrive"
+      ]
+    },
+    {
+      "closability": 0.4,
+      "effort": 4,
+      "example_ids": [
+        "frontier-a7da35b7ebe6",
+        "frontier-a4f38288cc90",
+        "frontier-3d60009ea9b4"
+      ],
+      "impact": 1.0,
+      "key": [
+        "unresolved_call",
+        "src/pyquifer/cognition/control/motivation.py"
+      ],
+      "kind": "unresolved_call",
+      "occurrences": 184,
+      "queue": "investigable",
+      "rank": 13,
+      "reason": "182 unresolved call site(s) in the file; needs investigation",
+      "score": 18.4,
+      "targets": [
+        "CoherenceReward",
+        "EpistemicValue",
+        "H_prior.mean",
+        "MasterySignal",
+        "NoveltyDetector"
+      ]
+    },
+    {
+      "closability": 0.4,
+      "effort": 4,
+      "example_ids": [
+        "frontier-3c2551fabbbf",
+        "frontier-4913d8bd826f",
+        "frontier-4304981d9fdf"
+      ],
+      "impact": 1.0,
+      "key": [
+        "unresolved_call",
+        "src/pyquifer/api/bridge.py"
+      ],
+      "kind": "unresolved_call",
+      "occurrences": 183,
+      "queue": "investigable",
+      "rank": 14,
+      "reason": "183 unresolved call site(s) in the file; needs investigation",
+      "score": 18.3,
+      "targets": [
+        "CognitiveCycle",
+        "CycleConfig.default",
+        "ModulationState",
+        "PROCESSING_MODE_NAMES.get",
+        "_cg.replay"
+      ]
+    },
+    {
+      "closability": 0.4,
+      "effort": 4,
+      "example_ids": [
+        "frontier-58eb4caa56bc",
+        "frontier-983699915c8d",
+        "frontier-fc75a7aa761a"
+      ],
+      "impact": 1.0,
+      "key": [
+        "unresolved_call",
+        "src/pyquifer/memory/latent_world_model.py"
+      ],
+      "kind": "unresolved_call",
+      "occurrences": 183,
+      "queue": "investigable",
+      "rank": 15,
+      "reason": "183 unresolved call site(s) in the file; needs investigation",
+      "score": 18.3,
+      "targets": [
+        "ContinueModel",
+        "F.binary_cross_entropy",
+        "F.mse_loss",
+        "F.softplus",
+        "GRUDynamics"
+      ]
+    },
+    {
+      "closability": 0.4,
+      "effort": 4,
+      "example_ids": [
+        "frontier-55094f6dc9a7",
+        "frontier-2690ca738e55",
+        "frontier-69963a67342d"
+      ],
+      "impact": 1.0,
+      "key": [
+        "unresolved_call",
+        "src/pyquifer/dynamics/spiking/neurons.py"
+      ],
+      "kind": "unresolved_call",
+      "occurrences": 180,
+      "queue": "investigable",
+      "rank": 16,
+      "reason": "179 unresolved call site(s) in the file; needs investigation",
+      "score": 18.0,
+      "targets": [
+        "LIFNeuron",
+        "SurrogateSpike.apply",
+        "all_membrane.append",
+        "all_spikes.append",
+        "delayed.unsqueeze"
+      ]
+    },
+    {
+      "closability": 0.4,
+      "effort": 4,
+      "example_ids": [
+        "frontier-c38f1793af6a",
+        "frontier-f0fb2bedfd5e",
+        "frontier-966a072f5925"
+      ],
+      "impact": 1.0,
+      "key": [
+        "unresolved_call",
+        "src/pyquifer/dynamics/criticality/monitors.py"
+      ],
+      "kind": "unresolved_call",
+      "occurrences": 172,
+      "queue": "investigable",
+      "rank": 17,
+      "reason": "172 unresolved call site(s) in the file; needs investigation",
+      "score": 17.2,
+      "targets": [
+        "R.detach",
+        "R.mean",
+        "R.numel",
+        "activity.abs",
+        "activity.numel"
+      ]
+    },
+    {
+      "closability": 0.4,
+      "effort": 4,
+      "example_ids": [
+        "frontier-79ed756d51d1",
+        "frontier-476d4aa6f5d5",
+        "frontier-48e2dda473c2"
+      ],
+      "impact": 1.0,
+      "key": [
+        "unresolved_call",
+        "src/pyquifer/learning/consolidation.py"
+      ],
+      "kind": "unresolved_call",
+      "occurrences": 169,
+      "queue": "investigable",
+      "rank": 18,
+      "reason": "169 unresolved call site(s) in the file; needs investigation",
+      "score": 16.9,
+      "targets": [
+        "a.detach",
+        "activations.append",
+        "all_delta_norms.append",
+        "buffer.num_stored.item",
+        "buffer.sample_prioritized"
+      ]
+    },
+    {
+      "closability": 0.4,
+      "effort": 4,
+      "example_ids": [
+        "frontier-d06caa366748",
+        "frontier-f0b7c351731a",
+        "frontier-cc9d72e5b71c"
+      ],
+      "impact": 1.0,
+      "key": [
+        "unresolved_call",
+        "src/pyquifer/embodiment/morphology.py"
+      ],
+      "kind": "unresolved_call",
+      "occurrences": 157,
+      "queue": "investigable",
+      "rank": 19,
+      "reason": "156 unresolved call site(s) in the file; needs investigation",
+      "score": 15.7,
+      "targets": [
+        "F.linear",
+        "MorphologicalMemory",
+        "PeripheralGanglion",
+        "SleepWakeController",
+        "TensionField"
+      ]
+    },
+    {
+      "closability": 0.4,
+      "effort": 4,
+      "example_ids": [
+        "frontier-fd3d53c5ae80",
+        "frontier-01dd6e5908fb",
+        "frontier-a61ded133b29"
+      ],
+      "impact": 1.0,
+      "key": [
+        "unresolved_call",
+        "examples/simple_actualization.py"
+      ],
+      "kind": "unresolved_call",
+      "occurrences": 151,
+      "queue": "investigable",
+      "rank": 20,
+      "reason": "126 unresolved call site(s) in the file; needs investigation",
+      "score": 15.1,
+      "targets": [
+        "GenerativeWorldModel",
+        "archetype_history.append",
+        "archetype_learning_history.append",
+        "ax1.grid",
+        "ax1.legend"
+      ]
+    }
+  ],
+  "version": 1
+}

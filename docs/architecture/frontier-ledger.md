@@ -78,6 +78,11 @@ failure is the acceptance check.
 1. Failed parsing: extractor diagnostics (`malformed_claims`,
    `invalid_claim`, `unknown_relation` in `tunic/extract.py`) become
    `unsupported` entries, deduped by source digest + kind + detail.
+   Ingest-filed entries anchor on digest + line + byte offset (v1.4):
+   two distinct calls on the same line must file as two observations —
+   PyQuifer showed three `print()` calls on one line collapsing into a
+   single entry with recurrence 3 after one ingest. Entries also carry
+   the originating `path` for file-level triage clustering.
 2. Retrieval abstention: `answer()` with outcome `empty` becomes an
    `unresolved` entry carrying the task text, deduped by task digest
    (an open entry for the same task suppresses duplicates; re-encounter
@@ -125,9 +130,17 @@ Hardening rules from the v1.2 review:
 - The recommendation selects from the full active cluster set ranked by
   the base weighting, never from the top-N display truncation, so a
   low-ranked but immediately closable cluster survives `--top 1`.
-- Unresolved calls cluster by observation site (task path + line), not
-  expression text: identical content in different files shares a
-  content digest and would silently merge into one "recurring" gap.
+- Unresolved calls cluster by file, not by site or expression: at
+  real-repo scale (PyQuifer: ~10.7k unresolved calls) per-site clusters
+  are singletons, which flattens occurrence-weighted ranking and makes
+  every sensitivity weighting identical (all overlap 1.0 — the pass
+  then carries no information). File clusters keep every site visible
+  as a member (`example_ids`) while occurrences aggregate into a
+  ranking signal. Expression-level grouping was rejected: it merges
+  unrelated causes; per-site grouping was rejected: no aggregation.
+  A file cluster blocks only when EVERY open member target is an
+  external stdlib symbol. Cluster keys surface in report rows and the
+  recommendation (`key` field).
 - The mutation check pairs the frontier-record digest with
   `PRAGMA data_version` before/after, so a write to any table by any
   connection fails closed, not just ledger tampering (review finding:
@@ -227,6 +240,12 @@ required evidence (read path for the future investigation scheduler).
   full scan per filing was quadratic. Existing databases gain the index
   on next open (`CREATE INDEX IF NOT EXISTS`); record semantics are
   unchanged.
+- v1.4 (implemented): dedupe anchor granularity (digest + line + byte
+  offset) and file-level triage clustering, validated on the real
+  PyQuifer repository — 10,906 entries collapse to 125 file clusters
+  with a discriminating ranking (`benchmarks/frontier/pyquifer-triage-v1.json`).
+  Acceptance: same-line calls file separately; cluster keys visible in
+  report rows; blocked requires every member target external.
 - Later: MochiOS-scheduled investigation, procedural learning records,
   sandboxed system-improvement proposals.
 

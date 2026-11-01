@@ -266,12 +266,17 @@ class Memory:
             detail = (diagnostic.get("table") or diagnostic.get("reason")
                       or diagnostic.get("expression") or diagnostic.get("path", ""))
             task = template % (detail, path, line)
-            ref = "%s:%s" % (digests.get(path, path), line)
+            # Anchor on digest + line + byte offset: two distinct calls on
+            # the same line must file as two observations (PyQuifer found
+            # three print() calls on one line collapsing into one entry
+            # with recurrence 3 after a single ingest).
+            ref = "%s:%s:%s" % (digests.get(path, path), line,
+                                diagnostic.get("start"))
             target = (diagnostic.get("table") or diagnostic.get("expression")
                       or path or None)
             self._frontier_upsert(
                 kind, task, "ingest_%s" % diagnostic.get("kind"),
-                source_refs=(ref,), target=target,
+                source_refs=(ref,), target=target, path=path or None,
                 required_evidence=("supporting evidence",))
             filed += 1
         return filed
@@ -346,7 +351,7 @@ class Memory:
 
     def _frontier_upsert(self, kind, task, failure, source_refs=(),
                          required_evidence=(), candidate_explanations=(),
-                         target=None):
+                         target=None, path=None):
         """Record an unresolved observation, or bump recurrence of the open one.
 
         Diagnostic write, not a claim: entries never traverse, corroborate,
@@ -389,6 +394,8 @@ class Memory:
                   "promotion_policy": "review_required",
                   "created_at": now, "updated_at": now, "dedupe": dedupe,
                   "resolution": None}
+        if path:
+            record["path"] = path
         base = "frontier-" + _digest(
             json.dumps([kind, task, refs, now], sort_keys=True).encode("utf-8"))[:12]
         taken = {r[0] for r in self.store.connection.execute(

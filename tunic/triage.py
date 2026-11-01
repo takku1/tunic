@@ -55,12 +55,14 @@ def _cluster_key(record):
     if failure in ("static_edge_unresolved", "ingest_dispatch_unresolved"):
         return ("unresolved_dispatch", target)
     if failure == "ingest_unresolved_call":
-        # cluster by observation site, not expression text: the task
-        # carries path + line, so the same expression at distinct call
-        # sites (or identical content in different files, which shares
-        # a content digest) clusters separately, while recurrences of
-        # one site stay one cluster.
-        return ("unresolved_call", target, task)
+        # Aggregate by file, not by site or expression: at real-repo
+        # scale (PyQuifer: ~10.7k unresolved calls) per-site clusters
+        # are singletons, which flattens occurrence-weighted ranking and
+        # makes every weighting pass identical. File clusters keep every
+        # site visible as a member (example_ids) while occurrences
+        # aggregate into a signal that can rank. Grouping by expression
+        # instead would merge unrelated causes (review finding).
+        return ("unresolved_call", record.get("path") or target or task[:80])
     if failure == "retrieval_miss":
         return ("retrieval_miss", target)
     if failure == "retrieval_abstention":
@@ -124,17 +126,23 @@ def _assess(cluster, view, as_of):
                         reason="no emittable candidate: needs extraction "
                                "capability or human-verified commit")
     elif kind == "unresolved_call":
-        if _is_external_call(key[1]):
+        # A file cluster mixes targets; block only when EVERY open
+        # member is an external stdlib symbol, otherwise the file
+        # contains at least one actionable call.
+        open_targets = [(m.get("target") or "") for m in open_entries]
+        if open_targets and all(_is_external_call(t) for t in open_targets):
             info.update(closability=0.0, effort=EFFORT["external"],
                         impact=IMPACT["unresolved_call_external"],
                         queue="blocked",
-                        reason="external stdlib symbol (%s): no graph action possible"
-                               % (key[1],))
+                        reason="all open calls are external stdlib symbols "
+                               "(e.g. %s): no graph action possible"
+                               % (open_targets[0],))
         else:
             info.update(closability=0.4, effort=EFFORT["investigate"],
                         impact=IMPACT["unresolved_call_local"],
                         queue="investigable",
-                        reason="local unknown call; needs investigation")
+                        reason="%d unresolved call site(s) in the file; "
+                               "needs investigation" % (len(open_entries),))
     elif kind == "parse_error":
         info.update(closability=0.4, effort=EFFORT["investigate"],
                     impact=IMPACT["parse_error"], queue="investigable",
@@ -243,7 +251,7 @@ def analyze(db_path, root=".", top=20):
     top_list = []
     for rank, row in enumerate(rankings["base"], 1):
         info = next(i for i in cluster_infos if list(i["key"]) == row["key"])
-        top_list.append({"rank": rank, "kind": row["kind"],
+        top_list.append({"rank": rank, "kind": row["kind"], "key": row["key"],
                          "occurrences": row["occurrences"],
                          "queue": row["queue"], "score": row["score"],
                          "impact": info["impact"], "effort": info["effort"],
@@ -267,7 +275,8 @@ def analyze(db_path, root=".", top=20):
                                           i["occurrences"]), reverse=True)
 
     def _candidate(info):
-        return {"kind": info["kind"], "targets": info["targets"],
+        return {"kind": info["kind"], "key": info["key"],
+                "targets": info["targets"],
                 "occurrences": info["occurrences"]}
 
     closable = [c for c in ranked_active if c["queue"] == "closable_now"]

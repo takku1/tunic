@@ -694,6 +694,27 @@ class FrontierIngestTests(unittest.TestCase):
         self.assertEqual({e["id"] for e in second}, set(first))
         self.assertTrue(all(e["recurrence"] == first[e["id"]] + 1 for e in second))
 
+    def test_same_line_calls_file_as_distinct_observations(self):
+        # Two distinct calls on one line must file as two observations:
+        # the dedupe anchor carries the byte offset, not just the line.
+        # (PyQuifer: three print() calls on one line collapsed into one
+        # entry with recurrence 3 after a single ingest.)
+        (self.root / "multi.py").write_bytes(
+            b"def show(a):\n    return print(a), print(a + 1)\n")
+        memory = Memory(str(self.tmp / "memory.sqlite"), self.root)
+        self.addCleanup(memory.close)
+        memory.ingest()
+        entries = [e for e in memory.frontier_list(status="open")
+                   if e.get("path") == "multi.py"]
+        self.assertEqual(len(entries), 2)
+        self.assertEqual({e["recurrence"] for e in entries}, {1})
+        self.assertEqual(len({e["source_refs"][0] for e in entries}), 2)
+        memory.ingest()
+        entries = [e for e in memory.frontier_list(status="open")
+                   if e.get("path") == "multi.py"]
+        self.assertEqual(len(entries), 2)
+        self.assertEqual({e["recurrence"] for e in entries}, {2})
+
     def test_dispatch_diagnostic_maps_to_unsupported(self):
         (self.root / "pricing.py").write_bytes(b"def round_total(cart):\n    return cart\n")
         (self.root / "dispatch.py").write_bytes(

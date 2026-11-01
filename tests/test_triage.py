@@ -155,6 +155,7 @@ class TriageSiteClusterTests(unittest.TestCase):
         self.db = str(self.tmp / "memory.sqlite")
 
     def test_same_expression_at_two_sites_clusters_separately(self):
+        # two files: file-level clusters stay distinct
         memory = Memory(self.db, self.root)
         self.addCleanup(memory.close)
         memory.ingest()
@@ -163,6 +164,43 @@ class TriageSiteClusterTests(unittest.TestCase):
         self.assertEqual(len(calls), 2)
         self.assertTrue(all(c["occurrences"] == 1 for c in calls))
         self.assertEqual(report["counts"]["by_kind"]["unresolved_call"], 2)
+
+    def test_two_sites_in_one_file_aggregate_with_member_visibility(self):
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp, True)
+        root = tmp / "repo"
+        root.mkdir()
+        (root / "multi.py").write_bytes(
+            b"def first(cb):\n    return cb(1)\n\n\n"
+            b"def second(cb):\n    return cb(2)\n")
+        db = str(tmp / "memory.sqlite")
+        memory = Memory(db, root)
+        self.addCleanup(memory.close)
+        memory.ingest()
+        report = analyze(db, root=str(root))
+        calls = [c for c in report["top"] if c["kind"] == "unresolved_call"]
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(calls[0]["occurrences"], 2)
+        self.assertEqual(len(calls[0]["example_ids"]), 2)
+
+    def test_file_cluster_with_any_local_call_is_investigable(self):
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp, True)
+        root = tmp / "repo"
+        root.mkdir()
+        (root / "mixed.py").write_bytes(
+            b"def pick(p):\n    return os.path.join('a', p)\n\n\n"
+            b"def run(cb):\n    return cb(1)\n")
+        db = str(tmp / "memory.sqlite")
+        memory = Memory(db, root)
+        self.addCleanup(memory.close)
+        memory.ingest()
+        report = analyze(db, root=str(root))
+        cluster = next(c for c in report["top"]
+                       if c["kind"] == "unresolved_call")
+        self.assertEqual(cluster["queue"], "investigable")
+        self.assertIn("2 unresolved call site(s)", cluster["reason"])
+        self.assertIn("os.path.join", cluster["targets"])
 
 
 class TriageDispatchTests(unittest.TestCase):
