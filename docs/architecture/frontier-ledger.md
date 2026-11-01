@@ -5,11 +5,15 @@ dedupe, answer-abstention hook, commit_proposal refusal filing,
 ingest-diagnostic auto-wiring, structured proof receipts for resolution,
 replay with per-kind rules, regression export, `retrieval_miss` records
 with rank-1 replay predicates; `frontier` CLI reads plus `--replay`,
-`--export-regression`, `--record-miss`). Demonstrated: S2
+`--export-regression`, `--record-miss`). Triage v1 implemented
+(read-only prioritization: clustering, three queues, heuristic ranking
+with sensitivity passes, `triage` CLI; see "Triage" below).
+Demonstrated: S2
 open→resolved cycle, PyQuifer avalanche `retrieval_miss` closure with an
 exported regression case (`benchmarks/frontier/closures/`). Pending:
 zero-config `tunic <path>` ingest (spec below, not built),
-investigation scheduling, miss-entry prioritization at scale.
+investigation scheduling, triage ranking validated against a second
+real-repo closure.
 Motivation: the v4 acquisition benchmark (S2, 0/6 commits on every
 protocol) proved models will not synthesize an edge through registry
 indirection even with the evidence in context, and probes of real
@@ -90,6 +94,31 @@ No model call is added by instrumentation; classification of the entry
 itself is deterministic. A second model call happens only for genuine
 ambiguity, mirroring the v4 conflict branch.
 
+## Triage (v1, read-only)
+
+`tunic triage --db <db> --root <root>` projects the ledger into
+normalized clusters, three queues, and a ranked investigation list
+without ever writing: it digests every frontier record before and after
+analysis and raises on any mismatch. Scoring is the provisional
+heuristic from the Prioritization section with observable factors only:
+`P = (I^a * R^b * C^c) / E^d` (impact, recurrence-weighted occurrences,
+closability under a supported replay predicate, reviewer-sized effort).
+Four weighting passes (base, recall-heavy, effort-averse, impact-first)
+report top-N overlap against base so ranking stability is visible, not
+assumed.
+
+Queues separate what Tunic can act on now from what it cannot:
+`closable_now` (a supported replay predicate passes against current
+evidence, e.g. an asserted edge already covers a dispatch table),
+`investigable` (evidence or verification is reachable through existing
+capability), and `blocked` (missing capability or external noise — a
+stdlib call names no graph action). A blocked entry at the top of the
+ranking generates a capability task, never a fabricated proof; the
+recommendation field names the closest verifiable second closure or
+states what it would take. Entries already in a terminal state
+(resolved/dismissed) stop contributing occurrences but stay in cluster
+counts.
+
 ## Prioritization (heuristic, not calibrated)
 
 ```
@@ -163,6 +192,11 @@ required evidence (read path for the future investigation scheduler).
   over audited misses. The `authority` field is an attested string, not
   proof a human performed the audit — keep that distinction explicit
   before introducing autonomous investigators.
+- v1.2 (implemented): read-only triage over the ledger (see "Triage"
+  above). Acceptance: clustering, three queues, four sensitivity
+  weightings, ranked list with reasons, a recommendation that never
+  fabricates proof for blocked entries, and a digest-anchored mutation
+  check proven by a tamper test; `triage` CLI.
 - Later: MochiOS-scheduled investigation, procedural learning records,
   sandboxed system-improvement proposals.
 

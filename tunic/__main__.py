@@ -55,6 +55,9 @@ def main(argv=None):
                           help="file an audited retrieval miss for a verified symbol")
     frontier.add_argument("--question", default=None, help="question the system answered wrong")
     frontier.add_argument("--authority", default=None, help="audit authority filing the miss")
+    triage = commands.add_parser("triage", help="read-only frontier triage: clusters, queues, ranked investigation list")
+    triage.add_argument("--root", default=".", help="workspace root the database was ingested from")
+    triage.add_argument("--top", type=int, default=20, help="max ranked clusters per weighting pass")
     draft = commands.add_parser("draft", help="propose claim blocks for co-mentioned entities (review input only)")
     draft.add_argument("document", help="repository-relative document path, e.g. notes.md")
     review = commands.add_parser("review", help="structured acquisition report for one document (read-only)")
@@ -134,6 +137,11 @@ def main(argv=None):
         if args.command == "mcp":
             from .mcp import serve
             return serve(args.db, args.root)
+        if args.command == "triage":
+            from .triage import analyze
+            print(json.dumps(analyze(args.db, root=args.root, top=args.top),
+                             ensure_ascii=True, sort_keys=True, indent=2))
+            return 0
         if args.command in {"candidates", "frontier"}:
             from .memory import Memory
             memory = Memory(args.db, args.root)
