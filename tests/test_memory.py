@@ -3,6 +3,7 @@
 import json
 import re
 import shutil
+import sqlite3
 import sys
 import tempfile
 import unittest
@@ -708,6 +709,62 @@ class FrontierIngestTests(unittest.TestCase):
         self.assertEqual(len(entries), 1)
         self.assertEqual(entries[0]["kind"], "unsupported")
         self.assertIn("STRATEGIES", entries[0]["task"])
+
+
+class FrontierDedupeIndexTests(unittest.TestCase):
+    """Dedupe anchor is index-backed: ingest stays near-linear in ledger size."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.root = self.tmp / "repo"
+        self.root.mkdir()
+        (self.root / "core.py").write_bytes(b"def calculate(x):\n    return x + 1\n")
+
+    def test_dedupe_lookup_uses_the_expression_index(self):
+        memory = Memory(str(self.tmp / "memory.sqlite"), self.root)
+        self.addCleanup(memory.close)
+        memory.ingest()
+        plan = memory.store.connection.execute(
+            "EXPLAIN QUERY PLAN SELECT id, record FROM frontier "
+            "WHERE json_extract(record, '$.dedupe') = 'x'").fetchall()
+        self.assertTrue(any("frontier_dedupe" in str(row) for row in plan),
+                        plan)
+
+    def test_existing_database_gains_the_index_on_open(self):
+        db = str(self.tmp / "memory.sqlite")
+        raw = sqlite3.connect(db)
+        raw.execute("CREATE TABLE frontier(id TEXT PRIMARY KEY, "
+                    "record TEXT NOT NULL)")
+        raw.commit()
+        raw.close()
+        memory = Memory(db, self.root)
+        self.addCleanup(memory.close)
+        names = [row[1] for row in memory.store.connection.execute(
+            "PRAGMA index_list('frontier')")]
+        self.assertIn("frontier_dedupe", names)
+
+    def test_many_entries_file_and_rededupe_exactly(self):
+        memory = Memory(str(self.tmp / "memory.sqlite"), self.root)
+        self.addCleanup(memory.close)
+        memory.ingest()
+        for index in range(300):
+            memory.frontier_record(
+                "unresolved", "resolve call site %d" % index,
+                "ingest_unresolved_call",
+                source_refs=("ref-%d" % index,))
+        for index in range(0, 300, 3):
+            memory.frontier_record(
+                "unresolved", "resolve call site %d" % index,
+                "ingest_unresolved_call",
+                source_refs=("ref-%d" % index,))
+        entries = memory.frontier_list()
+        self.assertEqual(len(entries), 300)
+        by_recurrence = {}
+        for entry in entries:
+            by_recurrence[entry["recurrence"]] = \
+                by_recurrence.get(entry["recurrence"], 0) + 1
+        self.assertEqual(by_recurrence, {1: 200, 2: 100})
 
 
 class FrontierReplayTests(unittest.TestCase):

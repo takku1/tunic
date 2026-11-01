@@ -212,14 +212,21 @@ required evidence (read path for the future investigation scheduler).
   weightings, ranked list with reasons, a recommendation that never
   fabricates proof for blocked entries, and a digest-anchored mutation
   check proven by a tamper test; `triage` CLI.
-- v1.3 (implemented): zero-config ingest (see spec below). Acceptance:
-  `tunic <path>` with no subcommand resolves the workspace root,
-  defaults the database to `<root>/.tunic/graph.sqlite` (`--db`
-  overrides), ingests, and prints the summary: files, symbols,
-  assertions by status, diagnostics by kind, and open frontier entries
-  by kind; rerunning re-ingests and bumps recurrence instead of
-  duplicating. Subcommand names are reserved: a workspace directory
-  named like a command is parsed as that command, not a path.
+- v1.3 (implemented): zero-config ingest (see spec below) plus an
+  index-backed dedupe anchor. Acceptance: `tunic <path>` with no
+  subcommand resolves the workspace root, defaults the database to
+  `<root>/.tunic/graph.sqlite` (`--db` overrides), ingests, and prints
+  the summary: files, symbols, assertions by status, diagnostics by
+  kind, and open frontier entries by kind; rerunning re-ingests and
+  bumps recurrence instead of duplicating. Subcommand names are
+  reserved: a workspace directory named like a command is parsed as
+  that command, not a path. The dedupe anchor is a SQLite expression
+  index over the record's dedupe field, so filing a diagnostic seeks
+  instead of scanning every ledger row — at real-repository scale
+  (thousands of open entries, one filing per unresolved call) the old
+  full scan per filing was quadratic. Existing databases gain the index
+  on next open (`CREATE INDEX IF NOT EXISTS`); record semantics are
+  unchanged.
 - Later: MochiOS-scheduled investigation, procedural learning records,
   sandboxed system-improvement proposals.
 

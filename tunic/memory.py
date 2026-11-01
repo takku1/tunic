@@ -360,10 +360,17 @@ class Memory:
         refs = sorted(source_refs)
         dedupe = _digest(json.dumps([kind, task, refs], sort_keys=True).encode("utf-8"))
         now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-        row = self.store.connection.execute("SELECT record FROM frontier").fetchall()
-        for (text,) in row:
+        # Index-backed lookup (frontier_dedupe): at real-repository scale
+        # the ledger holds thousands of entries, and ingest files one
+        # diagnostic per unresolved call, so a full scan per filing is
+        # quadratic. The expression index seeks matching dedupe anchors
+        # directly; the semantics are unchanged.
+        row = self.store.connection.execute(
+            "SELECT id, record FROM frontier "
+            "WHERE json_extract(record, '$.dedupe') = ?", (dedupe,)).fetchall()
+        for _rid, text in row:
             record = json.loads(text)
-            if record.get("dedupe") == dedupe and record.get("status") in ("open", "investigating"):
+            if record.get("status") in ("open", "investigating"):
                 record["recurrence"] = record.get("recurrence", 1) + 1
                 record["priority"] = min(
                     0.95, FRONTIER_BASE_PRIORITY[kind] + 0.05 * record["recurrence"])
