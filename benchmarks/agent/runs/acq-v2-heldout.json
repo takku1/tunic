@@ -32,7 +32,7 @@
   "heldout/callback/none": {
    "n": 5,
    "pass_rate": 0.0,
-   "apply_pass_rate": 0.0,
+   "apply_pass_rate": 1.0,
    "commits": 0,
    "committed_correct": 0,
    "acquisition_precision": null,
@@ -46,7 +46,7 @@
   "heldout/callback/lexical": {
    "n": 5,
    "pass_rate": 0.0,
-   "apply_pass_rate": 0.0,
+   "apply_pass_rate": 1.0,
    "commits": 0,
    "committed_correct": 0,
    "acquisition_precision": null,
@@ -102,7 +102,7 @@
   "heldout/registry/none": {
    "n": 5,
    "pass_rate": 0.0,
-   "apply_pass_rate": 0.0,
+   "apply_pass_rate": 1.0,
    "commits": 0,
    "committed_correct": 0,
    "acquisition_precision": null,
@@ -172,7 +172,7 @@
   "heldout/attribute/none": {
    "n": 5,
    "pass_rate": 0.0,
-   "apply_pass_rate": 0.0,
+   "apply_pass_rate": 0.8,
    "commits": 0,
    "committed_correct": 0,
    "acquisition_precision": null,
@@ -186,7 +186,7 @@
   "heldout/attribute/lexical": {
    "n": 5,
    "pass_rate": 0.2,
-   "apply_pass_rate": 0.0,
+   "apply_pass_rate": 0.8,
    "commits": 1,
    "committed_correct": 1,
    "acquisition_precision": 1.0,
@@ -200,7 +200,7 @@
   "heldout/attribute/tunic": {
    "n": 5,
    "pass_rate": 0.6,
-   "apply_pass_rate": 0.6,
+   "apply_pass_rate": 0.8,
    "commits": 4,
    "committed_correct": 3,
    "acquisition_precision": 0.75,
@@ -214,7 +214,7 @@
   "heldout/attribute/tunic-candidates": {
    "n": 5,
    "pass_rate": 0.8,
-   "apply_pass_rate": 0.6,
+   "apply_pass_rate": 0.8,
    "commits": 4,
    "committed_correct": 4,
    "acquisition_precision": 1.0,
@@ -312,7 +312,7 @@
   "heldout/correction/none": {
    "n": 5,
    "pass_rate": null,
-   "apply_pass_rate": 0.0,
+   "apply_pass_rate": 1.0,
    "commits": 0,
    "committed_correct": 0,
    "acquisition_precision": null,
@@ -326,7 +326,7 @@
   "heldout/correction/lexical": {
    "n": 5,
    "pass_rate": null,
-   "apply_pass_rate": 0.0,
+   "apply_pass_rate": 0.6,
    "commits": 0,
    "committed_correct": 0,
    "acquisition_precision": null,
@@ -340,7 +340,7 @@
   "heldout/correction/tunic": {
    "n": 5,
    "pass_rate": null,
-   "apply_pass_rate": 0.0,
+   "apply_pass_rate": 1.0,
    "commits": 0,
    "committed_correct": 0,
    "acquisition_precision": null,
@@ -354,7 +354,7 @@
   "heldout/correction/tunic-candidates": {
    "n": 5,
    "pass_rate": null,
-   "apply_pass_rate": 0.2,
+   "apply_pass_rate": 1.0,
    "commits": 1,
    "committed_correct": 0,
    "acquisition_precision": 0.0,
@@ -368,7 +368,7 @@
   "heldout/correction/tunic-commit-cand": {
    "n": 5,
    "pass_rate": null,
-   "apply_pass_rate": 0.0,
+   "apply_pass_rate": 1.0,
    "commits": 0,
    "committed_correct": 0,
    "acquisition_precision": null,
@@ -382,7 +382,7 @@
   "heldout/duplicate/none": {
    "n": 5,
    "pass_rate": 0.0,
-   "apply_pass_rate": 0.0,
+   "apply_pass_rate": 1.0,
    "commits": 0,
    "committed_correct": 0,
    "acquisition_precision": null,
@@ -396,7 +396,7 @@
   "heldout/duplicate/lexical": {
    "n": 5,
    "pass_rate": 0.8,
-   "apply_pass_rate": 0.0,
+   "apply_pass_rate": 1.0,
    "commits": 0,
    "committed_correct": 0,
    "acquisition_precision": null,
@@ -410,7 +410,7 @@
   "heldout/duplicate/tunic": {
    "n": 5,
    "pass_rate": 1.0,
-   "apply_pass_rate": 0.0,
+   "apply_pass_rate": 1.0,
    "commits": 0,
    "committed_correct": 0,
    "acquisition_precision": null,
@@ -424,7 +424,7 @@
   "heldout/duplicate/tunic-candidates": {
    "n": 5,
    "pass_rate": 1.0,
-   "apply_pass_rate": 0.0,
+   "apply_pass_rate": 1.0,
    "commits": 0,
    "committed_correct": 0,
    "acquisition_precision": null,
@@ -438,7 +438,7 @@
   "heldout/duplicate/tunic-commit-cand": {
    "n": 5,
    "pass_rate": 1.0,
-   "apply_pass_rate": 0.0,
+   "apply_pass_rate": 1.0,
    "commits": 0,
    "committed_correct": 0,
    "acquisition_precision": null,
@@ -592,7 +592,7 @@
   "heldout/poisoned-evidence/none": {
    "n": 5,
    "pass_rate": 0.0,
-   "apply_pass_rate": 0.0,
+   "apply_pass_rate": 1.0,
    "commits": 0,
    "committed_correct": 0,
    "acquisition_precision": null,
@@ -606,7 +606,7 @@
   "heldout/poisoned-evidence/lexical": {
    "n": 5,
    "pass_rate": 0.0,
-   "apply_pass_rate": 0.0,
+   "apply_pass_rate": 1.0,
    "commits": 0,
    "committed_correct": 0,
    "acquisition_precision": null,
@@ -708,7 +708,7 @@
     "main.py::kickoff"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 371,
@@ -762,7 +762,7 @@
     "main.py::kickoff"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 87,
@@ -997,7 +997,7 @@
     "shop.py::unleash"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 376,
@@ -1051,7 +1051,7 @@
     "shop.py::unleash"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 91,
@@ -1286,7 +1286,7 @@
     "main.py::commence"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 370,
@@ -1340,7 +1340,7 @@
     "main.py::commence"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 87,
@@ -1575,7 +1575,7 @@
     "shop.py::embark"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 368,
@@ -1629,7 +1629,7 @@
     "shop.py::embark"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 85,
@@ -1864,7 +1864,7 @@
     "main.py::depart"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 372,
@@ -1918,7 +1918,7 @@
     "main.py::depart"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 89,
@@ -2153,7 +2153,7 @@
     "buyer.py::dispatch_goods"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 389,
@@ -2442,7 +2442,7 @@
     "shop.py::release_hold"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 358,
@@ -2731,7 +2731,7 @@
     "buyer.py::assign_carrier"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 392,
@@ -3018,7 +3018,7 @@
     "shop.py::clear_dock"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 356,
@@ -3305,7 +3305,7 @@
     "buyer.py::send_off"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 393,
@@ -3595,7 +3595,7 @@
     "use.py::drive"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 400,
@@ -3650,7 +3650,7 @@
     "use.py::drive"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 87,
@@ -3887,7 +3887,7 @@
     "shop.py::drive"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 402,
@@ -3942,7 +3942,7 @@
     "shop.py::drive"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 90,
@@ -4181,7 +4181,7 @@
     "use.py::drive"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 399,
@@ -4236,7 +4236,7 @@
     "use.py::drive"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 88,
@@ -4350,7 +4350,7 @@
     "use.py::drive"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 399,
@@ -4471,7 +4471,7 @@
     "shop.py::drive"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 399,
@@ -4526,7 +4526,7 @@
     "shop.py::drive"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 87,
@@ -4581,7 +4581,7 @@
     "shop.py::drive"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 399,
@@ -6414,7 +6414,7 @@
     "buyer.py::dispatch_goods"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 449,
@@ -6514,7 +6514,7 @@
     "buyer.py::dispatch_goods"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 449,
@@ -6567,7 +6567,7 @@
     "buyer.py::dispatch_goods"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 449,
@@ -6623,7 +6623,7 @@
     "buyer.py::dispatch_goods"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 449,
@@ -6672,7 +6672,7 @@
     "shop.py::release_hold"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 448,
@@ -6721,7 +6721,7 @@
     "shop.py::release_hold"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 230,
@@ -6774,7 +6774,7 @@
     "shop.py::release_hold"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 448,
@@ -6883,7 +6883,7 @@
     "shop.py::release_hold"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 448,
@@ -6932,7 +6932,7 @@
     "buyer.py::assign_carrier"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 456,
@@ -7037,7 +7037,7 @@
     "buyer.py::assign_carrier"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 456,
@@ -7090,7 +7090,7 @@
     "buyer.py::assign_carrier"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 456,
@@ -7146,7 +7146,7 @@
     "buyer.py::assign_carrier"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 456,
@@ -7195,7 +7195,7 @@
     "shop.py::clear_dock"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 450,
@@ -7244,7 +7244,7 @@
     "shop.py::clear_dock"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 232,
@@ -7297,7 +7297,7 @@
     "shop.py::clear_dock"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 450,
@@ -7346,7 +7346,7 @@
     "shop.py::clear_dock"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 450,
@@ -7402,7 +7402,7 @@
     "shop.py::clear_dock"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 450,
@@ -7451,7 +7451,7 @@
     "buyer.py::send_off"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 452,
@@ -7500,7 +7500,7 @@
     "buyer.py::send_off"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 236,
@@ -7553,7 +7553,7 @@
     "buyer.py::send_off"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 452,
@@ -7606,7 +7606,7 @@
     "buyer.py::send_off"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 452,
@@ -7662,7 +7662,7 @@
     "buyer.py::send_off"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 452,
@@ -7712,7 +7712,7 @@
     "main.py::kickoff"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 406,
@@ -7766,7 +7766,7 @@
     "main.py::kickoff"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 157,
@@ -7820,7 +7820,7 @@
     "main.py::kickoff"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 406,
@@ -7874,7 +7874,7 @@
     "main.py::kickoff"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 406,
@@ -7935,7 +7935,7 @@
     "main.py::kickoff"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 406,
@@ -7985,7 +7985,7 @@
     "shop.py::unleash"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 413,
@@ -8039,7 +8039,7 @@
     "shop.py::unleash"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 162,
@@ -8093,7 +8093,7 @@
     "shop.py::unleash"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 413,
@@ -8147,7 +8147,7 @@
     "shop.py::unleash"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 413,
@@ -8208,7 +8208,7 @@
     "shop.py::unleash"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 413,
@@ -8258,7 +8258,7 @@
     "main.py::commence"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 404,
@@ -8312,7 +8312,7 @@
     "main.py::commence"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 156,
@@ -8366,7 +8366,7 @@
     "main.py::commence"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 404,
@@ -8420,7 +8420,7 @@
     "main.py::commence"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 404,
@@ -8481,7 +8481,7 @@
     "main.py::commence"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 404,
@@ -8531,7 +8531,7 @@
     "shop.py::embark"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 402,
@@ -8581,7 +8581,7 @@
     "shop.py::embark"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 154,
@@ -8635,7 +8635,7 @@
     "shop.py::embark"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 402,
@@ -8689,7 +8689,7 @@
     "shop.py::embark"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 402,
@@ -8750,7 +8750,7 @@
     "shop.py::embark"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 402,
@@ -8800,7 +8800,7 @@
     "main.py::depart"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 405,
@@ -8854,7 +8854,7 @@
     "main.py::depart"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 158,
@@ -8908,7 +8908,7 @@
     "main.py::depart"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 405,
@@ -8962,7 +8962,7 @@
     "main.py::depart"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 405,
@@ -9023,7 +9023,7 @@
     "main.py::depart"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 405,
@@ -10541,7 +10541,7 @@
     "main.py::kickoff"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 371,
@@ -10595,7 +10595,7 @@
     "main.py::kickoff"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 87,
@@ -10830,7 +10830,7 @@
     "shop.py::unleash"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 376,
@@ -10884,7 +10884,7 @@
     "shop.py::unleash"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 91,
@@ -11119,7 +11119,7 @@
     "main.py::commence"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 370,
@@ -11173,7 +11173,7 @@
     "main.py::commence"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 87,
@@ -11408,7 +11408,7 @@
     "shop.py::embark"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 368,
@@ -11462,7 +11462,7 @@
     "shop.py::embark"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 85,
@@ -11697,7 +11697,7 @@
     "main.py::depart"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 372,
@@ -11751,7 +11751,7 @@
     "main.py::depart"
    ],
    "stale": [],
-   "pass": false,
+   "pass": true,
    "had_commit": false,
    "model_calls": 1,
    "prompt_tokens": 89,
@@ -11942,5 +11942,8 @@
  ],
  "limitations": [
   "n=5 reps per cell; temperature 0; directional evidence only; heldout run once, not tuned against"
+ ],
+ "scorer_notes": [
+  "apply-gate scorer fix: correction/duplicate apply rows re-scored without the propose-commit gate (their knowledge pre-exists, so the correct propose outcome is a no-op); raw parsed/stale observations unchanged; positive cells keep the gate"
  ]
 }

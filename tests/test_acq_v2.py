@@ -132,6 +132,35 @@ class ResolveCandidateIdTests(unittest.TestCase):
         self.assertIsNone(self.resolve("nope.py::nope", self.candidates))
 
 
+class ApplyPassRuleTests(unittest.TestCase):
+    """The apply-row gate: positive requires the commit; pre-asserted
+    knowledge scenarios (correction, duplicate) must not — their correct
+    propose outcome is a no-op."""
+
+    def setUp(self):
+        sys.path.insert(0, str(REPO / "benchmarks/agent"))
+        from run_acq_v2 import apply_pass  # noqa: E402
+        self.apply_pass = apply_pass
+        sys.path.pop(0)
+
+    def test_positive_requires_commit(self):
+        self.assertTrue(self.apply_pass("positive", True, True))
+        self.assertFalse(self.apply_pass("positive", True, False))
+        self.assertFalse(self.apply_pass("positive", False, True))
+
+    def test_correction_does_not_gate_on_commit(self):
+        # correction cells pre-assert the corrected edge: the model's
+        # no-op (duplicate reconcile / abstention) is correct behavior
+        self.assertTrue(self.apply_pass("correction", True, False))
+
+    def test_duplicate_does_not_gate_on_commit(self):
+        self.assertTrue(self.apply_pass("duplicate", True, False))
+
+    def test_stale_or_wrong_answer_fails_everywhere(self):
+        for scenario in ("positive", "correction", "duplicate"):
+            self.assertFalse(self.apply_pass(scenario, False, True))
+
+
 class CommitCandidateTests(unittest.TestCase):
     """The bounded candidate-aided acquisition path."""
 

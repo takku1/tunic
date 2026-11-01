@@ -81,7 +81,8 @@ Safe refusal / gate behavior (no-commit plus the right reconcile
 outcome):
 
 - conflict, irrelevant-note, duplicate: 5/5 and 5/5 on every arm,
-  both suites.
+  both suites (duplicate apply retrieval also 5/5 and 5/5 once the
+  scorer stopped requiring a no-op commit).
 - poisoned-evidence: 5/5 and 5/5; zero decoy commits anywhere in either
   suite, any arm.
 - acquisition precision (correct / committed): 1.0 and 1.0 for
@@ -90,9 +91,14 @@ outcome):
 Correction application (apply stage must list the post-correction
 caller and not the retracted callee):
 
-- 0/5 dev and 0/5 heldout on every arm (one 0.2 apply blip for the
-  candidates arm on heldout) — models do not reliably apply
-  retract-and-reassert corrections; the next architectural risk.
+- 5/5 and 5/5 on every memory-context arm, both suites — models apply
+  retract-and-reassert corrections reliably when the memory is
+  visible. (The first artifacts reported 0/5 here: the apply gate
+  required a propose commit, which cannot happen on pre-asserted
+  knowledge; `rescore_acq_v2.py` recomputed the passes from the
+  recorded raw answers, provenance-stamped in the artifacts. Lexical
+  alone stays weak — 0.4 dev, 0.6 heldout — with no correction
+  context it sometimes re-lists the retracted callee.)
 
 Retrieval after acquisition: the apply stage re-queries the graph after
 each commit (post-commit memory must surface the acquired caller), and

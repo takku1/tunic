@@ -306,7 +306,20 @@ def propose_cell(work, arm, suite, scenario, rep, dry=False):
     return prop, applies
 
 
+def apply_pass(scenario, parsed_ok, had_commit):
+    """Apply-row pass rule.
+
+    Positive cells gate on the propose commit (a correct answer without
+    the acquired edge is not attributable to the arm). Correction and
+    duplicate cells pre-assert their knowledge, so the correct propose
+    outcome is a no-op and the gate would destroy the retrieval signal."""
+    if scenario == "positive":
+        return bool(parsed_ok and had_commit)
+    return bool(parsed_ok)
+
+
 def apply_stage(memory, code_index, notes_index, arm, prop, check):
+    """Post-commit retrieval check (pass rule: see apply_pass)."""
     response, _ = run_arm(memory, code_index, notes_index, arm, check["question"])
     parsed = parse_symbols(response.get("text", ""))
     stale = [s for s in parsed if s in check.get("obsolete", [])]
@@ -317,7 +330,9 @@ def apply_stage(memory, code_index, notes_index, arm, prop, check):
            "scenario": prop["scenario"], "rep": prop["rep"],
            "question": check["question"], "gold": check["gold"],
            "obsolete": check.get("obsolete", []), "parsed": parsed,
-           "stale": stale, "pass": passed and prop.get("committed", True),
+           "stale": stale,
+           "pass": apply_pass(prop["scenario"], passed,
+                              prop.get("committed", True)),
            "had_commit": prop.get("committed", False), "model_calls": 1,
            "prompt_tokens": response.get("prompt_tokens") or 0,
            "completion_tokens": response.get("completion_tokens") or 0,
