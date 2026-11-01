@@ -252,6 +252,19 @@ def _collect_code(sources, symbols, assertions, diagnostics):
                     del symbols[key]
                 continue
             s["classes"][node.name] = methods
+            # The class itself is an entity: constructor-call candidates
+            # need a resolvable target, and classes were previously
+            # invisible in the graph (methods only). NamedTuple-style
+            # declarations (annotation-only bodies) become visible here.
+            # kind "class" marks records the mention/claim passes must
+            # skip: document-mention semantics for classes are a later
+            # decision, and frozen precision behavior must not move.
+            key = s["path"] + "::" + node.name
+            start, end = _span(s["data"], node)
+            symbols[key] = {"key": key, "path": s["path"], "name": node.name,
+                            "source": s["id"], "line": node.lineno,
+                            "start": start, "end": end, "kind": "class",
+                            "is_test": Path(s["path"]).name.startswith("test_")}
         if (any(isinstance(n, ast.Lambda) for n in ast.walk(tree))
                 or any(isinstance(n, ast.ClassDef) for statement in tree.body
                        if isinstance(statement, (ast.FunctionDef, ast.AsyncFunctionDef))
@@ -454,6 +467,39 @@ def _class_attribute_bindings(s):
     return bindings
 
 
+def _resolve_class_symbol(s, name, imports, modules, local, star):
+    """Resolve a bare class name to its symbol key, or None.
+
+    Local classes resolve through the source's own table; imported ones
+    (aliases included, via the shared import map) through single-candidate
+    module lookups. Shadowed, bound, or star-imported names resolve to
+    None — a class invocation is only a candidate when the class
+    definition is verifiably in the indexed workspace.
+    """
+    if name in local or name in s["bindings"] or star:
+        return None
+    if name in s["classes"]:
+        return s["path"] + "::" + name, "local"
+    if name in imports:
+        parts = imports[name].split(".")
+        candidates = modules.get(".".join(parts[:-1]), [])
+        if len(candidates) == 1:
+            record = candidates[0]
+            # Class membership must be positive: a name that merely
+            # resolves to a module is not a class (functions and
+            # aliases share the same import table).
+            class_names = set(record.get("classes", {})) | set(record.get("class_names", ()))
+            if parts[-1] not in class_names:
+                return None
+            methods = record.get("classes", {}).get(parts[-1]) or {}
+            if methods:
+                return next(iter(methods.values())).rsplit(".", 1)[0], "import"
+            path = record.get("path")
+            if path is not None:
+                return path + "::" + parts[-1], "import"
+    return None
+
+
 def _constructor_bindings(s, body, imports, modules, local, star):
     """Variables provably bound once to a resolvable constructor call.
 
@@ -586,6 +632,27 @@ def _resolve_code(sources, modules, symbols, assertions, diagnostics, known_site
                                         emitted = True
                 if emitted:
                     continue
+                if target is None and isinstance(call.func, ast.Name):
+                    resolved = _resolve_class_symbol(
+                        s, call.func.id, imports, modules, local, star)
+                    if resolved is not None and resolved[0] in symbols:
+                        class_key, how = resolved
+                        definition = symbols[class_key]
+                        call_ref = {"source": s["id"], "start": start, "end": end}
+                        proposition = {"relation": "depends_on", "caller": caller,
+                                       "callee": class_key, "via": "constructor_call"}
+                        assertion = {"proposition": proposition, "source": s["id"],
+                                     "start": start, "end": end,
+                                     "resolution": {"expression": expression,
+                                                    "rule": "constructor_call_candidate_v1",
+                                                    "support": [{k: definition[k] for k in ("source", "start", "end")}]},
+                                     "derivation": {"constructor": call.func.id,
+                                                    "class": class_key, "how": how,
+                                                    "call": call_ref},
+                                     "producer": PROFILE, "status": "proposed"}
+                        assertion["id"] = identity("assertion", assertion)
+                        assertions.append(assertion)
+                        continue
                 if target:
                     proposition = {"relation": "static_call", "caller": caller, "callee": target}
                     definition = symbols[target]
@@ -1018,7 +1085,9 @@ def _build_claims(sources, symbols, assertions, diagnostics, text_ids=None):
     """
     if text_ids is None:
         text_ids = {s["id"] for s in sources if s.get("text")}
-    code_keys = sorted(key for key, record in symbols.items() if record["source"] not in text_ids)
+    code_keys = sorted(key for key, record in symbols.items()
+                    if record["source"] not in text_ids
+                    and record.get("kind") != "class")
 
     def _resolve_reference(ref):
         if ref in symbols:
@@ -1176,7 +1245,7 @@ def _code_leaf_names(symbols, text_ids):
     """Mappable bare leaves over code symbols: {leaf: [keys]}."""
     leaf_names = {}
     for key, record in symbols.items():
-        if record["source"] in text_ids:
+        if record["source"] in text_ids or record.get("kind") == "class":
             continue
         leaf = record["name"].split(".")[-1]
         if len(leaf) >= 2:
@@ -1218,7 +1287,9 @@ def _build_exact_mentions(sources, symbols, assertions, claim_spans, seen, text_
     """Populate exact `path::symbol` mention assertions in source order."""
     if text_ids is None:
         text_ids = {s["id"] for s in sources if s.get("text")}
-    code_keys = sorted(key for key, record in symbols.items() if record["source"] not in text_ids)
+    code_keys = sorted(key for key, record in symbols.items()
+                    if record["source"] not in text_ids
+                    and record.get("kind") != "class")
     seen_mentions = seen
     for s in sources:
         if not s.get("text"):
@@ -1393,7 +1464,9 @@ def _build_bare_mentions(sources, symbols, assertions, diagnostics, claim_spans,
     """
     if text_ids is None:
         text_ids = {s["id"] for s in sources if s.get("text")}
-    code_keys = sorted(key for key, record in symbols.items() if record["source"] not in text_ids)
+    code_keys = sorted(key for key, record in symbols.items()
+                    if record["source"] not in text_ids
+                    and record.get("kind") != "class")
     seen_mentions = seen
     leaf_names = _code_leaf_names(symbols, text_ids)
     if doc_freq is None:

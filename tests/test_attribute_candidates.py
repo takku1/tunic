@@ -62,12 +62,16 @@ class AttributeCandidateTests(unittest.TestCase):
         self.assertEqual(candidate["derivation"]["receiver"], "t")
         self.assertEqual(candidate["derivation"]["class"], "Tool")
         self.assertEqual(candidate["derivation"]["method"], "work")
-        # the method-call gap is bridged; the only remaining diagnostic
-        # is the bare constructor call itself (the separate,
-        # out-of-scope class-extraction gap)
+        # both gaps are bridged: the method call and the bare
+        # constructor call emit candidates, so no unresolved_call
+        # diagnostic remains
         calls = [e for e in memory.frontier_list(status="open")
                  if e["failure"] == "ingest_unresolved_call"]
-        self.assertEqual({e["target"] for e in calls}, {"Tool"})
+        self.assertEqual(calls, [])
+        ctors = [c for c in memory.candidates()["candidates"]
+                 if c.get("via") == "constructor_call"]
+        self.assertEqual([(c["caller"], c["callee"]) for c in ctors],
+                         [("user.py::drive", "tool.py::Tool")])
 
     def test_local_class_receiver(self):
         (self.root / "local.py").write_bytes(
@@ -149,7 +153,9 @@ class AttributeNegativeControlTests(unittest.TestCase):
             "    if flag:\n        t = None\n"
             "    return t.work(value)\n")
         self.assertEqual(candidates, [])
-        self.assertEqual({e["target"] for e in calls}, {"Tool", "t.work"})
+        # the reassigned receiver stays unresolved; the constructor call
+        # is a candidate, not a diagnostic
+        self.assertEqual({e["target"] for e in calls}, {"t.work"})
 
     def test_unknown_receiver_proposes_nothing(self):
         candidates, calls = self._candidates_and_diagnostics(
@@ -167,7 +173,8 @@ class AttributeNegativeControlTests(unittest.TestCase):
             "    t = Tool()\n"
             "    return t.teleport(value)\n")
         self.assertEqual(candidates, [])
-        self.assertEqual({e["target"] for e in calls}, {"Tool", "t.teleport"})
+        # unknown method stays unresolved; the constructor call is a candidate
+        self.assertEqual({e["target"] for e in calls}, {"t.teleport"})
 
     def test_parameter_receiver_proposes_nothing(self):
         candidates, calls = self._candidates_and_diagnostics(
@@ -184,7 +191,8 @@ class AttributeNegativeControlTests(unittest.TestCase):
             "    t = Tool()\n"
             "    return early\n")
         self.assertEqual(candidates, [])
-        self.assertEqual({e["target"] for e in calls}, {"t.work", "Tool"})
+        # use-before-binding stays unresolved; the constructor is a candidate
+        self.assertEqual({e["target"] for e in calls}, {"t.work"})
 
     def test_shadowed_constructor_proposes_nothing(self):
         candidates, calls = self._candidates_and_diagnostics(
@@ -289,8 +297,8 @@ class SelfAttributeCandidateTests(unittest.TestCase):
         self.assertEqual(candidate["callee"], "tool.py::Tool.work")
         self.assertEqual(candidate["derivation"]["receiver"], "self.engine")
         self.assertEqual(candidate["derivation"]["class"], "Tool")
-        # method-call gap bridged; only the constructor call stays open
-        self.assertEqual(calls, {"Tool"})
+        # both gaps bridged: the constructor call is now a candidate too
+        self.assertEqual(calls, set())
 
     def test_init_bound_attribute_used_later_in_init(self):
         (self.root / "robot.py").write_bytes(

@@ -1,0 +1,134 @@
+{
+  "after": {
+    "class_symbols": 383,
+    "constructor_call_candidates": 153,
+    "full_ingest_seconds_this_machine": 47.7,
+    "tickresult_namedtuple_recovered": true,
+    "triage": {
+      "active_clusters": 125,
+      "clusters": 125,
+      "queues": {
+        "blocked": 17,
+        "investigable": 108
+      },
+      "top": [
+        {
+          "key": [
+            "unresolved_call",
+            "src/pyquifer/identity/strange_attractor.py"
+          ],
+          "occurrences": 297,
+          "queue": "investigable"
+        },
+        {
+          "key": [
+            "unresolved_call",
+            "tests/benchmarks/bench_penrose_chess.py"
+          ],
+          "occurrences": 270,
+          "queue": "investigable"
+        },
+        {
+          "key": [
+            "unresolved_call",
+            "src/pyquifer/embodiment/ecology.py"
+          ],
+          "occurrences": 249,
+          "queue": "investigable"
+        },
+        {
+          "key": [
+            "unresolved_call",
+            "src/pyquifer/runtime/cycle.py"
+          ],
+          "occurrences": 237,
+          "queue": "investigable"
+        },
+        {
+          "key": [
+            "unresolved_call",
+            "src/pyquifer/embodiment/social.py"
+          ],
+          "occurrences": 234,
+          "queue": "investigable"
+        }
+      ]
+    },
+    "unresolved_call_diagnostics": 10829
+  },
+  "audited_sample": {
+    "candidates_read": 8,
+    "false_positives": 0
+  },
+  "baseline": {
+    "class_symbols": 0,
+    "constructor_call_candidates": 0,
+    "prior_after_state": "benchmarks/frontier/closures/pyquifer-attrdispatch-v1.json",
+    "unresolved_call_diagnostics": 10982
+  },
+  "closed_at": "2026-11-01T09:34:43Z",
+  "closure": {
+    "inspected": [
+      {
+        "pattern": "MultiScaleFractalPersonality.__init__ constructs three PersonalityAttractor instances (fast/medium/slow) \u2014 in the very file the v1.4 triage recommendation named as the top hotspot",
+        "site": "src/pyquifer/identity/strange_attractor.py lines 520-522",
+        "verified": "source read"
+      },
+      {
+        "pattern": "InterventionalQuery.__init__ constructs DoOperator(dim, num_variables)",
+        "site": "src/pyquifer/cognition/reasoning/causal_reasoning.py line 481",
+        "verified": "source read"
+      }
+    ],
+    "predicates": [
+      {
+        "callee": "src/pyquifer/identity/strange_attractor.py::PersonalityAttractor",
+        "caller": "src/pyquifer/identity/strange_attractor.py::MultiScaleFractalPersonality.__init__",
+        "type": "candidate_present",
+        "via": "constructor_call"
+      },
+      {
+        "callee": "src/pyquifer/cognition/reasoning/causal_reasoning.py::DoOperator",
+        "caller": "src/pyquifer/cognition/reasoning/causal_reasoning.py::InterventionalQuery.__init__",
+        "type": "candidate_present",
+        "via": "constructor_call"
+      }
+    ]
+  },
+  "coverage_note": "The remaining 10,829 unresolved calls are NOT 10,829 missed internal relationships: most are third-party APIs, builtins, and unsupported dynamic behavior. Verified-internal-coverage requires a representative audit sample as the denominator, not raw Frontier counts.",
+  "id": "pyquifer-constructors-v1",
+  "replay": [
+    {
+      "detail": "src/pyquifer/identity/strange_attractor.py::MultiScaleFractalPersonality.__init__ -> src/pyquifer/identity/strange_attractor.py::PersonalityAttractor via constructor_call: 3 proposed candidate(s)",
+      "passed": true,
+      "predicate": {
+        "callee": "src/pyquifer/identity/strange_attractor.py::PersonalityAttractor",
+        "caller": "src/pyquifer/identity/strange_attractor.py::MultiScaleFractalPersonality.__init__",
+        "type": "candidate_present",
+        "via": "constructor_call"
+      }
+    },
+    {
+      "detail": "src/pyquifer/cognition/reasoning/causal_reasoning.py::InterventionalQuery.__init__ -> src/pyquifer/cognition/reasoning/causal_reasoning.py::DoOperator via constructor_call: 1 proposed candidate(s)",
+      "passed": true,
+      "predicate": {
+        "callee": "src/pyquifer/cognition/reasoning/causal_reasoning.py::DoOperator",
+        "caller": "src/pyquifer/cognition/reasoning/causal_reasoning.py::InterventionalQuery.__init__",
+        "type": "candidate_present",
+        "via": "constructor_call"
+      }
+    }
+  ],
+  "repo": {
+    "commit": "1eb4a95",
+    "name": "PyQuifer"
+  },
+  "scope_limits": [
+    "decorated classes remain unsupported (40 unsupported_class diagnostics on PyQuifer): a decorator may replace the callable",
+    "typing.NamedTuple(...) factory-call syntax is NOT implemented (separate rule, deferred)",
+    "a constructor candidate claims the construction relationship only \u2014 no __init__ dispatch is implied",
+    "metaclasses, monkey-patching, dynamic imports, and runtime mutation are outside the static profile"
+  ],
+  "snapshot": "snapshot:a1488487842e5d71f325b5d0dec7548ab63b766d9a9274d9363868b68138eb3e",
+  "tunic_commit": "19f7438"
+}

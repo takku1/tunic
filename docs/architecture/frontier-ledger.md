@@ -281,6 +281,24 @@ required evidence (read path for the future investigation scheduler).
   (never guessed) and constructor calls are the separate
   class-extraction problem — neither is counted as an
   attribute-dispatch success.
+- v1.6 (implemented): bare constructor-call candidates
+  (`constructor_call_candidate_v1`) and class-symbol coverage. A bare
+  call resolving unambiguously to a workspace class (local or imported,
+  aliases via the shared import map) proposes a depends_on candidate
+  from caller to the CLASS symbol — construction relationship only, no
+  `__init__` dispatch claim. Class declarations (ordinary and
+  NamedTuple-style annotation-only bodies) are graph symbols of
+  `kind "class"`, invisible to the mention/claim passes so frozen
+  precision behavior cannot move. Positive class membership is
+  required for imports (a name resolving to a module is not a class).
+  Third audited real-repo closure:
+  `benchmarks/frontier/closures/pyquifer-constructors-v1.json` — 153
+  candidates, 383 class symbols, TickResult recovered, 10,982 -> 10,829
+  unresolved-call diagnostics; two source-inspected closures in the
+  v1.4-triage-named top hotspot (strange_attractor.__init__ ->
+  PersonalityAttractor). Scope limits recorded in the artifact:
+  decorated classes unsupported, `typing.NamedTuple(...)` factory syntax
+  not implemented, metaclasses/dynamic mutation outside the profile.
 - Later: MochiOS-scheduled investigation, procedural learning records,
   sandboxed system-improvement proposals.
 

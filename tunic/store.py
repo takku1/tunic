@@ -461,18 +461,27 @@ class GraphStore:
                 continue
             module = module_of(path)
             members = modules.setdefault(module, [])
-            functions, classes = {}, {}
+            functions, classes, class_names = {}, {}, set()
             for symbol in manifest["symbols"]:
                 if symbol.get("path") != path:
                     continue
                 name = symbol.get("name", "")
+                if symbol.get("kind") == "class":
+                    # class entities are resolved by _resolve_class_symbol,
+                    # not callable functions; their keys are derived from
+                    # path + name, so they need no table entry here — but
+                    # the name set must be present so import resolution
+                    # can distinguish a method-less class from a function.
+                    class_names.add(name)
+                    continue
                 if "." not in name:
                     functions[name] = symbol["key"]
                 else:
                     head, _, leaf = name.partition(".")
                     classes.setdefault(head, {})[leaf] = symbol["key"]
-            members.append({"module": module, "functions": functions,
-                            "classes": classes})
+            members.append({"module": module, "path": path,
+                            "functions": functions, "classes": classes,
+                            "class_names": sorted(class_names)})
         for record in records.values():
             modules.setdefault(record["module"], []).append(record)
         for path in unparsed:
