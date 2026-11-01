@@ -298,13 +298,100 @@ def _import_map(s, tree):
     return imports, import_evidence, star
 
 
-def _resolve_code(sources, modules, symbols, assertions, diagnostics):
+def _resolve_call_target(s, call, imports, modules, local, star, self_class, rebound):
+    """Resolve a call's callee to a symbol key, or None.
+
+    The unshadowed-static-binding rules, shared by pass-1 call resolution
+    and pass-2 callback-candidate emission so both see identical bindings.
+    Returns (target, expression, head).
+    """
+    name = _dotted(call.func)
+    expression = name
+    head = name.split(".")[0] if name else None
+    constructor = None
+    if isinstance(call.func, ast.Attribute) and isinstance(call.func.value, ast.Call):
+        base = call.func.value.func
+        if isinstance(base, ast.Name):
+            constructor = base.id
+            expression = constructor + "()." + call.func.attr
+    target = None
+    if name and (head not in local or head in ("self", "cls")) \
+            and head not in s["bindings"] and not star:
+        if "." not in name and name in s["functions"]:
+            target = s["functions"][name]
+        elif (self_class is not None and head in ("self", "cls") and head not in rebound
+                and name.count(".") == 1):
+            target = s["classes"][self_class].get(name.split(".")[1])
+        elif head in s["classes"] and name.count(".") == 1:
+            target = s["classes"][head].get(name.split(".")[1])
+        elif head in imports:
+            full = imports[head] + name[len(head):]
+            module, _, function = full.rpartition(".")
+            candidates = modules.get(module, [])
+            if len(candidates) == 1:
+                target = candidates[0].get("functions", {}).get(function)
+            if target is None and len(full.split(".")) >= 3:
+                parts = full.split(".")
+                candidates = modules.get(".".join(parts[:-2]), [])
+                if len(candidates) == 1:
+                    target = candidates[0].get("classes", {}).get(parts[-2], {}).get(parts[-1])
+    if target is None and constructor is not None and constructor not in local \
+            and constructor not in s["bindings"] and not star:
+        method = call.func.attr
+        if constructor in s["classes"]:
+            target = s["classes"][constructor].get(method)
+        elif constructor in imports:
+            parts = imports[constructor].split(".")
+            if len(parts) >= 2:
+                candidates = modules.get(".".join(parts[:-1]), [])
+                if len(candidates) == 1:
+                    target = candidates[0].get("classes", {}).get(parts[-1], {}).get(method)
+    return target, expression, head
+
+
+def _resolve_bare_function(s, name, imports, modules):
+    """Resolve a bare function name (module-level or imported) to a key."""
+    if name in s["functions"]:
+        return s["functions"][name]
+    if name in imports:
+        module, _, function = imports[name].rpartition(".")
+        candidates = modules.get(module, [])
+        if len(candidates) == 1:
+            return candidates[0].get("functions", {}).get(function)
+    return None
+
+
+def _code_targets(s):
+    """Top-level functions and methods of one parsed code source."""
+    targets = []
+    for node in s["tree"].body:
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name in s["functions"]:
+            targets.append((s["functions"][node.name], node, None))
+        elif isinstance(node, ast.ClassDef) and node.name in s["classes"]:
+            for item in node.body:
+                if (isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef))
+                        and item.name in s["classes"][node.name]):
+                    targets.append((s["classes"][node.name][item.name], item, node.name))
+    return targets
+
+
+def _resolve_code(sources, modules, symbols, assertions, diagnostics, known_sites=()):
     """Resolve imports and static calls for parsed code sources.
 
     Reads the module table and the accumulated symbol table; appends call
     assertions and resolution diagnostics. Accepts any source subset: files
     without trees are skipped, so callers pass only the files to resolve.
+
+    Pass 1 resolves static calls and collects callback sites (parameter
+    names invoked directly inside the function body). Pass 2 emits proposed
+    depends_on candidates with derivation chains for call sites that pass
+    a statically resolvable function into a known callback parameter.
+    Candidates never traverse: every compiler path requires
+    asserted_in_source. known_sites carries callback-site facts from kept
+    diagnostics across refresh so an unchanged callback definition still
+    matches newly re-parsed callers (rebuild equivalence).
     """
+    callback_sites = list(known_sites)
     for s in sources:
         tree = s["tree"]
         if tree is None:
@@ -314,16 +401,7 @@ def _resolve_code(sources, modules, symbols, assertions, diagnostics):
             for node in tree.body:
                 if isinstance(node, ast.ImportFrom) and any(a.name == "*" for a in node.names):
                     diagnostics.append({"path": s["path"], "line": node.lineno, "kind": "star_import"})
-        targets = []
-        for node in tree.body:
-            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name in s["functions"]:
-                targets.append((s["functions"][node.name], node, None))
-            elif isinstance(node, ast.ClassDef) and node.name in s["classes"]:
-                for item in node.body:
-                    if (isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef))
-                            and item.name in s["classes"][node.name]):
-                        targets.append((s["classes"][node.name][item.name], item, node.name))
-        for caller, node, self_class in targets:
+        for caller, node, self_class in _code_targets(s):
             local = set(_bound_names(ast.Module(body=node.body, type_ignores=[])))
             # A recursive function name can itself be shadowed by a parameter/local.
             argnames = {a.arg for a in ast.walk(node.args) if isinstance(a, ast.arg)}
@@ -333,55 +411,17 @@ def _resolve_code(sources, modules, symbols, assertions, diagnostics):
                    for statement in node.body for n in ast.walk(statement)):
                 diagnostics.append({"path": s["path"], "line": node.lineno, "kind": "nested_scope"})
                 continue
+            ordered_params = [a.arg for a in node.args.posonlyargs] + [a.arg for a in node.args.args]
             body = ast.Module(body=node.body, type_ignores=[])
             for call in (n for n in ast.walk(body) if isinstance(n, ast.Call)):
-                name = _dotted(call.func)
-                target = None
-                expression = name
-                head = name.split(".")[0] if name else None
-                constructor = None
-                if isinstance(call.func, ast.Attribute) and isinstance(call.func.value, ast.Call):
-                    base = call.func.value.func
-                    if isinstance(base, ast.Name):
-                        constructor = base.id
-                        expression = constructor + "()." + call.func.attr
-                if name and (head not in local or head in ("self", "cls")) \
-                        and head not in s["bindings"] and not star:
-                    if "." not in name and name in s["functions"]:
-                        target = s["functions"][name]
-                    elif (self_class is not None and head in ("self", "cls") and head not in rebound
-                            and name.count(".") == 1):
-                        target = s["classes"][self_class].get(name.split(".")[1])
-                    elif head in s["classes"] and name.count(".") == 1:
-                        target = s["classes"][head].get(name.split(".")[1])
-                    elif head in imports:
-                        full = imports[head] + name[len(head):]
-                        module, _, function = full.rpartition(".")
-                        candidates = modules.get(module, [])
-                        if len(candidates) == 1:
-                            target = candidates[0].get("functions", {}).get(function)
-                        if target is None and len(full.split(".")) >= 3:
-                            parts = full.split(".")
-                            candidates = modules.get(".".join(parts[:-2]), [])
-                            if len(candidates) == 1:
-                                target = candidates[0].get("classes", {}).get(parts[-2], {}).get(parts[-1])
-                if target is None and constructor is not None and constructor not in local \
-                        and constructor not in s["bindings"] and not star:
-                    method = call.func.attr
-                    if constructor in s["classes"]:
-                        target = s["classes"][constructor].get(method)
-                    elif constructor in imports:
-                        parts = imports[constructor].split(".")
-                        if len(parts) >= 2:
-                            candidates = modules.get(".".join(parts[:-1]), [])
-                            if len(candidates) == 1:
-                                target = candidates[0].get("classes", {}).get(parts[-1], {}).get(method)
+                target, expression, head = _resolve_call_target(
+                    s, call, imports, modules, local, star, self_class, rebound)
                 start, end = _span(s["data"], call)
                 if target:
                     proposition = {"relation": "static_call", "caller": caller, "callee": target}
                     definition = symbols[target]
                     support = [{k:definition[k] for k in ("source", "start", "end")}]
-                    owner = head if name else constructor
+                    owner = head if head else None
                     if owner in import_evidence:
                         support.insert(0, import_evidence[owner])
                     assertion = {"proposition": proposition, "source": s["id"], "start": start, "end": end,
@@ -390,8 +430,78 @@ def _resolve_code(sources, modules, symbols, assertions, diagnostics):
                     assertion["id"] = identity("assertion", assertion)
                     assertions.append(assertion)
                 else:
-                    diagnostics.append({"path": s["path"], "caller": caller, "line": call.lineno,
-                                        "start": start, "end": end, "kind": "unresolved_call", "expression": expression})
+                    diagnostic = {"path": s["path"], "caller": caller, "line": call.lineno,
+                                  "start": start, "end": end, "kind": "unresolved_call", "expression": expression}
+                    if isinstance(call.func, ast.Name) and call.func.id in argnames \
+                            and call.func.id in ordered_params:
+                        diagnostic["parameter"] = call.func.id
+                        diagnostic["index"] = ordered_params.index(call.func.id)
+                        callback_sites.append({"callee": caller, "parameter": call.func.id,
+                                               "index": diagnostic["index"], "path": s["path"],
+                                               "binding": {"source": s["id"], "start": start, "end": end}})
+                    diagnostics.append(diagnostic)
+    _emit_callback_candidates(sources, modules, callback_sites, assertions)
+
+
+def _emit_callback_candidates(sources, modules, callback_sites, assertions):
+    """Propose depends_on edges for resolvable callback arguments.
+
+    For every call to a function with a known callback site, resolve the
+    positional argument at the callback parameter index; when it is an
+    unshadowed bare name bound to a module-level or imported function,
+    emit a proposed candidate (via callback_parameter) with the binding
+    and call derivation chain. Unresolvable, shadowed, keyword-only,
+    non-name, and self-recursive arguments propose nothing — negative
+    controls keep the candidate set honest.
+    """
+    if not callback_sites:
+        return
+    by_callee = {}
+    for site in callback_sites:
+        by_callee.setdefault(site["callee"], []).append(site)
+    for s in sources:
+        tree = s["tree"]
+        if tree is None:
+            continue
+        imports, _import_evidence, star = _import_map(s, tree)
+        for _caller, node, self_class in _code_targets(s):
+            local = set(_bound_names(ast.Module(body=node.body, type_ignores=[])))
+            argnames = {a.arg for a in ast.walk(node.args) if isinstance(a, ast.arg)}
+            local.update(argnames)
+            rebound = local - argnames
+            if self_class is None and any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda))
+                   for statement in node.body for n in ast.walk(statement)):
+                continue
+            body = ast.Module(body=node.body, type_ignores=[])
+            for call in (n for n in ast.walk(body) if isinstance(n, ast.Call)):
+                target, _expression, _head = _resolve_call_target(
+                    s, call, imports, modules, local, star, self_class, rebound)
+                if target is None or target not in by_callee:
+                    continue
+                start, end = _span(s["data"], call)
+                for site in by_callee[target]:
+                    if site["index"] >= len(call.args):
+                        continue
+                    arg = call.args[site["index"]]
+                    if not isinstance(arg, ast.Name):
+                        continue
+                    if arg.id in local or arg.id in s["bindings"] or star:
+                        continue
+                    resolved = _resolve_bare_function(s, arg.id, imports, modules)
+                    if resolved is None or resolved == site["callee"]:
+                        continue
+                    call_ref = {"source": s["id"], "start": start, "end": end}
+                    proposition = {"relation": "depends_on", "caller": site["callee"],
+                                   "callee": resolved, "via": "callback_parameter"}
+                    assertion = {"proposition": proposition, "source": s["id"], "start": start, "end": end,
+                                 "resolution": {"expression": arg.id,
+                                                "rule": "callback_parameter_candidate_v1",
+                                                "support": [site["binding"], call_ref]},
+                                 "derivation": {"parameter": site["parameter"], "index": site["index"],
+                                                "binding": site["binding"], "call": call_ref},
+                                 "producer": PROFILE, "status": "proposed"}
+                    assertion["id"] = identity("assertion", assertion)
+                    assertions.append(assertion)
 
 
 def _dispatch_target(value, record, imports, modules):

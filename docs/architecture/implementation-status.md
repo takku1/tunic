@@ -1,7 +1,7 @@
 # Tunic implementation status (single authoritative tracker)
 
 Date: 2026-10-31. Scope: local reference implementation on `main`.
-Full suite: 268 tests green (`python -m unittest discover -s tests`, ~17 s).
+Full suite: 278 tests green (`python -m unittest discover -s tests`, ~17 s).
 This file records what is shipped, tested, and demonstrated — not what the
 architecture documents propose. For target architecture, see
 [overview.md](overview.md); for frozen evidence, see the benchmark
@@ -20,7 +20,7 @@ capabilities land.
 
 | Subsystem | Shipped and tested | Known limitations | Exit criteria |
 | --------- | ------------------ | ----------------- | ------------- |
-| Evidence ingestion and provenance | Python AST extraction (static profile v7: functions, methods, self/cls, imports) with byte-exact spans; doc mentions + typed claims; source digests, snapshots, manifest integrity; incremental refresh with rebuild-equivalence tests (`test_reference.py`, `test_incremental.py`, `test_refresh.py`) | Python only; dynamic dispatch (registry indirection, callbacks, attribute calls, `torch.__call__`) invisible; class-symbol gaps (e.g. `TickResult` NamedTuple missed on PyQuifer) | Callback/attribute candidate generation with negative controls; class extraction diagnostics |
+| Evidence ingestion and provenance | Python AST extraction (static profile v7: functions, methods, self/cls, imports) with byte-exact spans; doc mentions + typed claims; source digests, snapshots, manifest integrity; incremental refresh with rebuild-equivalence tests; callback-parameter candidates (proposed `depends_on` with binding/call derivation chains, negative controls for unresolvable/shadowed/keyword/non-name/self-recursive arguments, refresh-carried site facts, `callback_parameter_candidate_v1`; `test_callback_candidates.py`) (`test_reference.py`, `test_incremental.py`, `test_refresh.py`) | Python only; registry indirection yields candidates but attribute dispatch, bound-method arguments, and `torch.__call__`-style dunders stay invisible; class-symbol gaps (e.g. `TickResult` NamedTuple missed on PyQuifer) | Attribute-dispatch candidates; class extraction diagnostics; ACQ v2 measuring candidate-aided callback acquisition |
 | Semantic graph and truth maintenance | Typed assertions, bitemporal timeline, corrects/supersedes/retracts with support-minus-retraction arithmetic, dispute surfacing (`test_temporal.py`, `test_memory.py` correction tests) | Lazy re-exports and attribute-mediated relations have no relationship type; entity/ontology semantics unresolved | Relation vocabulary for re-export/attribute edges; merge/split identity rules |
 | Retrieval and evidence selection | Hybrid exact/name/lexical/semantic stages with RRF fusion, budgets, abstention; pinned local embeddings with persistent cache; opt-in selection layer with traces (`test_retrieval.py`, `test_selection.py`, `test_embedcache.py`, `test_precision.py`) | Dense/hybrid F1 trails BM25 (0.41 vs 0.61 on the 14-task semantic suite) while leading Recall@1/MRR; selection stays opt-in (frozen-suite wins not met); confident wrong answers on large repos (PyQuifer misses) | Selection wins a frozen suite; rank-based regression coverage; calibrated abstention |
 | Context compiler and typed IR | Versioned W1 IR, three traversal policies, trust-labeled rendering, truncation receipts (`test_eval.py`, `test_render_answer.py`, `test_policy_contract.py`) | Full target IR and richer derivations remain proposed | Portability checks for the full IR obligation set |

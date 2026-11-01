@@ -495,9 +495,22 @@ class GraphStore:
         _collect_code(collect_sources, symbols,
                       [], collect_diags)
         code_sources = [r for r in collect_sources if not r.get("text")]
+        # Callback-site facts from kept (unaffected-path) diagnostics:
+        # an unchanged callback definition must still match re-parsed
+        # callers. Affected paths re-discover their own sites from the
+        # fresh parse, so stale facts are never carried for them.
+        known_sites = [{"callee": d["caller"], "parameter": d["parameter"],
+                        "index": d["index"], "path": d["path"],
+                        "binding": {"source": fresh[d["path"]]["id"],
+                                    "start": d["start"], "end": d["end"]}}
+                       for d in manifest["diagnostics"]
+                       if d.get("kind") == "unresolved_call" and "parameter" in d
+                       and d.get("caller") and d.get("path") not in affected
+                       and d.get("path") in fresh]
         resolve_assertions, resolve_diags = [], []
         _resolve_code(code_sources, modules, symbols,
-                      resolve_assertions, resolve_diags)
+                      resolve_assertions, resolve_diags,
+                      known_sites=known_sites)
         _build_dispatch(code_sources, modules, symbols,
                         resolve_assertions, resolve_diags,
                         invalid_tables=dispatch_invalid)
