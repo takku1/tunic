@@ -380,6 +380,80 @@ def _class_methods(s, name, imports, modules, local, star):
     return None
 
 
+def _emit_attribute_candidate(s, symbols, assertions, caller, call, callee,
+                              class_name, receiver_label, binding, constructor):
+    """Emit one proposed attribute-dispatch candidate with a derivation chain.
+
+    Shared by local-variable receivers and self-attribute receivers. The
+    receiver type is proven by a single constructor binding: a candidate
+    is emitted, never an assertion — pending verification through the
+    governed promotion path.
+    """
+    start, end = _span(s["data"], call)
+    definition = symbols[callee]
+    call_ref = {"source": s["id"], "start": start, "end": end}
+    proposition = {"relation": "depends_on", "caller": caller,
+                   "callee": callee, "via": "attribute_dispatch"}
+    assertion = {"proposition": proposition, "source": s["id"],
+                 "start": start, "end": end,
+                 "resolution": {"expression": _dotted(call.func),
+                                "rule": "known_receiver_method_candidate_v1",
+                                "support": [binding,
+                                            {k: definition[k] for k in ("source", "start", "end")}]},
+                 "derivation": {"receiver": receiver_label,
+                                "class": class_name,
+                                "binding": binding,
+                                "constructor": constructor,
+                                "method": call.func.attr,
+                                "call": call_ref},
+                 "producer": PROFILE, "status": "proposed"}
+    assertion["id"] = identity("assertion", assertion)
+    assertions.append(assertion)
+
+
+def _class_attribute_bindings(s):
+    """self.attr = C() facts: {(class, attr): (assign, value, method_node)}.
+
+    Raw single-assignment candidates are collected here; constructor
+    resolution happens at the call site with the assigning method's own
+    scope, and the (class, attr) pair must be assigned exactly once in
+    the class with the assignment inside __init__ (so the attribute is
+    bound before any method can run).
+    """
+    raw = {}
+    counts = {}
+    for _key, node, self_class in _code_targets(s):
+        if self_class is None:
+            continue
+        body = ast.Module(body=node.body, type_ignores=[])
+        for assign in (n for n in ast.walk(body) if isinstance(n, ast.Assign)):
+            if len(assign.targets) != 1:
+                continue
+            target = assign.targets[0]
+            if not (isinstance(target, ast.Attribute)
+                    and isinstance(target.value, ast.Name)
+                    and target.value.id == "self"):
+                continue
+            slot = (self_class, target.attr)
+            # count EVERY Store binding of the attribute: the
+            # single-binding proof fails on `self.x = C()` plus any
+            # other assignment (e.g. lazy `self.x = None`), even one
+            # whose value is not a call.
+            counts[slot] = counts.get(slot, 0) + 1
+            if not isinstance(assign.value, ast.Call):
+                continue
+            raw.setdefault(slot, []).append((node, assign, assign.value))
+    bindings = {}
+    for slot, assigns in raw.items():
+        if counts[slot] != 1:
+            continue
+        method_node, assign, value = assigns[0]
+        if method_node.name != "__init__":
+            continue
+        bindings[slot] = (assign, value, method_node)
+    return bindings
+
+
 def _constructor_bindings(s, body, imports, modules, local, star):
     """Variables provably bound once to a resolvable constructor call.
 
@@ -455,6 +529,7 @@ def _resolve_code(sources, modules, symbols, assertions, diagnostics, known_site
             for node in tree.body:
                 if isinstance(node, ast.ImportFrom) and any(a.name == "*" for a in node.names):
                     diagnostics.append({"path": s["path"], "line": node.lineno, "kind": "star_import"})
+        attr_bindings = _class_attribute_bindings(s)
         for caller, node, self_class in _code_targets(s):
             local = set(_bound_names(ast.Module(body=node.body, type_ignores=[])))
             # A recursive function name can itself be shadowed by a parameter/local.
@@ -473,39 +548,44 @@ def _resolve_code(sources, modules, symbols, assertions, diagnostics, known_site
                 target, expression, head = _resolve_call_target(
                     s, call, imports, modules, local, star, self_class, rebound)
                 start, end = _span(s["data"], call)
-                receiver = None
-                if target is None and ctor_bindings \
-                        and isinstance(call.func, ast.Attribute) \
-                        and isinstance(call.func.value, ast.Name):
-                    receiver = ctor_bindings.get(call.func.value.id)
-                if target is None and receiver is not None \
-                        and call.lineno > receiver["line"]:
-                    callee = receiver["methods"].get(call.func.attr)
-                    if callee is not None:
-                        # The receiver type is proven by the single
-                        # constructor binding: emit a candidate, not a
-                        # diagnostic — the gap is bridged, pending
-                        # verification. Never asserted automatically.
-                        definition = symbols[callee]
-                        call_ref = {"source": s["id"], "start": start, "end": end}
-                        proposition = {"relation": "depends_on", "caller": caller,
-                                       "callee": callee, "via": "attribute_dispatch"}
-                        assertion = {"proposition": proposition, "source": s["id"],
-                                     "start": start, "end": end,
-                                     "resolution": {"expression": expression,
-                                                    "rule": "known_receiver_method_candidate_v1",
-                                                    "support": [receiver["binding"],
-                                                                {k: definition[k] for k in ("source", "start", "end")}]},
-                                     "derivation": {"receiver": call.func.value.id,
-                                                    "class": receiver["class"],
-                                                    "binding": receiver["binding"],
-                                                    "constructor": receiver["constructor"],
-                                                    "method": call.func.attr,
-                                                    "call": call_ref},
-                                     "producer": PROFILE, "status": "proposed"}
-                        assertion["id"] = identity("assertion", assertion)
-                        assertions.append(assertion)
-                        continue
+                emitted = False
+                if target is None and isinstance(call.func, ast.Attribute):
+                    if isinstance(call.func.value, ast.Name):
+                        receiver = ctor_bindings.get(call.func.value.id)
+                        if receiver is not None and call.lineno > receiver["line"]:
+                            callee = receiver["methods"].get(call.func.attr)
+                            if callee is not None:
+                                _emit_attribute_candidate(
+                                    s, symbols, assertions, caller, call, callee,
+                                    receiver["class"], call.func.value.id,
+                                    receiver["binding"], receiver["constructor"])
+                                emitted = True
+                    elif self_class is not None and attr_bindings \
+                            and isinstance(call.func.value, ast.Attribute) \
+                            and isinstance(call.func.value.value, ast.Name) \
+                            and call.func.value.value.id == "self":
+                        fact = attr_bindings.get((self_class, call.func.value.attr))
+                        if fact is not None:
+                            assign, value, method_node = fact
+                            if node.name != "__init__" or call.lineno > assign.lineno:
+                                mlocal = {a.arg for a in ast.walk(method_node.args)
+                                          if isinstance(a, ast.arg)}
+                                methods = _class_methods(
+                                    s, value.func.id, imports, modules,
+                                    mlocal, star) if isinstance(value.func, ast.Name) else None
+                                if methods:
+                                    callee = methods.get(call.func.attr)
+                                    if callee is not None:
+                                        b_start, b_end = _span(s["data"], assign)
+                                        c_start, c_end = _span(s["data"], value)
+                                        _emit_attribute_candidate(
+                                            s, symbols, assertions, caller, call, callee,
+                                            value.func.id, "self." + call.func.value.attr,
+                                            {"source": s["id"], "start": b_start, "end": b_end},
+                                            {"source": s["id"], "start": c_start, "end": c_end})
+                                        emitted = True
+                if emitted:
+                    continue
                 if target:
                     proposition = {"relation": "static_call", "caller": caller, "callee": target}
                     definition = symbols[target]

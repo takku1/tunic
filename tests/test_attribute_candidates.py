@@ -251,6 +251,151 @@ class AttributeRegressionPredicateTests(unittest.TestCase):
             replay_regression_case(memory, {"predicate": {"type": "candidate_present"}})
 
 
+class SelfAttributeCandidateTests(unittest.TestCase):
+    """self.attr = C() in __init__ proves the receiver for self.attr.m()."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.root = self.tmp / "repo"
+        self.root.mkdir()
+        (self.root / "tool.py").write_bytes(
+            b"class Tool:\n"
+            b"    def work(self, value):\n        return value\n")
+        self.db = str(self.tmp / "memory.sqlite")
+
+    def _candidates_and_targets(self):
+        memory = Memory(self.db, self.root)
+        self.addCleanup(memory.close)
+        memory.ingest()
+        candidates = [c for c in memory.candidates()["candidates"]
+                      if c.get("via") == "attribute_dispatch"]
+        calls = {e["target"] for e in memory.frontier_list(status="open")
+                 if e["failure"] == "ingest_unresolved_call"}
+        return candidates, calls
+
+    def test_init_bound_attribute_in_other_method(self):
+        (self.root / "robot.py").write_bytes(
+            b"from tool import Tool\n\n\n"
+            b"class Robot:\n"
+            b"    def __init__(self):\n"
+            b"        self.engine = Tool()\n\n"
+            b"    def drive(self, value):\n"
+            b"        return self.engine.work(value)\n")
+        candidates, calls = self._candidates_and_targets()
+        self.assertEqual(len(candidates), 1)
+        candidate = candidates[0]
+        self.assertEqual(candidate["caller"], "robot.py::Robot.drive")
+        self.assertEqual(candidate["callee"], "tool.py::Tool.work")
+        self.assertEqual(candidate["derivation"]["receiver"], "self.engine")
+        self.assertEqual(candidate["derivation"]["class"], "Tool")
+        # method-call gap bridged; only the constructor call stays open
+        self.assertEqual(calls, {"Tool"})
+
+    def test_init_bound_attribute_used_later_in_init(self):
+        (self.root / "robot.py").write_bytes(
+            b"from tool import Tool\n\n\n"
+            b"class Robot:\n"
+            b"    def __init__(self):\n"
+            b"        self.engine = Tool()\n"
+            b"        self.engine.work(0)\n")
+        candidates, _calls = self._candidates_and_targets()
+        self.assertEqual([(c["caller"], c["callee"]) for c in candidates],
+                         [("robot.py::Robot.__init__", "tool.py::Tool.work")])
+
+    def test_doubly_assigned_attribute_proposes_nothing(self):
+        (self.root / "robot.py").write_bytes(
+            b"from tool import Tool\n\n\n"
+            b"class Robot:\n"
+            b"    def __init__(self, spare):\n"
+            b"        self.engine = Tool()\n"
+            b"        if spare:\n"
+            b"            self.engine = spare\n\n"
+            b"    def drive(self, value):\n"
+            b"        return self.engine.work(value)\n")
+        candidates, calls = self._candidates_and_targets()
+        self.assertEqual(candidates, [])
+        self.assertIn("self.engine.work", calls)
+
+    def test_lazy_assigned_attribute_proposes_nothing(self):
+        (self.root / "robot.py").write_bytes(
+            b"from tool import Tool\n\n\n"
+            b"class Robot:\n"
+            b"    def __init__(self):\n"
+            b"        self.ready = False\n\n"
+            b"    def _ensure(self):\n"
+            b"        self.engine = Tool()\n\n"
+            b"    def drive(self, value):\n"
+            b"        return self.engine.work(value)\n")
+        candidates, calls = self._candidates_and_targets()
+        self.assertEqual(candidates, [])
+        self.assertIn("self.engine.work", calls)
+
+    def test_non_call_assignment_proposes_nothing_and_does_not_crash(self):
+        # `self.engine = Tool` (no call) is not a constructor binding;
+        # PyQuifer ships this shape (passing a class object around).
+        (self.root / "robot.py").write_bytes(
+            b"from tool import Tool\n\n\n"
+            b"class Robot:\n"
+            b"    def __init__(self):\n"
+            b"        self.engine = Tool\n\n"
+            b"    def drive(self, value):\n"
+            b"        return self.engine.work(value)\n")
+        candidates, calls = self._candidates_and_targets()
+        self.assertEqual(candidates, [])
+        self.assertEqual(calls, {"self.engine.work"})
+
+    def test_unknown_attribute_constructor_proposes_nothing(self):
+        (self.root / "robot.py").write_bytes(
+            b"class Robot:\n"
+            b"    def __init__(self):\n"
+            b"        self.engine = make_tool()\n\n"
+            b"    def drive(self, value):\n"
+            b"        return self.engine.work(value)\n")
+        candidates, calls = self._candidates_and_targets()
+        self.assertEqual(candidates, [])
+        self.assertEqual(calls, {"make_tool", "self.engine.work"})
+
+    def test_unknown_attribute_method_proposes_nothing(self):
+        (self.root / "robot.py").write_bytes(
+            b"from tool import Tool\n\n\n"
+            b"class Robot:\n"
+            b"    def __init__(self):\n"
+            b"        self.engine = Tool()\n\n"
+            b"    def drive(self, value):\n"
+            b"        return self.engine.teleport(value)\n")
+        candidates, calls = self._candidates_and_targets()
+        self.assertEqual(candidates, [])
+        self.assertIn("self.engine.teleport", calls)
+
+    def test_use_before_assignment_in_init_proposes_nothing(self):
+        (self.root / "robot.py").write_bytes(
+            b"from tool import Tool\n\n\n"
+            b"class Robot:\n"
+            b"    def __init__(self, value):\n"
+            b"        early = self.engine.work(value)\n"
+            b"        self.engine = Tool()\n"
+            b"        self.found = early\n")
+        candidates, calls = self._candidates_and_targets()
+        self.assertEqual(candidates, [])
+        self.assertIn("self.engine.work", calls)
+
+    def test_other_class_attribute_does_not_leak(self):
+        # attribute bound in Robot must not resolve calls in another
+        # class that happens to use the same attribute name
+        (self.root / "robot.py").write_bytes(
+            b"from tool import Tool\n\n\n"
+            b"class Robot:\n"
+            b"    def __init__(self):\n"
+            b"        self.engine = Tool()\n\n\n"
+            b"class Drone:\n"
+            b"    def drive(self, value):\n"
+            b"        return self.engine.work(value)\n")
+        candidates, calls = self._candidates_and_targets()
+        self.assertEqual(candidates, [])
+        self.assertIn("self.engine.work", calls)
+
+
 class AttributeRefreshEquivalenceTests(unittest.TestCase):
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())

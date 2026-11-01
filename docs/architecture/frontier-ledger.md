@@ -268,10 +268,19 @@ required evidence (read path for the future investigation scheduler).
   `benchmarks/frontier/closures/pyquifer-attrdispatch-v1.json`
   (CausalGraph.interventional_graph -> add_edge/add_variable, verified
   by source inspection; `candidate_present` regression predicates replay
-  green and fail on the frozen v1.4 baseline). Scope discipline:
-  third-party receivers stay unresolved (never guessed) and constructor
-  calls are the separate class-extraction problem — neither is counted
-  as an attribute-dispatch success.
+  green and fail on the frozen v1.4 baseline). Extended the same
+  milestone: `self.attr = C()` assigned exactly once in `__init__`
+  proves the receiver for `self.attr.method()` in any method of the
+  class (binding precedes any method run; calls inside `__init__` must
+  follow the assignment textually; every Store of the attribute counts
+  toward the single-binding proof, call-valued or not — a non-call
+  `self.x = C` is not a constructor binding). Real-repo yield: 83
+  PyQuifer candidates (10,889 -> 10,806 unresolved), including
+  MemoryConsolidationLoop.recall/consolidate -> DifferentiableMemoryBank
+  .read/write. Scope discipline: third-party receivers stay unresolved
+  (never guessed) and constructor calls are the separate
+  class-extraction problem — neither is counted as an
+  attribute-dispatch success.
 - Later: MochiOS-scheduled investigation, procedural learning records,
   sandboxed system-improvement proposals.
 
