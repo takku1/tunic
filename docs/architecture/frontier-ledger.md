@@ -209,6 +209,32 @@ Autonomous learning is NOT demonstrated: diagnosis, implementation,
 testing, and promotion approval remain developer-owned. The ledger
 feeds learning; it performs none of it.
 
+## Scheduler v1 (bounded, resumable, governed investigation)
+
+The scheduler (`tunic/schedule.py`, `schedule` CLI, `schedule_jobs`
+table) turns ranked clusters into executed investigations without a
+second priority engine: selection reuses Ranking v1, work reuses
+`investigate()` on isolated scratch copies (the source tree is never
+written), promotion reuses `commit_proposal` (duplicate-safe) plus
+proof-backed `frontier_resolve`. The scheduler never asserts edges
+itself and never promotes on ranking or model confidence.
+
+- Job ledger: id, cluster, queue, snapshot, state, budget, attempts,
+  outcome. States: queued, running, done, failed, blocked, stale.
+  Duplicate schedules return the existing job; done jobs resume-skipped.
+- Budgets: per-job max_sites/max_commits, run-level max_clusters and
+  deadline_s (checked between clusters). concurrency_limit must be 1;
+  anything else fails closed (sequential v1 gate).
+- Resume: interrupted running jobs re-drive (commits duplicate-safe,
+  already-terminal resolves recorded, never repeated). A moved home
+  snapshot rebases a job only when the move is the scheduler's own
+  prior apply; any other move marks it stale — stale evidence is never
+  applied, reschedule instead.
+- Blocked clusters produce capability-work receipts (`capability_request`,
+  open entry count) and leave entries open. No fabricated evidence.
+- Every home application cites the asserted edge id in the resolve
+  proof; invalid proofs fail closed and the entries stay open.
+
 ## Zero-config ingest (specified with v0)
 
 `python -m tunic <path>` with no subcommand must: resolve `<path>` as
@@ -317,8 +343,20 @@ required evidence (read path for the future investigation scheduler).
   PersonalityAttractor). Scope limits recorded in the artifact:
   decorated classes unsupported, `typing.NamedTuple(...)` factory syntax
   not implemented, metaclasses/dynamic mutation outside the profile.
-- Later: MochiOS-scheduled investigation, procedural learning records,
-  sandboxed system-improvement proposals.
+- v2 (implemented): scheduler v1 (`tunic/schedule.py`, `schedule_jobs`
+  table, `schedule` CLI). Ranked clusters become persisted jobs with
+  budgets, attempt history, and outcome receipts; scratch investigation
+  applies home only through commit_proposal plus proof-backed resolve;
+  interruption resumes without duplicate promotions, moved snapshots go
+  stale instead of applying stale evidence, and blocked clusters yield
+  capability receipts with entries left open. Acceptance: 12 committed
+  adversarial tests (duplicate, crash/restart, stale, budget, invalid
+  proof, blocked, terminal-skip, config gates) plus a real-repository
+  scheduled closure with proof, all green with no frozen changes
+  (`tests/test_scheduler.py`).
+- Later: MochiOS-invoked scheduling (the `run_schedule`/`list_jobs`
+  interface is the call boundary; no integration yet), procedural
+  learning records, sandboxed system-improvement proposals.
 
 ## Relation to existing contracts
 

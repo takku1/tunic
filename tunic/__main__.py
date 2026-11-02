@@ -154,6 +154,14 @@ def main(argv=None):
     triage = commands.add_parser("triage", help="read-only frontier triage: clusters, queues, ranked investigation list")
     triage.add_argument("--root", default=".", help="workspace root the database was ingested from")
     triage.add_argument("--top", type=int, default=20, help="max ranked clusters per weighting pass")
+    schedule = commands.add_parser("schedule", help="bounded, resumable frontier investigation scheduling")
+    schedule.add_argument("--root", default=".", help="workspace root the database was ingested from")
+    schedule.add_argument("--top", type=int, default=3, help="max ranked clusters to schedule")
+    schedule.add_argument("--max-sites", type=int, default=5, help="per-cluster site replay budget")
+    schedule.add_argument("--max-commits", type=int, default=3, help="per-cluster commit budget")
+    schedule.add_argument("--max-clusters", type=int, default=None, help="cap on clusters executed")
+    schedule.add_argument("--deadline", type=float, default=None, help="stop scheduling after this many seconds")
+    schedule.add_argument("--no-resume", action="store_true", help="re-drive terminal jobs instead of skipping")
     draft = commands.add_parser("draft", help="propose claim blocks for co-mentioned entities (review input only)")
     draft.add_argument("document", help="repository-relative document path, e.g. notes.md")
     review = commands.add_parser("review", help="structured acquisition report for one document (read-only)")
@@ -237,6 +245,17 @@ def main(argv=None):
             from .triage import analyze
             print(json.dumps(analyze(args.db, root=args.root, top=args.top),
                              ensure_ascii=True, sort_keys=True, indent=2))
+            return 0
+        if args.command == "schedule":
+            from .schedule import run_schedule
+            result = run_schedule(
+                args.db, root=args.root, top_n=args.top,
+                budget={"max_sites": args.max_sites,
+                        "max_commits": args.max_commits},
+                max_clusters=args.max_clusters, deadline_s=args.deadline,
+                resume=not args.no_resume)
+            print(json.dumps(result, ensure_ascii=True, sort_keys=True,
+                             indent=2, default=str))
             return 0
         if args.command in {"candidates", "frontier"}:
             from .memory import Memory

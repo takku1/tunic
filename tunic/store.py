@@ -23,6 +23,8 @@ CREATE TABLE IF NOT EXISTS entities(
 CREATE TABLE IF NOT EXISTS propositions(id TEXT PRIMARY KEY, record TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS frontier(id TEXT PRIMARY KEY, record TEXT NOT NULL);
 CREATE INDEX IF NOT EXISTS frontier_dedupe ON frontier(json_extract(record, '$.dedupe'));
+CREATE TABLE IF NOT EXISTS schedule_jobs(id TEXT PRIMARY KEY, record TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS schedule_jobs_state ON schedule_jobs(json_extract(record, '$.state'));
 CREATE TABLE IF NOT EXISTS assertions(
     id TEXT PRIMARY KEY, proposition TEXT REFERENCES propositions(id),
     source TEXT REFERENCES sources(id), caller TEXT NOT NULL, callee TEXT NOT NULL,

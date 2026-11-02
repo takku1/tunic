@@ -1,7 +1,7 @@
 # Tunic implementation status (single authoritative tracker)
 
 Date: 2026-11-02. Scope: local reference implementation on `main`.
-Full suite: 579 tests green (`python -m unittest discover -s tests`, ~80-210 s
+Full suite: 591 tests green (`python -m unittest discover -s tests`, ~80-210 s
 depending on live-repo ingests; always record command, count, and date).
 MCP tools: 13 (see [mcp.md](mcp.md)). No `/docs/STATUS.md` exists in this
 repo; this file is the registry (per binding convention below).
@@ -80,7 +80,7 @@ Crisp/Team-Ops integrations, geometry-driven ranking (D-08/D-14/D-15).
 | Receiver resolution | decisions D-25, w1-reference | `self`/local-constructed receiver proofs + static/class-method registration and self/cls/ClassName resolution (`tests/test_static_methods.py`, 9 tests) | Arena v1 Q3 key-rule flaw | Extractor fixtures + dogfood pin (Tunic +15 verified static edges/0 removed, PyQuifer +22/0 removed; torch/F.* still unresolved) | Cross-module fix (done); static/class SHIPPED 2026-11-02; same-file inheritance measured-and-deferred (31 Tunic fixture sites, 4 PyQuifer) | Medium | Yes |
 | Staleness-explicit references withheld | evaluation/strategy.md (agent suite stale/evolve tasks) | Keep task-named superseded symbols with status vs withhold under select+current | Agent-heldout stale-task/evolve-para fail under select+current (pass under transparent default and fusion) | Selection fixture + eval pin | Eval harness pins fusion (done); product fix SHIPPED 2026-11-02: named history kept flagged, impact/provenance fallback when silence is the alternative, unrelated decoys still withheld (`tests/test_selection_supersession.py`, 11 tests; suite 557 green; pilot re-run ADOPT, metrics unchanged) | Small | Yes |
 | Consolidation/forgetting | research/semantic-graph (SG-09..12) | Design + long-history fixture | Absent capability | New lifecycle suite | None (greenfield) | Large | Yes (design only) |
-| Frontier scheduler | architecture/frontier-ledger.md | Scheduling loop over triage queues | "Later: MochiOS-scheduled investigation" | Scheduler tests + closure yield | Triage v1 (done) | Medium | Yes |
+| Frontier scheduler | architecture/frontier-ledger.md | Scheduler v1 SHIPPED 2026-11-02: ranked clusters become persisted jobs; scratch investigation applies home only via commit_proposal + proof-backed resolve (`tunic/schedule.py`, `schedule` CLI, `schedule_jobs` table) | N/A (greenfield) | 12 committed adversarial tests (duplicate/crash/running-resume/stale/budget/deadline/invalid-proof/blocked/terminal/gates/CLI); real-repo yield on Tunic copy: scheduled 2 resolved + 2 edges vs raw-count baseline 0 under equal budgets; source-verified loans.py closure (matches frozen lib-para gold direction); DEV-dispatch capability deferral with entries open | Triage v1 + investigate harness (done) | Medium | Yes |
 | Memory reuse metric | evaluation/strategy.md | Paired-investigation reuse harness | Absent capability | Runner-based rehearsal | Arena v2 runner (done) | Medium | Yes (harness), No (real agents) |
 | Backup/restore + migrations | architecture/runtime-memory.md, storage row | Snapshot export/import + migration test | Absent capability | Recovery tests | None | Medium | Yes |
 | Authenticated principals | architecture/security.md | Principal interface + tests | "No multi-tenant ACL" | Security acceptance subset | None | Large | Yes (local subset) |
