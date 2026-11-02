@@ -1,7 +1,7 @@
 # Tunic implementation status (single authoritative tracker)
 
 Date: 2026-11-02. Scope: local reference implementation on `main`.
-Full suite: 557 tests green (`python -m unittest discover -s tests`, ~80-210 s
+Full suite: 570 tests green (`python -m unittest discover -s tests`, ~80-210 s
 depending on live-repo ingests; always record command, count, and date).
 MCP tools: 13 (see [mcp.md](mcp.md)). No `/docs/STATUS.md` exists in this
 repo; this file is the registry (per binding convention below).
@@ -57,7 +57,7 @@ correction, consolidation, and reuse across investigations. Platform 1.0
 Wave 1 (release truth): this reconciliation. Exit: every gate above has
 a measurable pass/fail and a cited source.
 Wave 2 (retrieval correctness): selection default adoption decided ADOPT 2026-11-02 (opt-out documented, BM25 trade-off recorded);
-calibrated abstention widening (more frozen abstention/decoy tasks);
+abstention widening SHIPPED 2026-11-02 (cause taxonomy + HISTORICAL markers, 12/12 suite gate holds);
 constructor-to-method and receiver-resolution gaps (post-fix hosted
 re-measurement when unblocked). Exit: source-grounded accuracy
 improvements, no speculative-edge promotion, no regressions.
@@ -74,7 +74,7 @@ Crisp/Team-Ops integrations, geometry-driven ranking (D-08/D-14/D-15).
 | Item | Owning docs | Implementation | Failure evidence | Expected tests | Depends on | Effort | Unblocked now? |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Selection default adoption | evidence-selection.md | `tunic/answer.py` default flip + budgets | None (decision, not bug) | Frozen-suite gate re-run + full suite | Selection acceptance (done) | Small | Yes (no model needed) |
-| Abstention widening | evaluation/strategy.md | Frozen abstention/decoy task set x3 | Arena v1 Q6 wording flaw | taskgen + stage-1 pins | Arena v2 protocol (done) | Small | Yes |
+| Abstention widening | evaluation/strategy.md | Cause taxonomy (`no_discovery`/`unknown_subject`/`all_withheld`/`budget_exhausted` on every empty answer) + HISTORICAL render markers + frozen abstention/decoy task set | Arena v1 Q6 wording flaw; unmarked historical candidates, causeless empties (fixed) | Suite gate: 12/12 non-experimental tasks hold under select=True+current, 0 false-abstentions on gold questions, 0 unmarked historical, 0 OBSERVED violations (`tests/test_abstention_widening.py`, 12 tests, green 2026-11-02) | Arena v2 protocol (done); widened calibration SHIPPED 2026-11-02 | Small | Yes |
 | Constructor re-measurement | implementation-status (this file) | Fresh ACQ constructor dev run | Pre-fix 0/5 apply | ACQ harness `--resume` | Model access | Small | No |
 | Receiver resolution | decisions D-25, w1-reference | `self`/local-constructed receiver proofs | Arena v1 Q3 key-rule flaw | Extractor fixtures + dogfood pin | Cross-module fix (done) | Medium | Yes |
 | Staleness-explicit references withheld | evaluation/strategy.md (agent suite stale/evolve tasks) | Keep task-named superseded symbols with status vs withhold under select+current | Agent-heldout stale-task/evolve-para fail under select+current (pass under transparent default and fusion) | Selection fixture + eval pin | Eval harness pins fusion (done); product fix SHIPPED 2026-11-02: named history kept flagged, impact/provenance fallback when silence is the alternative, unrelated decoys still withheld (`tests/test_selection_supersession.py`, 11 tests; suite 557 green; pilot re-run ADOPT, metrics unchanged) | Small | Yes |

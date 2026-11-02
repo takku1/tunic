@@ -21,7 +21,7 @@
   "platform": "Windows-11-10.0.26200-SP0",
   "python": "3.12.10",
   "semantic": "skipped (no embedding provider; lexical regime)",
-  "tunic_commit": "df5ad86298f661de981301a20b2333ed3f729ae6"
+  "tunic_commit": "715284f1b859e3916fa6549a70aed78e768fe593"
  },
  "failing_checks": [],
  "fixture_files": [
@@ -32,7 +32,7 @@
   "legacy.py",
   "shop.py"
  ],
- "ingest_peak_kb": 146.6474609375,
+ "ingest_peak_kb": 146.546875,
  "summary": {
   "bm25-only": {
    "decoy_nonempty_rate": 0.5,
@@ -41,8 +41,8 @@
    "micro_f1": 0.4878048780487805,
    "micro_precision": 0.3225806451612903,
    "micro_recall": 1.0,
-   "p50_latency_ms": 6.924299996171612,
-   "p95_latency_ms": 19.185899996955413
+   "p50_latency_ms": 11.566799999854993,
+   "p95_latency_ms": 34.79950000473764
   },
   "full-hybrid": {
    "decoy_nonempty_rate": 0.5,
@@ -51,8 +51,8 @@
    "micro_f1": 0.47619047619047616,
    "micro_precision": 0.3125,
    "micro_recall": 1.0,
-   "p50_latency_ms": 6.174699999974109,
-   "p95_latency_ms": 9.682299998530652
+   "p50_latency_ms": 13.547399998060428,
+   "p95_latency_ms": 20.9547000049497
   },
   "hybrid-select": {
    "decoy_nonempty_rate": 0.5,
@@ -61,8 +61,8 @@
    "micro_f1": 0.4878048780487805,
    "micro_precision": 0.3225806451612903,
    "micro_recall": 1.0,
-   "p50_latency_ms": 6.539699999848381,
-   "p95_latency_ms": 10.158499993849546
+   "p50_latency_ms": 12.676399994234089,
+   "p95_latency_ms": 20.906099998683203
   }
  },
  "tasks": [
@@ -72,7 +72,7 @@
      "context_symbols": 5,
      "fn": 0,
      "fp": 4,
-     "latency_ms": 19.185899996955413,
+     "latency_ms": 34.79950000473764,
      "outcome": "complete",
      "returned": [
       "core.py::Gadget.start",
@@ -84,17 +84,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.009300005331169814,
+       "ms": 0.015400000847876072,
        "skipped": false
       },
       "lexical": {
        "candidates": 5,
-       "ms": 7.5777999954880215,
+       "ms": 16.076100000645965,
        "skipped": false
       },
       "name": {
        "candidates": 0,
-       "ms": 2.3342999993474223,
+       "ms": 2.5404999978491105,
        "skipped": false
       },
       "semantic": {
@@ -109,7 +109,7 @@
      "context_symbols": 5,
      "fn": 0,
      "fp": 4,
-     "latency_ms": 9.682299998530652,
+     "latency_ms": 19.669100001920015,
      "outcome": "complete",
      "returned": [
       "billing.py::cover",
@@ -121,17 +121,17 @@
      "stages": {
       "exact": {
        "candidates": 1,
-       "ms": 0.011100004485342652,
+       "ms": 0.02800000220304355,
        "skipped": false
       },
       "lexical": {
        "candidates": 5,
-       "ms": 1.0267999969073571,
+       "ms": 2.3761999982525595,
        "skipped": false
       },
       "name": {
        "candidates": 2,
-       "ms": 0.24699999630684033,
+       "ms": 0.6701000020257197,
        "skipped": false
       },
       "semantic": {
@@ -146,7 +146,7 @@
      "context_symbols": 5,
      "fn": 0,
      "fp": 4,
-     "latency_ms": 10.158499993849546,
+     "latency_ms": 20.906099998683203,
      "outcome": "complete",
      "returned": [
       "billing.py::cover",
@@ -158,17 +158,17 @@
      "stages": {
       "exact": {
        "candidates": 1,
-       "ms": 0.008199996955227107,
+       "ms": 0.019299994164612144,
        "skipped": false
       },
       "lexical": {
        "candidates": 5,
-       "ms": 1.3050999987171963,
+       "ms": 2.090699999826029,
        "skipped": false
       },
       "name": {
        "candidates": 2,
-       "ms": 0.2147999985027127,
+       "ms": 0.44299999717622995,
        "skipped": false
       },
       "semantic": {
@@ -192,7 +192,7 @@
      "context_symbols": 5,
      "fn": 0,
      "fp": 3,
-     "latency_ms": 7.816399993316736,
+     "latency_ms": 16.889799997443333,
      "outcome": "complete",
      "returned": [
       "billing.py::cover",
@@ -204,17 +204,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.012099997547920793,
+       "ms": 0.0259000007645227,
        "skipped": false
       },
       "lexical": {
        "candidates": 5,
-       "ms": 0.9027999985846691,
+       "ms": 3.0775999985053204,
        "skipped": false
       },
       "name": {
        "candidates": 0,
-       "ms": 0.2032999982475303,
+       "ms": 0.3786000015679747,
        "skipped": false
       },
       "semantic": {
@@ -229,7 +229,7 @@
      "context_symbols": 5,
      "fn": 0,
      "fp": 3,
-     "latency_ms": 7.538600002590101,
+     "latency_ms": 14.958500003558584,
      "outcome": "complete",
      "returned": [
       "billing.py::cover",
@@ -241,17 +241,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.010200004908256233,
+       "ms": 0.010600000678095967,
        "skipped": false
       },
       "lexical": {
        "candidates": 5,
-       "ms": 1.0339000000385568,
+       "ms": 1.846899998781737,
        "skipped": false
       },
       "name": {
        "candidates": 2,
-       "ms": 0.23159999545896426,
+       "ms": 0.3192000003764406,
        "skipped": false
       },
       "semantic": {
@@ -266,7 +266,7 @@
      "context_symbols": 5,
      "fn": 0,
      "fp": 3,
-     "latency_ms": 7.99879999976838,
+     "latency_ms": 19.889700000931043,
      "outcome": "complete",
      "returned": [
       "billing.py::cover",
@@ -278,17 +278,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.007499998901039362,
+       "ms": 0.01939999492606148,
        "skipped": false
       },
       "lexical": {
        "candidates": 5,
-       "ms": 1.113199999963399,
+       "ms": 3.4723999997368082,
        "skipped": false
       },
       "name": {
        "candidates": 2,
-       "ms": 0.19680000696098432,
+       "ms": 0.43030000233557075,
        "skipped": false
       },
       "semantic": {
@@ -313,7 +313,7 @@
      "context_symbols": 5,
      "fn": 0,
      "fp": 4,
-     "latency_ms": 7.138900000427384,
+     "latency_ms": 21.66640000359621,
      "outcome": "complete",
      "returned": [
       "core.py::Gadget.start",
@@ -325,17 +325,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.008600000001024455,
+       "ms": 0.028100002964492887,
        "skipped": false
       },
       "lexical": {
        "candidates": 5,
-       "ms": 0.9621999997762032,
+       "ms": 4.639099999621976,
        "skipped": false
       },
       "name": {
        "candidates": 0,
-       "ms": 0.20780000340892002,
+       "ms": 0.4650999981095083,
        "skipped": false
       },
       "semantic": {
@@ -350,7 +350,7 @@
      "context_symbols": 5,
      "fn": 0,
      "fp": 4,
-     "latency_ms": 7.125800002540927,
+     "latency_ms": 16.707200004020706,
      "outcome": "complete",
      "returned": [
       "billing.py::cover",
@@ -362,17 +362,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.008500006515532732,
+       "ms": 0.011900003300979733,
        "skipped": false
       },
       "lexical": {
        "candidates": 5,
-       "ms": 1.0350000011385418,
+       "ms": 2.07090000185417,
        "skipped": false
       },
       "name": {
        "candidates": 2,
-       "ms": 0.20629999926313758,
+       "ms": 0.2824000039254315,
        "skipped": false
       },
       "semantic": {
@@ -387,7 +387,7 @@
      "context_symbols": 5,
      "fn": 0,
      "fp": 4,
-     "latency_ms": 7.484900001145434,
+     "latency_ms": 16.930099998717196,
      "outcome": "complete",
      "returned": [
       "billing.py::cover",
@@ -399,17 +399,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.007700000423938036,
+       "ms": 0.0242000023717992,
        "skipped": false
       },
       "lexical": {
        "candidates": 5,
-       "ms": 0.9637999974074773,
+       "ms": 3.4940999976242892,
        "skipped": false
       },
       "name": {
        "candidates": 2,
-       "ms": 0.1990000018849969,
+       "ms": 0.3161999993608333,
        "skipped": false
       },
       "semantic": {
@@ -433,7 +433,7 @@
      "context_symbols": 5,
      "fn": 0,
      "fp": 3,
-     "latency_ms": 7.398100002319552,
+     "latency_ms": 16.279600000416394,
      "outcome": "complete",
      "returned": [
       "billing.py::cover",
@@ -445,17 +445,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.007899994670879096,
+       "ms": 0.013900003978051245,
        "skipped": false
       },
       "lexical": {
        "candidates": 5,
-       "ms": 0.9583999999449588,
+       "ms": 3.2279000006383285,
        "skipped": false
       },
       "name": {
        "candidates": 0,
-       "ms": 0.2114000017172657,
+       "ms": 0.42099999700440094,
        "skipped": false
       },
       "semantic": {
@@ -470,7 +470,7 @@
      "context_symbols": 5,
      "fn": 0,
      "fp": 3,
-     "latency_ms": 7.521999999880791,
+     "latency_ms": 20.9547000049497,
      "outcome": "complete",
      "returned": [
       "billing.py::cover",
@@ -482,17 +482,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.00809999619377777,
+       "ms": 0.01750000228639692,
        "skipped": false
       },
       "lexical": {
        "candidates": 5,
-       "ms": 0.952299997152295,
+       "ms": 2.6982000053976662,
        "skipped": false
       },
       "name": {
        "candidates": 2,
-       "ms": 0.2055000004475005,
+       "ms": 0.46129999827826396,
        "skipped": false
       },
       "semantic": {
@@ -507,7 +507,7 @@
      "context_symbols": 5,
      "fn": 0,
      "fp": 3,
-     "latency_ms": 8.076799997070339,
+     "latency_ms": 14.624999996158294,
      "outcome": "complete",
      "returned": [
       "billing.py::cover",
@@ -519,17 +519,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.007999995432328433,
+       "ms": 0.01599999814061448,
        "skipped": false
       },
       "lexical": {
        "candidates": 5,
-       "ms": 0.9780999971553683,
+       "ms": 2.167900005588308,
        "skipped": false
       },
       "name": {
        "candidates": 2,
-       "ms": 0.20809999841731042,
+       "ms": 0.30189999961294234,
        "skipped": false
       },
       "semantic": {
@@ -554,7 +554,7 @@
      "context_symbols": 5,
      "fn": 0,
      "fp": 5,
-     "latency_ms": 6.7334999985178,
+     "latency_ms": 10.996700002579018,
      "outcome": "complete",
      "returned": [
       "analytics.py::cover_all",
@@ -566,17 +566,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.00790000194683671,
+       "ms": 0.01410000550094992,
        "skipped": false
       },
       "lexical": {
        "candidates": 5,
-       "ms": 1.5282999956980348,
+       "ms": 1.793399998859968,
        "skipped": false
       },
       "name": {
        "candidates": 0,
-       "ms": 0.20950000180164352,
+       "ms": 0.3177999969921075,
        "skipped": false
       },
       "semantic": {
@@ -591,7 +591,7 @@
      "context_symbols": 5,
      "fn": 0,
      "fp": 5,
-     "latency_ms": 6.174699999974109,
+     "latency_ms": 13.527800001611467,
      "outcome": "complete",
      "returned": [
       "analytics.py::cover_all",
@@ -603,17 +603,17 @@
      "stages": {
       "exact": {
        "candidates": 2,
-       "ms": 0.008600000001024455,
+       "ms": 0.01649999467190355,
        "skipped": false
       },
       "lexical": {
        "candidates": 5,
-       "ms": 1.2000000060652383,
+       "ms": 3.117499996733386,
        "skipped": false
       },
       "name": {
        "candidates": 2,
-       "ms": 0.22639999951934442,
+       "ms": 0.30130000232020393,
        "skipped": false
       },
       "semantic": {
@@ -628,7 +628,7 @@
      "context_symbols": 4,
      "fn": 0,
      "fp": 4,
-     "latency_ms": 6.539699999848381,
+     "latency_ms": 12.676399994234089,
      "outcome": "complete",
      "returned": [
       "analytics.py::cover_all",
@@ -639,17 +639,17 @@
      "stages": {
       "exact": {
        "candidates": 2,
-       "ms": 0.008400005754083395,
+       "ms": 0.01049999991664663,
        "skipped": false
       },
       "lexical": {
        "candidates": 5,
-       "ms": 1.1801000000559725,
+       "ms": 3.2935999988694675,
        "skipped": false
       },
       "name": {
        "candidates": 2,
-       "ms": 0.2596000049379654,
+       "ms": 0.27270000282442197,
        "skipped": false
       },
       "semantic": {
@@ -671,7 +671,7 @@
      "context_symbols": 3,
      "fn": 0,
      "fp": 2,
-     "latency_ms": 5.114399995363783,
+     "latency_ms": 8.338800005731173,
      "outcome": "complete",
      "returned": [
       "billing.py::cover",
@@ -681,17 +681,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.007799993909429759,
+       "ms": 0.014700002793688327,
        "skipped": false
       },
       "lexical": {
        "candidates": 3,
-       "ms": 1.004100005957298,
+       "ms": 1.4635999978054315,
        "skipped": false
       },
       "name": {
        "candidates": 0,
-       "ms": 0.20809999841731042,
+       "ms": 0.31650000164518133,
        "skipped": false
       },
       "semantic": {
@@ -706,7 +706,7 @@
      "context_symbols": 3,
      "fn": 0,
      "fp": 2,
-     "latency_ms": 4.783900003531016,
+     "latency_ms": 11.942099998123012,
      "outcome": "complete",
      "returned": [
       "billing.py::cover",
@@ -716,17 +716,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.007800001185387373,
+       "ms": 0.013299999409355223,
        "skipped": false
       },
       "lexical": {
        "candidates": 3,
-       "ms": 0.9580999976606108,
+       "ms": 2.842399997462053,
        "skipped": false
       },
       "name": {
        "candidates": 2,
-       "ms": 0.20549999317154288,
+       "ms": 0.32139999530045316,
        "skipped": false
       },
       "semantic": {
@@ -741,7 +741,7 @@
      "context_symbols": 3,
      "fn": 0,
      "fp": 2,
-     "latency_ms": 5.065599994850345,
+     "latency_ms": 11.557099998753984,
      "outcome": "complete",
      "returned": [
       "billing.py::cover",
@@ -751,17 +751,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.007699993147980422,
+       "ms": 0.019500002963468432,
        "skipped": false
       },
       "lexical": {
        "candidates": 3,
-       "ms": 1.0331000012229197,
+       "ms": 3.067599995119963,
        "skipped": false
       },
       "name": {
        "candidates": 2,
-       "ms": 0.2066000015474856,
+       "ms": 0.3690000012284145,
        "skipped": false
       },
       "semantic": {
@@ -785,23 +785,23 @@
      "context_symbols": 0,
      "fn": 0,
      "fp": 0,
-     "latency_ms": 6.924299996171612,
+     "latency_ms": 11.566799999854993,
      "outcome": "empty",
      "returned": [],
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.00790000194683671,
+       "ms": 0.015000005078036338,
        "skipped": false
       },
       "lexical": {
        "candidates": 0,
-       "ms": 1.316200003202539,
+       "ms": 2.3061000028974377,
        "skipped": false
       },
       "name": {
        "candidates": 0,
-       "ms": 0.2029999959631823,
+       "ms": 0.2749999985098839,
        "skipped": false
       },
       "semantic": {
@@ -816,23 +816,23 @@
      "context_symbols": 0,
      "fn": 0,
      "fp": 0,
-     "latency_ms": 5.8752999975695275,
+     "latency_ms": 13.547399998060428,
      "outcome": "empty",
      "returned": [],
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.011799995263572782,
+       "ms": 0.027399997634347528,
        "skipped": false
       },
       "lexical": {
        "candidates": 0,
-       "ms": 1.27010000142036,
+       "ms": 2.5687999950605445,
        "skipped": false
       },
       "name": {
        "candidates": 0,
-       "ms": 0.22429999808082357,
+       "ms": 0.41000000055646524,
        "skipped": false
       },
       "semantic": {
@@ -847,23 +847,23 @@
      "context_symbols": 0,
      "fn": 0,
      "fp": 0,
-     "latency_ms": 6.3012000027811155,
+     "latency_ms": 12.036300002364442,
      "outcome": "empty",
      "returned": [],
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.008100003469735384,
+       "ms": 0.02680000034160912,
        "skipped": false
       },
       "lexical": {
        "candidates": 0,
-       "ms": 1.3802999965264462,
+       "ms": 2.4952000021585263,
        "skipped": false
       },
       "name": {
        "candidates": 0,
-       "ms": 0.2161999946110882,
+       "ms": 0.4117999997106381,
        "skipped": false
       },
       "semantic": {
@@ -885,7 +885,7 @@
      "context_symbols": 1,
      "fn": 0,
      "fp": 0,
-     "latency_ms": 5.706300005840603,
+     "latency_ms": 8.789900006377138,
      "outcome": "complete",
      "returned": [
       "shop.py::checkout"
@@ -893,17 +893,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.011300006008241326,
+       "ms": 0.01630000042496249,
        "skipped": false
       },
       "lexical": {
        "candidates": 1,
-       "ms": 1.3371000022743829,
+       "ms": 3.177200000209268,
        "skipped": false
       },
       "name": {
        "candidates": 0,
-       "ms": 0.23489999875891954,
+       "ms": 0.3741000036825426,
        "skipped": false
       },
       "semantic": {
@@ -918,7 +918,7 @@
      "context_symbols": 1,
      "fn": 0,
      "fp": 0,
-     "latency_ms": 4.793300002347678,
+     "latency_ms": 9.482900000875816,
      "outcome": "complete",
      "returned": [
       "shop.py::checkout"
@@ -926,17 +926,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.009700001101009548,
+       "ms": 0.014999997802078724,
        "skipped": false
       },
       "lexical": {
        "candidates": 1,
-       "ms": 1.3185999996494502,
+       "ms": 2.4727000054554082,
        "skipped": false
       },
       "name": {
        "candidates": 1,
-       "ms": 0.3431000004638918,
+       "ms": 0.3152999997837469,
        "skipped": false
       },
       "semantic": {
@@ -951,7 +951,7 @@
      "context_symbols": 1,
      "fn": 0,
      "fp": 0,
-     "latency_ms": 4.394700001284946,
+     "latency_ms": 6.502000003820285,
      "outcome": "complete",
      "returned": [
       "shop.py::checkout"
@@ -959,17 +959,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.009700001101009548,
+       "ms": 0.013700002455152571,
        "skipped": false
       },
       "lexical": {
        "candidates": 1,
-       "ms": 1.1823000022559427,
+       "ms": 1.7838999992818572,
        "skipped": false
       },
       "name": {
        "candidates": 1,
-       "ms": 0.21100000594742596,
+       "ms": 0.26509999588597566,
        "skipped": false
       },
       "semantic": {
@@ -993,7 +993,7 @@
      "context_symbols": 1,
      "fn": 0,
      "fp": 0,
-     "latency_ms": 4.698900003859308,
+     "latency_ms": 7.616000002599321,
      "outcome": "complete",
      "returned": [
       "core.py::Gadget.start"
@@ -1001,17 +1001,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.007499998901039362,
+       "ms": 0.01080000220099464,
        "skipped": false
       },
       "lexical": {
        "candidates": 1,
-       "ms": 1.2790999971912242,
+       "ms": 2.0465999987209216,
        "skipped": false
       },
       "name": {
        "candidates": 0,
-       "ms": 0.21980000019539148,
+       "ms": 0.2598999999463558,
        "skipped": false
       },
       "semantic": {
@@ -1026,7 +1026,7 @@
      "context_symbols": 2,
      "fn": 0,
      "fp": 1,
-     "latency_ms": 5.353399996238295,
+     "latency_ms": 8.014500002900604,
      "outcome": "complete",
      "returned": [
       "core.py::Gadget",
@@ -1035,17 +1035,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.01170000177808106,
+       "ms": 0.012600001355167478,
        "skipped": false
       },
       "lexical": {
        "candidates": 1,
-       "ms": 1.3491999998223037,
+       "ms": 1.985800001421012,
        "skipped": false
       },
       "name": {
        "candidates": 2,
-       "ms": 0.23399999918183312,
+       "ms": 0.2390000008745119,
        "skipped": false
       },
       "semantic": {
@@ -1060,7 +1060,7 @@
      "context_symbols": 2,
      "fn": 0,
      "fp": 1,
-     "latency_ms": 5.481000000145286,
+     "latency_ms": 10.589400000753812,
      "outcome": "complete",
      "returned": [
       "core.py::Gadget",
@@ -1069,17 +1069,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.007599999662488699,
+       "ms": 0.01410000550094992,
        "skipped": false
       },
       "lexical": {
        "candidates": 1,
-       "ms": 1.4817999981460162,
+       "ms": 2.325699999346398,
        "skipped": false
       },
       "name": {
        "candidates": 2,
-       "ms": 0.21669999841833487,
+       "ms": 0.27660000341711566,
        "skipped": false
       },
       "semantic": {
@@ -1103,7 +1103,7 @@
      "context_symbols": 1,
      "fn": 0,
      "fp": 0,
-     "latency_ms": 4.125799998291768,
+     "latency_ms": 8.576799998991191,
      "outcome": "complete",
      "returned": [
       "core.py::helper"
@@ -1111,17 +1111,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.007199996616691351,
+       "ms": 0.015700003132224083,
        "skipped": false
       },
       "lexical": {
        "candidates": 1,
-       "ms": 1.4451000024564564,
+       "ms": 3.242400001909118,
        "skipped": false
       },
       "name": {
        "candidates": 0,
-       "ms": 0.21710000146413222,
+       "ms": 0.36859999818261713,
        "skipped": false
       },
       "semantic": {
@@ -1136,7 +1136,7 @@
      "context_symbols": 1,
      "fn": 0,
      "fp": 0,
-     "latency_ms": 3.884099998685997,
+     "latency_ms": 5.583300000580493,
      "outcome": "complete",
      "returned": [
       "core.py::helper"
@@ -1144,17 +1144,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.009800001862458885,
+       "ms": 0.01769999653333798,
        "skipped": false
       },
       "lexical": {
        "candidates": 1,
-       "ms": 1.2210999993840232,
+       "ms": 1.657099994190503,
        "skipped": false
       },
       "name": {
        "candidates": 1,
-       "ms": 0.23599999985890463,
+       "ms": 0.2758999980869703,
        "skipped": false
       },
       "semantic": {
@@ -1169,7 +1169,7 @@
      "context_symbols": 1,
      "fn": 0,
      "fp": 0,
-     "latency_ms": 3.183499997248873,
+     "latency_ms": 8.263999996415805,
      "outcome": "complete",
      "returned": [
       "core.py::helper"
@@ -1177,17 +1177,17 @@
      "stages": {
       "exact": {
        "candidates": 0,
-       "ms": 0.007199996616691351,
+       "ms": 0.01309999788645655,
        "skipped": false
       },
       "lexical": {
        "candidates": 1,
-       "ms": 0.8852000028127804,
+       "ms": 3.4790999998222105,
        "skipped": false
       },
       "name": {
        "candidates": 1,
-       "ms": 0.20879999647149816,
+       "ms": 0.2514000007067807,
        "skipped": false
       },
       "semantic": {

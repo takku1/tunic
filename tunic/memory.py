@@ -1328,6 +1328,33 @@ class Memory:
             if container:
                 entry["container"] = container
             cand_entries.append(entry)
+        abstention = None
+        if not top:
+            if max(limit, 0) == 0:
+                cause = "budget_exhausted"
+            elif unknown_symbols:
+                # The question names symbols the index never saw. That is
+                # the actionable fact even when lexical bycatch was also
+                # withheld; the withheld counts stay in the record.
+                cause = "unknown_subject"
+            elif not fused:
+                cause = "no_discovery"
+            else:
+                keep_outcomes = ("supported", "proposed", "ambiguous",
+                                 "contradicted")
+                viable = [d for d in
+                          ((selection or {}).get("trace", {}).get("decisions")
+                           or [])
+                          if d.get("outcome") in keep_outcomes]
+                cause = "budget_exhausted" if viable else "all_withheld"
+            counts = {}
+            for decision in ((selection or {}).get("trace", {}).get("decisions")
+                             or []):
+                outcome_key = decision.get("outcome", "?")
+                counts[outcome_key] = counts.get(outcome_key, 0) + 1
+            abstention = {"cause": cause, "fused_total": len(fused),
+                          "withheld": counts,
+                          "unknown_symbols": list(unknown_symbols)}
         result = {"task": task, "snapshot": snapshot, "policy": policy,
                 "fusion": "weighted_rrf_k60", "provider": provider.name,
                 "budget": caps, "threshold": threshold, "stages": stages,
@@ -1336,6 +1363,7 @@ class Memory:
                 "mentions": mentions, "claims": claims,
                 "selection": selection,
                 "unknown_symbols": unknown_symbols,
+                "abstention": abstention,
                 "container_expansion": {
                     "budget": container_limit,
                     "used": len(expanded_containers) - len(failed_containers),

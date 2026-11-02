@@ -135,10 +135,20 @@ def render_answer_text(result, *, cap=4000, receipt=None):
                 unique.append(item)
         return unique
     candidates = result.get("candidates") or []
-    cand_lines = ["  %s [best match: %s; stages: %s%s]" % (
+    history = {}
+    for decision in (((result.get("selection") or {}).get("trace") or {})
+                     .get("decisions") or []):
+        notes = [reason for reason in decision.get("reasons") or []
+                 if "historical context" in reason
+                 and "superseded by" in reason]
+        if notes:
+            history.setdefault(decision.get("symbol", "?"), []).extend(notes)
+    cand_lines = ["  %s [best match: %s; stages: %s%s%s]" % (
         entry.get("symbol", "?"), entry.get("match", "?"),
         ",".join(entry.get("origins") or []),
-        "; method of %s" % entry["container"] if entry.get("container") else "")
+        "; method of %s" % entry["container"] if entry.get("container") else "",
+        "; HISTORICAL -- %s" % " | ".join(history[entry["symbol"]])
+        if entry.get("symbol") in history else "")
         for entry in candidates]
     observed, asserted, container_lines = [], [], []
     for entry in result.get("impacts") or []:
@@ -221,13 +231,16 @@ def render_answer_text(result, *, cap=4000, receipt=None):
              "the named symbols are usable answers when relevant, but the "
              "named method itself has no direct edge to them. CORRECTIONS "
              "describe removed or replaced knowledge; never list a corrected, "
-             "retracted, or superseded symbol as an answer. DISPUTED lines "
+             "retracted, or superseded symbol as a current answer. HISTORICAL marks retired knowledge: past context only, never a current answer. DISPUTED lines "
              "are contested: do not rely on one alone when an undisputed "
              "alternative answers the question. "
              "WITHHELD lines are not evidence.")
+    abstention = result.get("abstention") or {}
+    empty_note = ("  (none; abstention: %s)" % abstention["cause"]
+                  if abstention.get("cause") else "  (none)")
     sections = [
         ("candidates", "CANDIDATES (discovery only; listing here asserts nothing):",
-         cand_lines or ["  (none)"], True),
+         cand_lines or [empty_note], True),
         ("observed", "OBSERVED DEPENDENCIES (verified by static code extraction):",
          ["  " + symbol for symbol in observed] or ["  (none)"], False),
         ("asserted_deps", "ASSERTED DEPENDENCIES (source claims, NOT independently verified):",

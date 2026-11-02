@@ -134,6 +134,20 @@ class NamedHistoryTests(unittest.TestCase):
         self.assertIn("superseded by a.py::new",
                       " ".join(result["trace"]["decisions"][0]["reasons"]))
 
+    def test_multiple_successors_all_named_in_note(self):
+        view = view_for(
+            ["a.py::old", "a.py::new1", "a.py::new2"],
+            [supersedes("a.py::new1", "a.py::old"),
+             supersedes("a.py::new2", "a.py::old")])
+        fused = [(0.05, "a.py::old", {"name": 1})]
+        result = select("What did we decide about old?", fused, view=view,
+                        policy="current", limit=3)
+        self.assertEqual(result["kept"], ["a.py::old"])
+        reasons = " ".join(result["trace"]["decisions"][0]["reasons"])
+        self.assertIn("a.py::new1", reasons)
+        self.assertIn("a.py::new2", reasons)
+        self.assertIn("historical context", reasons)
+
     def test_disputed_superseded_named_keeps_dispute(self):
         view = view_for(
             ["a.py::old", "a.py::new"],

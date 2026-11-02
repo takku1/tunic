@@ -45,6 +45,15 @@ query's only viable evidence is superseded, that evidence is retained
 rather than abstaining. Withheld discovery stays withheld whenever live
 evidence exists (`tests/test_selection_supersession.py`).
 
+Empty answers carry an abstention cause (`result["abstention"]`):
+`no_discovery`, `unknown_subject`, `all_withheld`, or
+`budget_exhausted`, with withheld-outcome counts; the text rendering
+names the cause and marks every kept historical candidate
+`HISTORICAL` (never presented as current), and no superseded symbol
+renders under OBSERVED. Verified absence stays a `related()`/traversal
+observation, and unresolvable calls stay `cold` receipts at the
+callees level (`tests/test_abstention_widening.py`).
+
 ## Query-intent obligations
 
 Different questions need different proof. The layer must know what
