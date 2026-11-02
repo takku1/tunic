@@ -13,8 +13,12 @@ minimal MCP-compatible server. The transport is newline-delimited JSON-RPC
 | Tool | Reads | Writes |
 | ---- | ----- | ------ |
 | `retrieve` | fused candidates, impacts, mentions, claims | none |
-| `related`, `impact`, `timeline` | compiled evidence for one key | none |
+| `related`, `impact`, `callees`, `timeline` | compiled evidence for one key (reverse, reverse-impact, forward, timeline) | none |
 | `review` | acquisition report for one document | none |
+| `candidates` | live proposed dependencies | none |
+| `acquire` | reviewed candidate + justification | commits the candidate through the governed path, then ingest publishes it |
+| `correct` | governed correction path | records retraction/correction claim, then ingest publishes it |
+| `frontier` | open knowledge gaps by status | none |
 | `note` | — | timestamped append inside the root |
 | `promote` | duplicate/contradiction check | one explicit claim block, then ingest publishes it |
 | `refresh` | — | incremental re-ingest of the fixed root |

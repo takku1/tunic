@@ -5,7 +5,12 @@ candidates enter agent context, with what evidence, and why the rest
 do not. Status: **selection layer implemented as opt-in**
 (`tunic/selection.py`, `tests/test_selection.py`, `select=True`);
 the default stays fusion-only until it beats the baseline on the
-frozen suites per the acceptance clause below. The current pipeline
+frozen suites per the acceptance clause below. Evaluated 2026-11-02
+against `benchmarks/arena/runs/semantic-selection-v1.json`: PASS with
+scoped verdict (precision/F1 up, recall held, identical sweep response;
+BM25 still leads suite precision/F1), pinned by
+`tests/test_selection_acceptance.py`. Adoption remains a separate
+decision; the default is unchanged. The current pipeline
 (fusion scores + global threshold + budgets) is that baseline.
 Do not tune it on the 14-task development probes; validate
 on positives, negatives, and the held-out split.
