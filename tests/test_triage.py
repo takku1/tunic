@@ -34,7 +34,7 @@ class TriageTests(unittest.TestCase):
 
     def test_clusters_queues_rankings_and_mutation_check(self):
         report = analyze(self.db, root=str(self.root))
-        self.assertEqual(report["version"], 1)
+        self.assertEqual(report["version"], 2)
         failures = report["counts"]["by_failure"]
         for failure in ("ingest_unresolved_call", "ingest_parse_error",
                         "retrieval_abstention"):
@@ -56,15 +56,18 @@ class TriageTests(unittest.TestCase):
         # every ranked row carries a reason and a positive score.
         self.assertTrue(report["top"])
         for row in report["top"]:
-            self.assertGreater(row["score"], 0)
+            self.assertGreaterEqual(row["score"], 0)
             self.assertTrue(row["reason"])
             self.assertIn(row["kind"], report["counts"]["by_kind"])
+            self.assertIn("queue_reason", row)
         # abstention outranks the single-occurrence extractor failures.
         self.assertEqual(report["top"][0]["kind"], "retrieval_abstention")
         # no closable cluster: recommendation points at the closest
         # investigable entry, with no verifiable target yet.
         self.assertIsNone(report["recommendation"]["verifiable_target"])
-        self.assertIn(report["top"][0]["reason"],
+        self.assertEqual(report["recommendation"]["candidate"]["key"],
+                         report["top"][0]["key"])
+        self.assertIn(report["top"][0]["queue_reason"],
                       report["recommendation"]["plan"])
         # read-only proof: digests and counts identical, zero writes.
         check = report["mutation_check"]
@@ -133,7 +136,7 @@ class TriageTests(unittest.TestCase):
                     and any("os.path" in t for t in c["targets"])]
         self.assertEqual(len(external), 1)
         self.assertEqual(external[0]["queue"], "blocked")
-        self.assertIn("external stdlib symbol", external[0]["reason"])
+        self.assertIn("external stdlib symbol", external[0]["queue_reason"])
         self.assertEqual(report["queues"]["blocked"]["clusters"], 1)
         # a high-priority blocked entry still recommends an investigable
         # cluster, never a fabricated proof.
@@ -199,7 +202,7 @@ class TriageSiteClusterTests(unittest.TestCase):
         cluster = next(c for c in report["top"]
                        if c["kind"] == "unresolved_call")
         self.assertEqual(cluster["queue"], "investigable")
-        self.assertIn("2 unresolved call site(s)", cluster["reason"])
+        self.assertIn("2 unresolved call site(s)", cluster["queue_reason"])
         self.assertIn("os.path.join", cluster["targets"])
 
 
@@ -229,7 +232,7 @@ class TriageDispatchTests(unittest.TestCase):
                        if c["kind"] == "unresolved_dispatch")
         self.assertEqual(cluster["queue"], "investigable")
         self.assertIn("candidate present without asserted cover",
-                      cluster["reason"])
+                      cluster["queue_reason"])
         committed, action, _ = memory.commit_proposal(
             "checkout.py::place_order", "pricing.py::round_total")
         self.assertEqual((committed, action), (True, "add"))
@@ -238,7 +241,8 @@ class TriageDispatchTests(unittest.TestCase):
         cluster = next(c for c in report["top"]
                        if c["kind"] == "unresolved_dispatch")
         self.assertEqual(cluster["queue"], "closable_now")
-        self.assertIn("asserted edge already covers", cluster["reason"])
+        self.assertIn("asserted edge already covers",
+                      cluster["queue_reason"])
         recommendation = report["recommendation"]
         self.assertEqual(recommendation["candidate"]["kind"],
                          "unresolved_dispatch")
@@ -247,9 +251,11 @@ class TriageDispatchTests(unittest.TestCase):
         self.assertIn("frontier_replay", recommendation["plan"])
 
     def test_recommendation_survives_a_small_top_cutoff(self):
-        # A recurring abstention outranks the covered dispatch table, so
-        # --top 1 truncates it from display; the recommendation must
-        # still select it from the full active cluster set.
+        # Ranking v1 scores verifiability over noise: the covered
+        # dispatch table (one verifiable close) outranks twelve repeats
+        # of the same abstention (no new evidence). --top 1 truncates
+        # the display; the recommendation must still select from the
+        # full active cluster set, not the truncated list.
         memory = Memory(self.db, self.root)
         self.addCleanup(memory.close)
         memory.ingest()
@@ -262,7 +268,7 @@ class TriageDispatchTests(unittest.TestCase):
             self.assertEqual(memory.answer(question)["outcome"], "empty")
         report = analyze(self.db, root=str(self.root), top=1)
         self.assertEqual(len(report["top"]), 1)
-        self.assertEqual(report["top"][0]["kind"], "retrieval_abstention")
+        self.assertEqual(report["top"][0]["kind"], "unresolved_dispatch")
         recommendation = report["recommendation"]
         self.assertEqual(recommendation["candidate"]["kind"],
                          "unresolved_dispatch")

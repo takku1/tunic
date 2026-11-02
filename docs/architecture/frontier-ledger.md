@@ -99,18 +99,30 @@ No model call is added by instrumentation; classification of the entry
 itself is deterministic. A second model call happens only for genuine
 ambiguity, mirroring the v4 conflict branch.
 
-## Triage (v1, read-only)
+## Triage (v1 clusters/queues; Ranking v1 scores, read-only)
 
 `tunic triage --db <db> --root <root>` projects the ledger into
 normalized clusters, three queues, and a ranked investigation list
 without ever writing: it digests every frontier record before and after
-analysis and raises on any mismatch. Scoring is the provisional
-heuristic from the Prioritization section with observable factors only:
-`P = (I^a * R^b * C^c) / E^d` (impact, recurrence-weighted occurrences,
-closability under a supported replay predicate, reviewer-sized effort).
-Four weighting passes (base, recall-heavy, effort-averse, impact-first)
-report top-N overlap against base so ranking stability is visible, not
-assumed.
+analysis and raises on any mismatch.
+
+Ranking v1 answers one question: how many new VERIFIABLE
+relationships will investigating this cluster recover, and at what
+cost? `S = Y * (1 + Q) * (1 + L) * G / E`: expected yield under a
+standard budget (5 sites, 3 commits), corroboration bits
+(re-observed digests, candidate explanations, non-default required
+evidence, asserted-graph corroboration), retrieval/impact leverage,
+reviewer-sized cost, governance risk. Raw occurrence counts never
+enter the score and never break ties (ties prefer fewer distinct
+sites); unresolved diagnostics are never counted as evidence.
+Ranking dedupes by (path, line, start, failure, target) for scoring
+only -- stored records are untouched. Every row carries its factors
+and a reason, so the score is reproducible by hand.
+
+The legacy occurrence-weighted passes (`P = (I^a * R^b * C^c)/E^d`,
+base/recall-heavy/effort-averse/impact-first) remain as a sensitivity
+comparison with overlap reported against the v1 order, so a silent
+model change cannot hide.
 
 Queues separate what Tunic can act on now from what it cannot:
 `closable_now` (a supported replay predicate passes against current
@@ -128,8 +140,14 @@ Hardening rules from the v1.2 review:
   excluded from rankings, queues, and the recommendation — a closed
   cluster must not be recommended again.
 - The recommendation selects from the full active cluster set ranked by
-  the base weighting, never from the top-N display truncation, so a
+  the v1 score, never from the top-N display truncation, so a
   low-ranked but immediately closable cluster survives `--top 1`.
+- Ranked investigation (v1 experiment): `tunic/investigate.py`
+  investigates a cluster under a fixed budget (bounded replays,
+  single-candidate governed commits, resolve-with-proof closes) and
+  `benchmarks/frontier/v1_rank_vs_baseline.py` compares top-N ranked
+  vs top-N raw-occurrence arms on scratch copies. Yield = entries
+  resolved with proof plus newly asserted edges.
 - Unresolved calls cluster by file, not by site or expression: at
   real-repo scale (PyQuifer: ~10.7k unresolved calls) per-site clusters
   are singletons, which flattens occurrence-weighted ranking and makes
