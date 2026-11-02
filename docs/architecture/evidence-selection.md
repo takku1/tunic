@@ -2,16 +2,18 @@
 
 Decision contract for the query-aware selection layer: which
 candidates enter agent context, with what evidence, and why the rest
-do not. Status: **selection layer implemented as opt-in**
-(`tunic/selection.py`, `tests/test_selection.py`, `select=True`);
-the default stays fusion-only until it beats the baseline on the
+do not. Status: **selection layer implemented, default ON since 2026-11-02**
+(`tunic/selection.py`, `tests/test_selection.py`, default `select=True`,
+explicit opt-out `select=False`); it beat the fusion baseline on the
 frozen suites per the acceptance clause below. Evaluated 2026-11-02
 against `benchmarks/arena/runs/semantic-selection-v1.json`: PASS with
 scoped verdict (precision/F1 up, recall held, identical sweep response;
 BM25 still leads suite precision/F1), pinned by
-`tests/test_selection_acceptance.py`. Adoption remains a separate
-decision; the default is unchanged. The current pipeline
-(fusion scores + global threshold + budgets) is that baseline.
+`tests/test_selection_acceptance.py`. Adopted 2026-11-02 after a 3-arm dev pilot
+per predeclared criteria (`tests/test_selection_pilot.py`), with the BM25
+trade-off recorded; the default is now `select=True`. The current pipeline
+(fusion scores + global threshold + budgets) remains the regression baseline, pinned by
+the eval harness (`select=False`).
 Do not tune it on the 14-task development probes; validate
 on positives, negatives, and the held-out split.
 
