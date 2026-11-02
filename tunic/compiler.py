@@ -300,6 +300,8 @@ def compile_callees(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100,
         proposition = assertion["proposition"]
         if proposition.get("relation") != "depends_on":
             continue
+        if policy == "evidence_only":
+            continue
         if proposition.get("caller") != symbol:
             continue
         if assertion.get("status") == "asserted_in_source":
