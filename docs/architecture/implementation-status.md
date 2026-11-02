@@ -1,7 +1,7 @@
 # Tunic implementation status (single authoritative tracker)
 
 Date: 2026-11-02. Scope: local reference implementation on `main`.
-Full suite: 591 tests green (`python -m unittest discover -s tests`, ~80-210 s
+Full suite: 602 tests green (`python -m unittest discover -s tests`, ~80-210 s
 depending on live-repo ingests; always record command, count, and date).
 MCP tools: 13 (see [mcp.md](mcp.md)). No `/docs/STATUS.md` exists in this
 repo; this file is the registry (per binding convention below).
@@ -16,7 +16,7 @@ capabilities land.
 | Gate | Bar | Standing |
 | ---- | --- | -------- |
 | Core 1.0: reliable evidence ingestion, grounded retrieval, corrections, context compilation, regression-tested real-repository answers | Avalanche-class closure committed; selection acceptance evaluated PASS-scoped on the frozen suite (D-16 targets proposed below, provisional) | Not met: constructor post-fix re-measurement blocked on model access (selection default adopted with opt-out; BM25 suite lead stands as documented trade-off); three real-repo closure artifacts exported (avalanche rank-1, PyQuifer attribute-dispatch, PyQuifer constructors) |
-| Memory 1.0: durable multi-session semantic/episodic/procedural memory with safe acquisition, consolidation, lifecycle | Multi-session benchmarks + ACQ v1/v2 exist; consolidation/forgetting absent; frontier scheduler absent | Partial: acquisition measured (ACQ v2 candidate-aided arms 5/5 callback/registry/attribute both suites, controls 5/5, zero decoys, precision 1.00); lifecycle incomplete (no consolidation, no forgetting, no cross-session reuse metric) |
+| Memory 1.0: durable multi-session semantic/episodic/procedural memory with safe acquisition, consolidation, lifecycle | Multi-session benchmarks + ACQ v1/v2 + frontier scheduler exist; consolidation/forgetting absent | Partial: acquisition measured (ACQ v2 candidate-aided arms 5/5 callback/registry/attribute both suites, controls 5/5, zero decoys, precision 1.00); cross-session reuse measured v1 (verified-reuse 4/4 wins, guards 5/5, zero false reuse, model-free scripted arms); consolidation/forgetting still absent |
 | Platform 1.0: authenticated multi-user deployment, isolation, recovery, field-validated reliability | Single-principal local system today | Not started (by design) |
 
 ## D-16 numeric acceptance targets (proposed 2026-11-02, provisional)
@@ -43,7 +43,7 @@ plan, not a pass).
 | ACQ callback/registry/attribute | 5/5 candidate-aided arms, both suites | ACQ v2 frozen artifacts | HELD |
 | Constructor acquisition/application | >= 4/5 acquisition and >= 4/5 application on a fresh dev run post-fix | Pre-fix 0/5 apply; blocked on model access | BLOCKED (no fresh run yet) |
 | Frontier closure yield | Ranked investigation yield >= raw-count baseline at fixed budget, replicated | v1 experiment ranked 4 vs baseline 2 (single run) | PROVISIONAL (needs replication) |
-| Memory reuse across sessions | Metric undefined; first measurement plan: verified-reuse rate on paired investigations | None | PROVISIONAL (no baseline) |
+| Memory reuse across sessions | Verified-reuse rate 1.0 on 4 paired win tasks (warm=1/cold=0 with acquired assertion cited), guards 5/5 both arms, warm never worse, zero false reuse, mean actions 1.0 warm vs 1.67 cold; scripted model-free agents | `benchmarks/agent/runs/reuse-v1-dev.json`; `tests/test_memory_reuse.py` (11 tests, green 2026-11-02) | PASS-scoped (dev fixture; scripted agents, not model-agent productivity) |
 | Consolidation/forgetting safety | No metric; plan: retention/distortion on long-history fixture | Not implemented | OPEN (no target settable) |
 | Ingest/retrieval budgets | No regression: self-ingest wall within 2x of 11 s baseline (237 symbols); retrieval p50/p95 to be measured | Census 2026-11-02 | PROVISIONAL (retrieval latency unmeasured) |
 
@@ -81,7 +81,7 @@ Crisp/Team-Ops integrations, geometry-driven ranking (D-08/D-14/D-15).
 | Staleness-explicit references withheld | evaluation/strategy.md (agent suite stale/evolve tasks) | Keep task-named superseded symbols with status vs withhold under select+current | Agent-heldout stale-task/evolve-para fail under select+current (pass under transparent default and fusion) | Selection fixture + eval pin | Eval harness pins fusion (done); product fix SHIPPED 2026-11-02: named history kept flagged, impact/provenance fallback when silence is the alternative, unrelated decoys still withheld (`tests/test_selection_supersession.py`, 11 tests; suite 557 green; pilot re-run ADOPT, metrics unchanged) | Small | Yes |
 | Consolidation/forgetting | research/semantic-graph (SG-09..12) | Design + long-history fixture | Absent capability | New lifecycle suite | None (greenfield) | Large | Yes (design only) |
 | Frontier scheduler | architecture/frontier-ledger.md | Scheduler v1 SHIPPED 2026-11-02: ranked clusters become persisted jobs; scratch investigation applies home only via commit_proposal + proof-backed resolve (`tunic/schedule.py`, `schedule` CLI, `schedule_jobs` table) | N/A (greenfield) | 12 committed adversarial tests (duplicate/crash/running-resume/stale/budget/deadline/invalid-proof/blocked/terminal/gates/CLI); real-repo yield on Tunic copy: scheduled 2 resolved + 2 edges vs raw-count baseline 0 under equal budgets; source-verified loans.py closure (matches frozen lib-para gold direction); DEV-dispatch capability deferral with entries open | Triage v1 + investigate harness (done) | Medium | Yes |
-| Memory reuse metric | evaluation/strategy.md | Paired-investigation reuse harness | Absent capability | Runner-based rehearsal | Arena v2 runner (done) | Medium | Yes (harness), No (real agents) |
+| Memory reuse metric | evaluation/strategy.md | Paired-session reuse harness SHIPPED 2026-11-02 (`benchmarks/agent/reuse_v1.py`, fixture `benchmarks/agent/reuse/`, artifact `benchmarks/agent/runs/reuse-v1-dev.json`) | Absent capability | 11 committed tests (4 wins + 5 guards + reopen/parity/permission/failure gates); verified-reuse 4/4, guards 5/5, zero false reuse | Arena v2 runner + scheduler (done) | Medium | Yes (harness), No (real agents) |
 | Backup/restore + migrations | architecture/runtime-memory.md, storage row | Snapshot export/import + migration test | Absent capability | Recovery tests | None | Medium | Yes |
 | Authenticated principals | architecture/security.md | Principal interface + tests | "No multi-tenant ACL" | Security acceptance subset | None | Large | Yes (local subset) |
 

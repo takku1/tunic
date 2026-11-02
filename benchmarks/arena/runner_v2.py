@@ -444,15 +444,18 @@ def _write_transcript(path, rows):
 
 
 def run_cell(manifest, arm, agent_fn, source_root, workdir, runs_dir=None,
-             allowed_tools=None, run_id=None, toolsets=("repo",)):
+             allowed_tools=None, run_id=None, toolsets=("repo",),
+             tunic_db_src=None):
     """Run one task x arm cell with enforced isolation and accounting.
 
     Toolsets select the trusted handlers: ``"repo"`` (read-only
     workspace inspection) and ``"tunic"`` (a fresh per-arm ingest with
-    read-only memory tools). The agent acts only through ``ctx``; the
-    answer key never crosses the agent interface. Workspaces and
-    transcripts are unique per run id and never overwritten; agent
-    exceptions finalize error cells. Returns a CellResult.
+    read-only memory tools, or a copy of ``tunic_db_src`` when given
+    for cross-session memory-reuse arms). The agent acts only through
+    ``ctx``; the answer key never crosses the agent interface.
+    Workspaces and transcripts are unique per run id and never
+    overwritten; agent exceptions finalize error cells. Returns a
+    CellResult.
     """
     run_id = run_id or uuid.uuid4().hex
     workdir = Path(workdir)
@@ -478,8 +481,12 @@ def run_cell(manifest, arm, agent_fn, source_root, workdir, runs_dir=None,
     if "tunic" in toolsets:
         t_setup = time.time()
         db_path = str(workdir / ("db-%s.sqlite" % run_id[:8]))
-        memory = Memory(db_path, str(arm_ws))
-        memory.ingest()
+        if tunic_db_src is not None:
+            shutil.copyfile(str(tunic_db_src), db_path)
+            memory = Memory(db_path, str(arm_ws))
+        else:
+            memory = Memory(db_path, str(arm_ws))
+            memory.ingest()
         TunicReadTools(memory).register_all(router)
         setup_s = time.time() - t_setup
     provenance = {"repo_sha": repo_sha(source_root),
@@ -491,6 +498,8 @@ def run_cell(manifest, arm, agent_fn, source_root, workdir, runs_dir=None,
                                     if allowed_tools is not None else None),
                   "handlers": router.names,
                   "toolsets": sorted(toolsets),
+                  "tunic_db_src": (str(tunic_db_src)
+                                   if tunic_db_src is not None else None),
                   "sandbox": "none-workspace-copy-only"}
     t0 = time.time()
     rows = [{"t": 0.0, "event": "start", "run_id": run_id,

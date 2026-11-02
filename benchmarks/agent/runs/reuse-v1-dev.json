@@ -1,0 +1,773 @@
+{
+  "cells": [
+    {
+      "actions": 1,
+      "answer": "ABSTAIN\nREASON: no memory or source evidence",
+      "arm": "cold",
+      "kind": "callers",
+      "provenance": {
+        "allowed_tools": null,
+        "arm": "cold",
+        "budget_actions": 12,
+        "handlers": [
+          "callees",
+          "candidates",
+          "claims",
+          "frontier",
+          "impact",
+          "list_files",
+          "mentions",
+          "read_file",
+          "related",
+          "retrieve",
+          "search",
+          "timeline"
+        ],
+        "manifest_digest": "7fb38bfeb06f14062b1cc21f7c64777129e76e453a9902e67d7d12fdcbbaac3b",
+        "repo_sha": "ef2aba95c45dbdbe4833dc550b6484cbebe1e57b",
+        "runner_version": "0.3.0",
+        "sandbox": "none-workspace-copy-only",
+        "scoring_version": "v3-strict",
+        "toolsets": [
+          "repo",
+          "tunic"
+        ],
+        "tunic_db_src": null
+      },
+      "role": "win",
+      "score": 0.0,
+      "status": "complete",
+      "task": "reuse-route",
+      "transcript": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\cells\\run-32887eaec2b544999ec709a202f732e5.jsonl",
+      "wall_s": 0.01
+    },
+    {
+      "actions": 1,
+      "answer": "svc.py::do_legacy",
+      "arm": "warm",
+      "kind": "callers",
+      "provenance": {
+        "allowed_tools": null,
+        "arm": "warm",
+        "budget_actions": 12,
+        "handlers": [
+          "callees",
+          "candidates",
+          "claims",
+          "frontier",
+          "impact",
+          "list_files",
+          "mentions",
+          "read_file",
+          "related",
+          "retrieve",
+          "search",
+          "timeline"
+        ],
+        "manifest_digest": "7fb38bfeb06f14062b1cc21f7c64777129e76e453a9902e67d7d12fdcbbaac3b",
+        "repo_sha": "ef2aba95c45dbdbe4833dc550b6484cbebe1e57b",
+        "runner_version": "0.3.0",
+        "sandbox": "none-workspace-copy-only",
+        "scoring_version": "v3-strict",
+        "toolsets": [
+          "repo",
+          "tunic"
+        ],
+        "tunic_db_src": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\session-a.sqlite"
+      },
+      "role": "win",
+      "score": 1.0,
+      "status": "complete",
+      "task": "reuse-route",
+      "transcript": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\cells\\run-7e8a616aa84b4610bb00d415ea96b0a8.jsonl",
+      "wall_s": 0.01
+    },
+    {
+      "actions": 3,
+      "answer": "svc.py::handle_old",
+      "arm": "cold",
+      "kind": "callers",
+      "provenance": {
+        "allowed_tools": null,
+        "arm": "cold",
+        "budget_actions": 12,
+        "handlers": [
+          "callees",
+          "candidates",
+          "claims",
+          "frontier",
+          "impact",
+          "list_files",
+          "mentions",
+          "read_file",
+          "related",
+          "retrieve",
+          "search",
+          "timeline"
+        ],
+        "manifest_digest": "3b213f810e88b313cc19043334846d06471ab746a68afbc6b6146a4f7b783b22",
+        "repo_sha": "ef2aba95c45dbdbe4833dc550b6484cbebe1e57b",
+        "runner_version": "0.3.0",
+        "sandbox": "none-workspace-copy-only",
+        "scoring_version": "v3-strict",
+        "toolsets": [
+          "repo",
+          "tunic"
+        ],
+        "tunic_db_src": null
+      },
+      "role": "win",
+      "score": 0.0,
+      "status": "complete",
+      "task": "reuse-correction",
+      "transcript": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\cells\\run-aca42cd409284bed8d1d8def66072d4c.jsonl",
+      "wall_s": 0.006
+    },
+    {
+      "actions": 1,
+      "answer": "svc.py::handle_new",
+      "arm": "warm",
+      "kind": "callers",
+      "provenance": {
+        "allowed_tools": null,
+        "arm": "warm",
+        "budget_actions": 12,
+        "handlers": [
+          "callees",
+          "candidates",
+          "claims",
+          "frontier",
+          "impact",
+          "list_files",
+          "mentions",
+          "read_file",
+          "related",
+          "retrieve",
+          "search",
+          "timeline"
+        ],
+        "manifest_digest": "3b213f810e88b313cc19043334846d06471ab746a68afbc6b6146a4f7b783b22",
+        "repo_sha": "ef2aba95c45dbdbe4833dc550b6484cbebe1e57b",
+        "runner_version": "0.3.0",
+        "sandbox": "none-workspace-copy-only",
+        "scoring_version": "v3-strict",
+        "toolsets": [
+          "repo",
+          "tunic"
+        ],
+        "tunic_db_src": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\session-a.sqlite"
+      },
+      "role": "win",
+      "score": 1.0,
+      "status": "complete",
+      "task": "reuse-correction",
+      "transcript": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\cells\\run-ce9798684f794ad6ad5968a5da8d5a8c.jsonl",
+      "wall_s": 0.005
+    },
+    {
+      "actions": 3,
+      "answer": "svc.py::do_legacy\nsvc.py::do_new",
+      "arm": "cold",
+      "kind": "uniqueness",
+      "provenance": {
+        "allowed_tools": null,
+        "arm": "cold",
+        "budget_actions": 12,
+        "handlers": [
+          "callees",
+          "candidates",
+          "claims",
+          "frontier",
+          "impact",
+          "list_files",
+          "mentions",
+          "read_file",
+          "related",
+          "retrieve",
+          "search",
+          "timeline"
+        ],
+        "manifest_digest": "d49749da5690bccf89dd41231e1c1c45185ea1b006dabf4cc980793c62814454",
+        "repo_sha": "ef2aba95c45dbdbe4833dc550b6484cbebe1e57b",
+        "runner_version": "0.3.0",
+        "sandbox": "none-workspace-copy-only",
+        "scoring_version": "v3-strict",
+        "toolsets": [
+          "repo",
+          "tunic"
+        ],
+        "tunic_db_src": null
+      },
+      "role": "win",
+      "score": 0.0,
+      "status": "complete",
+      "task": "reuse-dispute",
+      "transcript": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\cells\\run-e1ed7845612e4c368a6b406a59578d10.jsonl",
+      "wall_s": 0.007
+    },
+    {
+      "actions": 1,
+      "answer": "svc.py::do_legacy\nsvc.py::do_new\nVERDICT: NOT-DETERMINED",
+      "arm": "warm",
+      "kind": "uniqueness",
+      "provenance": {
+        "allowed_tools": null,
+        "arm": "warm",
+        "budget_actions": 12,
+        "handlers": [
+          "callees",
+          "candidates",
+          "claims",
+          "frontier",
+          "impact",
+          "list_files",
+          "mentions",
+          "read_file",
+          "related",
+          "retrieve",
+          "search",
+          "timeline"
+        ],
+        "manifest_digest": "d49749da5690bccf89dd41231e1c1c45185ea1b006dabf4cc980793c62814454",
+        "repo_sha": "ef2aba95c45dbdbe4833dc550b6484cbebe1e57b",
+        "runner_version": "0.3.0",
+        "sandbox": "none-workspace-copy-only",
+        "scoring_version": "v3-strict",
+        "toolsets": [
+          "repo",
+          "tunic"
+        ],
+        "tunic_db_src": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\session-a.sqlite"
+      },
+      "role": "win",
+      "score": 1.0,
+      "status": "complete",
+      "task": "reuse-dispute",
+      "transcript": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\cells\\run-fd3b8fa82b7a4f449c447e56d55239e0.jsonl",
+      "wall_s": 0.005
+    },
+    {
+      "actions": 3,
+      "answer": "svc.py::do_legacy",
+      "arm": "cold",
+      "kind": "callers",
+      "provenance": {
+        "allowed_tools": null,
+        "arm": "cold",
+        "budget_actions": 12,
+        "handlers": [
+          "callees",
+          "candidates",
+          "claims",
+          "frontier",
+          "impact",
+          "list_files",
+          "mentions",
+          "read_file",
+          "related",
+          "retrieve",
+          "search",
+          "timeline"
+        ],
+        "manifest_digest": "9317c3fb4d23a2629d66e6f8692c06dea802880815bdedcfcb183bc29c9ed693",
+        "repo_sha": "ef2aba95c45dbdbe4833dc550b6484cbebe1e57b",
+        "runner_version": "0.3.0",
+        "sandbox": "none-workspace-copy-only",
+        "scoring_version": "v3-strict",
+        "toolsets": [
+          "repo",
+          "tunic"
+        ],
+        "tunic_db_src": null
+      },
+      "role": "win",
+      "score": 0.0,
+      "status": "complete",
+      "task": "reuse-traverse",
+      "transcript": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\cells\\run-2c67d9e0e56d4c338ba050d9082fdf5c.jsonl",
+      "wall_s": 0.007
+    },
+    {
+      "actions": 1,
+      "answer": "svc.py::dispatch\nsvc.py::main",
+      "arm": "warm",
+      "kind": "callers",
+      "provenance": {
+        "allowed_tools": null,
+        "arm": "warm",
+        "budget_actions": 12,
+        "handlers": [
+          "callees",
+          "candidates",
+          "claims",
+          "frontier",
+          "impact",
+          "list_files",
+          "mentions",
+          "read_file",
+          "related",
+          "retrieve",
+          "search",
+          "timeline"
+        ],
+        "manifest_digest": "9317c3fb4d23a2629d66e6f8692c06dea802880815bdedcfcb183bc29c9ed693",
+        "repo_sha": "ef2aba95c45dbdbe4833dc550b6484cbebe1e57b",
+        "runner_version": "0.3.0",
+        "sandbox": "none-workspace-copy-only",
+        "scoring_version": "v3-strict",
+        "toolsets": [
+          "repo",
+          "tunic"
+        ],
+        "tunic_db_src": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\session-a.sqlite"
+      },
+      "role": "win",
+      "score": 1.0,
+      "status": "complete",
+      "task": "reuse-traverse",
+      "transcript": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\cells\\run-79991a14007942d5999b7effd54e6b96.jsonl",
+      "wall_s": 0.007
+    },
+    {
+      "actions": 1,
+      "answer": "svc.py::route",
+      "arm": "cold",
+      "kind": "callers",
+      "provenance": {
+        "allowed_tools": null,
+        "arm": "cold",
+        "budget_actions": 12,
+        "handlers": [
+          "callees",
+          "candidates",
+          "claims",
+          "frontier",
+          "impact",
+          "list_files",
+          "mentions",
+          "read_file",
+          "related",
+          "retrieve",
+          "search",
+          "timeline"
+        ],
+        "manifest_digest": "84ecd916ecdcfef780d380193bfb6a4e57a5233f76d07ad2b19b4caca9519845",
+        "repo_sha": "ef2aba95c45dbdbe4833dc550b6484cbebe1e57b",
+        "runner_version": "0.3.0",
+        "sandbox": "none-workspace-copy-only",
+        "scoring_version": "v3-strict",
+        "toolsets": [
+          "repo",
+          "tunic"
+        ],
+        "tunic_db_src": null
+      },
+      "role": "guard",
+      "score": 1.0,
+      "status": "complete",
+      "task": "reuse-static",
+      "transcript": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\cells\\run-627548f385474c4197df1cb626fd5b4e.jsonl",
+      "wall_s": 0.007
+    },
+    {
+      "actions": 1,
+      "answer": "svc.py::route",
+      "arm": "warm",
+      "kind": "callers",
+      "provenance": {
+        "allowed_tools": null,
+        "arm": "warm",
+        "budget_actions": 12,
+        "handlers": [
+          "callees",
+          "candidates",
+          "claims",
+          "frontier",
+          "impact",
+          "list_files",
+          "mentions",
+          "read_file",
+          "related",
+          "retrieve",
+          "search",
+          "timeline"
+        ],
+        "manifest_digest": "84ecd916ecdcfef780d380193bfb6a4e57a5233f76d07ad2b19b4caca9519845",
+        "repo_sha": "ef2aba95c45dbdbe4833dc550b6484cbebe1e57b",
+        "runner_version": "0.3.0",
+        "sandbox": "none-workspace-copy-only",
+        "scoring_version": "v3-strict",
+        "toolsets": [
+          "repo",
+          "tunic"
+        ],
+        "tunic_db_src": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\session-a.sqlite"
+      },
+      "role": "guard",
+      "score": 1.0,
+      "status": "complete",
+      "task": "reuse-static",
+      "transcript": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\cells\\run-b57f0d643d6d44ad8e557f4fd21e348e.jsonl",
+      "wall_s": 0.006
+    },
+    {
+      "actions": 1,
+      "answer": "svc.py::main",
+      "arm": "cold",
+      "kind": "callers",
+      "provenance": {
+        "allowed_tools": null,
+        "arm": "cold",
+        "budget_actions": 12,
+        "handlers": [
+          "callees",
+          "candidates",
+          "claims",
+          "frontier",
+          "impact",
+          "list_files",
+          "mentions",
+          "read_file",
+          "related",
+          "retrieve",
+          "search",
+          "timeline"
+        ],
+        "manifest_digest": "ba248b33ad5c505c7bddae08f23f0cf4cb41f28a4d678143df7b4b1058902eae",
+        "repo_sha": "ef2aba95c45dbdbe4833dc550b6484cbebe1e57b",
+        "runner_version": "0.3.0",
+        "sandbox": "none-workspace-copy-only",
+        "scoring_version": "v3-strict",
+        "toolsets": [
+          "repo",
+          "tunic"
+        ],
+        "tunic_db_src": null
+      },
+      "role": "guard",
+      "score": 1.0,
+      "status": "complete",
+      "task": "reuse-caller",
+      "transcript": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\cells\\run-47d8b9d0a95e42478dfe6ad4a768aa67.jsonl",
+      "wall_s": 0.005
+    },
+    {
+      "actions": 1,
+      "answer": "svc.py::main",
+      "arm": "warm",
+      "kind": "callers",
+      "provenance": {
+        "allowed_tools": null,
+        "arm": "warm",
+        "budget_actions": 12,
+        "handlers": [
+          "callees",
+          "candidates",
+          "claims",
+          "frontier",
+          "impact",
+          "list_files",
+          "mentions",
+          "read_file",
+          "related",
+          "retrieve",
+          "search",
+          "timeline"
+        ],
+        "manifest_digest": "ba248b33ad5c505c7bddae08f23f0cf4cb41f28a4d678143df7b4b1058902eae",
+        "repo_sha": "ef2aba95c45dbdbe4833dc550b6484cbebe1e57b",
+        "runner_version": "0.3.0",
+        "sandbox": "none-workspace-copy-only",
+        "scoring_version": "v3-strict",
+        "toolsets": [
+          "repo",
+          "tunic"
+        ],
+        "tunic_db_src": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\session-a.sqlite"
+      },
+      "role": "guard",
+      "score": 1.0,
+      "status": "complete",
+      "task": "reuse-caller",
+      "transcript": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\cells\\run-77c7a72fa5984f62a7764d7307c1ed9f.jsonl",
+      "wall_s": 0.007
+    },
+    {
+      "actions": 1,
+      "answer": "NO\nREASON: no asserted relationship found",
+      "arm": "cold",
+      "kind": "decoy",
+      "provenance": {
+        "allowed_tools": null,
+        "arm": "cold",
+        "budget_actions": 12,
+        "handlers": [
+          "callees",
+          "candidates",
+          "claims",
+          "frontier",
+          "impact",
+          "list_files",
+          "mentions",
+          "read_file",
+          "related",
+          "retrieve",
+          "search",
+          "timeline"
+        ],
+        "manifest_digest": "4424290dc2d5f7c08f100a512c1869a81dd328710d27c998eb95b4c8fedbac6b",
+        "repo_sha": "ef2aba95c45dbdbe4833dc550b6484cbebe1e57b",
+        "runner_version": "0.3.0",
+        "sandbox": "none-workspace-copy-only",
+        "scoring_version": "v3-strict",
+        "toolsets": [
+          "repo",
+          "tunic"
+        ],
+        "tunic_db_src": null
+      },
+      "role": "guard",
+      "score": 1.0,
+      "status": "complete",
+      "task": "reuse-decoy-stale",
+      "transcript": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\cells\\run-5778709f48444768997c3ac8525052e0.jsonl",
+      "wall_s": 0.005
+    },
+    {
+      "actions": 1,
+      "answer": "NO\nREASON: no asserted relationship found",
+      "arm": "warm",
+      "kind": "decoy",
+      "provenance": {
+        "allowed_tools": null,
+        "arm": "warm",
+        "budget_actions": 12,
+        "handlers": [
+          "callees",
+          "candidates",
+          "claims",
+          "frontier",
+          "impact",
+          "list_files",
+          "mentions",
+          "read_file",
+          "related",
+          "retrieve",
+          "search",
+          "timeline"
+        ],
+        "manifest_digest": "4424290dc2d5f7c08f100a512c1869a81dd328710d27c998eb95b4c8fedbac6b",
+        "repo_sha": "ef2aba95c45dbdbe4833dc550b6484cbebe1e57b",
+        "runner_version": "0.3.0",
+        "sandbox": "none-workspace-copy-only",
+        "scoring_version": "v3-strict",
+        "toolsets": [
+          "repo",
+          "tunic"
+        ],
+        "tunic_db_src": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\session-a.sqlite"
+      },
+      "role": "guard",
+      "score": 1.0,
+      "status": "complete",
+      "task": "reuse-decoy-stale",
+      "transcript": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\cells\\run-b721b3fdd06c4116b19d984c5a330c15.jsonl",
+      "wall_s": 0.009
+    },
+    {
+      "actions": 1,
+      "answer": "NO\nREASON: no asserted relationship found",
+      "arm": "cold",
+      "kind": "decoy",
+      "provenance": {
+        "allowed_tools": null,
+        "arm": "cold",
+        "budget_actions": 12,
+        "handlers": [
+          "callees",
+          "candidates",
+          "claims",
+          "frontier",
+          "impact",
+          "list_files",
+          "mentions",
+          "read_file",
+          "related",
+          "retrieve",
+          "search",
+          "timeline"
+        ],
+        "manifest_digest": "b904b068775874e745fc7e05dd7eb290954cdff72286e33f400353e1386daa80",
+        "repo_sha": "ef2aba95c45dbdbe4833dc550b6484cbebe1e57b",
+        "runner_version": "0.3.0",
+        "sandbox": "none-workspace-copy-only",
+        "scoring_version": "v3-strict",
+        "toolsets": [
+          "repo",
+          "tunic"
+        ],
+        "tunic_db_src": null
+      },
+      "role": "guard",
+      "score": 1.0,
+      "status": "complete",
+      "task": "reuse-decoy-irrelevant",
+      "transcript": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\cells\\run-2be8c7e30a084c5e881ff33e8d7aa913.jsonl",
+      "wall_s": 0.004
+    },
+    {
+      "actions": 1,
+      "answer": "NO\nREASON: no asserted relationship found",
+      "arm": "warm",
+      "kind": "decoy",
+      "provenance": {
+        "allowed_tools": null,
+        "arm": "warm",
+        "budget_actions": 12,
+        "handlers": [
+          "callees",
+          "candidates",
+          "claims",
+          "frontier",
+          "impact",
+          "list_files",
+          "mentions",
+          "read_file",
+          "related",
+          "retrieve",
+          "search",
+          "timeline"
+        ],
+        "manifest_digest": "b904b068775874e745fc7e05dd7eb290954cdff72286e33f400353e1386daa80",
+        "repo_sha": "ef2aba95c45dbdbe4833dc550b6484cbebe1e57b",
+        "runner_version": "0.3.0",
+        "sandbox": "none-workspace-copy-only",
+        "scoring_version": "v3-strict",
+        "toolsets": [
+          "repo",
+          "tunic"
+        ],
+        "tunic_db_src": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\session-a.sqlite"
+      },
+      "role": "guard",
+      "score": 1.0,
+      "status": "complete",
+      "task": "reuse-decoy-irrelevant",
+      "transcript": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\cells\\run-5c81074604a14fb4b959889337edcc22.jsonl",
+      "wall_s": 0.007
+    },
+    {
+      "actions": 1,
+      "answer": "ABSTAIN\nREASON: unknown symbol",
+      "arm": "cold",
+      "kind": "abstention",
+      "provenance": {
+        "allowed_tools": null,
+        "arm": "cold",
+        "budget_actions": 12,
+        "handlers": [
+          "callees",
+          "candidates",
+          "claims",
+          "frontier",
+          "impact",
+          "list_files",
+          "mentions",
+          "read_file",
+          "related",
+          "retrieve",
+          "search",
+          "timeline"
+        ],
+        "manifest_digest": "c8866669d325be2076a2de18c887af34b9f0ef20bc83b14da194007eca6f8d1e",
+        "repo_sha": "ef2aba95c45dbdbe4833dc550b6484cbebe1e57b",
+        "runner_version": "0.3.0",
+        "sandbox": "none-workspace-copy-only",
+        "scoring_version": "v3-strict",
+        "toolsets": [
+          "repo",
+          "tunic"
+        ],
+        "tunic_db_src": null
+      },
+      "role": "guard",
+      "score": 1.0,
+      "status": "complete",
+      "task": "reuse-missing",
+      "transcript": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\cells\\run-8f62073c5ee847cf88b7c34428c377f9.jsonl",
+      "wall_s": 0.004
+    },
+    {
+      "actions": 1,
+      "answer": "ABSTAIN\nREASON: unknown symbol",
+      "arm": "warm",
+      "kind": "abstention",
+      "provenance": {
+        "allowed_tools": null,
+        "arm": "warm",
+        "budget_actions": 12,
+        "handlers": [
+          "callees",
+          "candidates",
+          "claims",
+          "frontier",
+          "impact",
+          "list_files",
+          "mentions",
+          "read_file",
+          "related",
+          "retrieve",
+          "search",
+          "timeline"
+        ],
+        "manifest_digest": "c8866669d325be2076a2de18c887af34b9f0ef20bc83b14da194007eca6f8d1e",
+        "repo_sha": "ef2aba95c45dbdbe4833dc550b6484cbebe1e57b",
+        "runner_version": "0.3.0",
+        "sandbox": "none-workspace-copy-only",
+        "scoring_version": "v3-strict",
+        "toolsets": [
+          "repo",
+          "tunic"
+        ],
+        "tunic_db_src": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\session-a.sqlite"
+      },
+      "role": "guard",
+      "score": 1.0,
+      "status": "complete",
+      "task": "reuse-missing",
+      "transcript": "C:\\Users\\dcarn\\AppData\\Local\\Temp\\tmpals23lmf\\cells\\run-29ae01073b504bc0b6351067abfea9af.jsonl",
+      "wall_s": 0.009
+    }
+  ],
+  "deterministic_agents": true,
+  "elapsed_s": 2.0,
+  "metrics": {
+    "guard_hold_rate": 1.0,
+    "guards_held": [
+      "reuse-caller",
+      "reuse-decoy-irrelevant",
+      "reuse-decoy-stale",
+      "reuse-missing",
+      "reuse-static"
+    ],
+    "guards_total": 5,
+    "mean_actions_cold": 1.67,
+    "mean_actions_warm": 1.0,
+    "verified_reuse_rate": 1.0,
+    "warm_never_worse": true,
+    "wins_hit": [
+      "reuse-correction",
+      "reuse-dispute",
+      "reuse-route",
+      "reuse-traverse"
+    ],
+    "wins_total": 4
+  },
+  "model_free": true,
+  "reuse_version": 1,
+  "session_a": {
+    "assertions": 14,
+    "snapshot": "snapshot:ee574f6ec86eae1d35efa38b0db3593078c9d0e729738c069ee1191541769643",
+    "sources": 2
+  }
+}

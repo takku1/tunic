@@ -34,6 +34,25 @@ For exact compatible caching, compare outputs and where accessible logits agains
 
 Use paired queries and fixed replay traces. Report uncertainty across runs and query groups; keep a held-out task set. Inspect retrieved evidence and compiler manifests before attributing an answer improvement to graph reasoning.
 
+## Cross-session memory reuse (measured v1, 2026-11-02)
+
+Session A performs bounded governed acquisitions (reviewer audit note
+plus the trusted frontier scheduler closing the investigable dispatch
+cluster with proof) on a scratch copy of the `benchmarks/agent/reuse/`
+fixture. Session B runs paired arms on pristine copies of the same code
+snapshot: cold (fresh ingest) vs warm (copy of the Session-A database).
+Both arms run the same fixed scripted agent through the trusted Arena
+runner (`tunic_db_src` warm path in `run_cell`) with identical budgets,
+retrieval settings, and strict scoring. Metrics: verified-reuse rate
+(warm=1/cold=0 with the acquired assertion cited), guard hold rate,
+warm-never-worse, false-reuse count (stale or proposed-only answers),
+abstention correctness, and mean actions. Result v1:
+`benchmarks/agent/runs/reuse-v1-dev.json` (verified-reuse 4/4, guards
+5/5, zero false reuse; scripted model-free agents, not a model-agent
+productivity claim). Code-derived edges are pinned identical across
+arms; the warm database differs only by the audited acquisitions.
+Consolidation/forgetting remain unmeasured.
+
 ## Decision gates
 
 1. **Scope and oracle gate:** pin the first workload, corpus, accepted assertion types, independent evidence labels, and correctness oracle. Historical source recovery is required only for claims that depend on it.
