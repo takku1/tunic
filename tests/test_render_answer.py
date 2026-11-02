@@ -153,7 +153,16 @@ class RenderAnswerTrustTest(unittest.TestCase):
         small = {}
         tiny = render_answer_text(result, cap=600, receipt=small)
         self.assertLessEqual(len(tiny), 600)
-        self.assertTrue(tiny.endswith("WITHHELD lines are not evidence."))
+        # The trust rule itself grew (container-context sentence), so at
+        # this cap the rule may not fit whole. The contract is no SILENT
+        # truncation: either the full rule is emitted or the receipt flags
+        # trust_partial. Pinning the exact cap where the full rule fits
+        # would couple the test to trust wording length, not the contract.
+        if tiny.endswith("WITHHELD lines are not evidence."):
+            self.assertTrue(small["truncated"])
+        else:
+            self.assertTrue(small.get("trust_partial"))
+            self.assertTrue(tiny)
         self.assertTrue(small["truncated"])
         self.assertTrue(small["sections_dropped"])
         floor = {}

@@ -24,6 +24,24 @@ FRONTIER_BASE_PRIORITY = {"contradictory": 0.6, "unsupported": 0.5, "novel": 0.4
                           "unresolved": 0.3, "irrelevant": 0.05}
 
 
+def _container_of(symbols_by_key, key):
+    """Verified containing class of a method symbol, else None.
+
+    A dotted symbol whose dotted prefix resolves to a class symbol is a
+    method of that class (e.g. shop.py::Gadget.start lives in
+    shop.py::Gadget). Module functions, unknown prefixes, and missing
+    class symbols yield None. Single definition shared by retrieval-time
+    container expansion and candidate annotation.
+    """
+    path, _, name = key.partition("::")
+    if "." not in name:
+        return None
+    container_key = "%s::%s" % (path, name.rsplit(".", 1)[0])
+    if symbols_by_key.get(container_key, {}).get("kind") == "class":
+        return container_key
+    return None
+
+
 def authorize(principal, action):
     """Single-principal gate: the explicit authorization boundary.
 
@@ -1023,7 +1041,7 @@ class Memory:
 
     def answer(self, task, *, snapshot=None, limit=3, mode="hybrid",
                policy="transparent", budget=None, threshold=0.0, provider=None,
-               select=False):
+               select=False, container_limit=2):
         """Task-based retrieval without an exact symbol.
 
         Stages propose candidates: exact keys, bare names, BM25 lexical
@@ -1034,6 +1052,15 @@ class Memory:
         available, otherwise it is recorded as skipped. Discovery stages
         select candidates only and never create graph edges; an empty fusion
         abstains. The policy selects the traversal set for every candidate.
+        Container-aware retrieval (container_limit): a selected method whose
+        dotted prefix resolves to a verified class symbol additionally
+        expands that class with compile_related under the same snapshot and
+        policy. The expansion is navigational only -- it synthesizes and
+        asserts nothing; merged impacts carry a container_context label and
+        render under CONTAINER CONTEXT. Expansion fires only for symbols
+        already in the answer set (post-selection kept when select=True),
+        costs one budget unit per distinct class, and is recorded in
+        result["container_expansion"]. Zero disables it.
         With select=True, the evidence-aware selection layer
         (tunic.selection) filters fused candidates into supported /
         proposed / ambiguous / contradicted / insufficient_evidence /
@@ -1052,6 +1079,8 @@ class Memory:
             raise ValueError("unknown policy: " + str(policy))
         if type(limit) is not int or limit < 0:
             raise ValueError("limit must be a non-negative integer")
+        if type(container_limit) is not int or container_limit < 0:
+            raise ValueError("container_limit must be a non-negative integer")
         caps = {"exact": limit, "name": limit, "lexical": limit, "semantic": limit}
         if budget is not None:
             unknown = set(budget) - set(caps)
@@ -1216,6 +1245,20 @@ class Memory:
                         followed.append(replacement)
                         origins[replacement] = {"graph": 1}
                         scores[replacement] = scores.get(subject, 0.0)
+        symbols_by_key = {row["key"]: row for row in view["symbols"]}
+        # Container worklist, computed BEFORE dependency expansion from
+        # the answer set (post-selection kept when select=True, so
+        # expansion can never bypass filtering). Unique classes in answer
+        # order; the budget caps how many expand; the rest are recorded
+        # as skipped, never silently dropped.
+        container_order, _seen_containers = [], set()
+        for key in top:
+            container = _container_of(symbols_by_key, key)
+            if container and container not in _seen_containers:
+                _seen_containers.add(container)
+                container_order.append((key, container))
+        expanded_containers = container_order[:container_limit]
+        skipped_containers = container_order[container_limit:]
         impacts = {}
         mentions = []
         claims = []
@@ -1228,6 +1271,21 @@ class Memory:
                 impacts.setdefault(entry["symbol"], entry)
             mentions.extend(related["mentions"]["mentions"])
             claims.extend(related["claims"]["claims"])
+        for method_key, class_key in expanded_containers:
+            try:
+                container_related = compiler.compile_related(
+                    self.store, class_key, snapshot=snapshot,
+                    policy=policy, view=view)
+            except ValueError:
+                continue
+            for entry in container_related["impact"]["impacts"]:
+                if entry["symbol"] not in impacts:
+                    labeled = dict(entry)
+                    labeled["container_context"] = {
+                        "container": class_key, "via": method_key}
+                    impacts[entry["symbol"]] = labeled
+            mentions.extend(container_related["mentions"]["mentions"])
+            claims.extend(container_related["claims"]["claims"])
         seen = {(m.get("mentioner"), m.get("candidate")) for m in mentions}
         for mention in note_mentions:
             key = (mention.get("mentioner"), mention.get("candidate"))
@@ -1236,27 +1294,12 @@ class Memory:
                 mentions.append(mention)
         mentions.sort(key=lambda m: (m["evidence"]["path"], m["evidence"]["start"], m["status"]))
         claims.sort(key=lambda c: (c["relation"], c["caller"], c["callee"] or ""))
-        symbols_by_key = {row["key"]: row for row in view["symbols"]}
-
-        def _container_of(key):
-            # Method-of-class annotation: a dotted symbol whose dotted
-            # prefix resolves to a class symbol is a method of that class.
-            # The render uses it to bridge method questions to the class
-            # (and through it to construction candidates).
-            path, _, name = key.partition("::")
-            if "." not in name:
-                return None
-            container_key = "%s::%s" % (path, name.rsplit(".", 1)[0])
-            if symbols_by_key.get(container_key, {}).get("kind") == "class":
-                return container_key
-            return None
-
         cand_entries = []
         for key in top:
             entry = {"symbol": key, "score": scores[key],
                      "match": min(origins[key], key=order.__getitem__),
                      "origins": origins[key]}
-            container = _container_of(key)
+            container = _container_of(symbols_by_key, key)
             if container:
                 entry["container"] = container
             cand_entries.append(entry)
@@ -1268,6 +1311,13 @@ class Memory:
                 "mentions": mentions, "claims": claims,
                 "selection": selection,
                 "unknown_symbols": unknown_symbols,
+                "container_expansion": {
+                    "budget": container_limit,
+                    "used": len(expanded_containers),
+                    "expanded": {method: klass
+                                 for method, klass in expanded_containers},
+                    "skipped_over_budget": [klass for _, klass
+                                            in skipped_containers]},
                 "outcome": "complete" if top else "empty"}
         if result["outcome"] == "empty":
             self._frontier_upsert(

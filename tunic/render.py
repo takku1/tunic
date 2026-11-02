@@ -140,8 +140,15 @@ def render_answer_text(result, *, cap=4000, receipt=None):
         ",".join(entry.get("origins") or []),
         "; method of %s" % entry["container"] if entry.get("container") else "")
         for entry in candidates]
-    observed, asserted = [], []
+    observed, asserted, container_lines = [], [], []
     for entry in result.get("impacts") or []:
+        context = entry.get("container_context") or {}
+        if context:
+            # Navigational evidence: reached through the containing class,
+            # never presented as a direct dependency of the named method.
+            container_lines.append("  %s [via container %s]" % (
+                entry.get("symbol", "?"), context.get("container", "?")))
+            continue
         verification = (entry.get("derivation") or {}).get("verification", "")
         (observed if verification == "syntactic_path_only" else asserted).append(
             entry.get("symbol", "?"))
@@ -209,10 +216,14 @@ def render_answer_text(result, *, cap=4000, receipt=None):
     trust = ("TRUST RULE: OBSERVED lines are verified static-code facts. "
              "ASSERTED lines are session-recorded claims with their authority "
              "shown: usable as answers when relevant, but they are records, "
-             "not code proofs. CORRECTIONS describe removed or replaced "
-             "knowledge; never list a corrected, retracted, or superseded "
-             "symbol as an answer. DISPUTED lines are contested: do not rely "
-             "on one alone when an undisputed alternative answers the question. "
+             "not code proofs. CONTAINER CONTEXT lines reached the answer "
+             "through a containing class (for example a method's class): "
+             "the named symbols are usable answers when relevant, but the "
+             "named method itself has no direct edge to them. CORRECTIONS "
+             "describe removed or replaced knowledge; never list a corrected, "
+             "retracted, or superseded symbol as an answer. DISPUTED lines "
+             "are contested: do not rely on one alone when an undisputed "
+             "alternative answers the question. "
              "WITHHELD lines are not evidence.")
     sections = [
         ("candidates", "CANDIDATES (discovery only; listing here asserts nothing):",
@@ -221,6 +232,9 @@ def render_answer_text(result, *, cap=4000, receipt=None):
          ["  " + symbol for symbol in observed] or ["  (none)"], False),
         ("asserted_deps", "ASSERTED DEPENDENCIES (source claims, NOT independently verified):",
          ["  " + symbol for symbol in asserted] or ["  (none)"], False),
+        ("container_context", "CONTAINER CONTEXT (evidence via containing class; "
+         "navigational, not a direct dependency of the named method):",
+         container_lines or ["  (none)"], False),
         ("asserted_claims", "ASSERTED CLAIMS (source text; do not present as verified fact):",
          ["  " + text for text in dedup(claims)] or ["  (none)"], False),
         ("corrections", "CORRECTIONS (graph operations; the named knowledge was removed):",
