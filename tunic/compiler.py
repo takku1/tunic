@@ -322,7 +322,7 @@ def compile_callees(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100,
             continue
         if diagnostic.get("caller") not in reached:
             continue
-        expression = diagnostic.get("expression", "")
+        expression = diagnostic.get("expression") or ""
         if "." in expression:
             needed = ("the module or class providing '%s'" % expression)
         else:

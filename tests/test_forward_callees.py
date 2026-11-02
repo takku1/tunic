@@ -48,8 +48,11 @@ LOOP = ("def a():\n"
         "def b():\n"
         "    return a()\n")
 
+WEIRD = ("def run_weird():\n"
+         "    return factory()()\n")
+
 FILES = {"__init__.py": "", "core.py": CORE, "agent.py": AGENT,
-         "loop.py": LOOP}
+         "loop.py": LOOP, "weird.py": WEIRD}
 
 
 def build(files, tmp):
@@ -123,6 +126,16 @@ class ForwardCalleeTests(unittest.TestCase):
         self.assertEqual(receipt["expression"], "missing")
         self.assertTrue(receipt["path"].endswith("agent.py"))
         self.assertIn("needed", receipt)
+
+    def test_expressionless_call_still_receipted(self):
+        # factory()() yields two unresolved sites: inner bare `factory`
+        # and the outer chained call whose expression is None.
+        out = self.result("weird.py::run_weird")
+        exprs = sorted(c["expression"] for c in out["cold"])
+        self.assertEqual(exprs, ["", "factory"])
+        for receipt in out["cold"]:
+            self.assertEqual(receipt["caller"], "weird.py::run_weird")
+            self.assertIn("needed", receipt)
 
     def test_unknown_symbol_raises(self):
         with self.assertRaises(ValueError):
