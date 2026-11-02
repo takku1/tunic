@@ -330,7 +330,8 @@ class AnswerGuardTests(unittest.TestCase):
         memory = Memory(str(tmp / "g.sqlite"), root)
         self.addCleanup(memory.close)
         memory.ingest()
-        result = memory.answer("quantum banana firmware", limit=5)
+        result = memory.answer("quantum banana firmware", limit=5,
+                               select=False)
         self.assertIn("mod.py::outer.inner_helper", result["unknown_symbols"])
         self.assertTrue(all(c["symbol"] != "mod.py::outer.inner_helper"
                             for c in result["candidates"]))
@@ -365,7 +366,7 @@ class AnswerGuardTests(unittest.TestCase):
         self.addCleanup(memory.close)
         memory.ingest()
         result = memory.answer("Who computes late fees?", limit=5,
-                               provider=Broken())
+                               provider=Broken(), select=False)
         self.assertTrue(result["stages"]["semantic"]["skipped"])
         self.assertIn("semantic stage error",
                       result["stages"]["semantic"]["reason"])

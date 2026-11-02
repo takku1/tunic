@@ -1058,7 +1058,7 @@ class Memory:
 
     def answer(self, task, *, snapshot=None, limit=3, mode="hybrid",
                policy="transparent", budget=None, threshold=0.0, provider=None,
-               select=False, container_limit=2):
+               select=True, container_limit=2):
         """Task-based retrieval without an exact symbol.
 
         Stages propose candidates: exact keys, bare names, BM25 lexical
@@ -1082,9 +1082,9 @@ class Memory:
         (tunic.selection) filters fused candidates into supported /
         proposed / ambiguous / contradicted / insufficient_evidence /
         out_of_scope with a trace; only kept candidates expand into
-        impacts, mentions, and claims. The default (False) preserves the
-        fusion-only behavior until the selection contract acceptance
-        is met on frozen suites.
+        impacts, mentions, and claims. The default (True) applies selection filtering; pass select=False to
+        opt out to raw fusion (default flipped 2026-11-02 after the frozen-suite acceptance PASS-scoped plus a no-regression lexical pilot; rollback is the opt-out flag).
+
         """
         authorize(self.principal, "answer")
         import re
@@ -1237,7 +1237,9 @@ class Memory:
         origins = {key: ranks for _, key, ranks in fused}
         order = {"exact": 0, "name": 1, "lexical": 2, "semantic": 3, "graph": -1}
         known = {row["key"] for row in view["symbols"]}
-        unknown_symbols = [key for key in top if key not in known]
+        unknown_symbols = ([key for key in top if key not in known] + sorted(
+            {m for m in re.findall(r"[A-Za-z0-9_./-]+\.py::[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)*", task)}
+            - known - set(top)))
         top = [key for key in top if key in known]
         scores = {name: score for score, name, _ in fused}
         subjects = [key for _, key, ranks in fused

@@ -1,0 +1,1210 @@
+{
+ "benchmark": "selection-pilot-dev-v1",
+ "bm25_f1_gap_select_minus_bm25": 0.0,
+ "checks": {
+  "abstain_no_worse": true,
+  "decoy_no_worse": true,
+  "f1_up": true,
+  "latency_ok": true,
+  "precision_up": true,
+  "recall_held": true
+ },
+ "criteria": [
+  "micro-F1(select) > micro-F1(fusion) AND micro-P(select) > micro-P(fusion)",
+  "micro-R(select) >= micro-R(fusion)",
+  "decoy/empty-gold non-empty rate (select) <= (fusion)",
+  "false-abstain rate (select) <= (fusion)",
+  "p95 latency(select) < 2 * p95 latency(fusion)"
+ ],
+ "environment": {
+  "limit": 5,
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.10",
+  "semantic": "skipped (no embedding provider; lexical regime)",
+  "tunic_commit": "170a8c38b925b8a6d9983f7748356af1286ee713"
+ },
+ "failing_checks": [],
+ "fixture_files": [
+  "__init__.py",
+  "analytics.py",
+  "billing.py",
+  "core.py",
+  "legacy.py",
+  "shop.py"
+ ],
+ "ingest_peak_kb": 146.58984375,
+ "summary": {
+  "bm25-only": {
+   "decoy_nonempty_rate": 0.5,
+   "false_abstain_rate": 0.0,
+   "mean_context_symbols": 3.1,
+   "micro_f1": 0.4878048780487805,
+   "micro_precision": 0.3225806451612903,
+   "micro_recall": 1.0,
+   "p50_latency_ms": 7.538599998952122,
+   "p95_latency_ms": 20.167099999525817
+  },
+  "full-hybrid": {
+   "decoy_nonempty_rate": 0.5,
+   "false_abstain_rate": 0.0,
+   "mean_context_symbols": 3.2,
+   "micro_f1": 0.47619047619047616,
+   "micro_precision": 0.3125,
+   "micro_recall": 1.0,
+   "p50_latency_ms": 6.073599997762358,
+   "p95_latency_ms": 8.884799997758819
+  },
+  "hybrid-select": {
+   "decoy_nonempty_rate": 0.5,
+   "false_abstain_rate": 0.0,
+   "mean_context_symbols": 3.1,
+   "micro_f1": 0.4878048780487805,
+   "micro_precision": 0.3225806451612903,
+   "micro_recall": 1.0,
+   "p50_latency_ms": 6.616200000280514,
+   "p95_latency_ms": 10.272700001223711
+  }
+ },
+ "tasks": [
+  {
+   "arms": {
+    "bm25-only": {
+     "context_symbols": 5,
+     "fn": 0,
+     "fp": 4,
+     "latency_ms": 20.167099999525817,
+     "outcome": "complete",
+     "returned": [
+      "core.py::Gadget.start",
+      "core.py::cover",
+      "core.py::helper",
+      "shop.py::checkout",
+      "shop.py::run"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.012000000424450263,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 5,
+       "ms": 8.180799999536248,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 0,
+       "ms": 2.3550000005343463,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 1
+    },
+    "full-hybrid": {
+     "context_symbols": 5,
+     "fn": 0,
+     "fp": 4,
+     "latency_ms": 8.833100000629202,
+     "outcome": "complete",
+     "returned": [
+      "billing.py::cover",
+      "core.py::Gadget.start",
+      "core.py::cover",
+      "shop.py::checkout",
+      "shop.py::run"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 1,
+       "ms": 0.008700000762473792,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 5,
+       "ms": 1.3946999970357865,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 2,
+       "ms": 0.21050000214017928,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 1
+    },
+    "hybrid-select": {
+     "context_symbols": 5,
+     "fn": 0,
+     "fp": 4,
+     "latency_ms": 10.272700001223711,
+     "outcome": "complete",
+     "returned": [
+      "billing.py::cover",
+      "core.py::Gadget.start",
+      "core.py::cover",
+      "shop.py::checkout",
+      "shop.py::run"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 1,
+       "ms": 0.012299999070819467,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 5,
+       "ms": 1.1726999982784037,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 2,
+       "ms": 0.26620000062393956,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 1
+    }
+   },
+   "gold": [
+    "core.py::cover"
+   ],
+   "id": "exact",
+   "question": "core.py::cover"
+  },
+  {
+   "arms": {
+    "bm25-only": {
+     "context_symbols": 5,
+     "fn": 0,
+     "fp": 3,
+     "latency_ms": 8.68379999883473,
+     "outcome": "complete",
+     "returned": [
+      "billing.py::cover",
+      "core.py::Gadget.start",
+      "core.py::cover",
+      "shop.py::checkout",
+      "shop.py::run"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.013299999409355223,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 5,
+       "ms": 1.4549000006809365,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 0,
+       "ms": 0.21220000053290278,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 2
+    },
+    "full-hybrid": {
+     "context_symbols": 5,
+     "fn": 0,
+     "fp": 3,
+     "latency_ms": 8.884799997758819,
+     "outcome": "complete",
+     "returned": [
+      "billing.py::cover",
+      "core.py::Gadget.start",
+      "core.py::cover",
+      "shop.py::checkout",
+      "shop.py::run"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.012000000424450263,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 5,
+       "ms": 1.570600001286948,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 2,
+       "ms": 0.2460000032442622,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 2
+    },
+    "hybrid-select": {
+     "context_symbols": 5,
+     "fn": 0,
+     "fp": 3,
+     "latency_ms": 9.139899997535395,
+     "outcome": "complete",
+     "returned": [
+      "billing.py::cover",
+      "core.py::Gadget.start",
+      "core.py::cover",
+      "shop.py::checkout",
+      "shop.py::run"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.012799999240087345,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 5,
+       "ms": 1.3295000026118942,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 2,
+       "ms": 0.24090000079013407,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 2
+    }
+   },
+   "gold": [
+    "billing.py::cover",
+    "core.py::cover"
+   ],
+   "id": "name",
+   "question": "cover function"
+  },
+  {
+   "arms": {
+    "bm25-only": {
+     "context_symbols": 5,
+     "fn": 0,
+     "fp": 4,
+     "latency_ms": 9.11419999829377,
+     "outcome": "complete",
+     "returned": [
+      "core.py::Gadget.start",
+      "core.py::cover",
+      "core.py::helper",
+      "shop.py::checkout",
+      "shop.py::run"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.011399999493733048,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 5,
+       "ms": 1.196700002765283,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 0,
+       "ms": 0.23570000121253543,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 1
+    },
+    "full-hybrid": {
+     "context_symbols": 5,
+     "fn": 0,
+     "fp": 4,
+     "latency_ms": 7.988800000021001,
+     "outcome": "complete",
+     "returned": [
+      "billing.py::cover",
+      "core.py::Gadget.start",
+      "core.py::cover",
+      "shop.py::checkout",
+      "shop.py::run"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.010100000508828089,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 5,
+       "ms": 1.268500000151107,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 2,
+       "ms": 0.23019999935058877,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 1
+    },
+    "hybrid-select": {
+     "context_symbols": 5,
+     "fn": 0,
+     "fp": 4,
+     "latency_ms": 9.658200000558281,
+     "outcome": "complete",
+     "returned": [
+      "billing.py::cover",
+      "core.py::Gadget.start",
+      "core.py::cover",
+      "shop.py::checkout",
+      "shop.py::run"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.0121000011858996,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 5,
+       "ms": 1.1315999981889036,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 2,
+       "ms": 0.23090000104275532,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 1
+    }
+   },
+   "gold": [
+    "core.py::cover"
+   ],
+   "id": "import-context",
+   "question": "from core import cover usage"
+  },
+  {
+   "arms": {
+    "bm25-only": {
+     "context_symbols": 5,
+     "fn": 0,
+     "fp": 3,
+     "latency_ms": 8.706500000698725,
+     "outcome": "complete",
+     "returned": [
+      "billing.py::cover",
+      "core.py::Gadget.start",
+      "core.py::cover",
+      "shop.py::checkout",
+      "shop.py::run"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.010299998393747956,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 5,
+       "ms": 1.273800000490155,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 0,
+       "ms": 0.2609000002848916,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 2
+    },
+    "full-hybrid": {
+     "context_symbols": 5,
+     "fn": 0,
+     "fp": 3,
+     "latency_ms": 8.6907999975665,
+     "outcome": "complete",
+     "returned": [
+      "billing.py::cover",
+      "core.py::Gadget.start",
+      "core.py::cover",
+      "shop.py::checkout",
+      "shop.py::run"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.008700000762473792,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 5,
+       "ms": 1.0166000029130373,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 2,
+       "ms": 0.2229999990959186,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 2
+    },
+    "hybrid-select": {
+     "context_symbols": 5,
+     "fn": 0,
+     "fp": 3,
+     "latency_ms": 9.310699999332428,
+     "outcome": "complete",
+     "returned": [
+      "billing.py::cover",
+      "core.py::Gadget.start",
+      "core.py::cover",
+      "shop.py::checkout",
+      "shop.py::run"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.01340000017080456,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 5,
+       "ms": 1.328299997112481,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 2,
+       "ms": 0.28360000214888714,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 2
+    }
+   },
+   "gold": [
+    "billing.py::cover",
+    "core.py::cover"
+   ],
+   "id": "ambiguous",
+   "question": "which cover implementation handles refunds"
+  },
+  {
+   "arms": {
+    "bm25-only": {
+     "context_symbols": 5,
+     "fn": 0,
+     "fp": 5,
+     "latency_ms": 7.538599998952122,
+     "outcome": "complete",
+     "returned": [
+      "analytics.py::cover_all",
+      "analytics.py::cover_version",
+      "billing.py::cover",
+      "shop.py::checkout",
+      "shop.py::run"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.014599998394260183,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 5,
+       "ms": 1.745699999446515,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 0,
+       "ms": 0.24280000070575625,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 0
+    },
+    "full-hybrid": {
+     "context_symbols": 5,
+     "fn": 0,
+     "fp": 5,
+     "latency_ms": 6.073599997762358,
+     "outcome": "complete",
+     "returned": [
+      "analytics.py::cover_all",
+      "analytics.py::cover_version",
+      "billing.py::cover",
+      "shop.py::checkout",
+      "shop.py::run"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 2,
+       "ms": 0.01349999729427509,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 5,
+       "ms": 1.32119999761926,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 2,
+       "ms": 0.24479999774484895,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 0
+    },
+    "hybrid-select": {
+     "context_symbols": 4,
+     "fn": 0,
+     "fp": 4,
+     "latency_ms": 6.616200000280514,
+     "outcome": "complete",
+     "returned": [
+      "analytics.py::cover_all",
+      "billing.py::cover",
+      "shop.py::checkout",
+      "shop.py::run"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 2,
+       "ms": 0.00839999847812578,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 5,
+       "ms": 1.4994000011938624,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 2,
+       "ms": 0.20510000103968196,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 0
+    }
+   },
+   "gold": [],
+   "id": "decoy",
+   "question": "does shop.py::run call analytics.py::cover_all"
+  },
+  {
+   "arms": {
+    "bm25-only": {
+     "context_symbols": 3,
+     "fn": 0,
+     "fp": 2,
+     "latency_ms": 5.065000001195585,
+     "outcome": "complete",
+     "returned": [
+      "billing.py::cover",
+      "billing.py::invoice",
+      "core.py::helper"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.008200000593205914,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 3,
+       "ms": 1.2840000017604325,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 0,
+       "ms": 0.20799999765586108,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 1
+    },
+    "full-hybrid": {
+     "context_symbols": 3,
+     "fn": 0,
+     "fp": 2,
+     "latency_ms": 4.8749999987194315,
+     "outcome": "complete",
+     "returned": [
+      "billing.py::cover",
+      "billing.py::invoice",
+      "core.py::helper"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.009700001101009548,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 3,
+       "ms": 0.9825999986787792,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 2,
+       "ms": 0.22229999740375206,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 1
+    },
+    "hybrid-select": {
+     "context_symbols": 3,
+     "fn": 0,
+     "fp": 2,
+     "latency_ms": 5.510599999979604,
+     "outcome": "complete",
+     "returned": [
+      "billing.py::cover",
+      "billing.py::invoice",
+      "core.py::helper"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.00839999847812578,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 3,
+       "ms": 1.3926999999966938,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 2,
+       "ms": 0.20770000264747068,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 1
+    }
+   },
+   "gold": [
+    "billing.py::invoice"
+   ],
+   "id": "cold",
+   "question": "billing invoice helper"
+  },
+  {
+   "arms": {
+    "bm25-only": {
+     "context_symbols": 0,
+     "fn": 0,
+     "fp": 0,
+     "latency_ms": 5.823899999086279,
+     "outcome": "empty",
+     "returned": [],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.008200000593205914,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 0,
+       "ms": 1.0815999994520098,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 0,
+       "ms": 0.20959999892511405,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 0
+    },
+    "full-hybrid": {
+     "context_symbols": 0,
+     "fn": 0,
+     "fp": 0,
+     "latency_ms": 4.699000000982778,
+     "outcome": "empty",
+     "returned": [],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.00839999847812578,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 0,
+       "ms": 0.9647000006225426,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 0,
+       "ms": 0.20640000002458692,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 0
+    },
+    "hybrid-select": {
+     "context_symbols": 0,
+     "fn": 0,
+     "fp": 0,
+     "latency_ms": 4.995899998903042,
+     "outcome": "empty",
+     "returned": [],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.008300001354655251,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 0,
+       "ms": 0.9633000008761883,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 0,
+       "ms": 0.2049000031547621,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 0
+    }
+   },
+   "gold": [],
+   "id": "insufficient",
+   "question": "quantum banana firmware requirements"
+  },
+  {
+   "arms": {
+    "bm25-only": {
+     "context_symbols": 1,
+     "fn": 0,
+     "fp": 0,
+     "latency_ms": 3.8156000009621494,
+     "outcome": "complete",
+     "returned": [
+      "shop.py::checkout"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.008200000593205914,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 1,
+       "ms": 1.120599998102989,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 0,
+       "ms": 0.20260000019334257,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 1
+    },
+    "full-hybrid": {
+     "context_symbols": 1,
+     "fn": 0,
+     "fp": 0,
+     "latency_ms": 3.5870000028808136,
+     "outcome": "complete",
+     "returned": [
+      "shop.py::checkout"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.008099999831756577,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 1,
+       "ms": 0.9773999991011806,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 1,
+       "ms": 0.21280000146362,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 1
+    },
+    "hybrid-select": {
+     "context_symbols": 1,
+     "fn": 0,
+     "fp": 0,
+     "latency_ms": 3.5657000007631723,
+     "outcome": "complete",
+     "returned": [
+      "shop.py::checkout"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.007499998901039362,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 1,
+       "ms": 0.9715000014693942,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 1,
+       "ms": 0.2049000031547621,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 1
+    }
+   },
+   "gold": [
+    "shop.py::checkout"
+   ],
+   "id": "checkout-flow",
+   "question": "checkout flow"
+  },
+  {
+   "arms": {
+    "bm25-only": {
+     "context_symbols": 1,
+     "fn": 0,
+     "fp": 0,
+     "latency_ms": 4.221399998641573,
+     "outcome": "complete",
+     "returned": [
+      "core.py::Gadget.start"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.008099999831756577,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 1,
+       "ms": 1.0244000004604459,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 0,
+       "ms": 0.20739999672514386,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 1
+    },
+    "full-hybrid": {
+     "context_symbols": 2,
+     "fn": 0,
+     "fp": 1,
+     "latency_ms": 4.661300001316704,
+     "outcome": "complete",
+     "returned": [
+      "core.py::Gadget",
+      "core.py::Gadget.start"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.008999999408842996,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 1,
+       "ms": 1.113999998779036,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 2,
+       "ms": 0.21249999917927198,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 1
+    },
+    "hybrid-select": {
+     "context_symbols": 2,
+     "fn": 0,
+     "fp": 1,
+     "latency_ms": 4.479300001548836,
+     "outcome": "complete",
+     "returned": [
+      "core.py::Gadget",
+      "core.py::Gadget.start"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.008099999831756577,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 1,
+       "ms": 1.0197000010521151,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 2,
+       "ms": 0.2002000001084525,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 1
+    }
+   },
+   "gold": [
+    "core.py::Gadget.start"
+   ],
+   "id": "container",
+   "question": "Gadget start method"
+  },
+  {
+   "arms": {
+    "bm25-only": {
+     "context_symbols": 1,
+     "fn": 0,
+     "fp": 0,
+     "latency_ms": 3.253700000641402,
+     "outcome": "complete",
+     "returned": [
+      "core.py::helper"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.007599999662488699,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 1,
+       "ms": 1.0954999997920822,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 0,
+       "ms": 0.21850000121048652,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 1
+    },
+    "full-hybrid": {
+     "context_symbols": 1,
+     "fn": 0,
+     "fp": 0,
+     "latency_ms": 3.555800001777243,
+     "outcome": "complete",
+     "returned": [
+      "core.py::helper"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.01049999991664663,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 1,
+       "ms": 0.9957000002032146,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 1,
+       "ms": 0.22650000028079376,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 1
+    },
+    "hybrid-select": {
+     "context_symbols": 1,
+     "fn": 0,
+     "fp": 0,
+     "latency_ms": 3.4887000001617707,
+     "outcome": "complete",
+     "returned": [
+      "core.py::helper"
+     ],
+     "stages": {
+      "exact": {
+       "candidates": 0,
+       "ms": 0.010900002962443978,
+       "skipped": false
+      },
+      "lexical": {
+       "candidates": 1,
+       "ms": 0.9288999972341117,
+       "skipped": false
+      },
+      "name": {
+       "candidates": 1,
+       "ms": 0.1999000014620833,
+       "skipped": false
+      },
+      "semantic": {
+       "candidates": 0,
+       "ms": 0.0,
+       "skipped": true
+      }
+     },
+     "tp": 1
+    }
+   },
+   "gold": [
+    "core.py::helper"
+   ],
+   "id": "helper",
+   "question": "helper utility"
+  }
+ ],
+ "verdict": "ADOPT"
+}

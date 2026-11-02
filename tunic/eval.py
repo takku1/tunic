@@ -54,13 +54,20 @@ def _condition_run(condition, question, memory, index, limit):
         ranking = index.search_text(question, top_k=limit)
         return [hit["symbol"] for hit in ranking], ranking
     if condition == "tunic":
-        result = memory.answer(question, limit=limit, policy="current")
+        # The agent suite measures fusion graph retrieval, including
+        # stale symbols its golds name explicitly. It pins select=False
+        # so a product-default change cannot silently redefine what the
+        # frozen suite measures; selection is covered by its own
+        # frozen suites plus tests/test_selection_acceptance.py.
+        result = memory.answer(question, limit=limit, policy="current",
+                               select=False)
         return _answer_symbols(result), result
     raise ValueError("unknown condition %r" % condition)
 
 
 def _task_evidence(memory, question, limit):
-    result = memory.answer(question, limit=limit, policy="current")
+    result = memory.answer(question, limit=limit, policy="current",
+                           select=False)
     kinds = ["mention"] if result["mentions"] else []
     kinds.extend(row["relation"] for row in result["claims"])
     return result, sorted(set(kinds))

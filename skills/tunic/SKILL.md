@@ -25,8 +25,10 @@ server accepts only the `local` principal: a caller-supplied
 1. **Retrieve first.** `retrieve(task, limit?, policy?, threshold?,
    select?, snapshot?, container_limit?)` fuses exact, name, lexical,
    and (if configured) semantic stages. Use `policy="current"` for
-   answers (superseded knowledge excluded). `select=true` runs the
-   evidence-aware selection layer and returns its trace; `snapshot`
+   answers (superseded knowledge excluded). Selection is on by
+   default since 2026-11-02 (frozen-suite acceptance PASS-scoped;
+   `select=false` opts out to raw fusion); it returns its trace;
+   `snapshot`
    pins a view; `container_limit` (default 2, 0 disables) bounds
    method-to-class expansion. An empty result is a finding, not a
    failure: record what is missing.
