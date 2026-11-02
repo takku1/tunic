@@ -16,14 +16,21 @@ behavior. Precision and recall are reported separately.
 
 Usage:
   python run_acq_v2.py <out.json> [suite] [scen,...] [--dry-run] [--arms a,b]
-      [--backend=ollama|kimi-cli] [--kimi-model=NAME] [--kimi-timeout=SEC]
+      [--backend=ollama|kimi-cli|cli] [--kimi-model=NAME] [--kimi-timeout=SEC]
+      [--cli-exe=EXE --cli-agent-file=SPEC [--cli-name=N --cli-model=M
+       --cli-timeout=SEC --cli-quota-markers=a,b]] [--resume] [--overwrite]
 
 Backend: ollama (default) serves the frozen qwen3:4b comparison arms;
-kimi-cli shells out to the installed Kimi Code CLI in tool-less print mode,
-riding the authenticated subscription (no API keys). kimi-cli results must
+kimi-cli is the Kimi Code preset of the generic subscription-CLI backend
+(cli_backend.CLIBackend: any tool-less print-mode agent CLI riding its own
+authenticated subscription, no API keys). Subscription-CLI results must
 be written to their own artifacts -- never overwrite the qwen3 runs.
+Progress checkpoints atomically after every cell; --resume continues an
+incomplete run without rerunning recorded cells, and quota exhaustion
+saves progress and exits instead of retrying.
 """
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -35,12 +42,11 @@ sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "benchmarks/agent"))
 
 from run_model_ab_v1 import MODEL  # noqa: E402
-import run_model_ab_multisession_v2 as _ms_v2  # noqa: E402
 from run_model_ab_multisession_v2 import (  # noqa: E402
     CONTEXT_CAP, PROPOSE_PROMPT, chat, parse_proposal, parse_symbols, run_arm)
 from run_model_ab_multisession_v4 import static_edge_visible  # noqa: E402
 
-from kimi_cli_backend import model_identity as _kimi_identity  # noqa: E402
+from cli_backend import CLIBackend, QuotaError, kimi_backend  # noqa: E402
 
 # Inference backend. The frozen qwen3:4b Ollama arm is the default; the
 # kimi-cli backend rides the user's authenticated Kimi Code subscription
@@ -50,16 +56,17 @@ from kimi_cli_backend import model_identity as _kimi_identity  # noqa: E402
 _BACKEND = {"name": "ollama", "model": MODEL, "chat": chat}
 
 
-def use_backend(name, kimi_model=None, kimi_timeout=None):
+def use_backend(name, kimi_model=None, kimi_timeout=None, cli_options=None):
     if name == _BACKEND["name"]:
         return
-    if name != "kimi-cli":
-        raise SystemExit("unknown --backend %r (ollama|kimi-cli)" % name)
-    import kimi_cli_backend
-    kimi_cli_backend.configure(model=kimi_model, timeout_s=kimi_timeout)
-    _BACKEND.update(name=name, model=kimi_cli_backend.model_identity(),
-                    chat=kimi_cli_backend.chat)
-    _ms_v2.chat = kimi_cli_backend.chat
+    if name == "kimi-cli":
+        backend = kimi_backend(model=kimi_model, timeout_s=kimi_timeout)
+    elif name == "cli":
+        backend = CLIBackend(**(cli_options or {}))
+    else:
+        raise SystemExit("unknown --backend %r (ollama|kimi-cli|cli)" % name)
+    _BACKEND.update(name=backend.name, model=backend.identity(),
+                    chat=backend.chat)
 
 from acqgen2 import SCENARIOS, build, digest  # noqa: E402
 from tunic.memory import Memory  # noqa: E402
@@ -118,6 +125,9 @@ def resolve_candidate_id(selected, candidates):
     unique candidate whose caller or callee symbol the selection names
     (small models sometimes echo the endpoints instead of the id).
     Unresolvable or ambiguous -> None (the commit path then refuses)."""
+    selected = (selected or "").strip()
+    if selected[:3].lower() == "id ":
+        selected = selected[3:].strip()
     ids = [c["id"] for c in candidates]
     if selected in ids:
         return selected
@@ -240,7 +250,8 @@ def propose_cell(work, arm, suite, scenario, rep, dry=False):
     bundle_arm = "lexical" if arm == "lexical" else "tunic-select"
     if arm == "tunic-commit-cand":
         _resp, context = run_arm(memory, code_index, notes_index,
-                                 "tunic-select", question)
+                                 "tunic-select", question,
+                                 chat_fn=_BACKEND["chat"])
         calls[0] += 1
         block = candidates_block(candidates, memory) or "(no candidates)"
         response = tracked(SELECT_PROMPT % (question, context, block))
@@ -286,7 +297,8 @@ def propose_cell(work, arm, suite, scenario, rep, dry=False):
             context = "(no repository context available)"
         else:
             _resp, context = run_arm(memory, code_index, notes_index,
-                                     bundle_arm, question)
+                                     bundle_arm, question,
+                                     chat_fn=_BACKEND["chat"])
             calls[0] += 1
         if arm == "tunic-candidates" and candidates:
             context = (context + "\n\nProposed relationship candidates "
@@ -379,7 +391,8 @@ def apply_pass(scenario, parsed_ok, had_commit):
 
 def apply_stage(memory, code_index, notes_index, arm, prop, check):
     """Post-commit retrieval check (pass rule: see apply_pass)."""
-    response, _ = run_arm(memory, code_index, notes_index, arm, check["question"])
+    response, _ = run_arm(memory, code_index, notes_index, arm,
+                            check["question"], chat_fn=_BACKEND["chat"])
     parsed = parse_symbols(response.get("text", ""))
     stale = [s for s in parsed if s in check.get("obsolete", [])]
     passed = (set(check["gold"]) <= set(parsed) and not stale
@@ -446,9 +459,64 @@ def summarize_acq(rows):
     return summary
 
 
+QUOTA_EXIT_CODE = 3
+
+
+def run_config(suite, scenarios, arms, backend_name, model):
+    return {"suite": suite, "scenarios": list(scenarios),
+            "arms": list(arms), "backend": backend_name, "model": model}
+
+
+def done_cells(rows):
+    """(propose-id, arm) pairs already recorded. The propose id alone
+    is not unique: every arm reuses it, so the arm is part of the key."""
+    return {(r["id"], r.get("arm")) for r in rows
+            if r.get("id", "").endswith("-propose")}
+
+
+def pending_cells(suite, scenarios, reps, arms, done):
+    """Ordered (scenario, rep, arm) triples with no recorded propose row."""
+    pending = []
+    for scenario in scenarios:
+        for rep in reps:
+            for arm in arms:
+                pid = "%s-%s-rep%d-propose" % (suite, scenario, rep)
+                if (pid, arm) not in done:
+                    pending.append((scenario, rep, arm))
+    return pending
+
+
+def write_record_atomic(out, record):
+    """Crash-safe progress write: temp file + atomic replace, so an
+    interrupted run never leaves a truncated artifact behind."""
+    tmp = out.with_name(out.name + ".tmp")
+    tmp.write_text(json.dumps(record, indent=1), encoding="utf-8")
+    os.replace(tmp, out)
+
+
+def load_resume(out, config):
+    """Returns (rows, done) for an incomplete run, None when the recorded
+    run is already complete, and exits loudly on corruption or a config
+    mismatch (resuming the wrong run would silently mix results)."""
+    try:
+        record = json.loads(out.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as error:
+        raise SystemExit("cannot resume from %s: %s" % (out, error))
+    if record.get("complete"):
+        return None
+    if record.get("config") != config:
+        raise SystemExit(
+            "resume config mismatch in %s: recorded %r, requested %r "
+            "(finish or move the old run first)" % (out, record.get("config"), config))
+    rows = record.get("tasks", [])
+    return rows, done_cells(rows)
+
+
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     dry = "--dry-run" in sys.argv
+    resume = "--resume" in sys.argv
+    overwrite = "--overwrite" in sys.argv
     out_name = args[0] if args else "acq-v2.json"
     suite = args[1] if len(args) > 1 else "dev"
     scenarios = args[2].split(",") if len(args) > 2 else list(SCENARIOS)
@@ -456,6 +524,8 @@ def main():
     backend = "ollama"
     kimi_model = None
     kimi_timeout = None
+    cli_options = {}
+    cli_quota = None
     for a in sys.argv:
         if a.startswith("--arms="):
             arms = a.split("=", 1)[1].split(",")
@@ -465,54 +535,105 @@ def main():
             kimi_model = a.split("=", 1)[1]
         elif a.startswith("--kimi-timeout="):
             kimi_timeout = int(a.split("=", 1)[1])
+        elif a.startswith("--cli-exe="):
+            cli_options["exe"] = a.split("=", 1)[1]
+        elif a.startswith("--cli-agent-file="):
+            cli_options["agent_file"] = a.split("=", 1)[1]
+        elif a.startswith("--cli-name="):
+            cli_options["name"] = a.split("=", 1)[1]
+        elif a.startswith("--cli-model="):
+            cli_options["model"] = a.split("=", 1)[1]
+        elif a.startswith("--cli-timeout="):
+            cli_options["timeout_s"] = int(a.split("=", 1)[1])
+        elif a.startswith("--cli-quota-markers="):
+            cli_quota = a.split("=", 1)[1].split(",")
+    if cli_quota:
+        cli_options["quota_markers"] = tuple(cli_quota)
+    if backend == "cli" and ("exe" not in cli_options
+                             or "agent_file" not in cli_options):
+        raise SystemExit("--backend=cli requires --cli-exe and --cli-agent-file")
     arms = arms or list(ARMS)
-    use_backend(backend, kimi_model=kimi_model, kimi_timeout=kimi_timeout)
+    use_backend(backend, kimi_model, kimi_timeout, cli_options or None)
     tunic_commit = subprocess.run(
         ["git", "rev-parse", "HEAD"], capture_output=True, text=True,
         cwd=str(REPO)).stdout.strip()
+    out = REPO / "benchmarks/agent/runs" / out_name
+    config = run_config(suite, scenarios, arms, _BACKEND["name"],
+                        _BACKEND["model"])
+    if resume:
+        if out.is_file():
+            loaded = load_resume(out, config)
+            if loaded is None:
+                print("run already complete in %s; nothing to rerun" % out)
+                return
+            rows, done = loaded
+            print("resuming %s: %d rows, %d cells done" % (out, len(rows), len(done)))
+        else:
+            rows, done = [], set()
+    else:
+        if out.is_file() and not overwrite:
+            raise SystemExit(
+                "refusing to overwrite %s (use --resume or --overwrite)" % out)
+        rows, done = [], set()
     work = Path(tempfile.mkdtemp(prefix="tunic-acq-v2-"))
-    rows = []
-    for scenario in scenarios:
-        for rep in range(5):
-            for arm in arms:
-                prop, applies = propose_cell(work, arm, suite, scenario, rep, dry=dry)
-                rows.append(prop)
-                rows.extend(applies)
-                print("%s/%s/%s pass=%s %s" %
-                      (prop["id"], arm, "dry" if dry else "live",
-                       prop.get("pass"), prop.get("commit_reason", "")), flush=True)
+
+    def checkpoint(terminated=None, complete=False):
+        record = {"benchmark": out_name.replace(".json", ""),
+                  "protocol": ("ACQ v2: candidate-aided acquisition; 5 arms "
+                               "(none/lexical/tunic/tunic-candidates/tunic-commit-cand); "
+                               "product commit paths, exact-triple scorer; precision and "
+                               "recall reported separately; a candidate being present is "
+                               "not an acquisition success"),
+                  "model": _BACKEND["model"], "backend": _BACKEND["name"],
+                  "decoding": decoding,
+                  "context_cap": CONTEXT_CAP, "tunic_commit": tunic_commit,
+                  "dry_run": dry, "suite": suite, "scenarios": scenarios,
+                  "arms": arms, "config": config, "terminated": terminated,
+                  "complete": complete, "summary": summarize_acq(rows),
+                  "tasks": rows, "limitations": limitations}
+        write_record_atomic(out, record)
+
     decoding = ({"temperature": 0, "seed": 0} if backend == "ollama" else
-                {"temperature": "server-side (not exposed by kimi-cli)",
+                {"temperature": "server-side (not exposed by every CLI)",
                  "seed": None})
     limitations = ["n=5 reps per cell; directional evidence only; heldout run "
                    "once, not tuned against"]
     if backend == "ollama":
         limitations[0] = "n=5 reps per cell; temperature 0; " + limitations[0]
     else:
-        # Model swap: the kimi-cli arm differs from the frozen qwen3 run in
-        # model, decoding, and latency regime, so arm deltas conflate those.
-        limitations.append("kimi-cli backend: decoding is server-side "
+        # Model swap: a subscription-CLI arm differs from the frozen qwen3
+        # run in model, decoding, and latency regime, so arm deltas conflate
+        # those. CLI results go to their own artifacts, never the qwen3 runs.
+        limitations.append("%s backend: decoding is server-side "
                            "(temperature not pinned); token usage not reported "
-                           "by the CLI (null, never fabricated); each call is a "
+                           "by every CLI (null, never fabricated); each call is a "
                            "fresh subprocess + session so trials are independent "
-                           "but startup latency is included in latency_ms")
+                           "but startup latency is included in latency_ms"
+                           % backend)
         limitations.append("cross-model comparisons with the frozen qwen3 "
                            "artifacts are directional only, not controlled")
-    record = {"benchmark": out_name.replace(".json", ""),
-              "protocol": ("ACQ v2: candidate-aided acquisition; 5 arms "
-                           "(none/lexical/tunic/tunic-candidates/tunic-commit-cand); "
-                           "product commit paths; exact-triple scorer; precision and "
-                           "recall reported separately; a candidate being present is "
-                           "not an acquisition success"),
-              "model": _BACKEND["model"], "backend": _BACKEND["name"],
-              "decoding": decoding,
-              "context_cap": CONTEXT_CAP, "tunic_commit": tunic_commit,
-              "dry_run": dry, "suite": suite, "scenarios": scenarios, "arms": arms,
-              "summary": summarize_acq(rows), "tasks": rows,
-              "limitations": limitations}
-    out = REPO / "benchmarks/agent/runs" / out_name
-    out.write_text(json.dumps(record, indent=1), encoding="utf-8")
-    print("summary:", json.dumps(record["summary"]))
+    checkpoint()
+    try:
+        for scenario, rep, arm in pending_cells(suite, scenarios, range(5),
+                                                arms, done):
+            prop, applies = propose_cell(work, arm, suite, scenario, rep,
+                                         dry=dry)
+            rows.append(prop)
+            rows.extend(applies)
+            print("%s/%s/%s pass=%s %s" %
+                  (prop["id"], arm, "dry" if dry else "live",
+                   prop.get("pass"), prop.get("commit_reason", "")), flush=True)
+            checkpoint()
+    except QuotaError as error:
+        checkpoint(terminated="quota-exhausted")
+        print("quota exhausted (%s); progress saved to %s; retry after "
+              "the quota window with --resume" % (error, out), flush=True)
+        raise SystemExit(QUOTA_EXIT_CODE)
+    except BaseException:
+        checkpoint(terminated="interrupted")
+        raise
+    checkpoint(complete=True)
+    print("summary:", json.dumps(summarize_acq(rows)))
     print("wrote", out)
 
 

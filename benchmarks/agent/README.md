@@ -115,36 +115,60 @@ caller/callee symbol; ambiguous or unknown still refused).
 
 ### Inference backends
 
-`run_acq_v2.py` has two interchangeable inference backends, selected
+`run_acq_v2.py` has interchangeable inference backends, selected
 with `--backend=` (default `ollama`):
 
 - `ollama` — the frozen qwen3:4b comparison runs above (temperature 0,
   token counts reported).
-- `kimi-cli` — shells out to the installed Kimi Code CLI
+- `kimi-cli` — the Kimi Code preset of the generic subscription-CLI
+  backend (`cli_backend.py`): shells out to the installed Kimi Code CLI
   (`kimi --quiet --agent-file kimi_agent/agent.yaml -p <prompt>`), riding
   the user's authenticated Kimi Code subscription. No API keys or OAuth
   tokens are handled; no local model is loaded. Safety posture:
   `kimi_agent/agent.yaml` declares `tools: []`, so the model physically
   cannot touch the filesystem or shell regardless of prompt content, and
   the process runs in a per-run scratch work directory. One subprocess per
-  inference call — the CLI's persistent `stream-json` session accumulates
-  context across messages, which would contaminate independent trials.
-  Exit code 75 / timeouts retry with bounded backoff; anything else fails
-  the run loudly. Usage:
+  inference call — a CLI persistent session would accumulate context
+  across messages, which would contaminate independent trials.
+  Exit code 75 / timeouts retry with bounded backoff; quota exhaustion
+  (HTTP 429 / five-hour window) saves progress and exits without
+  retrying; anything else fails the run loudly. Usage:
 
   ```
   python run_acq_v2.py <out.json> [suite] [scen,...] \
       --backend=kimi-cli [--kimi-model=NAME] [--kimi-timeout=SEC]
   ```
 
-  Caveats recorded in every kimi-cli artifact: decoding is server-side
-  (temperature not pinned); the CLI does not report token usage (fields
-  are null, never fabricated); latency includes subprocess + session
-  startup. Cross-model comparisons against the frozen qwen3 artifacts are
-  directional only. Kimi results go to their own artifacts (smoke:
-  `runs/acq-v2-kimi-smoke.json`) — never overwrite the qwen3 runs.
-  Before any large run, check the subscription's applicable quota; one
-  cell is 1–3 calls at ~5–10s each.
+- `cli` — any other subscription CLI as a preset: `--cli-exe` and
+  `--cli-agent-file` (required), `--cli-name`, `--cli-model`,
+  `--cli-timeout`, `--cli-quota-markers` (comma-separated). The agent
+  spec must be tool-less for the same filesystem/shell isolation.
+  New presets belong in `cli_backend.py` (argv builder, quota markers,
+  identity); `kimi-cli` stays as the worked example.
+
+  Caveats recorded in every subscription-CLI artifact: decoding is
+  server-side (temperature not pinned); CLIs do not report token usage
+  (fields are null, never fabricated); latency includes subprocess +
+  session startup. Cross-model comparisons against the frozen qwen3
+  artifacts are directional only. CLI results go to their own artifacts
+  (smoke: `runs/acq-v2-kimi-smoke.json`) — never overwrite the qwen3
+  runs. Before any large run, check the subscription's applicable quota;
+  one cell is 1–3 calls at ~5–10s each.
+
+### Resume and interruption
+
+Every cell checkpoints atomically (temp file + replace) with
+`"complete": false`; a finished run rewrites the artifact with
+`"complete": true`. `--resume` continues an incomplete artifact,
+skipping recorded (propose-id, arm) cells without rerunning them, and
+refuses on config mismatch; a recorded complete run exits without
+rerunning anything. Without `--resume`, an existing artifact is never
+silently overwritten (use `--overwrite`). Quota exhaustion records
+`"terminated": "quota-exhausted"` and exits with code 3 — rerun with
+`--resume` after the window. Candidate-ID matching tolerates a literal
+`id ` prefix (models echo the candidate-block line format); post-change
+runs are not directly comparable to the frozen qwen3 artifacts for that
+one invalid-id cell class.
 
 ## Replays (deterministic, no model)
 

@@ -70,7 +70,8 @@ def bundle_lexical_notes(code_index, notes_index, question, limit=5):
     return "\n---\n".join(lines)[:CONTEXT_CAP]
 
 
-def run_arm(memory, code_index, notes_index, arm, question, propose=False):
+def run_arm(memory, code_index, notes_index, arm, question, propose=False,
+           chat_fn=None):
     if arm == "none":
         context = "(no context provided)"
     elif arm == "lexical":
@@ -82,7 +83,8 @@ def run_arm(memory, code_index, notes_index, arm, question, propose=False):
         context = (bundle_tunic(memory, question, select=True)
                    or "(no context provided)")
     prompt = PROPOSE_PROMPT if propose else PROMPT
-    return chat(prompt % (question, context)), context
+    invoke = chat_fn if chat_fn is not None else chat
+    return invoke(prompt % (question, context)), context
 
 
 def parse_proposal(text):

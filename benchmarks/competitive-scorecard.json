@@ -302,7 +302,8 @@
    "tokens_per_answer": {
     "completion_tokens": 26119,
     "prompt_tokens": 5666
-   }
+   },
+   "arm": "tunic-commit-cand"
   },
   {
    "accuracy": 1.0,
@@ -322,7 +323,8 @@
    "suite": "heldout",
    "system": "tunic",
    "system_version": "ecd97c3",
-   "tokens_per_answer": null
+   "tokens_per_answer": null,
+   "arm": "tunic-commit-cand"
   },
   {
    "accuracy": 1.0,
@@ -342,7 +344,8 @@
    "suite": "dev",
    "system": "tunic",
    "system_version": "ecd97c3",
-   "tokens_per_answer": null
+   "tokens_per_answer": null,
+   "arm": "tunic-commit-cand"
   },
   {
    "accuracy": 1.0,
@@ -362,7 +365,8 @@
    "suite": "heldout",
    "system": "tunic",
    "system_version": "ecd97c3",
-   "tokens_per_answer": null
+   "tokens_per_answer": null,
+   "arm": "tunic-commit-cand"
   },
   {
    "accuracy": 1.0,
@@ -382,7 +386,8 @@
    "suite": "dev",
    "system": "tunic",
    "system_version": "ecd97c3",
-   "tokens_per_answer": null
+   "tokens_per_answer": null,
+   "arm": "tunic-commit-cand"
   },
   {
    "accuracy": 1.0,
@@ -402,7 +407,8 @@
    "suite": "heldout",
    "system": "tunic",
    "system_version": "ecd97c3",
-   "tokens_per_answer": null
+   "tokens_per_answer": null,
+   "arm": "tunic-commit-cand"
   },
   {
    "accuracy": 0.0,
@@ -422,7 +428,8 @@
    "suite": "dev",
    "system": "tunic",
    "system_version": "ecd97c3",
-   "tokens_per_answer": null
+   "tokens_per_answer": null,
+   "arm": "tunic-commit-cand"
   },
   {
    "accuracy": 0.0,
@@ -442,7 +449,8 @@
    "suite": "heldout",
    "system": "tunic",
    "system_version": "ecd97c3",
-   "tokens_per_answer": null
+   "tokens_per_answer": null,
+   "arm": "tunic-commit-cand"
   },
   {
    "accuracy": 1.0,
@@ -462,7 +470,8 @@
    "suite": "dev",
    "system": "tunic",
    "system_version": "ecd97c3",
-   "tokens_per_answer": null
+   "tokens_per_answer": null,
+   "arm": "tunic-commit-cand"
   },
   {
    "accuracy": 1.0,
@@ -482,7 +491,8 @@
    "suite": "heldout",
    "system": "tunic",
    "system_version": "ecd97c3",
-   "tokens_per_answer": null
+   "tokens_per_answer": null,
+   "arm": "tunic-commit-cand"
   },
   {
    "accuracy": 1.0,
@@ -502,7 +512,8 @@
    "suite": "dev",
    "system": "tunic",
    "system_version": "ecd97c3",
-   "tokens_per_answer": null
+   "tokens_per_answer": null,
+   "arm": "tunic-commit-cand"
   },
   {
    "accuracy": 1.0,
@@ -522,7 +533,8 @@
    "suite": "heldout",
    "system": "tunic",
    "system_version": "ecd97c3",
-   "tokens_per_answer": null
+   "tokens_per_answer": null,
+   "arm": "tunic-commit-cand"
   },
   {
    "accuracy": 1.0,
@@ -542,7 +554,8 @@
    "suite": "dev",
    "system": "tunic",
    "system_version": "ecd97c3",
-   "tokens_per_answer": null
+   "tokens_per_answer": null,
+   "arm": "tunic-commit-cand"
   },
   {
    "accuracy": 1.0,
@@ -562,7 +575,8 @@
    "suite": "heldout",
    "system": "tunic",
    "system_version": "ecd97c3",
-   "tokens_per_answer": null
+   "tokens_per_answer": null,
+   "arm": "tunic-commit-cand"
   },
   {
    "accuracy": 1.0,
@@ -582,7 +596,8 @@
    "suite": "dev",
    "system": "tunic",
    "system_version": "ecd97c3",
-   "tokens_per_answer": null
+   "tokens_per_answer": null,
+   "arm": "tunic-commit-cand"
   },
   {
    "accuracy": 1.0,
@@ -602,7 +617,8 @@
    "suite": "heldout",
    "system": "tunic",
    "system_version": "ecd97c3",
-   "tokens_per_answer": null
+   "tokens_per_answer": null,
+   "arm": "tunic-commit-cand"
   },
   {
    "accuracy": 1.0,
@@ -622,7 +638,8 @@
    "suite": "dev",
    "system": "tunic",
    "system_version": "ecd97c3",
-   "tokens_per_answer": null
+   "tokens_per_answer": null,
+   "arm": "tunic-commit-cand"
   },
   {
    "accuracy": 1.0,
@@ -642,7 +659,8 @@
    "suite": "heldout",
    "system": "tunic",
    "system_version": "ecd97c3",
-   "tokens_per_answer": null
+   "tokens_per_answer": null,
+   "arm": "tunic-commit-cand"
   },
   {
    "accuracy": 1.0,
@@ -662,7 +680,8 @@
    "suite": "dev",
    "system": "tunic",
    "system_version": "580a391",
-   "tokens_per_answer": null
+   "tokens_per_answer": null,
+   "arm": "tunic-commit-cand"
   },
   {
    "accuracy": 0.8,
@@ -678,11 +697,12 @@
    "model": "kimi-cli:kimi-code/kimi-for-coding (server-side decoding, temperature not pinned)",
    "n": 5,
    "retrieval_budget": "context_cap 4000",
-   "scenario": "callback-apply",
+   "scenario": "callback",
    "suite": "dev",
    "system": "tunic",
    "system_version": "580a391",
-   "tokens_per_answer": null
+   "tokens_per_answer": null,
+   "arm": "tunic-commit-cand"
   },
   {
    "accuracy": 153.0,
@@ -702,7 +722,8 @@
    "suite": "pyquifer",
    "system": "tunic",
    "system_version": "ecd97c3",
-   "tokens_per_answer": null
+   "tokens_per_answer": null,
+   "arm": "tunic-commit-cand"
   },
   {
    "accuracy": 383.0,
@@ -722,7 +743,8 @@
    "suite": "pyquifer",
    "system": "tunic",
    "system_version": "ecd97c3",
-   "tokens_per_answer": null
+   "tokens_per_answer": null,
+   "arm": "tunic-commit-cand"
   }
  ],
  "version": "1",
