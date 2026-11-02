@@ -48,7 +48,7 @@ def classify_intent(task):
             "reasons": ["no impact or provenance markers; treating as a locator query"]}
 
 
-def _live_claim_maps(view):
+def _live_claim_maps(view, suppressed=frozenset()):
     """Index asserted claims once per selection pass.
 
     Mirrors the compiler's staleness rules: supersedes blocks its callee
@@ -58,6 +58,8 @@ def _live_claim_maps(view):
     contradicted = set()
     for assertion in view["assertions"]:
         if assertion.get("status") != "asserted_in_source":
+            continue
+        if assertion.get("id") in suppressed:
             continue
         proposition = assertion["proposition"]
         relation = proposition.get("relation")
@@ -72,7 +74,8 @@ def _live_claim_maps(view):
     return superseded_by, contradicted
 
 
-def candidate_evidence(view, symbol, anchors=None):
+def candidate_evidence(view, symbol, anchors=None,
+                       suppressed=frozenset()):
     """Structural evidence touching one candidate symbol.
 
     Asserted ties use supports-minus-retractions, mirroring the compiler:
@@ -90,6 +93,8 @@ def candidate_evidence(view, symbol, anchors=None):
         proposition = assertion["proposition"]
         if assertion.get("status") != "asserted_in_source":
             continue
+        if assertion.get("id") in suppressed:
+            continue
         relation = proposition.get("relation")
         if relation in TRAVERSABLE_CLAIMS:
             key = (relation, proposition.get("caller"), proposition.get("callee"))
@@ -103,6 +108,8 @@ def candidate_evidence(view, symbol, anchors=None):
     ambiguous = False
     for assertion in view["assertions"]:
         proposition = assertion["proposition"]
+        if assertion.get("id") in suppressed:
+            continue
         if proposition.get("caller") != symbol and proposition.get("callee") != symbol:
             continue
         relation = proposition.get("relation")
@@ -143,7 +150,8 @@ OUTCOME_ORDER = {"supported": 0, "proposed": 1, "ambiguous": 2,
                  "out_of_scope": 5}
 
 
-def select(task, fused, *, view, policy, limit, anchors=None):
+def select(task, fused, *, view, policy, limit, anchors=None,
+         suppressed=frozenset()):
     """Filter fused [(score, key, origins)] into kept keys plus a trace.
 
     Structural rules, no tuned cutoffs:
@@ -162,7 +170,8 @@ def select(task, fused, *, view, policy, limit, anchors=None):
     """
     intent = classify_intent(task)
     subjects = set(anchors or ())
-    superseded_by, contradicted = _live_claim_maps(view)
+    superseded_by, contradicted = _live_claim_maps(
+        view, suppressed)
     code_keys = [s["key"] for s in view["symbols"]
                  if not s["key"].endswith("::document")]
     leaves = {}
@@ -172,7 +181,8 @@ def select(task, fused, *, view, policy, limit, anchors=None):
     decisions, kept = [], []
     superseded_hold = {}
     for score, key, origins in fused:
-        evidence = candidate_evidence(view, key, anchors=subjects)
+        evidence = candidate_evidence(
+            view, key, anchors=subjects, suppressed=suppressed)
         best = min(origins, key=order.__getitem__)
         reasons = ["best stage: " + best,
                    "graph ties: %d" % evidence["graph_ties"],

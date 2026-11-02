@@ -5,6 +5,7 @@ import re
 
 from .extract import TRAVERSABLE_CLAIMS, is_iso_date
 from .identity import canonical, digest, identity
+from .lifecycle import suppressed_ids
 
 IR_VERSION = "tunic.w1.v3"
 POLICIES = ("transparent", "evidence_only", "current")
@@ -47,12 +48,15 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100, 
     if policy not in POLICIES:
         raise ValueError("unknown policy: " + str(policy))
     as_of = store.committed_on(snapshot)
+    suppressed = suppressed_ids(store)
     blocked = set()
     retracted = {}
     if policy == "current":
         for assertion in view["assertions"]:
             proposition = assertion["proposition"]
             if assertion.get("status") != "asserted_in_source":
+                continue
+            if assertion.get("id") in suppressed:
                 continue
             if proposition.get("relation") in ("supersedes", "corrects"):
                 if (proposition.get("effective") or as_of) <= as_of:
@@ -65,6 +69,8 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100, 
     supports = {}
     for assertion in view["assertions"]:
         proposition = assertion["proposition"]
+        if assertion.get("id") in suppressed:
+            continue
         if (proposition.get("relation") in TRAVERSABLE_CLAIMS
                 and assertion.get("status") == "asserted_in_source"):
             key = (proposition.get("relation"), proposition.get("caller"),
@@ -73,6 +79,8 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100, 
     def _survives(assertion):
         proposition = assertion["proposition"]
         relation = proposition.get("relation")
+        if assertion.get("id") in suppressed:
+            return False
         if relation != "static_call" and not (
                 relation in TRAVERSABLE_CLAIMS
                 and assertion.get("status") == "asserted_in_source"):
@@ -198,12 +206,15 @@ def compile_callees(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100,
     if policy not in POLICIES:
         raise ValueError("unknown policy: " + str(policy))
     as_of = store.committed_on(snapshot)
+    suppressed = suppressed_ids(store)
     blocked = set()
     retracted = {}
     if policy == "current":
         for assertion in view["assertions"]:
             proposition = assertion["proposition"]
             if assertion.get("status") != "asserted_in_source":
+                continue
+            if assertion.get("id") in suppressed:
                 continue
             if proposition.get("relation") in ("supersedes", "corrects"):
                 if (proposition.get("effective") or as_of) <= as_of:
@@ -216,6 +227,8 @@ def compile_callees(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100,
     supports = {}
     for assertion in view["assertions"]:
         proposition = assertion["proposition"]
+        if assertion.get("id") in suppressed:
+            continue
         if (proposition.get("relation") in TRAVERSABLE_CLAIMS
                 and assertion.get("status") == "asserted_in_source"):
             key = (proposition.get("relation"), proposition.get("caller"),
@@ -224,6 +237,8 @@ def compile_callees(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100,
     def _survives(assertion):
         proposition = assertion["proposition"]
         relation = proposition.get("relation")
+        if assertion.get("id") in suppressed:
+            return False
         if relation != "static_call" and not (
                 relation in TRAVERSABLE_CLAIMS
                 and assertion.get("status") == "asserted_in_source"):
@@ -372,8 +387,11 @@ def compile_mentions(store, symbol, *, snapshot=None, view=None):
     if symbol not in symbols:
         raise ValueError("unknown symbol: " + symbol)
     mentions = []
+    suppressed = suppressed_ids(store)
     for assertion in view["assertions"]:
         proposition = assertion["proposition"]
+        if assertion.get("id") in suppressed:
+            continue
         if proposition.get("relation") != "text_mention" or proposition.get("callee") != symbol:
             continue
         mentions.append({"mentioner": proposition["caller"],
@@ -385,6 +403,8 @@ def compile_mentions(store, symbol, *, snapshot=None, view=None):
     confirmed = set()
     for assertion in view["assertions"]:
         proposition = assertion["proposition"]
+        if assertion.get("id") in suppressed:
+            continue
         if proposition.get("relation") == "text_mention" and assertion.get("status") == "syntactic_observation":
             confirmed.add((assertion["source"], proposition.get("callee")))
         elif proposition.get("relation") in TRAVERSABLE_CLAIMS and assertion.get("status") == "asserted_in_source":
@@ -577,8 +597,11 @@ def compile_claims(store, symbol, *, snapshot=None, view=None):
     if symbol not in symbols:
         raise ValueError("unknown symbol: " + symbol)
     supports, retractions = {}, {}
+    suppressed = suppressed_ids(store)
     for assertion in view["assertions"]:
         proposition = assertion["proposition"]
+        if assertion.get("id") in suppressed:
+            continue
         if assertion.get("status") != "asserted_in_source":
             continue
         if proposition.get("relation") in TRAVERSABLE_CLAIMS:
@@ -592,6 +615,8 @@ def compile_claims(store, symbol, *, snapshot=None, view=None):
     rows = []
     for assertion in view["assertions"]:
         proposition = assertion["proposition"]
+        if assertion.get("id") in suppressed:
+            continue
         if proposition.get("relation") in ("static_call", "text_mention"):
             continue
         if proposition.get("caller") != symbol and proposition.get("callee") != symbol:
@@ -651,6 +676,8 @@ def compile_timeline(store, symbol, *, snapshot=None, at=None):
     for assertion in view["assertions"]:
         proposition = assertion["proposition"]
         if assertion.get("status") != "asserted_in_source":
+            continue
+        if assertion.get("id") in suppressed_ids(store):
             continue
         relation = proposition.get("relation")
         effective = proposition.get("effective") or current

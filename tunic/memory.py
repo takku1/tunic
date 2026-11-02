@@ -17,6 +17,7 @@ from . import compiler
 from .baselines import BM25, TextNotes
 from .extract import CLAIM_RELATIONS, is_iso_date
 from .identity import digest as _digest
+from .lifecycle import suppressed_ids
 from .store import GraphStore
 
 FRONTIER_KINDS = ("unresolved", "novel", "contradictory", "unsupported", "irrelevant")
@@ -68,7 +69,7 @@ def authorize(principal, action):
     raise PermissionError("denied: unknown principal %r for %s" % (principal, action))
 
 
-def _dispatch_covering(view, table, as_of):
+def _dispatch_covering(view, table, as_of, suppressed=frozenset()):
     """Split registry candidates for one table into covered/uncovered.
 
     Returns (candidates, covering) where candidates are the proposed
@@ -87,6 +88,8 @@ def _dispatch_covering(view, table, as_of):
     supports, support_ids, retracted = {}, {}, {}
     for a in assertions:
         if a.get("status") != "asserted_in_source":
+            continue
+        if a.get("id") in suppressed:
             continue
         proposition = a.get("proposition", {})
         if (proposition.get("effective") or as_of) > as_of:
@@ -171,7 +174,9 @@ def replay_regression_case(memory, case, config_override=None):
         if not table:
             raise ValueError("dispatch_covered predicate needs a table")
         as_of = memory.store.committed_on(snapshot)
-        _candidates, covering = _dispatch_covering(view, table, as_of)
+        _candidates, covering = _dispatch_covering(
+            view, table, as_of,
+            suppressed=suppressed_ids(memory.store))
         pairs = sorted({(c.get("proposition", {}).get("caller"),
                          c.get("proposition", {}).get("callee")) for c in covering})
         return bool(covering), "table %s covered by %s" % (table, pairs)
@@ -576,6 +581,9 @@ class Memory:
             if member is None:
                 raise ValueError("assertion %r is not a member of proof "
                                  "snapshot" % (aid,))
+            if aid in suppressed_ids(self.store):
+                raise ValueError("proof cites suppressed assertion: %r"
+                                 % (aid,))
         for span in spans:
             if not isinstance(span, dict):
                 raise ValueError("malformed proof span: %r" % (span,))
@@ -771,7 +779,9 @@ class Memory:
         if failure in ("static_edge_unresolved", "ingest_dispatch_unresolved"):
             if not target:
                 return record["status"], "no replayable target recorded"
-            candidates, covering = _dispatch_covering(view, target, as_of)
+            candidates, covering = _dispatch_covering(
+                view, target, as_of,
+                suppressed=suppressed_ids(self.store))
             if covering:
                 first = covering[0].get("proposition", {})
                 note = "asserted edge covers %s -> %s" % (
@@ -1207,6 +1217,7 @@ class Memory:
                     "lexical": lexical, "semantic": semantic}
         fused = fuse(rankings, total=limit, threshold=threshold)
         selection = None
+        suppressed = suppressed_ids(self.store)
         if select:
             from .selection import (OUTCOME_ORDER, classify_intent,
                                     select as run_selection)
@@ -1227,7 +1238,8 @@ class Memory:
                                             for entry in impact["impacts"]}
                     anchors = anchors or None
             selection = run_selection(task, fused, view=view, policy=policy,
-                                      limit=limit, anchors=anchors)
+                                      limit=limit, anchors=anchors,
+                                      suppressed=suppressed)
             outcomes = {d["symbol"]: d["outcome"]
                         for d in selection["trace"]["decisions"]}
             top = sorted(selection["kept"],
@@ -1253,7 +1265,7 @@ class Memory:
             # and expanding it reintroduces stale callers under current
             # policy (the supersedes edge itself is the evidence).
             from .selection import _live_claim_maps
-            superseded_by, _ = _live_claim_maps(view)
+            superseded_by, _ = _live_claim_maps(view, suppressed)
             for subject in subjects:
                 if subject not in known:
                     continue

@@ -28,6 +28,7 @@ import sys
 from datetime import datetime, timezone
 
 from .identity import digest as _digest
+from .lifecycle import suppressed_ids
 from .memory import Memory, _dispatch_covering
 
 TRIAGE_VERSION = 2
@@ -223,7 +224,7 @@ def _site_weight(site, leaf_counts, leaves):
     return 0.0
 
 
-def _assess(cluster, view, as_of):
+def _assess(cluster, view, as_of, suppressed=frozenset()):
     """Closability, effort, impact, queue, and reason for one cluster."""
     key, entries = cluster["key"], cluster["entries"]
     kind = key[0]
@@ -249,7 +250,8 @@ def _assess(cluster, view, as_of):
                     reason="resolves when evidence arrives; nothing to verify yet")
     elif kind == "unresolved_dispatch":
         table = key[1]
-        _candidates, covering = _dispatch_covering(view, table, as_of)
+        _candidates, covering = _dispatch_covering(
+            view, table, as_of, suppressed)
         if covering:
             pairs = sorted({(c["proposition"]["caller"],
                              c["proposition"]["callee"]) for c in covering})
@@ -368,7 +370,8 @@ def _assess_v2(info, entries, view, context):
 
     if kind == "unresolved_dispatch":
         _candidates, covering = _dispatch_covering(
-            view, key[1], context["as_of"])
+            view, key[1], context["as_of"],
+            context.get("suppressed", frozenset()))
         if covering:
             new_yield = 1.0
             yield_why = "asserted edge already covers the table"
@@ -461,6 +464,7 @@ def analyze(db_path, root=".", top=20):
         before = db_state()
         snapshot, view = memory.store.view()
         as_of = memory.store.committed_on(snapshot)
+        suppressed = suppressed_ids(memory.store)
         # frontier_list() is the authorized read path and returns parsed
         # records; the digest check above anchors on the raw stored text.
         records = memory.frontier_list()
@@ -490,6 +494,7 @@ def analyze(db_path, root=".", top=20):
         if record.get("failure") == "retrieval_abstention":
             retrieval_targets.add(record.get("task"))
     context = {"leaves": leaves, "leaf_counts": _symbol_leaf_counts(view),
+               "suppressed": suppressed,
                "pairs": asserted_pairs, "mentioned": mentioned_leaves,
                "retracted": _retracted_endpoints(view),
                "retrieval_targets": retrieval_targets, "as_of": as_of}
@@ -497,7 +502,8 @@ def analyze(db_path, root=".", top=20):
     for key, members in clusters.items():
         occurrences = sum(m.get("recurrence", 1) for m in members
                           if m.get("status") not in ("resolved", "dismissed"))
-        info = _assess({"key": key, "entries": members}, view, as_of)
+        info = _assess({"key": key, "entries": members}, view, as_of,
+                     suppressed)
         info["occurrences"] = occurrences
         info["example_ids"] = [m.get("id") for m in members[:3]]
         refs = sorted({(m.get("target") or "") for m in members if m.get("target")})

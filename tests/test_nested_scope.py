@@ -175,14 +175,18 @@ class RealRepoRegressionTests(unittest.TestCase):
         # compile_impact / compile_related recovered by the
         # cross-module import fix: memory.py:16 `from . import compiler`
         # with direct calls at lines 1217, 1284, 1292 (verified by
-        # inspection 2026-11-02).
+        # inspection 2026-11-02). lifecycle.suppressed_ids joined the
+        # set when suppression enforcement landed in answer()
+        # (verified by inspection 2026-11-02: the call computes the
+        # suppressed-id set passed to selection and successor maps).
         self.assertEqual(direct, {"memory.py::Memory._ensure_discovery",
                                   "memory.py::Memory._frontier_upsert",
                                   "memory.py::_container_of",
                                   "memory.py::_dedup_dicts",
                                   "memory.py::authorize",
                                   "compiler.py::compile_impact",
-                                  "compiler.py::compile_related"})
+                                  "compiler.py::compile_related",
+                                  "lifecycle.py::suppressed_ids"})
 
     def test_nested_only_calls_not_attributed(self):
         # _name_pattern (nested in answer) is the only user of `re`

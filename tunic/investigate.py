@@ -17,6 +17,7 @@ import shutil
 import tempfile
 from pathlib import Path
 
+from .lifecycle import suppressed_ids
 from .memory import Memory, _dispatch_covering
 from .triage import _cluster_key as cluster_of
 from .triage import analyze, dedup_sites
@@ -118,7 +119,8 @@ def investigate(memory, cluster_key, budget):
                        "ingest_dispatch_unresolved"):
             _snapshot2, view2 = memory.store.view()
             candidates, covering = _dispatch_covering(
-                view2, site.get("target"), as_of)
+                view2, site.get("target"), as_of,
+                suppressed=suppressed_ids(memory.store))
             if not covering and len(candidates) == 1:
                 proposition = candidates[0].get("proposition", {})
                 pairs = [(proposition.get("caller"),

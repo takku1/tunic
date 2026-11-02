@@ -51,7 +51,22 @@ abstention correctness, and mean actions. Result v1:
 5/5, zero false reuse; scripted model-free agents, not a model-agent
 productivity claim). Code-derived edges are pinned identical across
 arms; the warm database differs only by the audited acquisitions.
-Consolidation/forgetting remain unmeasured.
+
+## Memory lifecycle: consolidation + forgetting safety (measured v1, 2026-11-02)
+
+Consolidation is additive: deterministic support summaries compact
+redundant corroboration with exact source links but never enter the
+answer path, supports arithmetic, traversal, or timeline evidence
+(`tunic/lifecycle.py`, contract
+`docs/architecture/memory-lifecycle.md`). Forgetting is reversible
+policy-governed retrieval suppression with metadata-only tombstones,
+enforced in selection, traversal, claims/mentions, timeline,
+successor reasoning, scheduler covering, and proof validation;
+governing assertions refuse suppression, and physical erasure is
+explicitly out of scope. Result v1:
+`benchmarks/agent/runs/lifecycle-v1-dev.json` (answer-equivalence
+holds, stale resurrection 0, false forgetting 0, suppressed subgraph
+removed; scripted API-level benchmark, not a model-agent claim).
 
 ## Decision gates
 

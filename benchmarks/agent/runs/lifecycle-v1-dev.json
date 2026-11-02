@@ -1,0 +1,248 @@
+{
+  "elapsed_note": "per-op milliseconds recorded per phase",
+  "lifecycle_version": 1,
+  "metrics": {
+    "answer_equivalence_consolidation": true,
+    "false_forgetting_count": 0,
+    "stale_resurrection_count": 0,
+    "summary_bytes": 803,
+    "summary_groups": 1,
+    "summary_max_support": 2,
+    "suppressed_subgraph_removed": true
+  },
+  "model_free": true,
+  "phases": [
+    {
+      "answer_bytes": 46837,
+      "answer_ms": 28.63,
+      "answers": {
+        "callers": [
+          "svc.py::dispatch",
+          "svc.py::entry",
+          "svc.py::legacy_worker"
+        ],
+        "decoy": [
+          "extra.py::orphan",
+          "extra.py::orphan_caller"
+        ],
+        "replace": [
+          "svc.py::new_handler",
+          "svc.py::old_handler"
+        ],
+        "route": [
+          "svc.py::dispatch",
+          "svc.py::entry",
+          "svc.py::route"
+        ],
+        "static": [
+          "svc.py::new_handler",
+          "svc.py::route"
+        ]
+      },
+      "consolidate_ms": 3.85,
+      "label": "baseline",
+      "live_support_ms": 1.13,
+      "live_support_rows": 4,
+      "route_claims": [
+        [
+          "svc.py::dispatch",
+          "depends_on",
+          "svc.py::legacy_worker"
+        ],
+        [
+          "svc.py::entry",
+          "depends_on",
+          "svc.py::legacy_worker"
+        ],
+        [
+          "svc.py::route",
+          "depends_on",
+          "svc.py::new_handler"
+        ]
+      ],
+      "snapshot": "snapshot:6039d4961455a15cc43fc2cce26d24e014a5c3ac3efd1dfdbbde01ebf631f152",
+      "summary_bytes": 2,
+      "summary_count": 0,
+      "summary_ms": 0.13,
+      "summary_status": "stale",
+      "tables": {
+        "assertions": 15,
+        "consolidated_supports": 0,
+        "consolidation_receipts": 0,
+        "suppressions": 0
+      },
+      "timeline_entries": 4
+    },
+    {
+      "answer_bytes": 46837,
+      "answer_ms": 21.78,
+      "answers": {
+        "callers": [
+          "svc.py::dispatch",
+          "svc.py::entry",
+          "svc.py::legacy_worker"
+        ],
+        "decoy": [
+          "extra.py::orphan",
+          "extra.py::orphan_caller"
+        ],
+        "replace": [
+          "svc.py::new_handler",
+          "svc.py::old_handler"
+        ],
+        "route": [
+          "svc.py::dispatch",
+          "svc.py::entry",
+          "svc.py::route"
+        ],
+        "static": [
+          "svc.py::new_handler",
+          "svc.py::route"
+        ]
+      },
+      "label": "consolidated",
+      "live_support_ms": 1.16,
+      "live_support_rows": 4,
+      "route_claims": [
+        [
+          "svc.py::dispatch",
+          "depends_on",
+          "svc.py::legacy_worker"
+        ],
+        [
+          "svc.py::entry",
+          "depends_on",
+          "svc.py::legacy_worker"
+        ],
+        [
+          "svc.py::route",
+          "depends_on",
+          "svc.py::new_handler"
+        ]
+      ],
+      "snapshot": "snapshot:6039d4961455a15cc43fc2cce26d24e014a5c3ac3efd1dfdbbde01ebf631f152",
+      "summary_bytes": 805,
+      "summary_count": 1,
+      "summary_ms": 0.17,
+      "summary_status": "current",
+      "tables": {
+        "assertions": 15,
+        "consolidated_supports": 1,
+        "consolidation_receipts": 1,
+        "suppressions": 0
+      },
+      "timeline_entries": 4
+    },
+    {
+      "answer_bytes": 39296,
+      "answer_ms": 16.81,
+      "answers": {
+        "callers": [
+          "svc.py::legacy_worker"
+        ],
+        "decoy": [
+          "extra.py::orphan",
+          "extra.py::orphan_caller"
+        ],
+        "replace": [
+          "svc.py::new_handler",
+          "svc.py::old_handler"
+        ],
+        "route": [
+          "svc.py::dispatch",
+          "svc.py::entry",
+          "svc.py::route"
+        ],
+        "static": [
+          "svc.py::new_handler",
+          "svc.py::route"
+        ]
+      },
+      "label": "suppressed",
+      "live_support_ms": 0.63,
+      "live_support_rows": 2,
+      "route_claims": [
+        [
+          "svc.py::entry",
+          "depends_on",
+          "svc.py::legacy_worker"
+        ],
+        [
+          "svc.py::route",
+          "depends_on",
+          "svc.py::new_handler"
+        ]
+      ],
+      "snapshot": "snapshot:6039d4961455a15cc43fc2cce26d24e014a5c3ac3efd1dfdbbde01ebf631f152",
+      "summary_bytes": 805,
+      "summary_count": 1,
+      "summary_ms": 0.15,
+      "summary_status": "current",
+      "suppress_ms": 24.46,
+      "suppress_report": {
+        "covered": [
+          "assertion:3b05039411e1783427c7e3f82f23d7ed00ae86f908314509db9c7518b1901775",
+          "assertion:6f1d2e41bdb6054e1b8757ad31b7b054d187a3b94cc5a395a34e263db7ac1ef2",
+          "assertion:71ed4bb286ded8178460b94c90b4802ab0867d9f3d034e41f140f45879ce67e9",
+          "assertion:bff8026c4abe02769d7b8c662fdb07a334f144444fbc7f890ae0a75ecd2828dd",
+          "assertion:fc535ee1a198d5b359cab63ad3a2ed82831ef46858ee442073399b0b0b8fe9b6"
+        ],
+        "policy": "governance-review",
+        "suppressed": [
+          "assertion:71ed4bb286ded8178460b94c90b4802ab0867d9f3d034e41f140f45879ce67e9",
+          "assertion:bff8026c4abe02769d7b8c662fdb07a334f144444fbc7f890ae0a75ecd2828dd"
+        ]
+      },
+      "tables": {
+        "assertions": 15,
+        "consolidated_supports": 1,
+        "consolidation_receipts": 1,
+        "suppressions": 2
+      },
+      "timeline_entries": 1
+    }
+  ],
+  "snapshots": [
+    "snapshot:283ccd94a7507acf1822c460d6df17e30d4384215fb53251dae2277d7598fda0",
+    "snapshot:4ae676730556be84b5e649860b8109db46309f698d5e99c8a39f4a4bf4ce2a9b",
+    "snapshot:6039d4961455a15cc43fc2cce26d24e014a5c3ac3efd1dfdbbde01ebf631f152"
+  ],
+  "tombstones": [
+    {
+      "actor": "local",
+      "covers": [
+        "assertion:3b05039411e1783427c7e3f82f23d7ed00ae86f908314509db9c7518b1901775",
+        "assertion:6f1d2e41bdb6054e1b8757ad31b7b054d187a3b94cc5a395a34e263db7ac1ef2",
+        "assertion:71ed4bb286ded8178460b94c90b4802ab0867d9f3d034e41f140f45879ce67e9",
+        "assertion:bff8026c4abe02769d7b8c662fdb07a334f144444fbc7f890ae0a75ecd2828dd",
+        "assertion:fc535ee1a198d5b359cab63ad3a2ed82831ef46858ee442073399b0b0b8fe9b6"
+      ],
+      "created_at": "2026-11-02T18:30:14Z",
+      "id": "suppression:497f4fc4b3967b35d72cd64363dde21a56e0b7150c07a289d52d97311894aa71",
+      "policy": "governance-review",
+      "reason": "lifecycle benchmark: routing under re-audit",
+      "reverse_reason": null,
+      "reversed_at": null,
+      "snapshot": "snapshot:6039d4961455a15cc43fc2cce26d24e014a5c3ac3efd1dfdbbde01ebf631f152",
+      "status": "active"
+    },
+    {
+      "actor": "local",
+      "covers": [
+        "assertion:3b05039411e1783427c7e3f82f23d7ed00ae86f908314509db9c7518b1901775",
+        "assertion:6f1d2e41bdb6054e1b8757ad31b7b054d187a3b94cc5a395a34e263db7ac1ef2",
+        "assertion:71ed4bb286ded8178460b94c90b4802ab0867d9f3d034e41f140f45879ce67e9",
+        "assertion:bff8026c4abe02769d7b8c662fdb07a334f144444fbc7f890ae0a75ecd2828dd",
+        "assertion:fc535ee1a198d5b359cab63ad3a2ed82831ef46858ee442073399b0b0b8fe9b6"
+      ],
+      "created_at": "2026-11-02T18:30:14Z",
+      "id": "suppression:78a83e90ecb21b4fe34658f3650254b5bdebb42f6f9aeaf959f906bc50803603",
+      "policy": "governance-review",
+      "reason": "lifecycle benchmark: routing under re-audit",
+      "reverse_reason": null,
+      "reversed_at": null,
+      "snapshot": "snapshot:6039d4961455a15cc43fc2cce26d24e014a5c3ac3efd1dfdbbde01ebf631f152",
+      "status": "active"
+    }
+  ]
+}

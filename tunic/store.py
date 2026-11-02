@@ -33,6 +33,16 @@ CREATE INDEX IF NOT EXISTS incoming_calls ON assertions(callee,caller);
 CREATE TABLE IF NOT EXISTS snapshot_assertions(
     snapshot TEXT REFERENCES snapshots(id), assertion TEXT REFERENCES assertions(id),
     PRIMARY KEY(snapshot,assertion));
+CREATE TABLE IF NOT EXISTS consolidated_supports(
+    id TEXT PRIMARY KEY, snapshot TEXT REFERENCES snapshots(id),
+    record TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS consolidated_by_snapshot ON consolidated_supports(snapshot);
+CREATE TABLE IF NOT EXISTS consolidation_receipts(
+    snapshot TEXT PRIMARY KEY REFERENCES snapshots(id), record TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS suppressions(
+    id TEXT PRIMARY KEY, assertion TEXT NOT NULL,
+    record TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS suppressions_by_assertion ON suppressions(assertion);
 """
 
 
