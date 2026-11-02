@@ -1,6 +1,7 @@
 """Bounded, non-executing Python AST extraction. Unresolved is not absent."""
 
 import ast
+import copy
 import io
 import json
 import os
@@ -235,10 +236,14 @@ def _collect_code(sources, symbols, assertions, diagnostics):
                 if item.decorator_list:
                     diagnostics.append({"path": s["path"], "line": item.lineno, "kind": "decorated_function"})
                     continue
-                if any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda))
+                if any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda,
+                                       ast.GeneratorExp))
                        for statement in item.body for n in ast.walk(statement)):
+                    # Nested scope noted, but the method is still indexed:
+                    # its direct calls resolve (nested regions pruned at
+                    # resolution time) while nested calls are reported as
+                    # distinct nested_call diagnostics, never as outer edges.
                     diagnostics.append({"path": s["path"], "line": item.lineno, "kind": "nested_scope"})
-                    continue
                 key = s["path"] + "::" + node.name + "." + item.name
                 start, end = _span(s["data"], item)
                 symbols[key] = {"key": key, "path": s["path"], "name": node.name + "." + item.name,
@@ -535,6 +540,117 @@ def _constructor_bindings(s, body, imports, modules, local, star):
     return bindings
 
 
+class _NestedScopePruner(ast.NodeTransformer):
+    """Separate eager from deferred execution in a copied definition.
+
+    A closure calling foo() does not mean the enclosing function
+    directly calls foo(): the call may run much later, elsewhere, or
+    never. But decorators, default arguments, base classes, and the
+    iterable of a generator expression DO evaluate when the enclosing
+    function runs. The pruner therefore keeps eager positions intact
+    and neutralizes only deferred ones: nested function/class bodies
+    become ``pass``/empty (decorators, defaults, bases, keywords still
+    walked), lambda bodies and generator elements/conditions become
+    ``None``/``True`` constants (defaults and iterables still walked).
+    Bare-name calls found in deferred positions are recorded for
+    ``nested_call`` diagnostics, never attributed outward. Operates on
+    a deep copy: the shared parse tree is never mutated.
+    """
+
+    def __init__(self):
+        self.calls = []
+        self.pruned = False
+        self._depth = 0
+
+    def _record(self, target):
+        if isinstance(target, ast.AST):
+            target = [target]
+        for node in target:
+            self.calls.extend(c for c in ast.walk(node)
+                              if isinstance(c, ast.Call)
+                              and isinstance(c.func, ast.Name))
+
+    def _nested(self, node, replacement):
+        """Record + neutralize a nested definition; root passes through.
+
+        The transformer visits the copied outer definition itself
+        first: depth 0 is the extraction target, kept whole so its
+        eager header positions still resolve. Deeper definitions are
+        deferred scopes whose bodies never attribute outward.
+        """
+        if self._depth > 0:
+            self._record(node.body)
+            self.pruned = True
+            node.body[:] = replacement
+
+    def visit_FunctionDef(self, node):
+        self._nested(node, [ast.copy_location(ast.Pass(), node)])
+        self._depth += 1
+        self.generic_visit(node)
+        self._depth -= 1
+        return node
+
+    def visit_AsyncFunctionDef(self, node):
+        self._nested(node, [ast.copy_location(ast.Pass(), node)])
+        self._depth += 1
+        self.generic_visit(node)
+        self._depth -= 1
+        return node
+
+    def visit_ClassDef(self, node):
+        self._nested(node, [])
+        self._depth += 1
+        self.generic_visit(node)
+        self._depth -= 1
+        return node
+
+    def visit_Lambda(self, node):
+        self._record(node.body)
+        self.pruned = True
+        node.body = ast.copy_location(ast.Constant(value=None), node.body)
+        self.generic_visit(node)
+        return node
+
+    def visit_GeneratorExp(self, node):
+        self._record(node.elt)
+        for comprehension in node.generators:
+            for condition in comprehension.ifs:
+                self._record(condition)
+        self.pruned = True
+        node.elt = ast.copy_location(ast.Constant(value=None), node.elt)
+        for comprehension in node.generators:
+            comprehension.ifs = [ast.copy_location(ast.Constant(value=True), condition)
+                                 for condition in comprehension.ifs]
+        self.generic_visit(node)
+        return node
+
+
+def _without_nested_scopes(node):
+    """Split a function/method into eager positions and deferred content.
+
+    Returns (kept_node, nested_names, nested_calls, pruned). kept_node
+    is a deep copy of the whole definition with only deferred positions
+    neutralized (nested bodies, lambda bodies, generator
+    elements/conditions); eager header positions -- decorators, default
+    arguments, base classes, keywords -- survive so the call dispatcher
+    attributes them to the enclosing function;
+    nested_names holds every nested definition name (still shadowing,
+    never resolvable to module scope); nested_calls holds the bare-name
+    Call nodes found in deferred positions for distinct diagnostics.
+    """
+    nested_names = {n.name for n in ast.walk(node)
+                    if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef,
+                                      ast.ClassDef))
+                    and n is not node}
+    if not any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef,
+                              ast.ClassDef, ast.Lambda, ast.GeneratorExp))
+               for statement in node.body for n in ast.walk(statement)):
+        return node, nested_names, [], False
+    pruner = _NestedScopePruner()
+    kept_node = pruner.visit(copy.deepcopy(node))
+    return kept_node, nested_names, pruner.calls, pruner.pruned
+
+
 def _code_targets(s):
     """Top-level functions and methods of one parsed code source."""
     targets = []
@@ -582,12 +698,18 @@ def _resolve_code(sources, modules, symbols, assertions, diagnostics, known_site
             argnames = {a.arg for a in ast.walk(node.args) if isinstance(a, ast.arg)}
             local.update(argnames)
             rebound = local - argnames
-            if self_class is None and any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda))
-                   for statement in node.body for n in ast.walk(statement)):
+            kept_node, nested_names, nested_calls, pruned = _without_nested_scopes(node)
+            if pruned and self_class is None:
+                # Methods already recorded this at symbol extraction;
+                # module functions record it here, once per target.
                 diagnostics.append({"path": s["path"], "line": node.lineno, "kind": "nested_scope"})
-                continue
+            for nested_call in nested_calls:
+                start, end = _span(s["data"], nested_call)
+                diagnostics.append({"path": s["path"], "caller": caller, "line": nested_call.lineno,
+                                    "start": start, "end": end, "kind": "nested_call",
+                                    "expression": _dotted(nested_call.func)})
             ordered_params = [a.arg for a in node.args.posonlyargs] + [a.arg for a in node.args.args]
-            body = ast.Module(body=node.body, type_ignores=[])
+            body = ast.Module(body=[kept_node], type_ignores=[])
             ctor_bindings = _constructor_bindings(s, body, imports,
                                                   modules, local, star)
             for call in (n for n in ast.walk(body) if isinstance(n, ast.Call)):
@@ -666,8 +788,12 @@ def _resolve_code(sources, modules, symbols, assertions, diagnostics, known_site
                     assertion["id"] = identity("assertion", assertion)
                     assertions.append(assertion)
                 else:
+                    kind = ("nested_call"
+                            if isinstance(call.func, ast.Name)
+                            and call.func.id in nested_names
+                            else "unresolved_call")
                     diagnostic = {"path": s["path"], "caller": caller, "line": call.lineno,
-                                  "start": start, "end": end, "kind": "unresolved_call", "expression": expression}
+                                  "start": start, "end": end, "kind": kind, "expression": expression}
                     if isinstance(call.func, ast.Name) and call.func.id in argnames \
                             and call.func.id in ordered_params:
                         diagnostic["parameter"] = call.func.id
@@ -705,10 +831,8 @@ def _emit_callback_candidates(sources, modules, callback_sites, assertions):
             argnames = {a.arg for a in ast.walk(node.args) if isinstance(a, ast.arg)}
             local.update(argnames)
             rebound = local - argnames
-            if self_class is None and any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda))
-                   for statement in node.body for n in ast.walk(statement)):
-                continue
-            body = ast.Module(body=node.body, type_ignores=[])
+            kept_node, _nested_names, _nested_calls, _pruned = _without_nested_scopes(node)
+            body = ast.Module(body=[kept_node], type_ignores=[])
             for call in (n for n in ast.walk(body) if isinstance(n, ast.Call)):
                 target, _expression, _head = _resolve_call_target(
                     s, call, imports, modules, local, star, self_class, rebound)
@@ -961,17 +1085,15 @@ def _build_dispatch(sources, modules, symbols, assertions, diagnostics, invalid_
         return False
 
     for (module, _), (node, s) in sorted(func_index.items()):
-        if any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda))
-               for statement in node.body for n in ast.walk(statement)):
-            continue
+        kept_node, _nested_names, _nested_calls, _pruned = _without_nested_scopes(node)
         caller = s["functions"][node.name]
         aliases = {}
-        for statement in node.body:
+        for statement in kept_node.body:
             if (isinstance(statement, ast.Assign) and len(statement.targets) == 1
                     and isinstance(statement.targets[0], ast.Name)
                     and isinstance(statement.value, ast.Name)):
                 aliases[statement.targets[0].id] = statement.value.id
-        for call in (n for n in ast.walk(ast.Module(body=node.body, type_ignores=[]))
+        for call in (n for n in ast.walk(ast.Module(body=[kept_node], type_ignores=[]))
                      if isinstance(n, ast.Call)):
             target = call.func
             if (isinstance(target, ast.Subscript)
