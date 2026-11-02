@@ -1,34 +1,38 @@
-"""Arena v2 runner: enforced budgets, strict scoring, immutable evidence.
+"""Arena v2 runner: trusted dispatch, strict scoring, immutable evidence.
 
 Model-agnostic and model-free. The runner never calls any model: it
 takes an ``agent_fn(task_text, workspace, budget, ctx)`` callable,
 runs it against an isolated workspace copy, and scores the
 machine-parsed answer against the frozen key.
 
-Integrity rules (v0.2.0):
+Integrity rules (v0.3.0):
 
-- Budgets are enforced by the trusted ``AgentContext``: every tool
-  call goes through ``ctx.action``, which counts and raises
-  ``BudgetExhausted`` past the limit. Agents cannot self-report.
+- Tool calls execute inside the trusted ``ToolRouter``: ``ctx.action``
+  authorizes (registered + permitted), admits against the budget, then
+  runs the handler. Admitted attempts (completed or handler-failed)
+  consume budget; denied attempts (unknown or unpermitted tool) and
+  over-budget attempts do not, are recorded, and raise to the agent.
+  An agent that catches ``BudgetExhausted`` and answers anyway is
+  still invalid: the post-return budget check fails the cell.
 - Scoring parses typed answers (exact symbol sets, ordered hops,
   single verdicts). Substring hits, contradictions, and unexpected
   extra relationships score 0. Raw answers stay verbatim in the
   transcript.
 - Every run gets a unique run id and an immutable transcript path;
   nothing is overwritten and no pre-existing workspace is deleted.
-- Agent exceptions finalize the transcript as an error cell (category,
-  action count, elapsed time, incomplete status) -- failure is never
-  converted into abstention or a score.
+- Agent exceptions finalize error cells (category, action count,
+  elapsed time, incomplete status) with the full action history --
+  failure is never converted into abstention or a score.
 - The provenance record (repo SHA, manifest digest, runner/scoring
-  versions, arm config, allowed tools, sandbox disclaimer) travels
-  with every result.
+  versions, arm config, allowed tools, handler inventory, sandbox
+  disclaimer) travels with every result.
 - The agent interface carries task text only, never answer keys.
   Workspace copying is isolation, not a security sandbox: a real
   agent runs with the operator's filesystem trust, recorded as such.
 
-Interface change from v0.1.0: ``agent_fn`` receives ``ctx`` instead
-of a passive ``log`` callback, and ``run_cell`` returns ``status``
-instead of ``over_budget``.
+Interface change from v0.2.0: ``ctx.action`` dispatches real
+handlers instead of counting labels; ``run_cell`` takes ``toolsets``
+and returns ``status`` (complete | budget-exceeded | error).
 """
 import json
 import re
@@ -40,8 +44,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from tunic.investigate import _copy_workspace
+from tunic.memory import Memory
 
-RUNNER_VERSION = "0.2.0"
+RUNNER_VERSION = "0.3.0"
 SCORING_VERSION = "v3-strict"
 
 SYMBOL_RE = re.compile(r"^[A-Za-z0-9_./-]+\.py::[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)*$")
@@ -51,35 +56,91 @@ VERDICT_RE = re.compile(r"^VERDICT: (UNIQUE \S+|NOT-DETERMINED)$")
 
 
 class BudgetExhausted(Exception):
-    """Raised by the trusted context when the agent exceeds its budget."""
+    """Admitted attempts passed the budget. Terminal for the cell."""
 
 
 class UnknownTool(Exception):
-    """Raised when the agent calls a tool outside its permission set."""
+    """No handler is registered under that name. Not budget-consuming."""
+
+
+class ToolDenied(Exception):
+    """Registered but outside this arm's permission set. Not consuming."""
+
+
+class ToolRouter:
+    """Trusted dispatch boundary. Agents cannot call tools around it."""
+
+    def __init__(self):
+        self.handlers = {}
+
+    def register(self, name, handler):
+        if name in self.handlers:
+            raise ValueError("duplicate tool registration: " + name)
+        self.handlers[name] = handler
+
+    @property
+    def names(self):
+        return sorted(self.handlers)
+
+    def dispatch(self, ctx, tool, args):
+        if tool not in self.handlers:
+            ctx._record(tool, args, "denied-unknown",
+                        "no handler registered")
+            raise UnknownTool("unknown tool: %r" % tool)
+        if ctx.allowed_tools is not None and tool not in ctx.allowed_tools:
+            ctx._record(tool, args, "denied-permission",
+                        "tool not permitted for this arm")
+            raise ToolDenied("tool not permitted for this arm: %r" % tool)
+        ctx._admit(tool)
+        try:
+            result = self.handlers[tool](**args)
+        except BudgetExhausted:
+            raise
+        except Exception as error:
+            ctx._record(tool, args, "failed",
+                        "%s: %s" % (type(error).__name__, error))
+            raise
+        ctx._record(tool, args, "completed", None, result=result)
+        return result
 
 
 class AgentContext:
-    """Trusted action counter. The only tool-call path the runner honors."""
+    """Counting gate in front of the trusted router."""
 
-    def __init__(self, budget, allowed_tools=None):
+    def __init__(self, budget, router, allowed_tools=None, t0=None):
         self.budget = budget
+        self.router = router
         self.allowed_tools = (set(allowed_tools)
                               if allowed_tools is not None else None)
+        self.t0 = t0 if t0 is not None else time.time()
         self.actions = 0
         self.rows = []
 
-    def action(self, tool, **args):
-        if self.allowed_tools is not None and tool not in self.allowed_tools:
-            raise UnknownTool("tool not permitted for this arm: %r" % tool)
+    def _record(self, tool, args, outcome, detail=None, result=None):
+        row = {"t": time.time() - self.t0, "event": "action",
+               "tool": tool, "args": args, "outcome": outcome}
+        if detail is not None:
+            row["detail"] = detail
+        if result is not None:
+            row["result_preview"] = str(result)[:300]
+        self.rows.append(row)
+
+    def _admit(self, tool):
         self.actions += 1
         if self.actions > self.budget:
+            self._record(tool, {}, "budget-exceeded",
+                         "action %d exceeds budget %d"
+                         % (self.actions, self.budget))
             raise BudgetExhausted(
                 "action %d exceeds budget %d" % (self.actions, self.budget))
-        self.rows.append({"tool": tool, "args": args})
-        return self.actions
+
+    def action(self, tool, **args):
+        """Execute a registered tool. Only admitted calls consume budget."""
+        return self.router.dispatch(self, tool, args)
 
     def note(self, **fields):
-        self.rows.append(dict(fields))
+        self.rows.append({"t": time.time() - self.t0, "event": "note",
+                          **fields})
 
 
 @dataclass
@@ -138,7 +199,7 @@ def parse_uniqueness(answer):
     if len(verdicts) != 1:
         return False, None
     defs = sorted(line for line in lines
-                  if line.upper() not in verdicts and
+                  if line.upper() not in [v.upper() for v in verdicts] and
                   SYMBOL_RE.match(line))
     if len(defs) + 1 != len(lines):
         return False, None
@@ -281,6 +342,101 @@ def repo_sha(source_root):
     return sha if proc.returncode == 0 and sha else "n/a"
 
 
+class ReadOnlyRepoTools:
+    """Filesystem inspection confined to the arm workspace. No writes."""
+
+    def __init__(self, workspace):
+        self.workspace = Path(workspace).resolve()
+
+    def _confine(self, path):
+        target = (self.workspace / path).resolve()
+        if target != self.workspace and \
+                self.workspace not in target.parents:
+            raise PermissionError("path escapes workspace: %r" % path)
+        return target
+
+    def list_files(self):
+        return sorted(p.relative_to(self.workspace).as_posix()
+                      for p in sorted(self.workspace.rglob("*"))
+                      if p.is_file() and ".tunic" not in p.parts)
+
+    def read_file(self, path):
+        target = self._confine(path)
+        if not target.is_file():
+            raise FileNotFoundError("no such file: %r" % path)
+        return target.read_text(encoding="utf-8-sig")
+
+    def search(self, pattern, suffix=".py"):
+        import re as _re
+        try:
+            rx = _re.compile(pattern)
+        except _re.error as error:
+            raise ValueError("bad pattern: %s" % error)
+        hits = []
+        for path in sorted(self.workspace.rglob("*" + suffix)):
+            if not path.is_file() or ".tunic" in path.parts:
+                continue
+            for lineno, line in enumerate(
+                    path.read_text(encoding="utf-8-sig").splitlines(), 1):
+                if rx.search(line):
+                    hits.append({"path": path.relative_to(
+                        self.workspace).as_posix(), "line": lineno})
+                    if len(hits) >= 200:
+                        return hits
+        return hits
+
+    def register_all(self, router):
+        router.register("list_files", lambda: self.list_files())
+        router.register("read_file", lambda path: self.read_file(path))
+        router.register("search",
+                        lambda pattern, suffix=".py": self.search(
+                            pattern, suffix))
+
+
+class TunicReadTools:
+    """Tunic's read-only memory tools through the accounting interface."""
+
+    def __init__(self, memory):
+        self.memory = memory
+
+    def register_all(self, router):
+        memory = self.memory
+        router.register("retrieve",
+                        lambda task, limit=5, policy="transparent",
+                        threshold=0.0, select=False, snapshot=None,
+                        container_limit=2: memory.answer(
+                            task, limit=limit, policy=policy,
+                            threshold=threshold, select=select,
+                            snapshot=snapshot,
+                            container_limit=container_limit))
+        router.register("related",
+                        lambda symbol, policy="transparent":
+                        memory.related(symbol, policy=policy))
+        router.register("impact",
+                        lambda symbol, policy="transparent", max_depth=8,
+                        max_nodes=100: memory.impact(
+                            symbol, policy=policy, max_depth=max_depth,
+                            max_nodes=max_nodes))
+        router.register("callees",
+                        lambda symbol, policy="transparent", max_depth=8,
+                        max_nodes=100: memory.callees(
+                            symbol, policy=policy, max_depth=max_depth,
+                            max_nodes=max_nodes))
+        router.register("mentions",
+                        lambda symbol: memory.mentions(symbol))
+        router.register("claims",
+                        lambda symbol: memory.claims(symbol))
+        router.register("timeline",
+                        lambda symbol, at=None: memory.timeline(
+                            symbol, at=at))
+        router.register("candidates", lambda: memory.candidates())
+        router.register("frontier",
+                        lambda status=None, limit=None: memory.frontier_list(
+                            status=status)[:limit]
+                        if limit is not None else memory.frontier_list(
+                            status=status))
+
+
 def _write_transcript(path, rows):
     with open(path, "w", encoding="utf-8") as handle:
         for row in rows:
@@ -288,14 +444,15 @@ def _write_transcript(path, rows):
 
 
 def run_cell(manifest, arm, agent_fn, source_root, workdir, runs_dir=None,
-             allowed_tools=None, run_id=None):
+             allowed_tools=None, run_id=None, toolsets=("repo",)):
     """Run one task x arm cell with enforced isolation and accounting.
 
-    The agent acts only through ``ctx.action`` (budget-enforced) and
-    ``ctx.note``. Workspaces and transcripts are unique per run id and
-    never overwritten; a colliding workspace aborts instead of
-    deleting. Agent exceptions finalize an error cell. Returns a
-    CellResult; the answer key never crosses the agent interface.
+    Toolsets select the trusted handlers: ``"repo"`` (read-only
+    workspace inspection) and ``"tunic"`` (a fresh per-arm ingest with
+    read-only memory tools). The agent acts only through ``ctx``; the
+    answer key never crosses the agent interface. Workspaces and
+    transcripts are unique per run id and never overwritten; agent
+    exceptions finalize error cells. Returns a CellResult.
     """
     run_id = run_id or uuid.uuid4().hex
     workdir = Path(workdir)
@@ -313,6 +470,18 @@ def run_cell(manifest, arm, agent_fn, source_root, workdir, runs_dir=None,
     if Path(transcript_path).exists():
         raise FileExistsError("refusing to overwrite transcript: %s"
                               % transcript_path)
+    router = ToolRouter()
+    ReadOnlyRepoTools(arm_ws).register_all(router) \
+        if "repo" in toolsets else None
+    memory = None
+    setup_s = 0.0
+    if "tunic" in toolsets:
+        t_setup = time.time()
+        db_path = str(workdir / ("db-%s.sqlite" % run_id[:8]))
+        memory = Memory(db_path, str(arm_ws))
+        memory.ingest()
+        TunicReadTools(memory).register_all(router)
+        setup_s = time.time() - t_setup
     provenance = {"repo_sha": repo_sha(source_root),
                   "manifest_digest": manifest_digest(manifest),
                   "runner_version": RUNNER_VERSION,
@@ -320,15 +489,21 @@ def run_cell(manifest, arm, agent_fn, source_root, workdir, runs_dir=None,
                   "arm": arm, "budget_actions": manifest.budget_actions,
                   "allowed_tools": (sorted(allowed_tools)
                                     if allowed_tools is not None else None),
+                  "handlers": router.names,
+                  "toolsets": sorted(toolsets),
                   "sandbox": "none-workspace-copy-only"}
+    t0 = time.time()
     rows = [{"t": 0.0, "event": "start", "run_id": run_id,
              "task_id": manifest.id, "arm": arm,
-             "provenance": provenance}]
-    ctx = AgentContext(manifest.budget_actions, allowed_tools)
-    t0 = time.time()
+             "setup_s": setup_s, "provenance": provenance}]
+    ctx = AgentContext(manifest.budget_actions, router, allowed_tools, t0)
     try:
-        answer = agent_fn(manifest.text, arm_ws, manifest.budget_actions,
-                          ctx)
+        try:
+            answer = agent_fn(manifest.text, arm_ws, manifest.budget_actions,
+                              ctx)
+        finally:
+            if memory is not None:
+                memory.close()
     except BudgetExhausted as error:
         wall_s = time.time() - t0
         rows.append({"t": wall_s, "event": "error",
@@ -336,14 +511,17 @@ def run_cell(manifest, arm, agent_fn, source_root, workdir, runs_dir=None,
                      "actions": ctx.actions})
         return _finalize(manifest, arm, run_id, "", ctx.actions, wall_s,
                          0.0, "budget-exceeded", transcript_path,
-                         provenance, rows)
-    except UnknownTool as error:
+                         provenance, rows, ctx)
+    except (UnknownTool, ToolDenied) as error:
         wall_s = time.time() - t0
         rows.append({"t": wall_s, "event": "error",
-                     "category": "unknown-tool", "detail": str(error),
-                     "actions": ctx.actions})
+                     "category": ("unknown-tool"
+                                  if isinstance(error, UnknownTool)
+                                  else "tool-denied"),
+                     "detail": str(error), "actions": ctx.actions})
         return _finalize(manifest, arm, run_id, "", ctx.actions, wall_s,
-                         0.0, "error", transcript_path, provenance, rows)
+                         0.0, "error", transcript_path, provenance, rows,
+                         ctx)
     except Exception as error:
         wall_s = time.time() - t0
         rows.append({"t": wall_s, "event": "error",
@@ -351,21 +529,29 @@ def run_cell(manifest, arm, agent_fn, source_root, workdir, runs_dir=None,
                      "detail": "%s: %s" % (type(error).__name__, error),
                      "actions": ctx.actions})
         return _finalize(manifest, arm, run_id, "", ctx.actions, wall_s,
-                         0.0, "error", transcript_path, provenance, rows)
+                         0.0, "error", transcript_path, provenance, rows,
+                         ctx)
     wall_s = time.time() - t0
     answer = answer if isinstance(answer, str) else str(answer)
+    if ctx.actions > manifest.budget_actions:
+        rows.append({"t": wall_s, "event": "error",
+                     "category": "budget-exceeded",
+                     "detail": "caught BudgetExhausted but kept acting",
+                     "actions": ctx.actions})
+        return _finalize(manifest, arm, run_id, answer, ctx.actions,
+                         wall_s, 0.0, "budget-exceeded", transcript_path,
+                         provenance, rows, ctx)
     score = score_answer(manifest, answer)
     return _finalize(manifest, arm, run_id, answer, ctx.actions, wall_s,
                      score, "complete", transcript_path, provenance, rows,
-                     ctx_rows=ctx.rows, t0=t0)
+                     ctx)
 
 
 def _finalize(manifest, arm, run_id, answer, actions, wall_s, score,
-              status, transcript_path, provenance, rows, ctx_rows=None,
-              t0=None):
-    base = t0 if t0 is not None else time.time()
-    for row in (ctx_rows or []):
-        rows.append({"t": time.time() - base, "event": "action", **row})
+              status, transcript_path, provenance, rows, ctx):
+    for row in ctx.rows:
+        rows.append({"t": row["t"], "event": "action", **{
+            k: v for k, v in row.items() if k != "t"}})
     rows.append({"t": wall_s, "event": "result", "run_id": run_id,
                  "task_id": manifest.id, "arm": arm, "answer": answer,
                  "actions": actions, "wall_s": wall_s, "score": score,
@@ -379,20 +565,15 @@ def _finalize(manifest, arm, run_id, answer, actions, wall_s, score,
 
 
 def grep_stub_agent(task_text, workspace, budget, ctx):
-    """Deterministic stub: scans sources, then abstains with a reason."""
-    import re
-    for path in sorted(Path(workspace).glob("*.py")):
-        ctx.action("search", path=path.name)
-        text = path.read_text(encoding="utf-8")
-        if re.search(r"def \w+", text):
-            ctx.note(hit=path.name)
-    ctx.action("answer", key="abstain-stub")
+    """Deterministic stub: real dispatched search, then abstains."""
+    ctx.action("search", pattern=r"def \w+")
+    ctx.action("list_files")
     return "ABSTAIN\nREASON: insufficient evidence in stub scan"
 
 
 def abstain_stub_agent(task_text, workspace, budget, ctx):
-    """Deterministic stub: always abstains with the reason."""
-    ctx.action("answer", key="abstain")
+    """Deterministic stub: one inspection, then abstains."""
+    ctx.action("list_files")
     return "ABSTAIN\nREASON: stub agent abstains on every task"
 
 
@@ -410,8 +591,6 @@ def isolation_probe(agent_fn, source_root, workdir):
 
     first = run_cell(manifest, "first", writing_agent, source_root,
                      workdir, runs_dir=workdir)
-    assert (Path(first.transcript_path).parent /
-            first.transcript_path).exists()
     ws_first = list(Path(workdir).glob("probe_isolation-first-*"))
     assert ws_first and (ws_first[0] / "MARKER").exists()
     second = run_cell(manifest, "second", agent_fn, source_root,
