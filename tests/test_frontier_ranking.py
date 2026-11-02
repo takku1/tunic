@@ -250,6 +250,33 @@ class ExperimentHarnessTests(unittest.TestCase):
         self.assertIn("refresh", kinds)
         self.assertIn("close", kinds)
 
+    def test_crash_mid_arm_leaves_source_clean(self):
+        from tunic import investigate as inv
+        import unittest.mock as mock
+        tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, tmp, True)
+        root = tmp / "repo"
+        root.mkdir()
+        (root / "a.py").write_text(
+            "def use():\n    return helper()\n", encoding="utf-8")
+        (root / "b.py").write_text(
+            "def helper():\n    return 1\n", encoding="utf-8")
+        db = str(tmp / "memory.sqlite")
+        memory = Memory(db, root)
+        memory.ingest()
+        memory.close()
+        real_investigate = inv.investigate
+
+        def crashing(memory, cluster_key, budget):
+            outcome = real_investigate(memory, cluster_key, budget)
+            raise RuntimeError("simulated mid-arm crash")
+
+        with mock.patch.object(inv, "investigate", crashing):
+            with self.assertRaises(RuntimeError):
+                inv.compare_arms(db, str(root), top_n=1,
+                                 budget={"max_sites": 5, "max_commits": 3})
+        self.assertFalse((root / "notes").exists())
+
     def test_ranked_arm_beats_raw_count_arm(self):
         from tunic.investigate import compare_arms
         tmp = Path(tempfile.mkdtemp())

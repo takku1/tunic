@@ -22,35 +22,6 @@ from .triage import _cluster_key as cluster_of
 from .triage import analyze, dedup_sites
 
 
-def _snapshot_workspace(root):
-    """Record workspace claim files so arm side-effects restore exactly."""
-    notes = Path(root) / "notes"
-    snap = {}
-    if notes.is_dir():
-        for child in sorted(notes.iterdir()):
-            if child.is_file():
-                snap[child.name] = child.read_bytes()
-    return snap
-
-
-def _restore_workspace(root, snap):
-    """Remove claim files an arm created; restore touched ones byte-wise."""
-    notes = Path(root) / "notes"
-    if not notes.is_dir():
-        return
-    for child in sorted(notes.iterdir()):
-        if not child.is_file():
-            continue
-        if child.name not in snap:
-            child.unlink()
-        elif child.read_bytes() != snap[child.name]:
-            child.write_bytes(snap[child.name])
-    try:
-        notes.rmdir()
-    except OSError:
-        pass
-
-
 def _asserted_count(memory):
     _snapshot, view = memory.store.view()
     return sum(1 for a in view.get("assertions", [])
@@ -222,13 +193,26 @@ def investigate(memory, cluster_key, budget):
             "yield": resolved + edges_added}
 
 
+def _copy_workspace(root, dest):
+    """Copy a source tree for one arm; dotfiles, caches, and stray
+    databases stay behind. Symbol keys are root-relative, so clusters
+    stay comparable across copies."""
+    shutil.copytree(
+        root, dest,
+        ignore=shutil.ignore_patterns(
+            ".git", "__pycache__", "*.sqlite", "*.sqlite-journal",
+            "*.sqlite-wal", "*.sqlite-shm", ".pytest_cache"))
+
+
 def compare_arms(db_path, root, top_n=3, budget=None):
     """Ranked top-N vs raw-occurrence top-N, identical budget each.
 
-    Each arm works on its own scratch copy of the database. Ranked
-    order comes from Ranking v1 (verifiability); baseline order comes
-    from raw open-occurrence counts (the thing v1 rejects). Returns
-    per-arm cluster keys, action logs, and yields.
+    Each arm gets its own scratch workspace COPY plus a freshly
+    ingested database, so no arm ever writes the source tree (no
+    mutate-and-restore: a crash cannot leave claim files behind).
+    Ranked order comes from Ranking v1 (verifiability); baseline order
+    comes from raw open-occurrence counts (the thing v1 rejects).
+    Returns per-arm cluster keys, action logs, and yields.
     """
     budget = dict(budget or {"max_sites": 5, "max_commits": 3})
     report = analyze(db_path, root=root)
@@ -251,14 +235,14 @@ def compare_arms(db_path, root, top_n=3, budget=None):
                             reverse=True)[:top_n]]
 
     arms = {}
-    workspace_snap = _snapshot_workspace(root)
     for name, keys in (("ranked", ranked_keys),
                        ("baseline", baseline_keys)):
         scratch_dir = Path(tempfile.mkdtemp())
-        scratch = scratch_dir / "arm.sqlite"
-        shutil.copy(db_path, scratch)
-        memory = Memory(str(scratch), root)
+        arm_ws = scratch_dir / "ws"
+        _copy_workspace(root, arm_ws)
+        memory = Memory(str(scratch_dir / "arm.sqlite"), str(arm_ws))
         try:
+            memory.ingest()
             total = {"clusters": [list(k) for k in keys], "actions": 0,
                      "resolved": 0, "edges_added": 0, "yield": 0,
                      "detail": []}
@@ -273,6 +257,5 @@ def compare_arms(db_path, root, top_n=3, budget=None):
         finally:
             memory.close()
             shutil.rmtree(scratch_dir, True)
-        _restore_workspace(root, workspace_snap)
     arms["budget"] = budget
     return arms
