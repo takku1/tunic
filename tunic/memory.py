@@ -274,16 +274,16 @@ class Memory:
             handle.write("\n\n## " + stamp + "\n\n" + text.rstrip("\n") + "\n")
         return str(target)
 
-    def ingest(self):
+    def ingest(self, exclude=()):
         authorize(self.principal, "ingest")
-        result = self.store.ingest(str(self.root))
+        result = self.store.ingest(str(self.root), exclude)
         result["frontier_filed"] = self._file_ingest_diagnostics(
             result.get("diagnostics", []))
         return result
 
-    def refresh(self):
+    def refresh(self, exclude=()):
         authorize(self.principal, "refresh")
-        result = self.store.refresh(str(self.root))
+        result = self.store.refresh(str(self.root), exclude)
         result["frontier_filed"] = self._file_ingest_diagnostics(
             result.get("diagnostics", []))
         return result

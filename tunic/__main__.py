@@ -117,9 +117,13 @@ def main(argv=None):
     parser.add_argument("--db", help="SQLite database path (required for graph/render/experiment commands)")
     commands = parser.add_subparsers(dest="command", required=True)
     ingest = commands.add_parser("ingest", help="fully rebuild and atomically publish a Python source snapshot")
-    ingest.add_argument("root", help="Python source root; e.g. repository/src for a src layout")
+    ingest.add_argument("root", help="Source root; e.g. repository/src for a src layout")
+    ingest.add_argument("--exclude", action="append", default=None,
+                        help="Exclude path pattern (repeatable; gitignore syntax)")
     refresh = commands.add_parser("refresh", help="incrementally re-ingest; equivalent to ingest with less work")
-    refresh.add_argument("root", help="Python source root; e.g. repository/src for a src layout")
+    refresh.add_argument("root", help="Source root; e.g. repository/src for a src layout")
+    refresh.add_argument("--exclude", action="append", default=None,
+                         help="Exclude path pattern (repeatable; gitignore syntax)")
     impact = commands.add_parser("impact", help="compile possible reverse-call impact with evidence")
     impact.add_argument("symbol", help="exact path::function key, e.g. core.py::calculate")
     impact.add_argument("--policy", default="transparent", help="retrieval policy: transparent, evidence_only, or current")
@@ -291,9 +295,9 @@ def main(argv=None):
             return 0
         with GraphStore(args.db) as store:
             if args.command == "ingest":
-                result = store.ingest(args.root)
+                result = store.ingest(args.root, args.exclude or ())
             elif args.command == "refresh":
-                result = store.refresh(args.root)
+                result = store.refresh(args.root, args.exclude or ())
                 print(json.dumps(result, ensure_ascii=True, sort_keys=True, indent=2))
                 return 0
             elif args.command == "impact":

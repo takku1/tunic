@@ -13,7 +13,14 @@ from .identity import digest, identity
 
 PROFILE = "python-static-v7"
 EXCLUDED = {".git", ".venv", "venv", "__pycache__", ".tunic", ".research", "node_modules"}
+EXCLUDED_BUILD = {"dist", "build", ".astro", ".next", ".nuxt", "coverage", "target",
+                  "out", ".output", "vendor", "third_party"}
 TEXT_EXTENSIONS = {".md", ".txt", ".rst"}
+INVENTORY_EXTENSIONS = {".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".astro",
+                        ".vue", ".svelte", ".go", ".rs", ".java", ".c", ".h",
+                        ".cpp", ".hpp", ".cc", ".cs", ".rb", ".php", ".swift",
+                        ".kt", ".kts", ".scala", ".lua", ".pl", ".r", ".sh",
+                        ".bash", ".ps1"}
 CLAIM_RELATIONS = {"depends_on", "implements", "supersedes", "decided_by", "contradicts",
                    "corrects", "retracts"}
 TRAVERSABLE_CLAIMS = {"depends_on", "implements"}
@@ -74,17 +81,108 @@ DOC_PHASE_KINDS = {"malformed_claims", "invalid_claim", "unknown_relation",
 STRUCTURE_KINDS = {"excluded_symlink"}
 
 
-def _scan(root):
+def _pattern_regexes(pattern):
+    """Compile one ignore pattern to (self, under-or-None) matchers.
+
+    Documented subset of gitignore: `dir/` (that dir and everything
+    under it), `*.ext`, bare names (any level), `/`-anchored paths,
+    `**` spans, `*`/`?` within a segment, `!` negation (handled by
+    the caller). Only the root `.gitignore` is read.
+    """
+    anchored = pattern.startswith("/")
+    body = pattern.strip("/")
+    if not body or body == "!":
+        return None
+    parts = []
+    i = 0
+    while i < len(body):
+        if body.startswith("**/", i):
+            parts.append("(.*/)?")
+            i += 3
+        elif body.startswith("**", i):
+            parts.append(".*")
+            i += 2
+        elif body[i] == "*":
+            parts.append("[^/]*")
+            i += 1
+        elif body[i] == "?":
+            parts.append("[^/]")
+            i += 1
+        else:
+            parts.append(re.escape(body[i]))
+            i += 1
+    core = "".join(parts)
+    dir_only = pattern.endswith("/")
+    if "/" not in body:
+        self_rx = "^(?:.*/)?" + core + "$"
+        under_rx = ("^(?:.*/)?" + core + "/.*$" if dir_only else None)
+    else:
+        self_rx = "^" + core + "$"
+        under_rx = ("^" + core + "/.*$" if dir_only else None)
+    import re as _re
+    return (_re.compile(self_rx),
+            _re.compile(under_rx) if under_rx else None)
+
+
+def _compile_ignore_rules(root, extra):
+    """Ordered (self, under, negated) rules: defaults, root .gitignore,
+    then explicit excludes. Last matching rule wins."""
+    raws = [name + "/" for name in sorted(EXCLUDED | EXCLUDED_BUILD)]
+    ignore_file = Path(root) / ".gitignore"
+    if ignore_file.is_file():
+        try:
+            lines = ignore_file.read_text(
+                encoding="utf-8-sig").splitlines()
+        except OSError:
+            lines = []
+        raws.extend(lines)
+    raws.extend(extra or ())
+    rules = []
+    for raw in raws:
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        negated = line.startswith("!")
+        if negated:
+            line = line[1:]
+        compiled = _pattern_regexes(line)
+        if compiled is None:
+            continue
+        self_rx, under_rx = compiled
+        rules.append((self_rx, under_rx, negated))
+    return rules
+
+
+def _is_ignored(relpath, is_dir, rules):
+    ignored = False
+    for self_rx, under_rx, negated in rules:
+        if self_rx.match(relpath) or (
+                under_rx is not None and under_rx.match(relpath)):
+            if not is_dir and under_rx is not None \
+                    and self_rx.match(relpath):
+                # A dir-only rule never matches a file itself; paths
+                # under the dir match via under_rx.
+                if not under_rx.match(relpath):
+                    continue
+            ignored = not negated
+    return ignored
+
+
+def _scan(root, exclude=()):
     """Walk the source root and read candidate files without parsing.
 
-    Returns (entries, diagnostics) where each entry carries path, data and
-    text flags. Shared by full capture and incremental change detection so
-    both observe the same file set.
+    Returns (entries, diagnostics, excluded) where each entry carries
+    path, data, text, and inventory flags. Build output, vendored code,
+    root-.gitignore matches, and explicit excludes are pruned (counts
+    reported, not per-path diagnostics). Shared by full capture and
+    incremental change detection so both observe the same file set.
     """
     root = Path(root).resolve(strict=True)
     if not root.is_dir():
         raise ValueError("source root must be a directory")
+    rules = _compile_ignore_rules(root, exclude)
     entries, diagnostics = [], []
+    excluded = {"dirs": 0, "files": 0}
     def scan_error(error):
         raise error
     for base, dirs, files in os.walk(root, followlinks=False, onerror=scan_error):
@@ -92,23 +190,39 @@ def _scan(root):
             p = Path(base) / name
             if p.is_symlink():
                 diagnostics.append({"path": p.relative_to(root).as_posix(), "kind": "excluded_symlink"})
-        dirs[:] = sorted(d for d in dirs if d not in EXCLUDED and not (Path(base)/d).is_symlink())
-        for name in sorted(files):
-            text = Path(name).suffix in TEXT_EXTENSIONS
-            if not (name.endswith(".py") or text):
+        kept = []
+        for name in sorted(dirs):
+            p = Path(base) / name
+            rel = p.relative_to(root).as_posix()
+            if p.is_symlink() or name in EXCLUDED:
                 continue
+            if _is_ignored(rel, True, rules):
+                excluded["dirs"] += 1
+                continue
+            kept.append(name)
+        dirs[:] = kept
+        for name in sorted(files):
             p = Path(base)/name
             path = p.relative_to(root).as_posix()
             if p.is_symlink():
                 diagnostics.append({"path": path, "kind": "excluded_symlink"})
                 continue
-            entries.append({"path": path, "data": p.read_bytes(), "text": text})
-    return entries, diagnostics
+            if _is_ignored(path, False, rules):
+                excluded["files"] += 1
+                continue
+            suffix = Path(name).suffix
+            text = suffix in TEXT_EXTENSIONS
+            inventory = suffix in INVENTORY_EXTENSIONS
+            if not (name.endswith(".py") or text or inventory):
+                continue
+            entries.append({"path": path, "data": p.read_bytes(), "text": text,
+                            "inventory": inventory})
+    return entries, diagnostics, excluded
 
 
-def capture(root):
+def capture(root, exclude=()):
     sources, diagnostics, modules = [], [], {}
-    entries, walk_diagnostics = _scan(root)
+    entries, walk_diagnostics, excluded = _scan(root, exclude)
     diagnostics.extend(walk_diagnostics)
     for entry in entries:
         path, data, text = entry["path"], entry["data"], entry["text"]
@@ -116,6 +230,10 @@ def capture(root):
         source = {"path": path, "digest": file_digest, "data": data,
                   "id": identity("source", [path, file_digest]), "tree": None, "text": text}
         if text:
+            sources.append(source)
+            continue
+        if entry.get("inventory"):
+            source["inventory"] = True
             sources.append(source)
             continue
         parts = list(Path(path).with_suffix("").parts)
@@ -132,7 +250,7 @@ def capture(root):
             source["tree"] = ast.parse(data.decode("utf-8-sig"), filename=path)
         except (SyntaxError, UnicodeError, ValueError) as error:
             diagnostics.append({"path": path, "kind": "parse_error", "line": getattr(error, "lineno", None)})
-    return sources, diagnostics, modules
+    return sources, diagnostics, modules, excluded
 
 
 def module_of(path):
@@ -150,6 +268,10 @@ def parse_source(path, data):
     parse step of capture so incremental refresh reuses identical records.
     """
     file_digest = digest(data)
+    if Path(path).suffix in INVENTORY_EXTENSIONS:
+        return ({"path": path, "digest": file_digest, "data": data,
+                 "id": identity("source", [path, file_digest]), "tree": None,
+                 "text": False, "inventory": True}, None)
     record = {"path": path, "digest": file_digest, "data": data,
               "id": identity("source", [path, file_digest]), "tree": None,
               "text": False, "module": module_of(path)}
@@ -183,6 +305,47 @@ def _builtin_method_kind(decorator_list):
     return None
 
 
+INVENTORY_PATTERNS = (
+    (re.compile(rb"^[ \t]*(?:export[ \t]+)?(?:async[ \t]+)?function[ \t]+([A-Za-z_$][\w$]*)[ \t]*\(", re.MULTILINE), "function"),
+    (re.compile(rb"^[ \t]*(?:export[ \t]+)?(?:abstract[ \t]+)?class[ \t]+([A-Za-z_$][\w$]*)", re.MULTILINE), "class"),
+    (re.compile(rb"^[ \t]*(?:export[ \t]+)?(?:const|let|var)[ \t]+([A-Za-z_$][\w$]*)[ \t]*=[ \t]*(?:async[ \t]*)?(?:\(|function\b|class\b|new\b)", re.MULTILINE), "function"),
+    (re.compile(rb"^[ \t]*(?:public|private|protected)?[ \t]*(?:static[ \t]+|async[ \t]+|abstract[ \t]+)*(?:fn|func|def)[ \t]+([A-Za-z_]\w*)", re.MULTILINE), "function"),
+)
+
+
+def _harvest_inventory(source, symbols, diagnostics):
+    """Heuristic symbol inventory for non-Python code files.
+
+    Emits function/class symbols with byte-exact spans so lookup,
+    mentions, and review work across languages. Emits NO assertions:
+    a harvested name is inventory, never a call edge. Deterministic:
+    first occurrence wins, later duplicates file a diagnostic.
+    """
+    data = source["data"]
+    language = Path(source["path"]).suffix[1:]
+    found = 0
+    for pattern, kind in INVENTORY_PATTERNS:
+        for match in pattern.finditer(data):
+            name = match.group(1).decode("ascii")
+            key = source["path"] + "::" + name
+            if key in symbols:
+                continue
+            lineno = data.count(b"\n", 0, match.start()) + 1
+            symbols[key] = {"key": key, "path": source["path"],
+                            "name": name, "source": source["id"],
+                            "line": lineno, "start": match.start(),
+                            "end": match.end(), "kind": kind,
+                            "is_test": name.startswith("test_")
+                            or Path(source["path"]).name.startswith("test_"),
+                            "language": language,
+                            "derivation": "heuristic_inventory_v1"}
+            found += 1
+    if found:
+        diagnostics.append({"path": source["path"], "kind": "language_inventory",
+                            "language": language, "symbols": found})
+    return found
+
+
 def _collect_code(sources, symbols, assertions, diagnostics):
     """Populate symbols and per-file tables from parsed Python sources.
 
@@ -200,6 +363,8 @@ def _collect_code(sources, symbols, assertions, diagnostics):
                                 "source": s["id"], "line": 1,
                                 "start": 0, "end": len(s["data"]),
                                 "is_test": False}
+            elif s.get("inventory") and s["data"]:
+                _harvest_inventory(s, symbols, diagnostics)
             continue
         # Collect module bindings without descending into function/class scopes.
         wrapper = ast.Module(body=[], type_ignores=[])
@@ -1737,12 +1902,12 @@ def _build_bare_mentions(sources, symbols, assertions, diagnostics, claim_spans,
     return seen_mentions
 
 
-def extract(root):
+def extract(root, exclude=()):
     """Full rebuild: capture, code resolution, then document extraction."""
-    sources, diagnostics, modules = capture(root)
+    sources, diagnostics, modules, excluded = capture(root, exclude)
     symbols, assertions = {}, []
     _collect_code(sources, symbols, assertions, diagnostics)
     _resolve_code(sources, modules, symbols, assertions, diagnostics)
     _build_dispatch(sources, modules, symbols, assertions, diagnostics)
     _build_docs(sources, symbols, assertions, diagnostics)
-    return sources, sorted(symbols.values(), key=lambda x:x["key"]), sorted(assertions, key=lambda x:x["id"]), sorted(diagnostics, key=lambda x: (x["path"], x.get("line") or 0, x["kind"], x.get("start", 0)))
+    return sources, sorted(symbols.values(), key=lambda x:x["key"]), sorted(assertions, key=lambda x:x["id"]), sorted(diagnostics, key=lambda x: (x["path"], x.get("line") or 0, x["kind"], x.get("start", 0))), excluded

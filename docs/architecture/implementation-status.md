@@ -1,7 +1,7 @@
 # Tunic implementation status (single authoritative tracker)
 
 Date: 2026-11-02. Scope: local reference implementation on `main`.
-Full suite: 615 tests green (`python -m unittest discover -s tests`, ~80-210 s
+Full suite: 624 tests green (`python -m unittest discover -s tests`, ~80-210 s
 depending on live-repo ingests; always record command, count, and date).
 MCP tools: 13 (see [mcp.md](mcp.md)). No `/docs/STATUS.md` exists in this
 repo; this file is the registry (per binding convention below).

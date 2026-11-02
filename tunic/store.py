@@ -87,14 +87,17 @@ class GraphStore:
     def close(self):
         self.connection.close()
 
-    def ingest(self, root):
+    def ingest(self, root, exclude=()):
         """Capture/extract first; publish all rows or roll back all rows."""
         root = str(Path(root).resolve(strict=True))
         binding = self.connection.execute("SELECT value FROM metadata WHERE key='root'").fetchone()
         if binding and binding[0] != root:
             raise ValueError("database belongs to a different source root")
-        sources, symbols, assertions, diagnostics = extract(root)
-        return self._publish(root, sources, symbols, assertions, diagnostics)
+        sources, symbols, assertions, diagnostics, excluded = extract(
+            root, exclude)
+        result = self._publish(root, sources, symbols, assertions, diagnostics)
+        result["excluded"] = excluded
+        return result
 
     def _publish(self, root, sources, symbols, assertions, diagnostics):
         """Assemble the manifest and publish every row atomically."""
@@ -128,7 +131,7 @@ class GraphStore:
                 "assertions": len(assertions), "diagnostics": diagnostics,
                 "coverage": "bounded_static_analysis"}
 
-    def refresh(self, root):
+    def refresh(self, root, exclude=()):
         """Incrementally re-ingest, differentially equivalent to ingest().
 
         Change detection walks and digests files without parsing. An
@@ -144,7 +147,7 @@ class GraphStore:
         binding = self.connection.execute("SELECT value FROM metadata WHERE key='root'").fetchone()
         if binding and binding[0] != root:
             raise ValueError("database belongs to a different source root")
-        entries, walk_diagnostics = _scan(root)
+        entries, walk_diagnostics, excluded = _scan(root, exclude)
         work = {"files_walked": len(entries), "files_parsed": 0,
                 "code_files_parsed": 0, "doc_files_processed": 0,
                 "assertions_reused": 0, "assertions_built": 0,
@@ -158,9 +161,10 @@ class GraphStore:
             file_digest = digest(entry["data"])
             fresh[entry["path"]] = {"digest": file_digest, "data": entry["data"],
                                     "text": entry["text"],
+                                    "inventory": entry.get("inventory", False),
                                     "id": identity("source", [entry["path"], file_digest])}
         if current is None:
-            return self._refresh_full(root, work, dict(fresh))
+            return self._refresh_full(root, work, dict(fresh), exclude)
         _, manifest = self.view(current)
         stored = {row[0]: {"digest": row[1], "id": row[2]}
                   for row in self.connection.execute(
@@ -176,19 +180,20 @@ class GraphStore:
                                 if d["kind"] in STRUCTURE_KINDS)
         if not added and not deleted and not changed and structure_now == structure_then:
             return {"snapshot": current, "path": "unchanged", "reused": True,
-                    "previous": current, "published_new": False, "work": work}
+                    "previous": current, "published_new": False, "work": work,
+                    "excluded": excluded}
         touched = added + deleted + changed
         code_touched = [p for p in touched
                         if Path(p).suffix not in TEXT_EXTENSIONS]
         if structure_now != structure_then:
-            return self._refresh_full(root, work, dict(fresh))
+            return self._refresh_full(root, work, dict(fresh), exclude)
         if code_touched:
             return self._refresh_code(root, work, manifest, stored, dict(fresh),
                                       current, touched, code_touched)
         return self._refresh_documents(root, work, manifest, stored, dict(fresh),
                                        current, touched)
 
-    def _refresh_full(self, root, work, fresh):
+    def _refresh_full(self, root, work, fresh, exclude=()):
         """Full extract fallback; also serves databases without a snapshot."""
         code_files = sum(1 for entry in fresh.values() if not entry["text"])
         work["files_parsed"] = code_files
@@ -198,12 +203,14 @@ class GraphStore:
             previous = self.current()
         except ValueError:
             previous = None
-        sources, symbols, assertions, diagnostics = extract(root)
+        sources, symbols, assertions, diagnostics, excluded = extract(
+            root, exclude)
         work["assertions_built"] = len(assertions)
         work["diagnostics_built"] = len(diagnostics)
         result = self._publish(root, sources, symbols, assertions, diagnostics)
         result = dict(result, path="full", reused=False, previous=previous,
-                      published_new=result["snapshot"] != previous, work=work)
+                      published_new=result["snapshot"] != previous, work=work,
+                      excluded=excluded)
         return result
 
     @staticmethod
@@ -495,6 +502,10 @@ class GraphStore:
                             "functions": functions, "classes": classes,
                             "class_names": sorted(class_names)})
         for record in records.values():
+            if record.get("inventory"):
+                # Harvested symbols need no import-resolution table;
+                # resolve passes skip treeless sources.
+                continue
             modules.setdefault(record["module"], []).append(record)
         for path in unparsed:
             module = module_of(path)
