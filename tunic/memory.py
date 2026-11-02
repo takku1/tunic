@@ -24,6 +24,19 @@ FRONTIER_BASE_PRIORITY = {"contradictory": 0.6, "unsupported": 0.5, "novel": 0.4
                           "unresolved": 0.3, "irrelevant": 0.05}
 
 
+def _dedup_dicts(rows):
+    """Collapse byte-identical rows (every field equal): the same evidence
+    discovered twice. Rows differing in any field -- authority, status,
+    spans -- are distinct sources and survive."""
+    unique, markers = [], set()
+    for row in rows:
+        marker = json.dumps(row, sort_keys=True, default=str)
+        if marker not in markers:
+            markers.add(marker)
+            unique.append(row)
+    return unique
+
+
 def _container_of(symbols_by_key, key):
     """Verified containing class of a method symbol, else None.
 
@@ -1253,12 +1266,15 @@ class Memory:
         # as skipped, never silently dropped.
         container_order, _seen_containers = [], set()
         for key in top:
+            if key in followed:
+                continue
             container = _container_of(symbols_by_key, key)
             if container and container not in _seen_containers:
                 _seen_containers.add(container)
                 container_order.append((key, container))
         expanded_containers = container_order[:container_limit]
         skipped_containers = container_order[container_limit:]
+        failed_containers = []
         impacts = {}
         mentions = []
         claims = []
@@ -1277,6 +1293,7 @@ class Memory:
                     self.store, class_key, snapshot=snapshot,
                     policy=policy, view=view)
             except ValueError:
+                failed_containers.append(class_key)
                 continue
             for entry in container_related["impact"]["impacts"]:
                 if entry["symbol"] not in impacts:
@@ -1292,8 +1309,10 @@ class Memory:
             if key not in seen:
                 seen.add(key)
                 mentions.append(mention)
+        mentions = _dedup_dicts(mentions)
+        claims = _dedup_dicts(claims)
         mentions.sort(key=lambda m: (m["evidence"]["path"], m["evidence"]["start"], m["status"]))
-        claims.sort(key=lambda c: (c["relation"], c["caller"], c["callee"] or ""))
+        claims.sort(key=lambda c: (c["relation"], c["caller"], c.get("callee") or ""))
         cand_entries = []
         for key in top:
             entry = {"symbol": key, "score": scores[key],
@@ -1313,9 +1332,12 @@ class Memory:
                 "unknown_symbols": unknown_symbols,
                 "container_expansion": {
                     "budget": container_limit,
-                    "used": len(expanded_containers),
+                    "used": len(expanded_containers) - len(failed_containers),
+                    "attempted": [klass for _, klass in container_order],
                     "expanded": {method: klass
-                                 for method, klass in expanded_containers},
+                                 for method, klass in expanded_containers
+                                 if klass not in failed_containers},
+                    "failed": list(failed_containers),
                     "skipped_over_budget": [klass for _, klass
                                             in skipped_containers]},
                 "outcome": "complete" if top else "empty"}
