@@ -375,28 +375,43 @@ def _builtin_method_kind(decorator_list):
     return None
 
 
+# A bare identifier on an indented line is usually a local binding, not a
+# module-scope declaration. Exports are always top-level in ESM, so a
+# brace-language line is harvestable when it starts at column 0 or
+# carries `export`. The fn/func/def family stays indent-tolerant on
+# purpose: Go/Rust top-level items are column-0 by convention, while
+# `impl` methods and stub-file methods are indented but real. Each
+# entry is (pattern, kind, scope_disciplined).
+_TOP = rb"^(?P<indent>[ \t]*)(?P<export>export[ \t]+)?"
 INVENTORY_PATTERNS = (
-    (re.compile(rb"^[ \t]*(?:export[ \t]+)?(?:async[ \t]+)?function[ \t]+([A-Za-z_$][\w$]*)[ \t]*\(", re.MULTILINE), "function"),
-    (re.compile(rb"^[ \t]*(?:export[ \t]+)?(?:abstract[ \t]+)?class[ \t]+([A-Za-z_$][\w$]*)", re.MULTILINE), "class"),
-    (re.compile(rb"^[ \t]*(?:export[ \t]+)?(?:const|let|var)[ \t]+([A-Za-z_$][\w$]*)[ \t]*=[ \t]*(?:async[ \t]*)?(?:\(|function\b|class\b|new\b)", re.MULTILINE), "function"),
-    (re.compile(rb"^[ \t]*(?:public|private|protected)?[ \t]*(?:static[ \t]+|async[ \t]+|abstract[ \t]+)*(?:fn|func|def)[ \t]+([A-Za-z_]\w*)", re.MULTILINE), "function"),
+    (re.compile(_TOP + rb"(?:async[ \t]+)?function[ \t]+([A-Za-z_$][\w$]*)[ \t]*\(", re.MULTILINE), "function", True),
+    (re.compile(_TOP + rb"(?:abstract[ \t]+)?class[ \t]+([A-Za-z_$][\w$]*)", re.MULTILINE), "class", True),
+    (re.compile(_TOP + rb"(?:const|let|var)[ \t]+([A-Za-z_$][\w$]*)[ \t]*[=:]", re.MULTILINE), "function", True),
+    (re.compile(_TOP + rb"(?:interface|type|enum)[ \t]+([A-Za-z_$][\w$]*)", re.MULTILINE), "type", True),
+    (re.compile(rb"^(?P<indent>[ \t]*)(?P<export>export[ \t]+)default[ \t]+(?:async[ \t]+)?function[ \t]+([A-Za-z_$][\w$]*)", re.MULTILINE), "function", True),
+    (re.compile(rb"^(?P<indent>[ \t]*)(?P<export>export[ \t]+)default[ \t]+(?:async[ \t]+)?class[ \t]+([A-Za-z_$][\w$]*)", re.MULTILINE), "class", True),
+    (re.compile(rb"^[ \t]*(?:public|private|protected)?[ \t]*(?:static[ \t]+|async[ \t]+|abstract[ \t]+)*(?:fn[ \t]+(?:\([^)]*\)[ \t]+)?|func[ \t]+(?:\([^)]*\)[ \t]+)?|def[ \t]+)([A-Za-z_]\w*)", re.MULTILINE), "function", False),
 )
 
 
 def _harvest_inventory(source, symbols, diagnostics):
     """Heuristic symbol inventory for non-Python code files.
 
-    Emits function/class symbols with byte-exact spans so lookup,
-    mentions, and review work across languages. Emits NO assertions:
+    Emits function/class/type symbols with byte-exact spans so lookup,
+    with column-0-or-export scope discipline for brace languages,
+    so mentions and review keep working. Emits NO assertions:
     a harvested name is inventory, never a call edge. Deterministic:
     first occurrence wins, later duplicates file a diagnostic.
     """
     data = source["data"]
     language = Path(source["path"]).suffix[1:]
     found = 0
-    for pattern, kind in INVENTORY_PATTERNS:
+    for pattern, kind, scoped in INVENTORY_PATTERNS:
         for match in pattern.finditer(data):
-            name = match.group(1).decode("ascii")
+            if (scoped and match.group("indent") != b""
+                    and match.group("export") is None):
+                continue
+            name = match.group(match.lastindex).decode("ascii")
             key = source["path"] + "::" + name
             if key in symbols:
                 continue
@@ -1787,7 +1802,7 @@ def _claim_mention_refs(assertion_list):
     return refs
 
 
-def _requalify(leaf, line, source_id, callee, doc_freq, exact_refs, claim_refs=frozenset()):
+def _requalify(leaf, line, source_id, callee, doc_freq, exact_refs, claim_refs=frozenset(), inventory_keys=frozenset()):
     """Recompute admission for a kept mention under current corpus state.
 
     Lets incremental refresh reprocess documents whose bare mentions flip
@@ -1796,9 +1811,12 @@ def _requalify(leaf, line, source_id, callee, doc_freq, exact_refs, claim_refs=f
     """
     frequency = doc_freq.get(leaf, 0.0)
     class_hit, module_hit, inventory = _context_hits(line, callee)
-    signals = _mention_signals(line, leaf, (source_id, callee) in exact_refs,
-                               (source_id, callee) in claim_refs,
-                               class_hit, module_hit, inventory)
+    signals = _mention_signals(line, leaf, (source_id, callee) in exact_refs, (source_id, callee) in claim_refs, class_hit, module_hit, inventory)
+    if not signals and callee in inventory_keys:
+        # Full rebuilds no longer file zero-signal inventory candidates
+        # (see _build_bare_mentions); a kept one of that shape is stale,
+        # so mark its document for reprocessing.
+        return True
     return ("exact_same_document" in signals
             or "asserted_claim_same_document" in signals
             or "class_context" in signals
@@ -1948,6 +1966,13 @@ def _build_bare_mentions(sources, symbols, assertions, diagnostics, claim_spans,
                                           or "module_path_context" in signals
                                           or "inventory_list" in signals)))
                     if not qualified:
+                        if (not signals and symbols[key].get("derivation")
+                                == "heuristic_inventory_v1"):
+                            # A bare common word with no corroborating
+                            # signal is not an investigation lead; filing
+                            # it drowns review in noise. The leaf stays
+                            # searchable through the lexical stage.
+                            continue
                         diagnostics.append({"path": s["path"], "line": lineno,
                                             "kind": "mention_candidate",
                                             "expression": leaf, "callee": key,

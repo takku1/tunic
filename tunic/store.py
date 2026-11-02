@@ -322,6 +322,8 @@ class GraphStore:
                       if record.get("resolution", {}).get("rule") == "exact_key_match_v1"}
         doc_freq = _leaf_document_frequency(
             text_sources, _code_leaf_names(symbols, all_text_ids))
+        inventory_keys = {k for k, r in symbols.items()
+                          if r.get("derivation") == "heuristic_inventory_v1"}
         kept_claim_refs = set()
         for entry in manifest["assertions"]:
             proposition = entry.get("proposition", {})
@@ -344,7 +346,8 @@ class GraphStore:
             if not _requalify(leaf, _line_at(path, record.get("start", 0)),
                               record.get("source"),
                               record["proposition"].get("callee"),
-                              doc_freq, kept_exact, kept_claim_refs):
+                              doc_freq, kept_exact, kept_claim_refs,
+                              inventory_keys):
                 reprocess.add(path)
         for diagnostic in manifest["diagnostics"]:
             if diagnostic.get("kind") != "mention_candidate":
@@ -361,7 +364,8 @@ class GraphStore:
             if _requalify(diagnostic.get("expression", ""), line,
                           src_id.get(path),
                           diagnostic.get("callee"), doc_freq, kept_exact,
-                          kept_claim_refs):
+                          kept_claim_refs,
+                          inventory_keys):
                 reprocess.add(path)
         repro = [by_path[p] for p in order if p in reprocess]
         claim_assertions, claim_diags = [], []

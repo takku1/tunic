@@ -11,6 +11,30 @@ IR_VERSION = "tunic.w1.v3"
 POLICIES = ("transparent", "evidence_only", "current")
 
 
+def _subject_coverage(symbols, symbol):
+    """Per-symbol extraction coverage for honest replies.
+
+    Inventory-only subjects carry names and locations but no call
+    edges; replies about them must report inventory_only instead of
+    wearing the Python profile.
+    """
+    subject = symbols.get(symbol, {})
+    if subject.get("derivation") == "heuristic_inventory_v1":
+        return "inventory_only"
+    return "bounded_static_analysis"
+
+
+def _profile_note(symbols, symbol):
+    """First limitations line, honest about inventory-only subjects."""
+    subject = symbols.get(symbol, {})
+    if subject.get("derivation") == "heuristic_inventory_v1":
+        return ("heuristic_inventory_v1: name and location only for .%s; "
+                "call extraction not available."
+                % (subject.get("language") or "unknown"))
+    return ("Python profile is an under-approximation; "
+            "non-observation is not absence.")
+
+
 def _char_window(data, start, end, radius=160):
     """Character-aligned evidence window around byte offsets [start, end).
 
@@ -168,7 +192,7 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100, 
         "query": {"symbol": symbol, "max_depth": max_depth, "max_nodes": max_nodes, "policy": policy},
         "selection_receipt": {"snapshot": snapshot, "profile": view["profile"],
                               "policy": "reverse-static-call-bfs-v1", "reuse": "none_full_recompute",
-                              "scope": "local_single_principal", "coverage": "bounded_static_analysis",
+                              "scope": "local_single_principal", "coverage": _subject_coverage(symbols, symbol),
                               "diagnostics": view["diagnostics"], "bounds_hit": sorted(bounds), "cycles_observed": cycles},
         "target": {"entity": symbols[symbol], "evidence": _evidence(store, symbols[symbol], snapshot)},
         "units": units,
@@ -176,7 +200,7 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100, 
         "validation_scope": "source_integrity_and_static_path_support_not_runtime_effect",
         "policy": policy,
         "outcome": "partial",
-        "limitations": ["Python profile is an under-approximation; non-observation is not absence.",
+        "limitations": [_profile_note(symbols, symbol),
                         "A static path establishes possible dependency, not demonstrated execution.",
                         "One shortest witness per caller; alternate paths are not enumerated."],
     }
@@ -356,7 +380,7 @@ def compile_callees(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100,
         "query": {"symbol": symbol, "max_depth": max_depth, "max_nodes": max_nodes, "policy": policy},
         "selection_receipt": {"snapshot": snapshot, "profile": view["profile"],
                               "policy": "forward-static-call-bfs-v1", "reuse": "none_full_recompute",
-                              "scope": "local_single_principal", "coverage": "bounded_static_analysis",
+                              "scope": "local_single_principal", "coverage": _subject_coverage(symbols, symbol),
                               "diagnostics": view["diagnostics"], "bounds_hit": sorted(bounds), "cycles_observed": cycles},
         "target": {"entity": symbols[symbol], "evidence": _evidence(store, symbols[symbol], snapshot)},
         "direct": direct,
@@ -365,8 +389,8 @@ def compile_callees(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100,
         "cold": cold,
         "validation_scope": "source_integrity_and_static_path_support_not_runtime_effect",
         "policy": policy,
-        "outcome": "complete" if not bounds and not cold else "partial",
-        "limitations": ["Python profile is an under-approximation; non-observation is not absence.",
+        "coverage": _subject_coverage(symbols, symbol), "outcome": "unsupported_capability" if _subject_coverage(symbols, symbol) == "inventory_only" else ("complete" if not bounds and not cold else "partial"),
+        "limitations": [_profile_note(symbols, symbol),
                         "A static path establishes possible dependency, not demonstrated execution.",
                         "One shortest witness per callee; alternate paths are not enumerated.",
                         "Candidates are proposed, not asserted; cold entries mark where knowledge ends."],
@@ -584,7 +608,7 @@ def compile_related(store, symbol, *, snapshot=None, policy="transparent", view=
     return {"symbol": symbol, "snapshot": snapshot, "profile": view["profile"],
             "impact": compile_impact(store, symbol, snapshot=snapshot, policy=policy,
                                      view=view),
-            "mentions": compile_mentions(store, symbol, snapshot=snapshot, view=view),
+            "coverage": _subject_coverage({s["key"]: s for s in view["symbols"]}, symbol), "mentions": compile_mentions(store, symbol, snapshot=snapshot, view=view),
             "claims": compile_claims(store, symbol, snapshot=snapshot, view=view),
             "outcome": "complete"}
 
