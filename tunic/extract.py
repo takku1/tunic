@@ -300,7 +300,7 @@ def _import_map(s, tree):
         elif isinstance(node, ast.ImportFrom):
             package = s["module"].split(".") if Path(s["path"]).name == "__init__.py" else s["module"].split(".")[:-1]
             if node.level:
-                if node.level > len(package):
+                if node.level > len(package) + 1:  # L1 == current package, valid even when empty
                     continue
                 base = package[:len(package)-node.level+1]
                 prefix = ".".join(base + ([node.module] if node.module else []))

@@ -172,11 +172,17 @@ class RealRepoRegressionTests(unittest.TestCase):
     def test_answer_direct_callees_accurate(self):
         direct = {callee for caller, callee in self.edges
                   if caller == "memory.py::Memory.answer"}
+        # compile_impact / compile_related recovered by the
+        # cross-module import fix: memory.py:16 `from . import compiler`
+        # with direct calls at lines 1217, 1284, 1292 (verified by
+        # inspection 2026-11-02).
         self.assertEqual(direct, {"memory.py::Memory._ensure_discovery",
                                   "memory.py::Memory._frontier_upsert",
                                   "memory.py::_container_of",
                                   "memory.py::_dedup_dicts",
-                                  "memory.py::authorize"})
+                                  "memory.py::authorize",
+                                  "compiler.py::compile_impact",
+                                  "compiler.py::compile_related"})
 
     def test_nested_only_calls_not_attributed(self):
         # _name_pattern (nested in answer) is the only user of `re`
