@@ -212,35 +212,42 @@ class Memory:
         self._discovery = None
         self._discovery_key = None
 
-    def _ensure_discovery(self, snapshot):
-        """Cached code + notes indexes; rebuilt only when the snapshot or
-        any source file changes. A stat walk is far cheaper than re-parsing
-        1600+ files per answer() call, and the key guarantees the cached
-        indexes reflect exactly what fresh builds would see."""
+    def _ensure_discovery(self, snapshot, exclude=()):
+        """Cached code + notes indexes; rebuilt only when the snapshot,
+        the effective scope, or any in-scope file changes.
+
+        The scope walk prunes before descent (defaults, the root
+        .gitignore, explicit excludes), so excluded trees cost nothing.
+        The key carries a scope fingerprint: .gitignore edits rebuild
+        even when no member file changed, while churn inside excluded
+        trees never invalidates the cache."""
+        from .extract import (_compile_ignore_rules, _scope_fingerprint,
+                              iter_scope_files)
+        rules = _compile_ignore_rules(self.root, exclude)
+        found, stats = iter_scope_files(
+            self.root, rules, {".py", ".md", ".txt"})
         newest, count = 0, 0
-        for path in self.root.rglob("*"):
-            if ("__pycache__" in path.parts or path.is_symlink()
-                    or not path.is_file()
-                    or path.suffix.lower() not in (".py", ".md", ".txt")):
-                continue
+        for path, _rel in found:
             try:
                 newest = max(newest, path.stat().st_mtime_ns)
             except OSError:
                 continue
             count += 1
-        key = (snapshot, newest, count)
+        key = (snapshot, newest, count,
+               _scope_fingerprint(self.root, exclude))
         if self._discovery is None or self._discovery_key != key:
-            self._discovery = (BM25(self.root), TextNotes(self.root))
+            self._discovery = (BM25(self.root, exclude),
+                               TextNotes(self.root, exclude))
             self._discovery_key = key
         return self._discovery
 
-    def _lexical_index(self, snapshot):
+    def _lexical_index(self, snapshot, exclude=()):
         """Cached BM25 over code; see _ensure_discovery."""
-        return self._ensure_discovery(snapshot)[0]
+        return self._ensure_discovery(snapshot, exclude)[0]
 
-    def _notes_index(self, snapshot):
+    def _notes_index(self, snapshot, exclude=()):
         """Cached lexical index over prose notes; see _ensure_discovery."""
-        return self._ensure_discovery(snapshot)[1]
+        return self._ensure_discovery(snapshot, exclude)[1]
 
     def close(self):
         self.store.close()
@@ -1068,7 +1075,7 @@ class Memory:
 
     def answer(self, task, *, snapshot=None, limit=3, mode="hybrid",
                policy="transparent", budget=None, threshold=0.0, provider=None,
-               select=True, container_limit=2):
+               select=True, container_limit=2, exclude=()):
         """Task-based retrieval without an exact symbol.
 
         Stages propose candidates: exact keys, bare names, BM25 lexical
@@ -1149,7 +1156,7 @@ class Memory:
         discovery = None
         if mode == "hybrid" and caps["lexical"] > 0:
             started = time.perf_counter()
-            discovery = self._ensure_discovery(snapshot)
+            discovery = self._ensure_discovery(snapshot, exclude)
             index, notes = discovery
             lexical = [hit["symbol"] for hit in
                        index.search_text(task, top_k=caps["lexical"])]
@@ -1180,7 +1187,7 @@ class Memory:
         if mode == "hybrid" and caps["semantic"] > 0 and provider.available():
             try:
                 if discovery is None:
-                    discovery = self._ensure_discovery(snapshot)
+                    discovery = self._ensure_discovery(snapshot, exclude)
                 index = discovery[0]
                 texts, order = [], []
                 for document in index.documents:

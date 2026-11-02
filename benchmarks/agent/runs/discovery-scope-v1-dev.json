@@ -1,0 +1,85 @@
+{
+  "cold": {
+    "helper": {
+      "ms": 9.4,
+      "top3": [
+        "src/util.py::helper"
+      ]
+    },
+    "render": {
+      "ms": 3.7,
+      "top3": [
+        "src/app.ts::render"
+      ]
+    },
+    "retention": {
+      "ms": 5.1,
+      "top3": []
+    }
+  },
+  "discovery_version": 1,
+  "ingest_ms": 16.7,
+  "ingest_report": {
+    "excluded": {
+      "dirs": 2,
+      "files": 2
+    },
+    "sources": 4,
+    "symbols": 4
+  },
+  "model_free": true,
+  "parity": {
+    "helper": {
+      "gold": "src/util.py::helper",
+      "scoped_hit": true,
+      "warm_hit": true
+    },
+    "render": {
+      "gold": "src/app.ts::render",
+      "scoped_hit": true,
+      "warm_hit": true
+    },
+    "retention": {
+      "gold": "docs/keep.md",
+      "scoped_hit": false,
+      "warm_hit": false
+    }
+  },
+  "scoped": {
+    "bm25_documents": 2,
+    "bm25_stats": {
+      "dirs_pruned": 3,
+      "excluded_files": 2,
+      "files": 2
+    },
+    "notes_documents": 1,
+    "notes_stats": {
+      "dirs_pruned": 3,
+      "excluded_files": 2,
+      "files": 1
+    }
+  },
+  "scoped_bm25_documents": [
+    "src/app.py::run",
+    "src/util.py::helper"
+  ],
+  "total_files_on_disk": 3258,
+  "warm": {
+    "helper": {
+      "ms": 3.5,
+      "top3": [
+        "src/util.py::helper"
+      ]
+    },
+    "render": {
+      "ms": 3.0,
+      "top3": [
+        "src/app.ts::render"
+      ]
+    },
+    "retention": {
+      "ms": 5.9,
+      "top3": []
+    }
+  }
+}

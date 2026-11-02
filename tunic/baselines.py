@@ -31,14 +31,20 @@ def _rank(documents, lengths, average_length, frequency, terms, skip, top_k):
 
 
 class BM25:
-    """Function chunks plus module-level imports, indexed without graph edges."""
-    def __init__(self, root):
+    """Function chunks plus module-level imports, indexed without graph edges.
+
+    Indexes only in-scope ``.py`` files: defaults, the root
+    ``.gitignore``, and explicit excludes prune before descent, so
+    excluded trees are never walked.
+    """
+    def __init__(self, root, exclude=()):
+        from .extract import _compile_ignore_rules, iter_scope_files
+        root = Path(root)
+        rules = _compile_ignore_rules(root, exclude)
+        found, self.scope_stats = iter_scope_files(root, rules, {".py"})
         self.documents = []
         self.diagnostics = []
-        for path in sorted(Path(root).rglob("*.py")):
-            if "__pycache__" in path.parts or path.is_symlink():
-                continue
-            relative = path.relative_to(root).as_posix()
+        for path, relative in sorted(found, key=lambda item: item[1]):
             try:
                 text = path.read_bytes().decode("utf-8-sig")
                 tree = ast.parse(text)
@@ -101,17 +107,18 @@ class TextNotes:
     is one retrievable unit keyed by relative path with an excerpt for
     bundling. No graph edges, no identity resolution: pure lexical recall,
     including stale records it cannot distinguish from current ones.
+
+    Indexes only in-scope notes: defaults, the root ``.gitignore``, and
+    explicit excludes prune before descent.
     """
-    def __init__(self, root):
+    def __init__(self, root, exclude=()):
+        from .extract import _compile_ignore_rules, iter_scope_files
         self.root = Path(root)
+        rules = _compile_ignore_rules(self.root, exclude)
+        found, self.scope_stats = iter_scope_files(
+            self.root, rules, {".md", ".txt"})
         self.documents = []
-        for path in sorted(self.root.rglob("*")):
-            if ("__pycache__" in path.parts or path.is_symlink()
-                    or not path.is_file()):
-                continue
-            if path.suffix.lower() not in (".md", ".txt"):
-                continue
-            relative = path.relative_to(self.root).as_posix()
+        for path, relative in sorted(found, key=lambda item: item[1]):
             try:
                 text = path.read_bytes().decode("utf-8-sig")
             except (ValueError, UnicodeError):

@@ -82,16 +82,17 @@ STRUCTURE_KINDS = {"excluded_symlink"}
 
 
 def _pattern_regexes(pattern):
-    """Compile one ignore pattern to (self, under-or-None) matchers.
+    """Compile one ignore pattern to [(regex, scope)] matchers.
 
     Documented subset of gitignore: `dir/` (that dir and everything
     under it), `*.ext`, bare names (any level), `/`-anchored paths,
     `**` spans, `*`/`?` within a segment, `!` negation (handled by
-    the caller). Only the root `.gitignore` is read.
+    the caller). Only the root `.gitignore` is read. Scopes: "any"
+    matches files and dirs; "dir" matches only the directory itself;
+    "under" matches paths beneath it.
     """
-    anchored = pattern.startswith("/")
     body = pattern.strip("/")
-    if not body or body == "!":
+    if not body:
         return None
     parts = []
     i = 0
@@ -114,18 +115,20 @@ def _pattern_regexes(pattern):
     core = "".join(parts)
     dir_only = pattern.endswith("/")
     if "/" not in body:
-        self_rx = "^(?:.*/)?" + core + "$"
-        under_rx = ("^(?:.*/)?" + core + "/.*$" if dir_only else None)
+        matchers = [(re.compile("^(?:.*/)?" + core + "$"), "any")]
+        if dir_only:
+            matchers = [(re.compile("^(?:.*/)?" + core + "$"), "dir"),
+                        (re.compile("^(?:.*/)?" + core + "/.*$"), "under")]
     else:
-        self_rx = "^" + core + "$"
-        under_rx = ("^" + core + "/.*$" if dir_only else None)
-    import re as _re
-    return (_re.compile(self_rx),
-            _re.compile(under_rx) if under_rx else None)
+        matchers = [(re.compile("^" + core + "$"), "any")]
+        if dir_only:
+            matchers = [(re.compile("^" + core + "$"), "dir"),
+                        (re.compile("^" + core + "/.*$"), "under")]
+    return matchers
 
 
 def _compile_ignore_rules(root, extra):
-    """Ordered (self, under, negated) rules: defaults, root .gitignore,
+    """Ordered (matchers, negated) rules: defaults, root .gitignore,
     then explicit excludes. Last matching rule wins."""
     raws = [name + "/" for name in sorted(EXCLUDED | EXCLUDED_BUILD)]
     ignore_file = Path(root) / ".gitignore"
@@ -148,24 +151,91 @@ def _compile_ignore_rules(root, extra):
         compiled = _pattern_regexes(line)
         if compiled is None:
             continue
-        self_rx, under_rx = compiled
-        rules.append((self_rx, under_rx, negated))
+        rules.append((compiled, negated))
     return rules
 
 
-def _is_ignored(relpath, is_dir, rules):
+def _match_rules(relpath, is_dir, rules):
+    """Last matching rule wins over one path."""
     ignored = False
-    for self_rx, under_rx, negated in rules:
-        if self_rx.match(relpath) or (
-                under_rx is not None and under_rx.match(relpath)):
-            if not is_dir and under_rx is not None \
-                    and self_rx.match(relpath):
-                # A dir-only rule never matches a file itself; paths
-                # under the dir match via under_rx.
-                if not under_rx.match(relpath):
-                    continue
+    for matchers, negated in rules:
+        fired = False
+        for rx, scope in matchers:
+            if scope == "dir" and not is_dir:
+                continue
+            if rx.match(relpath):
+                fired = True
+                break
+        if fired:
             ignored = not negated
     return ignored
+
+
+def _is_ignored(relpath, is_dir, rules):
+    """Ignore state honoring excluded ancestors (git semantics).
+
+    A file beneath an excluded directory stays excluded unless the
+    directory itself is re-included by a later rule: negations match
+    files, never their excluded parents.
+    """
+    parts = relpath.split("/")
+    for depth in range(1, len(parts)):
+        if _match_rules("/".join(parts[:depth]), True, rules):
+            return True
+    return _match_rules(relpath, is_dir, rules)
+
+
+def iter_scope_files(root, rules, suffixes=None):
+    """Yield (path, relpath) under root honoring ignore rules.
+
+    Prunes excluded directories before descent: excluded trees are
+    never walked. Returns (paths, stats) with files visited, pruned
+    dirs, and excluded files for observability.
+    """
+    root = Path(root).resolve(strict=True)
+    if not root.is_dir():
+        raise ValueError("scope root must be a directory")
+    if suffixes is not None:
+        suffixes = {s.lower() for s in suffixes}
+    stats = {"files": 0, "dirs_pruned": 0, "excluded_files": 0}
+    found = []
+    for base, dirs, files in os.walk(root, followlinks=False):
+        kept = []
+        for name in sorted(dirs):
+            path = Path(base) / name
+            if path.is_symlink():
+                continue
+            rel = path.relative_to(root).as_posix()
+            if _is_ignored(rel, True, rules):
+                stats["dirs_pruned"] += 1
+                continue
+            kept.append(name)
+        dirs[:] = kept
+        for name in sorted(files):
+            path = Path(base) / name
+            if path.is_symlink():
+                continue
+            rel = path.relative_to(root).as_posix()
+            if _is_ignored(rel, False, rules):
+                stats["excluded_files"] += 1
+                continue
+            if suffixes is not None and path.suffix.lower() not in suffixes:
+                continue
+            stats["files"] += 1
+            found.append((path, rel))
+    return found, stats
+
+
+def _scope_fingerprint(root, exclude):
+    """Cheap scope identity: explicit excludes + root .gitignore bytes."""
+    ignore_file = Path(root) / ".gitignore"
+    try:
+        ignored = ignore_file.read_bytes() if ignore_file.is_file() else b""
+    except OSError:
+        ignored = b""
+    return identity("scope", [sorted(set(exclude or ())),
+                              ignored.decode("utf-8", "replace")])
+
 
 
 def _scan(root, exclude=()):

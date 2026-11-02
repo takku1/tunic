@@ -65,7 +65,9 @@ def tool_schemas():
                              "threshold": {"type": "number"},
                              "select": {"type": "boolean"},
                              "snapshot": {"type": "string"},
-                             "container_limit": {"type": "integer"}}}},
+                             "container_limit": {"type": "integer"},
+                        "exclude": {"type": "array",
+                                    "items": {"type": "string"}}}}},
         {"name": "related",
          "description": "Cross-source context for one exact path::symbol key.",
          "inputSchema": {"type": "object",
@@ -189,9 +191,13 @@ def handle_call(memory, name, args):
         container_limit = _optional(args, "container_limit", int, 2)
         if container_limit < 0:
             _fail("tool argument 'container_limit' must be a non-negative integer")
+        exclude = args.get("exclude", [])
+        if (not isinstance(exclude, list)
+                or not all(isinstance(item, str) for item in exclude)):
+            _fail("tool argument 'exclude' must be a list of strings")
         return memory.answer(task, limit=limit, policy=_policy(args),
                              threshold=threshold, select=select,
-                             snapshot=snapshot,
+                             snapshot=snapshot, exclude=exclude,
                              container_limit=container_limit)
     if name == "related":
         return compile_related(memory.store, _need(args, "symbol", str),
