@@ -240,8 +240,10 @@ class EagerEvaluationTests(unittest.TestCase):
                             for d in diagnostics(memory, "nested_call")))
 
     def test_lambda_defaults_are_eager_body_is_not(self):
-        memory = build("def outer(cb=make_default()):\n"
-                       "    return sorted([3, 1], key=lambda i: use(i))\n"
+        memory = build("def outer(flag=True):\n"
+                       "    def inner(cb=make_default()):\n"
+                       "        return sorted([3, 1], key=lambda i: use(i))\n"
+                       "    return inner(flag)\n"
                        "\n\n"
                        "def make_default():\n"
                        "    return None\n"
@@ -314,6 +316,182 @@ class ComprehensionSemanticsTests(unittest.TestCase):
         self.addCleanup(memory.close)
         self.assertIn(("shop.py::outer", "shop.py::fetch_all",
                        "syntactic_observation"), edges(memory))
+
+
+class RootHeaderTests(unittest.TestCase):
+    """The target's own header evaluates at definition time, not when
+    the target executes. Root decorators, defaults, and annotations
+    are definition-time scope: never attributed to the target."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+
+    def test_root_defaults_not_attributed(self):
+        memory = build("def outer(x=make_default()):\n"
+                       "    return x\n"
+                       "\n\n"
+                       "def make_default():\n"
+                       "    return 42\n", self.tmp)
+        self.addCleanup(memory.close)
+        self.assertNotIn(("shop.py::outer", "shop.py::make_default",
+                          "syntactic_observation"), edges(memory))
+        self.assertFalse([d for d in diagnostics(memory, "nested_call")
+                          if d.get("expression") == "make_default"])
+
+    def test_root_decorators_not_attributed(self):
+        memory = build("@register(make_handler())\n"
+                       "def outer():\n"
+                       "    return 1\n"
+                       "\n\n"
+                       "def register(fn):\n"
+                       "    return fn\n"
+                       "\n\n"
+                       "def make_handler():\n"
+                       "    return 2\n", self.tmp)
+        self.addCleanup(memory.close)
+        self.assertNotIn(("shop.py::outer", "shop.py::register",
+                          "syntactic_observation"), edges(memory))
+        self.assertNotIn(("shop.py::outer", "shop.py::make_handler",
+                          "syntactic_observation"), edges(memory))
+
+    def test_root_body_still_resolves(self):
+        memory = build("def outer(x=make_default()):\n"
+                       "    def inner():\n"
+                       "        return 1\n"
+                       "    direct_dep()\n"
+                       "    return inner\n"
+                       "\n\n"
+                       "def make_default():\n"
+                       "    return 0\n"
+                       "\n\n"
+                       "def direct_dep():\n"
+                       "    return 3\n", self.tmp)
+        self.addCleanup(memory.close)
+        self.assertIn(("shop.py::outer", "shop.py::direct_dep",
+                       "syntactic_observation"), edges(memory))
+        self.assertNotIn(("shop.py::outer", "shop.py::make_default",
+                          "syntactic_observation"), edges(memory))
+
+
+class NestedClassBodyTests(unittest.TestCase):
+    """Nested class bodies execute when the class statement runs, so
+    their direct calls are eager. Nested methods stay deferred."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+
+    def test_class_body_assignments_are_eager(self):
+        memory = build("def outer():\n"
+                       "    class Inner(make_base()):\n"
+                       "        value = initialize()\n"
+                       "\n"
+                       "        @mark(\"method\")\n"
+                       "        def method(self):\n"
+                       "            return deferred_work()\n"
+                       "    return Inner\n"
+                       "\n\n"
+                       "def make_base():\n"
+                       "    return object\n"
+                       "\n\n"
+                       "def initialize():\n"
+                       "    return 1\n"
+                       "\n\n"
+                       "def mark(fn):\n"
+                       "    return fn\n"
+                       "\n\n"
+                       "def deferred_work():\n"
+                       "    return 2\n", self.tmp)
+        self.addCleanup(memory.close)
+        self.assertIn(("shop.py::outer", "shop.py::make_base",
+                       "syntactic_observation"), edges(memory))
+        self.assertIn(("shop.py::outer", "shop.py::initialize",
+                       "syntactic_observation"), edges(memory))
+        self.assertIn(("shop.py::outer", "shop.py::mark",
+                       "syntactic_observation"), edges(memory))
+        self.assertNotIn(("shop.py::outer", "shop.py::deferred_work",
+                          "syntactic_observation"), edges(memory))
+        self.assertTrue(any(d.get("expression") == "deferred_work"
+                            for d in diagnostics(memory, "nested_call")))
+
+
+class GeneratorTimingTests(unittest.TestCase):
+    """Only the outermost iterable of a generator expression evaluates
+    at creation. Later iterables, conditions, and the element defer."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+
+    def test_only_outermost_iterable_is_eager(self):
+        memory = build("def outer():\n"
+                       "    return (transform(x, y) for x in first()\n"
+                       "            for y in second(x))\n"
+                       "\n\n"
+                       "def transform(x, y):\n"
+                       "    return x\n"
+                       "\n\n"
+                       "def first():\n"
+                       "    return []\n"
+                       "\n\n"
+                       "def second(x):\n"
+                       "    return x\n", self.tmp)
+        self.addCleanup(memory.close)
+        self.assertIn(("shop.py::outer", "shop.py::first",
+                       "syntactic_observation"), edges(memory))
+        self.assertNotIn(("shop.py::outer", "shop.py::second",
+                          "syntactic_observation"), edges(memory))
+        self.assertNotIn(("shop.py::outer", "shop.py::transform",
+                          "syntactic_observation"), edges(memory))
+        nested = {d.get("expression")
+                  for d in diagnostics(memory, "nested_call")}
+        self.assertIn("second", nested)
+        self.assertIn("transform", nested)
+
+    def test_genexp_condition_defers(self):
+        memory = build("def outer(items):\n"
+                       "    return (x for x in items if check(x))\n"
+                       "\n\n"
+                       "def check(x):\n"
+                       "    return True\n", self.tmp)
+        self.addCleanup(memory.close)
+        self.assertNotIn(("shop.py::outer", "shop.py::check",
+                          "syntactic_observation"), edges(memory))
+        self.assertTrue(any(d.get("expression") == "check"
+                            for d in diagnostics(memory, "nested_call")))
+
+
+class AsyncParityTests(unittest.TestCase):
+    """Async definitions follow the same eager/deferred model."""
+
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+
+    def test_async_outer_with_nested_def(self):
+        memory = build("async def outer():\n"
+                       "    def inner(x=build_default()):\n"
+                       "        return deferred_work()\n"
+                       "    direct_dep()\n"
+                       "    return inner\n"
+                       "\n\n"
+                       "def build_default():\n"
+                       "    return 1\n"
+                       "\n\n"
+                       "def direct_dep():\n"
+                       "    return 2\n"
+                       "\n\n"
+                       "def deferred_work():\n"
+                       "    return 3\n", self.tmp)
+        self.addCleanup(memory.close)
+        self.assertIn("shop.py::outer", symbols(memory))
+        self.assertIn(("shop.py::outer", "shop.py::direct_dep",
+                       "syntactic_observation"), edges(memory))
+        self.assertIn(("shop.py::outer", "shop.py::build_default",
+                       "syntactic_observation"), edges(memory))
+        self.assertNotIn(("shop.py::outer", "shop.py::deferred_work",
+                          "syntactic_observation"), edges(memory))
 
 
 if __name__ == "__main__":

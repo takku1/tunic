@@ -541,20 +541,20 @@ def _constructor_bindings(s, body, imports, modules, local, star):
 
 
 class _NestedScopePruner(ast.NodeTransformer):
-    """Separate eager from deferred execution in a copied definition.
+    """Separate definition-time, eager, and deferred execution.
 
-    A closure calling foo() does not mean the enclosing function
-    directly calls foo(): the call may run much later, elsewhere, or
-    never. But decorators, default arguments, base classes, and the
-    iterable of a generator expression DO evaluate when the enclosing
-    function runs. The pruner therefore keeps eager positions intact
-    and neutralizes only deferred ones: nested function/class bodies
-    become ``pass``/empty (decorators, defaults, bases, keywords still
-    walked), lambda bodies and generator elements/conditions become
-    ``None``/``True`` constants (defaults and iterables still walked).
-    Bare-name calls found in deferred positions are recorded for
-    ``nested_call`` diagnostics, never attributed outward. Operates on
-    a deep copy: the shared parse tree is never mutated.
+    Three phases: (1) the target's OWN header (decorators, defaults,
+    annotations, returns) evaluates when the ``def`` statement runs --
+    definition time, never attributed to the target's execution;
+    (2) the target body plus nested-definition headers (decorators,
+    defaults, bases, keywords) evaluate when the target runs -- eager,
+    attributed outward; (3) nested function bodies, lambda bodies, and
+    generator elements/conditions/late-iterables evaluate later or
+    never -- deferred, recorded as ``nested_call`` diagnostics.
+    Nested class bodies are transparent: the class statement itself
+    runs during the target, so direct class-body calls are eager;
+    only the methods inside defer. Operates on a deep copy: the
+    shared parse tree is never mutated.
     """
 
     def __init__(self):
@@ -570,35 +570,57 @@ class _NestedScopePruner(ast.NodeTransformer):
                               if isinstance(c, ast.Call)
                               and isinstance(c.func, ast.Name))
 
-    def _nested(self, node, replacement):
-        """Record + neutralize a nested definition; root passes through.
+    def _blank(self, old):
+        return ast.copy_location(ast.Constant(value=None), old)
 
-        The transformer visits the copied outer definition itself
-        first: depth 0 is the extraction target, kept whole so its
-        eager header positions still resolve. Deeper definitions are
-        deferred scopes whose bodies never attribute outward.
+    def _strip_header(self, node):
+        """Neutralize the target's own definition-time positions.
+
+        Depth 0 is the extraction target: its decorators, defaults,
+        annotations, and returns evaluate at definition time (import
+        or class-body time), not when the target executes. Replace
+        them with constants so only the body attributes outward.
+        Nested definitions keep their headers: those evaluate while
+        the target runs. Matches the pre-nested-scope contract, where
+        headers were never walked.
         """
-        if self._depth > 0:
-            self._record(node.body)
-            self.pruned = True
-            node.body[:] = replacement
+        node.decorator_list[:] = []
+        node.args.defaults[:] = [self._blank(d) for d in node.args.defaults]
+        node.args.kw_defaults[:] = [self._blank(d) if d is not None else None
+                                    for d in node.args.kw_defaults]
+        for arg in ast.walk(node.args):
+            if isinstance(arg, ast.arg):
+                arg.annotation = None
+        node.returns = None
 
     def visit_FunctionDef(self, node):
-        self._nested(node, [ast.copy_location(ast.Pass(), node)])
+        if self._depth == 0:
+            self._strip_header(node)
+        else:
+            self._record(node.body)
+            self.pruned = True
+            node.body[:] = [ast.copy_location(ast.Pass(), node)]
         self._depth += 1
         self.generic_visit(node)
         self._depth -= 1
         return node
 
     def visit_AsyncFunctionDef(self, node):
-        self._nested(node, [ast.copy_location(ast.Pass(), node)])
+        if self._depth == 0:
+            self._strip_header(node)
+        else:
+            self._record(node.body)
+            self.pruned = True
+            node.body[:] = [ast.copy_location(ast.Pass(), node)]
         self._depth += 1
         self.generic_visit(node)
         self._depth -= 1
         return node
 
     def visit_ClassDef(self, node):
-        self._nested(node, [])
+        # Transparent at every depth: the class statement executes in
+        # the enclosing scope, so direct class-body calls are eager.
+        # Nested functions/methods neutralize themselves on visit.
         self._depth += 1
         self.generic_visit(node)
         self._depth -= 1
@@ -612,15 +634,23 @@ class _NestedScopePruner(ast.NodeTransformer):
         return node
 
     def visit_GeneratorExp(self, node):
+        # Only the outermost iterable evaluates at generator creation;
+        # later iterables, conditions, and the element run per-iteration.
+        first, late = node.generators[0], node.generators[1:]
         self._record(node.elt)
         for comprehension in node.generators:
             for condition in comprehension.ifs:
                 self._record(condition)
+        for comprehension in late:
+            self._record(comprehension.iter)
         self.pruned = True
         node.elt = ast.copy_location(ast.Constant(value=None), node.elt)
         for comprehension in node.generators:
             comprehension.ifs = [ast.copy_location(ast.Constant(value=True), condition)
                                  for condition in comprehension.ifs]
+        for comprehension in late:
+            comprehension.iter = ast.copy_location(ast.Constant(value=None),
+                                                   comprehension.iter)
         self.generic_visit(node)
         return node
 
@@ -629,26 +659,43 @@ def _without_nested_scopes(node):
     """Split a function/method into eager positions and deferred content.
 
     Returns (kept_node, nested_names, nested_calls, pruned). kept_node
-    is a deep copy of the whole definition with only deferred positions
-    neutralized (nested bodies, lambda bodies, generator
-    elements/conditions); eager header positions -- decorators, default
-    arguments, base classes, keywords -- survive so the call dispatcher
-    attributes them to the enclosing function;
-    nested_names holds every nested definition name (still shadowing,
-    never resolvable to module scope); nested_calls holds the bare-name
-    Call nodes found in deferred positions for distinct diagnostics.
+    is a deep copy of the definition with the target's own header
+    stripped (definition-time, never attributed), deferred positions
+    neutralized (nested function bodies, lambda bodies, generator
+    elements/conditions/late-iterables), and everything else intact:
+    the target body, nested-definition headers, transparent nested
+    class bodies, and the outermost generator iterable. nested_names
+    holds every nested definition name (still shadowing, never
+    resolvable to module scope); nested_calls holds the bare-name Call
+    nodes found in deferred positions for distinct diagnostics. NOTE:
+    return/argument annotations ride with the stripped header (PEP 563
+    ``from __future__ import annotations`` files excepted, documented
+    but not modeled).
     """
     nested_names = {n.name for n in ast.walk(node)
                     if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef,
                                       ast.ClassDef))
                     and n is not node}
-    if not any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef,
-                              ast.ClassDef, ast.Lambda, ast.GeneratorExp))
-               for statement in node.body for n in ast.walk(statement)):
+    if (not any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef,
+                               ast.ClassDef, ast.Lambda, ast.GeneratorExp))
+                for statement in node.body for n in ast.walk(statement))
+            and not _header_calls(node)):
         return node, nested_names, [], False
     pruner = _NestedScopePruner()
     kept_node = pruner.visit(copy.deepcopy(node))
     return kept_node, nested_names, pruner.calls, pruner.pruned
+
+
+def _header_calls(node):
+    """Whether the target's own header contains any call expression."""
+    parts = list(node.decorator_list) + list(node.args.defaults)
+    parts += [d for d in node.args.kw_defaults if d is not None]
+    if node.returns is not None:
+        parts.append(node.returns)
+    for arg in ast.walk(node.args):
+        if isinstance(arg, ast.arg) and arg.annotation is not None:
+            parts.append(arg.annotation)
+    return any(isinstance(n, ast.Call) for part in parts for n in ast.walk(part))
 
 
 def _code_targets(s):
