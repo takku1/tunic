@@ -46,10 +46,10 @@ class McpProtocolTests(unittest.TestCase):
         self.assertIn("tools", response["result"]["capabilities"])
         response = handle_request(self.memory, _rpc("tools/list"))
         names = sorted(tool["name"] for tool in response["result"]["tools"])
-        self.assertEqual(names, ["acquire", "candidates", "correct",
-                                 "frontier", "impact", "note", "promote",
-                                 "refresh", "related", "retrieve",
-                                 "review", "timeline"])
+        self.assertEqual(names, ["acquire", "callees", "candidates",
+                                 "correct", "frontier", "impact", "note",
+                                 "promote", "refresh", "related",
+                                 "retrieve", "review", "timeline"])
         for tool in response["result"]["tools"]:
             self.assertIn("inputSchema", tool)
 
@@ -191,7 +191,9 @@ class McpServerTests(unittest.TestCase):
         by_id = {line["id"]: line for line in lines}
         self.assertEqual(len(by_id), 6)
         self.assertEqual(by_id[1]["result"]["serverInfo"]["name"], "tunic")
-        self.assertEqual(len(by_id[2]["result"]["tools"]), 12)
+        self.assertEqual(len(by_id[2]["result"]["tools"]), 13)
+        self.assertIn("callees",
+                      {t["name"] for t in by_id[2]["result"]["tools"]})
         payload = json.loads(by_id[3]["result"]["content"][0]["text"])
         self.assertEqual(payload["outcome"], "complete")
         noted = json.loads(by_id[4]["result"]["content"][0]["text"])
@@ -236,10 +238,10 @@ class McpAgentToolsTests(unittest.TestCase):
     def test_tool_list_includes_agent_tools(self):
         response = handle_request(self.memory, _rpc("tools/list"))
         names = sorted(tool["name"] for tool in response["result"]["tools"])
-        self.assertEqual(names, ["acquire", "candidates", "correct",
-                                 "frontier", "impact", "note", "promote",
-                                 "refresh", "related", "retrieve",
-                                 "review", "timeline"])
+        self.assertEqual(names, ["acquire", "callees", "candidates",
+                                 "correct", "frontier", "impact", "note",
+                                 "promote", "refresh", "related",
+                                 "retrieve", "review", "timeline"])
 
     def test_candidates_lists_live_proposals(self):
         payload = self.call("candidates", {})

@@ -11,8 +11,8 @@ failures return structured errors, never tracebacks.
 import json
 import sys
 
-from .compiler import (POLICIES, compile_impact, compile_related,
-                       compile_review, compile_timeline)
+from .compiler import (POLICIES, compile_callees, compile_impact,
+                       compile_related, compile_review, compile_timeline)
 from .extract import CLAIM_RELATIONS
 from .memory import Memory
 
@@ -75,6 +75,15 @@ def tool_schemas():
                              "policy": {"type": "string"}}}},
         {"name": "impact",
          "description": "Possible reverse-call impact for one exact path::symbol key.",
+         "inputSchema": {"type": "object",
+                         "required": ["symbol"],
+                         "properties": {
+                             "symbol": {"type": "string"},
+                             "policy": {"type": "string"},
+                             "max_depth": {"type": "integer"},
+                             "max_nodes": {"type": "integer"}}}},
+        {"name": "callees",
+         "description": "Forward-call traversal for one exact path::symbol key: direct, bounded reachable, and candidate callees plus cold receipts.",
          "inputSchema": {"type": "object",
                          "required": ["symbol"],
                          "properties": {
@@ -195,6 +204,14 @@ def handle_call(memory, name, args):
         return compile_impact(memory.store, _need(args, "symbol", str),
                               policy=_policy(args),
                               max_depth=depth, max_nodes=nodes)
+    if name == "callees":
+        depth = _optional(args, "max_depth", int, 8)
+        nodes = _optional(args, "max_nodes", int, 100)
+        if depth < 1 or nodes < 1:
+            _fail("max_depth and max_nodes must be positive integers")
+        return compile_callees(memory.store, _need(args, "symbol", str),
+                               policy=_policy(args),
+                               max_depth=depth, max_nodes=nodes)
     if name == "timeline":
         return compile_timeline(memory.store, _need(args, "symbol", str),
                                 at=_optional(args, "at", str))

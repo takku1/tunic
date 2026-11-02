@@ -176,6 +176,188 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100, 
     return artifact
 
 
+def compile_callees(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100,
+                    policy="transparent", view=None):
+    """Forward-call traversal: direct, bounded-reachable, and candidate callees.
+
+    Built on the same governed assertion set as reverse impact: only
+    surviving ``static_call`` edges traverse. Proposed ``depends_on``
+    candidates are listed with their status but never traversed, and
+    unresolved call sites surface as cold-frontier receipts instead of
+    silent stops. ``direct`` is exactly the single-hop static calls
+    (execution-attributed); ``reachable`` holds deeper or asserted-claim
+    hops with depth and witness premises.
+    """
+    if type(max_depth) is not int or max_depth < 1 or type(max_nodes) is not int or max_nodes < 1:
+        raise ValueError("max_depth and max_nodes must be positive integers")
+    if view is None:
+        snapshot, view = store.view(snapshot)
+    symbols = {s["key"]: s for s in view["symbols"]}
+    if symbol not in symbols:
+        raise ValueError("unknown or unsupported symbol: " + symbol)
+    if policy not in POLICIES:
+        raise ValueError("unknown policy: " + str(policy))
+    as_of = store.committed_on(snapshot)
+    blocked = set()
+    retracted = {}
+    if policy == "current":
+        for assertion in view["assertions"]:
+            proposition = assertion["proposition"]
+            if assertion.get("status") != "asserted_in_source":
+                continue
+            if proposition.get("relation") in ("supersedes", "corrects"):
+                if (proposition.get("effective") or as_of) <= as_of:
+                    blocked.add(proposition.get("callee"))
+            elif proposition.get("relation") == "retracts":
+                if (proposition.get("effective") or as_of) <= as_of:
+                    key = (proposition.get("retract"), proposition.get("caller"),
+                           proposition.get("callee"))
+                    retracted[key] = retracted.get(key, 0) + 1
+    supports = {}
+    for assertion in view["assertions"]:
+        proposition = assertion["proposition"]
+        if (proposition.get("relation") in TRAVERSABLE_CLAIMS
+                and assertion.get("status") == "asserted_in_source"):
+            key = (proposition.get("relation"), proposition.get("caller"),
+                   proposition.get("callee"))
+            supports[key] = supports.get(key, 0) + 1
+    def _survives(assertion):
+        proposition = assertion["proposition"]
+        relation = proposition.get("relation")
+        if relation != "static_call" and not (
+                relation in TRAVERSABLE_CLAIMS
+                and assertion.get("status") == "asserted_in_source"):
+            return False
+        if policy == "evidence_only" and relation != "static_call":
+            return False
+        if policy == "current" and relation in TRAVERSABLE_CLAIMS:
+            key = (relation, proposition.get("caller"), proposition.get("callee"))
+            if supports.get(key, 0) - retracted.get(key, 0) < 1:
+                return False
+        if policy == "current" and (proposition.get("caller") in blocked
+                                    or proposition.get("callee") in blocked):
+            return False
+        return True
+
+    outgoing = defaultdict(list)
+    for assertion in view["assertions"]:
+        if not _survives(assertion):
+            continue
+        outgoing[assertion["proposition"]["caller"]].append(assertion)
+    for edges in outgoing.values():
+        edges.sort(key=lambda a: (a["proposition"]["callee"], a["id"]))
+    paths = {symbol: []}
+    queue = deque([symbol])
+    bounds = set()
+    cycles = False
+    while queue:
+        caller = queue.popleft()
+        for edge in outgoing[caller]:
+            callee = edge["proposition"]["callee"]
+            path = paths[caller] + [edge]
+            nodes = [symbol] + [a["proposition"]["callee"] for a in path]
+            if len(set(nodes)) != len(nodes):
+                cycles = True
+                continue
+            if callee in paths:
+                continue
+            if len(path) > max_depth:
+                bounds.add("max_depth")
+                continue
+            if len(paths) >= max_nodes:
+                bounds.add("max_nodes")
+                continue
+            paths[callee] = path
+            queue.append(callee)
+    def _entry(key, path, depth):
+        asserted = any(a["proposition"].get("relation") != "static_call"
+                       for a in path)
+        first = path[0]
+        return {"callee": key, "depth": depth, "is_test": symbols[key]["is_test"],
+                "status": first["status"],
+                "derivation": {"rule": "asserted_dependency_v1" if asserted
+                               else "forward_static_reachability_v1",
+                               "premises": [a["id"] for a in path],
+                               "verification": "asserted_not_observed" if asserted
+                               else "syntactic_path_only"},
+                "evidence": _evidence(store, first, snapshot),
+                "resolution_support": [_evidence(store, premise, snapshot)
+                                        for premise in first["resolution"]["support"]]}
+    direct, reachable = [], []
+    for key in sorted(paths):
+        if key == symbol:
+            continue
+        path = paths[key]
+        entry = _entry(key, path, len(path))
+        if len(path) == 1 and path[0]["proposition"].get("relation") == "static_call":
+            entry["kind"] = "direct_callee"
+            direct.append(entry)
+        else:
+            entry["kind"] = "reachable_callee"
+            reachable.append(entry)
+    candidates = []
+    for assertion in view["assertions"]:
+        proposition = assertion["proposition"]
+        if proposition.get("relation") != "depends_on":
+            continue
+        if proposition.get("caller") != symbol:
+            continue
+        if assertion.get("status") == "asserted_in_source":
+            continue
+        candidates.append({"relation": proposition["relation"],
+                           "caller": proposition["caller"],
+                           "callee": proposition.get("callee"),
+                           "candidate": proposition.get("candidate"),
+                           "note": proposition.get("note"),
+                           "status": assertion["status"],
+                           "evidence": _evidence(store, assertion, snapshot),
+                           "resolution": assertion["resolution"]})
+    candidates.sort(key=lambda r: (r["callee"] or "",
+                                   r["evidence"]["path"],
+                                   r["evidence"]["start"]))
+    reached = set(paths)
+    cold = []
+    for diagnostic in view.get("diagnostics", []):
+        if diagnostic.get("kind") != "unresolved_call":
+            continue
+        if diagnostic.get("caller") not in reached:
+            continue
+        expression = diagnostic.get("expression", "")
+        if "." in expression:
+            needed = ("the module or class providing '%s'" % expression)
+        else:
+            needed = ("a same-file or importable definition of '%s'"
+                      % expression)
+        cold.append({"caller": diagnostic.get("caller"),
+                     "path": diagnostic.get("path"),
+                     "line": diagnostic.get("line"),
+                     "expression": expression, "needed": needed})
+    cold.sort(key=lambda r: (r["caller"] or "", r["line"] or 0,
+                             r["expression"]))
+    artifact = {
+        "ir_version": IR_VERSION,
+        "query": {"symbol": symbol, "max_depth": max_depth, "max_nodes": max_nodes, "policy": policy},
+        "selection_receipt": {"snapshot": snapshot, "profile": view["profile"],
+                              "policy": "forward-static-call-bfs-v1", "reuse": "none_full_recompute",
+                              "scope": "local_single_principal", "coverage": "bounded_static_analysis",
+                              "diagnostics": view["diagnostics"], "bounds_hit": sorted(bounds), "cycles_observed": cycles},
+        "target": {"entity": symbols[symbol], "evidence": _evidence(store, symbols[symbol], snapshot)},
+        "direct": direct,
+        "reachable": reachable,
+        "candidates": candidates,
+        "cold": cold,
+        "validation_scope": "source_integrity_and_static_path_support_not_runtime_effect",
+        "policy": policy,
+        "outcome": "complete" if not bounds and not cold else "partial",
+        "limitations": ["Python profile is an under-approximation; non-observation is not absence.",
+                        "A static path establishes possible dependency, not demonstrated execution.",
+                        "One shortest witness per callee; alternate paths are not enumerated.",
+                        "Candidates are proposed, not asserted; cold entries mark where knowledge ends."],
+    }
+    artifact["id"] = identity("context", artifact)
+    return artifact
+
+
 def compile_mentions(store, symbol, *, snapshot=None, view=None):
     """List document spans that mention a symbol key; proposals never traverse.
 

@@ -32,7 +32,12 @@ server accepts only the `local` principal: a caller-supplied
    failure: record what is missing.
 2. **Inspect evidence.** `related(symbol)` / `impact(symbol)` /
    `timeline(symbol)` expand one exact `path::symbol` key with
-   provenance. `review(document)` reads the structured acquisition
+   provenance. `callees(symbol)` traverses forward instead: `direct`
+   (single-hop static calls), `reachable` (bounded multi-hop with
+   depth and witness premises), `candidates` (proposed, never
+   traversed), and `cold` (unresolved call sites with what would
+   be needed to resolve them). Use `related` for who calls X,
+   `callees` for what X calls; never present `candidates` as fact. `review(document)` reads the structured acquisition
    report for one note file. Never treat a symbol from a question as
    an answer; only symbols the tools return.
 3. **Review candidates, never invent edges.** `candidates` lists live

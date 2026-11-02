@@ -3,9 +3,11 @@
 A bare ``cover()`` call in a file holding ``from .core import cover``
 (or ``from core import cover``) is a statically resolvable edge to
 ``core.py::cover`` -- not an unresolved call. Previously the extractor
-dropped these for two compounding reasons: the relative-import guard
-rejected level-1 imports in top-level modules, and bare-name
-resolution never consulted the import map at all.
+dropped these because the relative-import guard rejected level-1
+imports in top-level modules, so the import map never held the
+binding. (An early hypothesis blamed bare-name resolution as well;
+failing-first tests disproved it -- the ``head in imports`` branch
+already resolves absolute from-imports.)
 
 Same-file definitions keep precedence, genuinely unresolvable names
 stay ``unresolved_call``, and beyond-top-level relative imports stay

@@ -344,6 +344,10 @@ class Memory:
         authorize(self.principal, "related")
         return compiler.compile_related(self.store, symbol, **kwargs)
 
+    def callees(self, symbol, **kwargs):
+        authorize(self.principal, "callees")
+        return compiler.compile_callees(self.store, symbol, **kwargs)
+
     def timeline(self, symbol, **kwargs):
         authorize(self.principal, "timeline")
         return compiler.compile_timeline(self.store, symbol, **kwargs)
