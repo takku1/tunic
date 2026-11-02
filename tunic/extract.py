@@ -165,6 +165,24 @@ def parse_source(path, data):
     return record, None
 
 
+def _builtin_method_kind(decorator_list):
+    """'staticmethod'/'classmethod' if that is the sole decorator, else None.
+
+    A bare @staticmethod/@classmethod is language semantics, not a
+    replaceable callable: the underlying function is indexed and called
+    with exactly the passed arguments (plus cls for classmethod). Any
+    other decorator, alone or stacked, may replace the callable, so
+    those methods stay skipped with a decorated_function diagnostic.
+    """
+    if len(decorator_list) != 1:
+        return None
+    node = decorator_list[0]
+    if isinstance(node, ast.Name) and node.id in ("staticmethod",
+                                                  "classmethod"):
+        return node.id
+    return None
+
+
 def _collect_code(sources, symbols, assertions, diagnostics):
     """Populate symbols and per-file tables from parsed Python sources.
 
@@ -233,7 +251,8 @@ def _collect_code(sources, symbols, assertions, diagnostics):
                 if item.name in methods:
                     duplicate = True
                     continue
-                if item.decorator_list:
+                if item.decorator_list and _builtin_method_kind(
+                        item.decorator_list) is None:
                     diagnostics.append({"path": s["path"], "line": item.lineno, "kind": "decorated_function"})
                     continue
                 if any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef, ast.Lambda,
