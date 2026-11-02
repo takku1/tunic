@@ -53,14 +53,19 @@ def tool_schemas():
     """Tool names with JSON-schema arguments; the tools/list payload."""
     return [
         {"name": "retrieve",
-         "description": "Answer a natural-language task with fused graph evidence.",
+         "description": "Answer a natural-language task with fused graph evidence. "
+                        "Optional select runs the evidence-aware selection layer; "
+                        "container_limit bounds method-to-class expansion.",
          "inputSchema": {"type": "object",
                          "required": ["task"],
                          "properties": {
                              "task": {"type": "string"},
                              "limit": {"type": "integer"},
                              "policy": {"type": "string"},
-                             "threshold": {"type": "number"}}}},
+                             "threshold": {"type": "number"},
+                             "select": {"type": "boolean"},
+                             "snapshot": {"type": "string"},
+                             "container_limit": {"type": "integer"}}}},
         {"name": "related",
          "description": "Cross-source context for one exact path::symbol key.",
          "inputSchema": {"type": "object",
@@ -96,6 +101,41 @@ def tool_schemas():
                          "properties": {
                              "text": {"type": "string"},
                              "document": {"type": "string"}}}},
+        {"name": "candidates",
+         "description": "List live proposed-but-unverified relationship candidates for review.",
+         "inputSchema": {"type": "object", "properties": {}}},
+        {"name": "acquire",
+         "description": "Commit one reviewed candidate through the governed path. "
+                        "The candidate stays proposed until reviewed; selection records "
+                        "a justificationed receipt. Publishes before returning.",
+         "inputSchema": {"type": "object",
+                         "required": ["candidate_id", "justification"],
+                         "properties": {
+                             "candidate_id": {"type": "string"},
+                             "justification": {"type": "string"},
+                             "task": {"type": "string"}}}},
+        {"name": "correct",
+         "description": "Record a correction, retraction, or supersession and publish it. "
+                        "Use contradicts to contest, retracts (with retract naming the "
+                        "relation) to withdraw, supersedes to replace.",
+         "inputSchema": {"type": "object",
+                         "required": ["subject", "object", "rel"],
+                         "properties": {
+                             "subject": {"type": "string"},
+                             "object": {"type": "string"},
+                             "rel": {"type": "string"},
+                             "retract": {"type": "string"},
+                             "document": {"type": "string"},
+                             "authority": {"type": "string"},
+                             "note": {"type": "string"}}}},
+        {"name": "frontier",
+         "description": "List unresolved-knowledge ledger entries (gaps the agent could close). "
+                        "Raw ledger rows: use limit for a bounded sample; triage-style "
+                        "ranking is a later milestone, not this tool.",
+         "inputSchema": {"type": "object",
+                         "properties": {
+                             "status": {"type": "string"},
+                             "limit": {"type": "integer"}}}},
         {"name": "promote",
          "description": "Explicitly approve one candidate relationship as a claim.",
          "inputSchema": {"type": "object",
@@ -133,8 +173,17 @@ def handle_call(memory, name, args):
         threshold = _optional(args, "threshold", (int, float), 0.0)
         if threshold < 0:
             _fail("tool argument 'threshold' must be a non-negative number")
+        select = args.get("select", False)
+        if not isinstance(select, bool):
+            _fail("tool argument 'select' must be bool")
+        snapshot = _optional(args, "snapshot", str)
+        container_limit = _optional(args, "container_limit", int, 2)
+        if container_limit < 0:
+            _fail("tool argument 'container_limit' must be a non-negative integer")
         return memory.answer(task, limit=limit, policy=_policy(args),
-                             threshold=threshold)
+                             threshold=threshold, select=select,
+                             snapshot=snapshot,
+                             container_limit=container_limit)
     if name == "related":
         return compile_related(memory.store, _need(args, "symbol", str),
                                policy=_policy(args))
@@ -170,6 +219,46 @@ def handle_call(memory, name, args):
                                        _need(args, "object", str), **kwargs)}
     if name == "refresh":
         return memory.refresh()
+    if name == "candidates":
+        if args:
+            _fail("candidates takes no arguments")
+        return memory.candidates()
+    if name == "acquire":
+        receipt = memory.commit_candidate(
+            _need(args, "candidate_id", str),
+            _need(args, "justification", str),
+            task=_optional(args, "task", str))
+        published = memory.ingest()
+        receipt["snapshot"] = published.get("snapshot")
+        return receipt
+    if name == "correct":
+        rel = _need(args, "rel", str)
+        if rel not in ("contradicts", "retracts", "supersedes"):
+            _fail("unknown correction relation: %r "
+                  "(expected contradicts, retracts, or supersedes)" % (rel,))
+        kwargs = {}
+        for field in ("document", "authority", "note", "retract"):
+            value = _optional(args, field, str)
+            if value is not None:
+                kwargs[field] = value
+        if rel == "retracts" and "retract" not in kwargs:
+            _fail("retracts requires the retracted relation in 'retract'")
+        memory.record_outcome(_need(args, "subject", str),
+                              _need(args, "object", str), rel=rel, **kwargs)
+        published = memory.ingest()
+        return {"outcome": "recorded", "rel": rel,
+                "snapshot": published.get("snapshot")}
+    if name == "frontier":
+        status = _optional(args, "status", str)
+        if status is not None and status not in ("open", "investigating",
+                                                "resolved", "dismissed"):
+            _fail("unknown frontier status: %r" % (status,))
+        limit = _optional(args, "limit", int)
+        if limit is not None and limit < 0:
+            _fail("tool argument 'limit' must be a non-negative integer")
+        entries = memory.frontier_list(status=status)
+        return {"status": status or "all", "total": len(entries),
+                "entries": entries if limit is None else entries[:limit]}
     _fail("unknown tool: %s" % (name,))
 
 
@@ -214,7 +303,7 @@ def handle_request(memory, message):
                                                                ensure_ascii=True,
                                                                sort_keys=True)}],
                                "isError": True}}
-        except (ValueError, KeyError, TypeError) as error:
+        except (ValueError, KeyError, TypeError, OSError) as error:
             return {"jsonrpc": "2.0", "id": request_id,
                     "result": {"content": [{"type": "text",
                                             "text": json.dumps({"error": str(error)},

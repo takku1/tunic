@@ -6,6 +6,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import unittest.mock
 from pathlib import Path
 
 from tunic.mcp import handle_request
@@ -45,8 +46,10 @@ class McpProtocolTests(unittest.TestCase):
         self.assertIn("tools", response["result"]["capabilities"])
         response = handle_request(self.memory, _rpc("tools/list"))
         names = sorted(tool["name"] for tool in response["result"]["tools"])
-        self.assertEqual(names, ["impact", "note", "promote", "refresh",
-                                 "related", "retrieve", "review", "timeline"])
+        self.assertEqual(names, ["acquire", "candidates", "correct",
+                                 "frontier", "impact", "note", "promote",
+                                 "refresh", "related", "retrieve",
+                                 "review", "timeline"])
         for tool in response["result"]["tools"]:
             self.assertIn("inputSchema", tool)
 
@@ -188,7 +191,7 @@ class McpServerTests(unittest.TestCase):
         by_id = {line["id"]: line for line in lines}
         self.assertEqual(len(by_id), 6)
         self.assertEqual(by_id[1]["result"]["serverInfo"]["name"], "tunic")
-        self.assertEqual(len(by_id[2]["result"]["tools"]), 8)
+        self.assertEqual(len(by_id[2]["result"]["tools"]), 12)
         payload = json.loads(by_id[3]["result"]["content"][0]["text"])
         self.assertEqual(payload["outcome"], "complete")
         noted = json.loads(by_id[4]["result"]["content"][0]["text"])
@@ -196,6 +199,262 @@ class McpServerTests(unittest.TestCase):
         refreshed = json.loads(by_id[5]["result"]["content"][0]["text"])
         self.assertIn("snapshot", refreshed)
         self.assertTrue(by_id[6]["result"]["isError"])
+
+
+class McpAgentToolsTests(unittest.TestCase):
+    """Agent integration tools: candidates, acquire, correct, frontier.
+
+    Thin delegation only: listing reuses memory.candidates/frontier_list;
+    acquire commits through the governed commit_candidate path; correct
+    records a correction/retraction and publishes it. Deterministic,
+    no model, dev-scale fixture.
+    """
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.root = self.tmp / "repo"
+        self.root.mkdir()
+        (self.root / "shop.py").write_text(
+            "class Gadget:\n"
+            "    def start(self):\n"
+            "        return 1\n"
+            "\n\n"
+            "def create():\n"
+            "    return Gadget()\n", encoding="utf-8")
+        self.memory = Memory(str(self.tmp / "memory.sqlite"), self.root)
+        self.addCleanup(self.memory.close)
+        self.memory.ingest()
+
+    def call(self, name, arguments):
+        response = handle_request(
+            self.memory, _rpc("tools/call", {"name": name,
+                                             "arguments": arguments}))
+        self.assertFalse(response["result"]["isError"], msg=name)
+        return _text(response)
+
+    def test_tool_list_includes_agent_tools(self):
+        response = handle_request(self.memory, _rpc("tools/list"))
+        names = sorted(tool["name"] for tool in response["result"]["tools"])
+        self.assertEqual(names, ["acquire", "candidates", "correct",
+                                 "frontier", "impact", "note", "promote",
+                                 "refresh", "related", "retrieve",
+                                 "review", "timeline"])
+
+    def test_candidates_lists_live_proposals(self):
+        payload = self.call("candidates", {})
+        live = [c for c in payload["candidates"]
+                if c.get("via") == "constructor_call"]
+        self.assertEqual(len(live), 1)
+        self.assertEqual(live[0]["caller"], "shop.py::create")
+        self.assertEqual(live[0]["callee"], "shop.py::Gadget")
+
+    def test_acquire_commits_through_governed_path(self):
+        listed = self.call("candidates", {})
+        candidate = next(c for c in listed["candidates"]
+                         if c.get("via") == "constructor_call")
+        receipt = self.call("acquire", {
+            "candidate_id": candidate["id"],
+            "justification": "create constructs Gadget; start rides along",
+            "task": "what breaks if start changes"})
+        self.assertTrue(receipt["committed"])
+        self.assertEqual(receipt["action"], "add")
+        self.assertEqual(receipt["proposition"]["caller"],
+                         "shop.py::create")
+        # Published by the tool: post-acquire retrieval sees the edge.
+        answer = self.call("retrieve", {"task": "what breaks if start changes"})
+        self.assertTrue(any(e["symbol"] == "shop.py::create"
+                            for e in answer["impacts"]))
+
+    def test_acquire_requires_justification_and_live_id(self):
+        listed = self.call("candidates", {})
+        candidate = next(c for c in listed["candidates"]
+                         if c.get("via") == "constructor_call")
+        for args in ({"candidate_id": candidate["id"], "justification": ""},
+                     {"candidate_id": "assertion:deadbeef",
+                      "justification": "guessing"}):
+            response = handle_request(
+                self.memory, _rpc("tools/call", {"name": "acquire",
+                                                 "arguments": args}))
+            self.assertTrue(response["result"]["isError"], msg=repr(args))
+
+    def test_correct_retracts_and_publishes(self):
+        listed = self.call("candidates", {})
+        candidate = next(c for c in listed["candidates"]
+                         if c.get("via") == "constructor_call")
+        self.call("acquire", {"candidate_id": candidate["id"],
+                              "justification": "test selects gold",
+                              "task": "t"})
+        receipt = self.call("correct", {
+            "subject": "shop.py::create", "object": "shop.py::Gadget",
+            "rel": "retracts", "retract": "depends_on",
+            "document": "notes/fix.md", "authority": "reviewer"})
+        self.assertIn("snapshot", receipt)
+        # Transparent policy keeps retracted history visible; the governed
+        # current policy must not return the withdrawn caller.
+        answer = self.call("retrieve", {"task": "what breaks if start changes",
+                                        "policy": "current"})
+        self.assertFalse(any(e["symbol"] == "shop.py::create"
+                             for e in answer["impacts"]))
+
+    def test_frontier_lists_open_gaps(self):
+        payload = self.call("frontier", {})
+        self.assertIn("entries", payload)
+        self.assertTrue(all(e["status"] == "open" for e in payload["entries"]))
+        filtered = self.call("frontier", {"status": "open"})
+        self.assertEqual(len(filtered["entries"]), len(payload["entries"]))
+
+
+class McpReviewHardeningTests(unittest.TestCase):
+    """Review fixes: parity params, bounded frontier, idempotency,
+    provenance, publish-failure semantics, correction validation."""
+
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, self.tmp, True)
+        self.root = self.tmp / "repo"
+        self.root.mkdir()
+        (self.root / "shop.py").write_text(
+            "class Gadget:\n"
+            "    def start(self):\n"
+            "        return 1\n"
+            "\n\n"
+            "def create():\n"
+            "    return Gadget()\n", encoding="utf-8")
+        self.memory = Memory(str(self.tmp / "memory.sqlite"), self.root)
+        self.addCleanup(self.memory.close)
+        self.memory.ingest()
+
+    def call(self, name, arguments):
+        response = handle_request(
+            self.memory, _rpc("tools/call", {"name": name,
+                                             "arguments": arguments}))
+        return response
+
+    def committed_edge_count(self):
+        _snap, view = self.memory.store.view()
+        return sum(1 for a in view["assertions"]
+                   if a.get("status") == "asserted_in_source"
+                   and a["proposition"].get("caller") == "shop.py::create"
+                   and a["proposition"].get("callee") == "shop.py::Gadget"
+                   and a["proposition"].get("relation") == "depends_on")
+
+    def test_retrieve_parity_select_and_container_budget(self):
+        listed = json.loads(self.call(
+            "candidates", {})["result"]["content"][0]["text"])
+        candidate = next(c for c in listed["candidates"]
+                         if c.get("via") == "constructor_call")
+        self.call("acquire", {"candidate_id": candidate["id"],
+                              "justification": "parity probe",
+                              "task": "t"})
+        selected = json.loads(self.call(
+            "retrieve", {"task": "what breaks if start changes",
+                         "policy": "current",
+                         "select": True})["result"]["content"][0]["text"])
+        self.assertIn("selection", selected)
+        self.assertTrue(any(e["symbol"] == "shop.py::create"
+                            for e in selected["impacts"]))
+        disabled = json.loads(self.call(
+            "retrieve", {"task": "what breaks if start changes",
+                         "policy": "current", "select": True,
+                         "container_limit": 0})["result"]["content"][0]["text"])
+        self.assertFalse(any(e["symbol"] == "shop.py::create"
+                             for e in disabled["impacts"]))
+
+    def test_retrieve_snapshot_pinning_and_rejection(self):
+        snapshot = self.memory.store.current()
+        pinned = json.loads(self.call(
+            "retrieve", {"task": "what breaks if start changes",
+                         "snapshot": snapshot})["result"]["content"][0]["text"])
+        self.assertEqual(pinned["snapshot"], snapshot)
+        bad = self.call("retrieve", {"task": "x", "snapshot": "snapshot:nope"})
+        self.assertTrue(bad["result"]["isError"])
+
+    def test_retrieve_rejects_bad_parity_arguments(self):
+        for args in ({"task": "x", "select": "yes"},
+                     {"task": "x", "select": 1},
+                     {"task": "x", "container_limit": -1},
+                     {"task": "x", "snapshot": 42}):
+            response = self.call("retrieve", args)
+            self.assertTrue(response["result"]["isError"], msg=repr(args))
+
+    def test_frontier_limit_bounds_unfiltered_ledger(self):
+        full = json.loads(self.call(
+            "frontier", {})["result"]["content"][0]["text"])
+        self.assertIn("total", full)
+        self.assertEqual(full["total"], len(full["entries"]))
+        bounded = json.loads(self.call(
+            "frontier", {"limit": 1})["result"]["content"][0]["text"])
+        self.assertEqual(len(bounded["entries"]), min(1, full["total"]))
+        self.assertEqual(bounded["total"], full["total"])
+        bad = self.call("frontier", {"limit": -1})
+        self.assertTrue(bad["result"]["isError"])
+        bad_status = self.call("frontier", {"status": "vibes"})
+        self.assertTrue(bad_status["result"]["isError"])
+
+    def test_acquire_is_idempotent_no_double_write(self):
+        listed = json.loads(self.call(
+            "candidates", {})["result"]["content"][0]["text"])
+        candidate = next(c for c in listed["candidates"]
+                         if c.get("via") == "constructor_call")
+        first = json.loads(self.call(
+            "acquire", {"candidate_id": candidate["id"],
+                        "justification": "first",
+                        "task": "t"})["result"]["content"][0]["text"])
+        self.assertTrue(first["committed"])
+        second = json.loads(self.call(
+            "acquire", {"candidate_id": candidate["id"],
+                        "justification": "second",
+                        "task": "t"})["result"]["content"][0]["text"])
+        self.assertFalse(second["committed"])
+        self.assertEqual(second["action"], "duplicate")
+        self.assertEqual(self.committed_edge_count(), 1)
+
+    def test_acquire_records_provenance_visible_in_review(self):
+        listed = json.loads(self.call(
+            "candidates", {})["result"]["content"][0]["text"])
+        candidate = next(c for c in listed["candidates"]
+                         if c.get("via") == "constructor_call")
+        receipt = json.loads(self.call(
+            "acquire", {"candidate_id": candidate["id"],
+                        "justification": "reviewed: constructs Gadget",
+                        "task": "why"})["result"]["content"][0]["text"])
+        self.assertIn("reviewed: constructs Gadget",
+                      receipt.get("justification", ""))
+        self.assertIn(candidate["id"], receipt.get("candidate_id", ""))
+        review = json.loads(self.call(
+            "review", {"document": "notes/proposed.md"}
+            )["result"]["content"][0]["text"])
+        self.assertIn("shop.py::create", json.dumps(review))
+        self.assertIn("shop.py::Gadget", json.dumps(review))
+
+    def test_publish_failure_is_loud_and_state_is_explicit(self):
+        listed = json.loads(self.call(
+            "candidates", {})["result"]["content"][0]["text"])
+        candidate = next(c for c in listed["candidates"]
+                         if c.get("via") == "constructor_call")
+        with unittest.mock.patch.object(
+                self.memory.store, "ingest",
+                side_effect=OSError("disk unavailable")):
+            response = self.call(
+                "acquire", {"candidate_id": candidate["id"],
+                            "justification": "doomed",
+                            "task": "t"})
+        self.assertTrue(response["result"]["isError"])
+        # Two-phase semantics: the claim block is written, but nothing is
+        # published -- a later refresh makes it visible, nothing is lost
+        # silently and nothing is half-asserted.
+        self.assertEqual(self.committed_edge_count(), 0)
+        proposed = Path(self.root / "notes" / "proposed.md")
+        self.assertTrue(proposed.is_file())
+        self.assertIn("shop.py::create", proposed.read_text(encoding="utf-8"))
+
+    def test_correct_rejects_unknown_relations(self):
+        for args in ({"subject": "a", "object": "b", "rel": "vibes"},
+                     {"subject": "a", "object": "b", "rel": "retracts"},
+                     {"subject": "a", "object": "b"}):
+            response = self.call("correct", args)
+            self.assertTrue(response["result"]["isError"], msg=repr(args))
 
 
 if __name__ == "__main__":
