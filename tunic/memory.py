@@ -1115,7 +1115,7 @@ class Memory:
             raise ValueError("limit must be a non-negative integer")
         if type(container_limit) is not int or container_limit < 0:
             raise ValueError("container_limit must be a non-negative integer")
-        caps = {"exact": limit, "name": limit, "lexical": limit, "semantic": limit}
+        caps = {"exact": limit, "name": limit, "lexical": limit, "semantic": limit, "documents": limit}
         if budget is not None:
             unknown = set(budget) - set(caps)
             if unknown:
@@ -1130,7 +1130,11 @@ class Memory:
                 for s in view["symbols"] if not s["key"].endswith("::document")]
         rankings, stages = {}, {}
         started = time.perf_counter()
-        exact = sorted(key for key, _ in code if key in task)[:caps["exact"]]
+        exact = sorted(key for key, _ in code if key in task)
+        doc_exact = sorted(s["key"] for s in view["symbols"]
+                           if s["key"].endswith("::document")
+                           and (s["key"] in task or s["path"] in task))
+        exact = exact[:caps["exact"]]
         stages["exact"] = {"candidates": len(exact),
                            "ms": (time.perf_counter() - started) * 1000.0,
                            "skipped": False}
@@ -1154,6 +1158,7 @@ class Memory:
         index = None
         note_mentions = []
         discovery = None
+        notes = None
         if mode == "hybrid" and caps["lexical"] > 0:
             started = time.perf_counter()
             discovery = self._ensure_discovery(snapshot, exclude)
@@ -1184,6 +1189,23 @@ class Memory:
                                  "reason": ("lexical stage disabled"
                                             if mode != "hybrid" else "budget cap is zero")}
         started = time.perf_counter()
+        started = time.perf_counter()
+        doc_hits = []
+        if mode == "hybrid" and notes is not None and caps["documents"] > 0:
+            doc_hits = notes.search_text(task, top_k=caps["documents"])
+        if caps["documents"] > 0 and (doc_hits or doc_exact):
+            documents = compiler.compile_documents(
+                self.store, snapshot=snapshot, view=view, task=task,
+                hits=doc_hits,
+                frequency=(notes.frequency if notes is not None else None),
+                top_k=caps["documents"], exact=doc_exact)
+        else:
+            documents = []
+        stages["documents"] = {"candidates": len(documents),
+                               "ms": (time.perf_counter() - started) * 1000.0,
+                               "skipped": not (caps["documents"] > 0
+                                               and (mode == "hybrid"
+                                                    or doc_exact))}
         if mode == "hybrid" and caps["semantic"] > 0 and provider.available():
             try:
                 if discovery is None:
@@ -1348,7 +1370,7 @@ class Memory:
                 entry["container"] = container
             cand_entries.append(entry)
         abstention = None
-        if not top:
+        if not top and not documents:
             if max(limit, 0) == 0:
                 cause = "budget_exhausted"
             elif unknown_symbols:
@@ -1379,6 +1401,7 @@ class Memory:
                 "budget": caps, "threshold": threshold, "stages": stages,
                 "candidates": cand_entries,
                 "impacts": [impacts[key] for key in sorted(impacts)],
+                "documents": documents,
                 "mentions": mentions, "claims": claims,
                 "selection": selection,
                 "unknown_symbols": unknown_symbols,
@@ -1393,7 +1416,7 @@ class Memory:
                     "failed": list(failed_containers),
                     "skipped_over_budget": [klass for _, klass
                                             in skipped_containers]},
-                "outcome": "complete" if top else "empty"}
+                "outcome": "complete" if (top or documents) else "empty"}
         if result["outcome"] == "empty":
             self._frontier_upsert(
                 "unresolved", task, "retrieval_abstention",

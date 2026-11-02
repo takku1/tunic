@@ -12,7 +12,7 @@ minimal MCP-compatible server. The transport is newline-delimited JSON-RPC
 
 | Tool | Reads | Writes |
 | ---- | ----- | ------ |
-| `retrieve` | fused candidates, impacts, mentions, claims | none |
+| `retrieve` | fused candidates, impacts, mentions, claims, cited document passages | none |
 | `related`, `impact`, `callees`, `timeline` | compiled evidence for one key (reverse, reverse-impact, forward, timeline) | none |
 | `review` | acquisition report for one document | none |
 | `candidates` | live proposed dependencies | none |
@@ -25,7 +25,7 @@ minimal MCP-compatible server. The transport is newline-delimited JSON-RPC
 
 `retrieve` takes `task`, `limit`, `policy`, and `threshold`, and returns the
 same fused answer as the Python API: per-candidate scores, stage origins,
-retrieval method, and abstention (`outcome: empty`) when nothing qualifies.
+retrieval method, and abstention (`outcome: empty`) when neither code nor documents qualify. R2 (2026-11-02): a documents channel returns bounded cited prose passages (`documents`: doc, section, span, digest, snapshot, score, excerpt) from published `::document` sources only; prose is OBSERVED text, never a code claim, and never enters candidate selection.
 On large corpora a nonsense query still finds weak single-term lexical
 matches (observed scores 0.008–0.025 on 1,651 real documents), so callers
 that need strict abstention should set `threshold` (0.05 abstained there).

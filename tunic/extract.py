@@ -1704,6 +1704,78 @@ def _exact_mention_refs(assertion_list):
             and record.get("resolution", {}).get("rule") == "exact_key_match_v1"}
 
 
+def _slugify_heading(text):
+    """GitHub-style slug for a heading line, never empty."""
+    slug = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+    return slug or "section"
+
+
+def split_doc_sections(path, data):
+    """Split a prose document into deterministic retrieval sections.
+
+    Returns [(slug_or_None, start_byte, end_byte)]: byte-exact spans
+    over the raw bytes, in document order. Markdown headings (ATX,
+    outside fenced code blocks and YAML frontmatter) start sections;
+    duplicate headings get -2/-3 suffixes; leading prose before the
+    first heading is a slug-less preamble. Non-markdown prose (.txt,
+    .rst) is one whole-document unit. Setext underlines, headings
+    inside fenced code, and RST section adornments are NOT parsed:
+    those spans stay in their enclosing section rather than risking
+    false boundaries. Deterministic: same bytes always give the same
+    sections, so citations stay stable across refreshes.
+    """
+    if Path(path).suffix.lower() != ".md":
+        return [(None, 0, len(data))]
+    lines = data.splitlines(keepends=True)
+    offsets, heads = [0], []
+    for raw in lines:
+        offsets.append(offsets[-1] + len(raw))
+    fence, frontmatter, fm_done = None, False, False
+    index = 0
+    if lines and lines[0].strip() == b"---":
+        frontmatter = True
+        index = 1
+    for lineno in range(index, len(lines)):
+        try:
+            line = lines[lineno].decode("utf-8")
+        except UnicodeError:
+            continue
+        stripped = line.strip()
+        if frontmatter and not fm_done:
+            if stripped in ("---", "..."):
+                fm_done = True
+            continue
+        if stripped.startswith("```") or stripped.startswith("~~~"):
+            if fence is None:
+                fence = stripped[:3]
+            elif fence == stripped[:3]:
+                fence = None
+            continue
+        if fence is not None:
+            continue
+        match = re.match(r"^(#{1,6})[ \t]+(.*?)[ \t]*#*[ \t]*$", stripped)
+        if match and match.group(2):
+            heads.append((len(match.group(1)), match.group(2), offsets[lineno]))
+    sections, counts = [], {}
+    for pos, (level, title, start) in enumerate(heads):
+        end = offsets[len(lines)]
+        for deeper_level, _, deeper_start in heads[pos + 1:]:
+            if deeper_level <= level:
+                end = deeper_start
+                break
+        base = _slugify_heading(title)
+        counts[base] = counts.get(base, 0) + 1
+        slug = base if counts[base] == 1 else "%s-%d" % (base, counts[base])
+        if end > start:
+            sections.append((slug, start, end))
+    if not heads:
+        return [(None, 0, len(data))]
+    if heads[0][2] > 0 and data[:heads[0][2]].strip():
+        sections.insert(0, (None, 0, heads[0][2]))
+    sections.sort(key=lambda section: section[1])
+    return sections
+
+
 def _build_mentions(sources, symbols, assertions, diagnostics, claim_spans, seen=None):
     """Populate document mention assertions in source order.
 

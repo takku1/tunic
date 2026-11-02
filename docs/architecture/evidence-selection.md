@@ -52,7 +52,7 @@ names the cause and marks every kept historical candidate
 `HISTORICAL` (never presented as current), and no superseded symbol
 renders under OBSERVED. Verified absence stays a `related()`/traversal
 observation, and unresolvable calls stay `cold` receipts at the
-callees level (`tests/test_abstention_widening.py`).
+callees level (`tests/test_abstention_widening.py`). The R2 documents channel (2026-11-02) runs outside selection by design: cited prose passages are observed text with span/digest/snapshot provenance, not candidates with epistemic status; an answer is non-empty when code or documents qualify, and abstention files only when neither does.
 
 ## Query-intent obligations
 

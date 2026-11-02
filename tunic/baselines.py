@@ -113,10 +113,11 @@ class TextNotes:
     """
     def __init__(self, root, exclude=()):
         from .extract import _compile_ignore_rules, iter_scope_files
+        from .extract import TEXT_EXTENSIONS as _TEXT_EXTENSIONS
         self.root = Path(root)
         rules = _compile_ignore_rules(self.root, exclude)
         found, self.scope_stats = iter_scope_files(
-            self.root, rules, {".md", ".txt"})
+            self.root, rules, set(_TEXT_EXTENSIONS))
         self.documents = []
         for path, relative in sorted(found, key=lambda item: item[1]):
             try:

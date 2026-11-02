@@ -179,11 +179,16 @@ class RealRepoRegressionTests(unittest.TestCase):
         # set when suppression enforcement landed in answer()
         # (verified by inspection 2026-11-02: the call computes the
         # suppressed-id set passed to selection and successor maps).
+        # compile_documents joined when the R2 documents channel landed
+        # in answer() (verified by inspection 2026-11-02: the call at
+        # memory.py:1197 builds the cited prose passages; read-only,
+        # adds no edges).
         self.assertEqual(direct, {"memory.py::Memory._ensure_discovery",
                                   "memory.py::Memory._frontier_upsert",
                                   "memory.py::_container_of",
                                   "memory.py::_dedup_dicts",
                                   "memory.py::authorize",
+                                  "compiler.py::compile_documents",
                                   "compiler.py::compile_impact",
                                   "compiler.py::compile_related",
                                   "lifecycle.py::suppressed_ids"})

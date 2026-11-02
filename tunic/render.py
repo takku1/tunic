@@ -223,6 +223,17 @@ def render_answer_text(result, *, cap=4000, receipt=None):
                                             (" says: \"%s\"" % mention_window(mention))
                                             if mention_window(mention) else "")
                      for mention in mentions[:10]]
+    documents = result.get("documents") or []
+    def doc_excerpt(passage):
+        excerpt = " ".join((passage.get("excerpt") or "").split())
+        return excerpt[:300]
+    doc_lines = ["  %s%s (%s:%s-%s digest %s) says: \"%s\"" % (
+        passage.get("doc", "?"),
+        ("#" + passage["section"] if passage.get("section") else ""),
+        passage.get("doc", "?"), (passage.get("span") or {}).get("start", "?"),
+        (passage.get("span") or {}).get("end", "?"),
+        (passage.get("digest") or "?")[:12], doc_excerpt(passage))
+        for passage in documents[:10]]
     trust = ("TRUST RULE: OBSERVED lines are verified static-code facts. "
              "ASSERTED lines are session-recorded claims with their authority "
              "shown: usable as answers when relevant, but they are records, "
@@ -260,6 +271,10 @@ def render_answer_text(result, *, cap=4000, receipt=None):
         ("mentions", "TEXT MENTIONS (lexical co-occurrence, not a code relationship):",
          mention_lines or ["  (none)"], False),
     ]
+    if doc_lines:
+        sections.append(("documents",
+                         "DOCUMENTS (observed prose passages; cited description, not verified fact):",
+                         doc_lines, False))
     try:
         budget = max(int(cap), 0) if cap else 0
     except (TypeError, ValueError):

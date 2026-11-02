@@ -1,9 +1,10 @@
 """Deterministic reverse-call witnesses and mechanically validated context IR."""
 
-from collections import defaultdict, deque
+from collections import Counter, defaultdict, deque
 import re
 
-from .extract import TRAVERSABLE_CLAIMS, is_iso_date
+from .baselines import _rank, _tokens
+from .extract import TRAVERSABLE_CLAIMS, is_iso_date, split_doc_sections
 from .identity import canonical, digest, identity
 from .lifecycle import suppressed_ids
 
@@ -597,6 +598,88 @@ def compile_review(store, document, *, snapshot=None):
             "entities": entities, "asserted": asserted, "proposals": proposals,
             "candidates": candidates,
             "drafts": drafts, "conflicts": conflicts, "outcome": "complete"}
+
+
+def compile_documents(store, *, snapshot=None, view=None, task="", hits=(),
+                      frequency=None, top_k=3, exact=(),
+                      excerpt_chars=1200, per_doc_sections=2):
+    """Bounded cited prose passages for one task; read-only.
+
+    Documents participate in retrieval as OBSERVED prose with
+    byte-exact citations, never as synthetic code symbols or asserted
+    edges. Whole-document TextNotes hits are split into heading
+    sections (split_doc_sections) and re-ranked with the shared BM25
+    scorer against the discovery corpus frequencies, so passages stay
+    bounded and citable. Only documents published in the snapshot can
+    appear: the mentioner key must resolve to a live ::document symbol
+    and its source must be a snapshot member, so excluded, vendored,
+    or out-of-scope documents cannot leak through. Doc keys named
+    exactly in the task (exact) rank first. Returns passages sorted by
+    (-score, unit) with {doc, section, span, digest, snapshot, score,
+    excerpt, unit}; retrieval adds no assertions.
+    """
+    if view is None:
+        snapshot, view = store.view(snapshot)
+    if type(top_k) is not int or top_k < 0:
+        raise ValueError("top_k must be a non-negative integer")
+    symbols = {s["key"]: s for s in view["symbols"]}
+    terms = set(_tokens(task)) if isinstance(task, str) and task.strip() else set()
+    ordered, seen = [], set()
+    for key in exact or ():
+        if key in symbols and key not in seen:
+            seen.add(key)
+            ordered.append(key)
+    for hit in hits or ():
+        mentioner = (hit.get("symbol") or "") + "::document"
+        if mentioner in symbols and mentioner not in seen:
+            seen.add(mentioner)
+            ordered.append(mentioner)
+    frequency = frequency if frequency is not None else Counter()
+    sections, meta = [], []
+    for mentioner in ordered:
+        record = symbols[mentioner]
+        try:
+            source = store.source(record["source"], snapshot)
+        except ValueError:
+            continue
+        data = source["data"]
+        try:
+            data.decode("utf-8")  # guard: skip undecodable docs
+        except UnicodeError:
+            continue
+        for slug, start, end in split_doc_sections(source["path"], data):
+            body = data[start:end].decode("utf-8")
+            unit = mentioner if slug is None else mentioner.replace(
+                "::document", "::" + slug, 1)
+            content = source["path"] + " " + (slug or "") + " " + body
+            sections.append({"symbol": unit, "is_test": False,
+                             "tokens": Counter(_tokens(content))})
+            meta.append({"doc": source["path"], "section": slug,
+                         "span": {"start": start, "end": end},
+                         "digest": source["digest"], "snapshot": snapshot,
+                         "excerpt": body[:excerpt_chars], "unit": unit})
+    if not sections or not terms:
+        return []
+    lengths = [sum(d["tokens"].values()) for d in sections]
+    ranked = _rank(sections, lengths,
+                   sum(lengths) / len(lengths) if lengths else 1,
+                   frequency, terms, None, len(sections))
+    by_unit = {m["unit"]: m for m in meta}
+    per_doc, passages = {}, []
+    for row in ranked:
+        passage = by_unit.get(row["symbol"])
+        if passage is None:
+            continue
+        score = row["score"]
+        taken = per_doc.get(passage["doc"], 0)
+        if taken >= per_doc_sections:
+            continue
+        per_doc[passage["doc"]] = taken + 1
+        passages.append({**passage, "score": round(score, 4)})
+        if len(passages) >= top_k:
+            break
+    passages.sort(key=lambda p: (-p["score"], p["unit"]))
+    return passages[:top_k]
 
 
 def compile_related(store, symbol, *, snapshot=None, policy="transparent", view=None):
