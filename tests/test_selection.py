@@ -1,9 +1,10 @@
-"""Selection layer: intent, outcomes, traces, and answer() opt-in.
+"""Selection layer: intent, outcomes, traces, and answer() default-on.
 
 Rules are structural, never tuned cutoffs: identity in the query or a
 graph tie is required to return a candidate, contradictions are flagged
-rather than silenced, supersession excludes only under the current
-policy. No frozen gold labels are used here.
+rather than silenced, supersession withholds discovery-ranked history
+under the current policy while named history is kept flagged
+(see test_selection_supersession.py). No frozen gold labels are used here.
 """
 
 import unittest

@@ -5,9 +5,9 @@ layer decides what is supported enough to return. Similarity proposes,
 structure disposes — a candidate with no graph ties and no identity in
 the query is discovery noise, not evidence.
 
-Status: opt-in (`answer(..., select=True)`). Default retrieval is
-unchanged until the contract acceptance in
-docs/architecture/evidence-selection.md is met on frozen suites.
+Status: default ON since 2026-11-02 (`answer(...)` selects unless
+`select=False`). Named history is kept as flagged historical context;
+see the contract.
 
 Outcomes follow the evidence-selection contract: supported, proposed,
 ambiguous, contradicted, insufficient_evidence, out_of_scope. Every
@@ -147,7 +147,7 @@ def select(task, fused, *, view, policy, limit, anchors=None):
     """Filter fused [(score, key, origins)] into kept keys plus a trace.
 
     Structural rules, no tuned cutoffs:
-    - superseded candidates are out_of_scope under the current policy;
+    - superseded candidates are out_of_scope under the current policy, unless the query names them or an impact/provenance query has no other viable evidence (kept flagged as historical context, never as current);
     - contradicted candidates are kept but flagged, never silently;
     - ambiguous identity is kept with the ambiguity attached;
     - exact/name matches are supported: the query names the entity;
@@ -170,17 +170,14 @@ def select(task, fused, *, view, policy, limit, anchors=None):
         leaves.setdefault(key.split("::")[-1].split(".")[-1], []).append(key)
     order = {"exact": 0, "name": 1, "lexical": 2, "semantic": 3}
     decisions, kept = [], []
+    superseded_hold = {}
     for score, key, origins in fused:
         evidence = candidate_evidence(view, key, anchors=subjects)
         best = min(origins, key=order.__getitem__)
         reasons = ["best stage: " + best,
                    "graph ties: %d" % evidence["graph_ties"],
                    "anchored ties: %d" % evidence["anchored_ties"]]
-        if policy == "current" and key in superseded_by:
-            outcome = "out_of_scope"
-            reasons.append("superseded by " + ", ".join(sorted(superseded_by[key]))
-                           + " under current policy")
-        elif key in contradicted:
+        if key in contradicted:
             outcome = "contradicted"
             reasons.append("a live contradicts claim touches this symbol")
             kept.append(key)
@@ -209,9 +206,41 @@ def select(task, fused, *, view, policy, limit, anchors=None):
             outcome = "supported"
             reasons.append("discovery corroborated by graph evidence")
             kept.append(key)
+        merits = outcome
+        if policy == "current" and key in superseded_by:
+            note = ("superseded by " + ", ".join(sorted(superseded_by[key]))
+                    + " under current policy")
+            if best in ("exact", "name"):
+                # Identity established: the query names this symbol, so it
+                # is historical context for the question, not a stale
+                # discovery. The merits outcome stands; the note records
+                # that it must not be read as current.
+                reasons.append(note + "; returned as named historical "
+                                     "context, not current")
+            else:
+                outcome = "out_of_scope"
+                reasons.append(note)
+                if key in kept:
+                    kept.remove(key)
+                if merits in ("supported", "proposed"):
+                    superseded_hold[key] = (merits, note)
         decisions.append({"symbol": key, "score": score, "match": best,
                           "origins": origins, "outcome": outcome,
                           "reasons": reasons, "evidence": evidence})
+    if (not kept and superseded_hold
+            and intent["intent"] in ("impact", "provenance")):
+        # Silence would be worse than flagged history: an effects/history
+        # question whose only viable evidence is superseded keeps that
+        # evidence marked as historical context, never as current.
+        # Withheld discovery stays withheld whenever live evidence exists.
+        for decision in decisions:
+            key = decision["symbol"]
+            if key in superseded_hold:
+                merits, note = superseded_hold[key]
+                decision["outcome"] = merits
+                decision["reasons"].append(note + "; retained as historical "
+                                                "context, not current")
+                kept.append(key)
     kept = kept[:max(limit, 0)]
     if len(fused) > max(limit, 0):
         reasons = ["fused total %d exceeds limit %d" % (len(fused), limit)]

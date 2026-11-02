@@ -1,7 +1,7 @@
 # Tunic implementation status (single authoritative tracker)
 
 Date: 2026-11-02. Scope: local reference implementation on `main`.
-Full suite: 546 tests green (`python -m unittest discover -s tests`, ~80-210 s
+Full suite: 557 tests green (`python -m unittest discover -s tests`, ~80-210 s
 depending on live-repo ingests; always record command, count, and date).
 MCP tools: 13 (see [mcp.md](mcp.md)). No `/docs/STATUS.md` exists in this
 repo; this file is the registry (per binding convention below).
@@ -77,7 +77,7 @@ Crisp/Team-Ops integrations, geometry-driven ranking (D-08/D-14/D-15).
 | Abstention widening | evaluation/strategy.md | Frozen abstention/decoy task set x3 | Arena v1 Q6 wording flaw | taskgen + stage-1 pins | Arena v2 protocol (done) | Small | Yes |
 | Constructor re-measurement | implementation-status (this file) | Fresh ACQ constructor dev run | Pre-fix 0/5 apply | ACQ harness `--resume` | Model access | Small | No |
 | Receiver resolution | decisions D-25, w1-reference | `self`/local-constructed receiver proofs | Arena v1 Q3 key-rule flaw | Extractor fixtures + dogfood pin | Cross-module fix (done) | Medium | Yes |
-| Staleness-explicit references withheld | evaluation/strategy.md (agent suite stale/evolve tasks) | Keep task-named superseded symbols with status vs withhold under select+current | Agent-heldout stale-task/evolve-para fail under select+current (pass under transparent default and fusion) | Selection fixture + eval pin | Eval harness pins fusion (done); product fix open | Small | Yes |
+| Staleness-explicit references withheld | evaluation/strategy.md (agent suite stale/evolve tasks) | Keep task-named superseded symbols with status vs withhold under select+current | Agent-heldout stale-task/evolve-para fail under select+current (pass under transparent default and fusion) | Selection fixture + eval pin | Eval harness pins fusion (done); product fix SHIPPED 2026-11-02: named history kept flagged, impact/provenance fallback when silence is the alternative, unrelated decoys still withheld (`tests/test_selection_supersession.py`, 11 tests; suite 557 green; pilot re-run ADOPT, metrics unchanged) | Small | Yes |
 | Consolidation/forgetting | research/semantic-graph (SG-09..12) | Design + long-history fixture | Absent capability | New lifecycle suite | None (greenfield) | Large | Yes (design only) |
 | Frontier scheduler | architecture/frontier-ledger.md | Scheduling loop over triage queues | "Later: MochiOS-scheduled investigation" | Scheduler tests + closure yield | Triage v1 (done) | Medium | Yes |
 | Memory reuse metric | evaluation/strategy.md | Paired-investigation reuse harness | Absent capability | Runner-based rehearsal | Arena v2 runner (done) | Medium | Yes (harness), No (real agents) |

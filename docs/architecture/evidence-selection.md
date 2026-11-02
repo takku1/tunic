@@ -37,6 +37,14 @@ Every candidate ends in exactly one outcome, with reasons:
 | `insufficient_evidence` | Relevant-looking but ungrounded | no (trace records why) |
 | `out_of_scope` | Fails authorization, time, or query intent | no (trace records which gate) |
 
+Supersession under the current policy withholds superseded candidates as
+`out_of_scope`, with two narrow exceptions, both flagged in the trace and
+never presented as current: a symbol the query names (`exact`/`name`
+match) is kept as named historical context; when an impact/provenance
+query's only viable evidence is superseded, that evidence is retained
+rather than abstaining. Withheld discovery stays withheld whenever live
+evidence exists (`tests/test_selection_supersession.py`).
+
 ## Query-intent obligations
 
 Different questions need different proof. The layer must know what
