@@ -111,7 +111,9 @@ def build_callers_task(symbol, sites, scope, target_path):
                     if scope == "cross-file"
                     else "callers including the defining file (same-file-included)")
     text = ("Which functions call %s? List exact path::symbol keys, "
-            "or ABSTAIN with the reason. Scope: %s."
+            "or ABSTAIN with the reason. Scope: %s. "
+            "Answer with one exact path::symbol key per line, "
+            "or a single ABSTAIN line."
             % (symbol, scope_phrase))
     return TaskSpec(id="callers:" + symbol, kind="callers", text=text,
                     key={"target": symbol, "sites": list(sites),
@@ -124,7 +126,10 @@ def build_uniqueness_task(site_path, site_line, receiver, name, caller,
             "enclosing class defines the name")
     text = ("At %s:%d, `%s.%s(...)` is called inside %s. List every "
             "qualified `%s` definition, and state whether the receiver "
-            "determines a unique target under this rule: %s."
+            "determines a unique target under this rule: %s. Answer "
+            "with one qualified definition per line plus exactly one "
+            "line of the form VERDICT: UNIQUE <key> or "
+            "VERDICT: NOT-DETERMINED."
             % (site_path, site_line, receiver, name, caller, name, rule))
     return TaskSpec(id="uniqueness:%s:%d" % (site_path, site_line),
                     kind="uniqueness", text=text,
@@ -136,7 +141,9 @@ def build_chain_task(start, branch, hops, cold, cold_reason):
     text = ("Trace the static call chain starting at %s, following this "
             "branch: %s. List each hop (caller -> callee) with the "
             "import or same-file fact supporting it. State where the "
-            "trail goes cold and why." % (start, branch))
+            "trail goes cold and why. Answer with one hop per line as "
+            "'<caller> -> <callee>', exactly one COLD: <head> line, "
+            "and optional REASON: lines." % (start, branch))
     return TaskSpec(id="chain:" + start, kind="chain", text=text,
                     key={"start": start, "branch": branch,
                          "hops": [list(h) for h in hops], "cold": cold,
@@ -146,7 +153,9 @@ def build_chain_task(start, branch, hops, cold, cold_reason):
 def build_decoy_task(a_symbol, b_symbol, verdict):
     text = ("Does %s call %s? Answer YES with the call evidence, or NO "
             "with the reason. Do not assert what the evidence does not "
-            "support." % (a_symbol, b_symbol))
+            "support. Answer with YES or NO on the first line, then "
+            "optional REASON: or EVIDENCE: lines."
+            % (a_symbol, b_symbol))
     return TaskSpec(id="decoy:%s:%s" % (a_symbol, b_symbol), kind="decoy",
                     text=text,
                     key={"a": a_symbol, "b": b_symbol, "verdict": verdict})
@@ -154,7 +163,8 @@ def build_decoy_task(a_symbol, b_symbol, verdict):
 
 def build_abstention_task(symbol, expectation="abstain"):
     text = ("Which functions call %s? List exact path::symbol keys, "
-            "or ABSTAIN with the reason." % symbol)
+            "or ABSTAIN with the reason. Answer with ABSTAIN on the "
+            "first line, then optional REASON: lines." % symbol)
     return TaskSpec(id="abstention:" + symbol, kind="abstention",
                     text=text, key={"target": symbol,
                                     "expected": expectation})
