@@ -12,7 +12,12 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tunic import tsgraph
 from tunic.memory import Memory
+
+PARSER_OR_SKIP = unittest.skipUnless(
+    tsgraph._HAVE_PARSER,
+    "tree-sitter parser not installed")
 
 SITE_TS = """import { defineMiddleware } from "astro:middleware";
 
@@ -190,6 +195,7 @@ class CoverageLabelTest(unittest.TestCase):
             finally:
                 memory.close()
 
+    @PARSER_OR_SKIP
     def test_edged_ts_symbol_not_inventory_only(self):
         with tempfile.TemporaryDirectory() as tmp:
             memory = _ingest_edged(tmp)
@@ -207,6 +213,7 @@ class CoverageLabelTest(unittest.TestCase):
             finally:
                 memory.close()
 
+    @PARSER_OR_SKIP
     def test_edged_ts_callees_complete(self):
         with tempfile.TemporaryDirectory() as tmp:
             memory = _ingest_edged(tmp)
