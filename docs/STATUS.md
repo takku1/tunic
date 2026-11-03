@@ -17,6 +17,7 @@ W1 reference slice plus memory loop are implemented and regression-tested on `ma
 - Document-first-class retrieval R2 and discovery scope unification R3 (shipped 2026-11-02).
 - Frontier scheduler v1 turning ranked clusters into governed investigations with proof-backed resolves.
 - Frontier signal quality + multi-language precision baseline (2026-11-03): bare data-label mention-candidates no longer filed (151,674 to 37,600 diagnostics, DB 72 to 34 MB); 40-sample precision baseline across Rust/Java/C++/PowerShell pinned SHAs (28 judged: 21 pass, 7 miss, 0 false edges; cpp 0 edges = method/free-function harvest gap).
+- Retrieval calibration + language diagnostics (2026-11-03): releaseHref answers complete with both verified callers on pre-pivot snapshot (reported abstention was stale-DB artifact + live-tree symbol removal; live no_discovery is correct); C++ gap is whole-file ERROR skip not node coverage (clean fixtures 3/3); Rust alias vs Type::method isolated; 40-sample candidate review 0/40 useful — no further filter. 939 tests.
 - Blocked: constructor acquisition/application re-measurement (needs model access); platform deployment (by design, not started).
 
 ## Architecture Summary
