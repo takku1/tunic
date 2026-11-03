@@ -600,6 +600,33 @@ def compile_review(store, document, *, snapshot=None):
             "drafts": drafts, "conflicts": conflicts, "outcome": "complete"}
 
 
+def _passage_signals(body, terms, is_exact):
+    """Explicit, explainable relevance signals for one prose section.
+
+    exact_path: the task named this document outright. term_code_span:
+    a query term appears in backticks (a literal reference, not prose).
+    term_call: `term(` or `recv.term` syntax (code-shaped usage).
+    Each is a pure function of task terms and section text, so ranking
+    stays deterministic and inspectable; signals never assert edges.
+    """
+    signals = []
+    if is_exact:
+        signals.append("exact_path")
+    if not terms or not isinstance(body, str):
+        return signals
+    lowered = body.lower()
+    for term in sorted(terms):
+        if re.search(r"`[^`]*\b" + re.escape(term) + r"\b[^`]*`", lowered):
+            signals.append("term_code_span")
+            break
+    for term in sorted(terms):
+        if re.search(r"[\w$]+\." + re.escape(term) + r"\b|\b"
+                     + re.escape(term) + r"\s*\(", lowered):
+            signals.append("term_call")
+            break
+    return signals
+
+
 def compile_documents(store, *, snapshot=None, view=None, task="", hits=(),
                       frequency=None, top_k=3, exact=(),
                       excerpt_chars=1200, per_doc_sections=2):
@@ -625,6 +652,7 @@ def compile_documents(store, *, snapshot=None, view=None, task="", hits=(),
     symbols = {s["key"]: s for s in view["symbols"]}
     terms = set(_tokens(task)) if isinstance(task, str) and task.strip() else set()
     ordered, seen = [], set()
+    exact_keys = {key for key in (exact or ()) if key in symbols}
     for key in exact or ():
         if key in symbols and key not in seen:
             seen.add(key)
@@ -652,12 +680,19 @@ def compile_documents(store, *, snapshot=None, view=None, task="", hits=(),
             unit = mentioner if slug is None else mentioner.replace(
                 "::document", "::" + slug, 1)
             content = source["path"] + " " + (slug or "") + " " + body
+            tokens = Counter(_tokens(content))
+            overlap = (terms & set(tokens)) if terms else set()
+            signals = _passage_signals(body, terms,
+                                       mentioner in exact_keys)
             sections.append({"symbol": unit, "is_test": False,
-                             "tokens": Counter(_tokens(content))})
+                             "tokens": tokens})
             meta.append({"doc": source["path"], "section": slug,
                          "span": {"start": start, "end": end},
                          "digest": source["digest"], "snapshot": snapshot,
-                         "excerpt": body[:excerpt_chars], "unit": unit})
+                         "excerpt": body[:excerpt_chars], "unit": unit,
+                         "coverage": round(len(overlap) / len(terms), 4)
+                         if terms else 0.0,
+                         "signals": signals})
     if not sections or not terms:
         return []
     lengths = [sum(d["tokens"].values()) for d in sections]
@@ -676,9 +711,7 @@ def compile_documents(store, *, snapshot=None, view=None, task="", hits=(),
             continue
         per_doc[passage["doc"]] = taken + 1
         passages.append({**passage, "score": round(score, 4)})
-        if len(passages) >= top_k:
-            break
-    passages.sort(key=lambda p: (-p["score"], p["unit"]))
+    passages.sort(key=lambda p: (-p["score"], -p["coverage"], p["unit"]))
     return passages[:top_k]
 
 

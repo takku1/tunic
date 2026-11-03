@@ -38,6 +38,37 @@ def _dedup_dicts(rows):
     return unique
 
 
+MENTION_TIERS = {"syntactic_observation": 0, "asserted_in_source": 0,
+                 "proposed": 1, "lexical_discovery": 2}
+
+# Stage-1 document recall is deliberately wider than the final
+# documents budget: whole-doc BM25 can bury the best section (e.g. a
+# gold doc at doc-rank 4+). Sections re-rank globally, so recall width
+# costs a bounded re-rank, not context.
+DOCUMENT_RECALL_MULTIPLE = 3
+DOCUMENT_RECALL_MINIMUM = 10
+
+
+def _mention_tier(mention):
+    """Evidence-strength tier for ranking mentions (lower is stronger).
+
+    Exact identity (an exact key or asserted mention) outranks a bare
+    name with corroborating signals, which outranks a query-matched
+    lexical mention, which outranks an unsignaled ambiguous bare word.
+    Unsignaled ambiguity is penalized, never deleted: the observation
+    stays in the list. Deterministic and inspectable: tier, then
+    source coordinates.
+    """
+    status = mention.get("status")
+    if status in ("proposed", "proposed_ambiguous"):
+        qualification = ((mention.get("resolution") or {}).get("qualification")
+                         or {})
+        signals = qualification.get("signals") or []
+        if not signals:
+            return 3
+    return MENTION_TIERS.get(status, 1)
+
+
 def _container_of(symbols_by_key, key):
     """Verified containing class of a method symbol, else None.
 
@@ -1192,7 +1223,9 @@ class Memory:
         started = time.perf_counter()
         doc_hits = []
         if mode == "hybrid" and notes is not None and caps["documents"] > 0:
-            doc_hits = notes.search_text(task, top_k=caps["documents"])
+            doc_hits = notes.search_text(
+                task, top_k=max(caps["documents"] * DOCUMENT_RECALL_MULTIPLE,
+                                DOCUMENT_RECALL_MINIMUM))
         if caps["documents"] > 0 and (doc_hits or doc_exact):
             documents = compiler.compile_documents(
                 self.store, snapshot=snapshot, view=view, task=task,
@@ -1358,7 +1391,7 @@ class Memory:
                 mentions.append(mention)
         mentions = _dedup_dicts(mentions)
         claims = _dedup_dicts(claims)
-        mentions.sort(key=lambda m: (m["evidence"]["path"], m["evidence"]["start"], m["status"]))
+        mentions.sort(key=lambda m: (_mention_tier(m), m["evidence"]["path"], m["evidence"]["start"], m["status"]))
         claims.sort(key=lambda c: (c["relation"], c["caller"], c.get("callee") or ""))
         cand_entries = []
         for key in top:
