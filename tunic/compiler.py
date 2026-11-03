@@ -923,3 +923,73 @@ def validate_artifact(store, artifact, *, expected_snapshot=None):
                 "freshness": "expected_snapshot_matched" if expected_snapshot else "historical_snapshot_only"}
     except (ValueError, KeyError, TypeError, UnicodeError) as error:
         return {"valid": False, "error": str(error)}
+
+
+def compile_references(store, symbol, *, snapshot=None, view=None,
+                       extensions=(".astro",), limit=20):
+    """Textual identifier occurrences in unsupported source languages.
+
+    Prototype for cross-language reference discovery: scans the raw
+    bytes of non-text snapshot-member sources (e.g. .astro templates
+    Tunic cannot parse) for exact identifier-boundary matches. Every
+    row is a ``textual_reference`` with path and byte-exact span; no
+    row is a call edge and nothing here writes to the graph. Deliberately
+    outside the default retrieval path: callers opt in per question and
+    the result carries its own truncation receipt.
+    """
+    from pathlib import PurePosixPath
+    from .extract import INVENTORY_EXTENSIONS
+    if view is None:
+        snapshot, view = store.view(snapshot)
+    symbols = {s["key"]: s for s in view["symbols"]}
+    if symbol in symbols:
+        key = symbol
+    else:
+        cands = sorted(k for k in symbols if k.split("::")[-1] == symbol)
+        if len(cands) != 1:
+            raise ValueError("unknown or ambiguous symbol: " + symbol)
+        key = cands[0]
+    name = key.split("::")[-1].encode("utf-8")
+    pattern = re.compile(rb"(?<![\w$])" + name + rb"(?![\w$])")
+    wanted = {e.lower() for e in (extensions or ())
+              if e.lower() in INVENTORY_EXTENSIONS}
+    rows = store.connection.execute(
+        """SELECT s.path, s.data FROM sources s
+           JOIN members m ON m.source=s.id WHERE m.snapshot=?""",
+        (snapshot,)).fetchall()
+    found = []
+    for path, blob in sorted(rows, key=lambda r: r[0]):
+        if PurePosixPath(path).suffix.lower() not in wanted:
+            continue
+        data = bytes(blob)
+        try:
+            text = data.decode("utf-8")
+        except UnicodeDecodeError:
+            continue
+        if name.decode("utf-8", "replace") not in text:
+            continue
+        for match in pattern.finditer(data):
+            start = int(match.start())
+            line = data.count(b"\n", 0, start) + 1
+            streak = data.rfind(b"\n", 0, start) + 1
+            stop = data.find(b"\n", start)
+            context = data[streak:stop if stop != -1 else len(data)]
+            found.append({"path": path, "start": start,
+                          "end": int(match.end()), "line": line,
+                          "context": context.decode("utf-8", "replace"
+                                                    ).strip()[:200],
+                          "kind": "textual_reference"})
+    found.sort(key=lambda r: (r["path"], r["start"]))
+    total = len(found)
+    return {"symbol": key, "name": key.split("::")[-1], "snapshot": snapshot,
+            "kind": "textual_reference", "extensions": sorted(wanted),
+            "limit": int(limit), "total": total,
+            "truncated": total > int(limit),
+            "references": found[:int(limit)],
+            "limitations": ["Textual identifier occurrences only; no row "
+                            "is a verified call edge.",
+                            "Exact identifier boundaries; matches inside "
+                            "longer names are excluded, matches inside "
+                            "comments or string literals are included.",
+                            "Non-text snapshot members only; parsed "
+                            "languages already carry graph edges."]}
