@@ -68,12 +68,13 @@ def _ingest(files):
         dest = work / name
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(text, encoding="utf-8")
+    raws = {name: (work / name).read_bytes() for name in files}
     memory = Memory(str(Path(tmp.name) / "t.sqlite"), str(work))
     memory.ingest()
     _snapshot, view = memory.store.view()
     memory.close()
     tmp.cleanup()
-    return view
+    return view, raws
 
 
 def _edges(view):
@@ -93,7 +94,7 @@ def _producers(view):
 class NotebookTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.view = _ingest(NB_FILES)
+        cls.view, cls.raws = _ingest(NB_FILES)
         cls.edges = _edges(cls.view)
 
     def test_cross_cell_call(self):
@@ -142,7 +143,9 @@ class NotebookTest(unittest.TestCase):
         self.assertEqual(_producers(self.view), {"python-static-v7"})
 
     def test_spans_are_line_granular(self):
-        raw = NB_FILES["nb.ipynb"].replace("\n", "\r\n").encode()
+        # Spans are over the stored file bytes; compare against the
+        # exact bytes written, never a newline-normalized reconstruction.
+        raw = self.raws["nb.ipynb"]
         for a in self.view["assertions"]:
             prop = a["proposition"]
             if prop.get("relation") != "static_call":

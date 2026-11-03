@@ -77,12 +77,13 @@ def _ingest(files):
         dest = work / name
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(text, encoding="utf-8")
+    raws = {name: (work / name).read_bytes() for name in files}
     memory = Memory(str(Path(tmp.name) / "t.sqlite"), str(work))
     memory.ingest()
     _snapshot, view = memory.store.view()
     memory.close()
     tmp.cleanup()
-    return view
+    return view, raws
 
 
 def _edges(view):
@@ -100,11 +101,9 @@ def _producers(view, relation):
 class SchemaRefsTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.view = _ingest(FILES)
+        cls.view, cls.raw = _ingest(FILES)
         cls.symbols = {s["key"]: s for s in cls.view["symbols"]}
         cls.edges = _edges(cls.view)
-        cls.raw = {name: text.replace("\n", "\r\n").encode("utf-8")
-                   for name, text in FILES.items()}
 
     def test_sql_entities(self):
         for key in ("schema.sql::users", "schema.sql::users.org_id",

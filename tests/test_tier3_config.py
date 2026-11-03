@@ -12,6 +12,15 @@ from pathlib import Path
 
 from tunic.memory import Memory
 
+try:
+    import yaml as _yaml
+except ImportError:
+    _yaml = None
+
+YAML_OR_SKIP = unittest.skipUnless(
+    _yaml is not None,
+    "PyYAML not installed (pip install tunic-context[config])")
+
 JSON_DOC = {
     "server": {"host": "db.local", "port": 8080},
     "routes": ["/a", "/b"],
@@ -65,12 +74,13 @@ def _ingest(files):
         dest = work / name
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(text, encoding="utf-8")
+    raws = {name: (work / name).read_bytes() for name in files}
     memory = Memory(str(Path(tmp.name) / "t.sqlite"), str(work))
     memory.ingest()
     _snapshot, view = memory.store.view()
     memory.close()
     tmp.cleanup()
-    return view
+    return view, raws
 
 
 def _edges(view, relation):
@@ -82,10 +92,8 @@ def _edges(view, relation):
 class ConfigTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.view = _ingest(FILES)
+        cls.view, cls.raw = _ingest(FILES)
         cls.symbols = {s["key"]: s for s in cls.view["symbols"]}
-        cls.raw = {name: text.replace("\n", "\r\n").encode("utf-8")
-                   for name, text in FILES.items()}
 
     def test_json_entities(self):
         self.assertEqual(
@@ -120,6 +128,7 @@ class ConfigTest(unittest.TestCase):
         self.assertEqual(edge["producer"], "key_path_v1")
         self.assertEqual(edge["status"], "syntactic_observation")
 
+    @YAML_OR_SKIP
     def test_yaml_entities_and_merge(self):
         self.assertEqual(
             self.symbols["svc.yaml::server.host"]["value"], "yaml.local")
@@ -174,10 +183,15 @@ class ConfigTest(unittest.TestCase):
         self.assertTrue(diags)
 
     def test_symbol_receipt(self):
-        for key in ("app.json::server.host", "svc.yaml::server.host",
+        for key in ("app.json::server.host",
                     "conf.toml::server.port", "app.ini::server.host"):
             self.assertEqual(self.symbols[key]["producer"],
                              "key_path_v1")
+
+    @YAML_OR_SKIP
+    def test_symbol_receipt_yaml(self):
+        self.assertEqual(self.symbols["svc.yaml::server.host"]["producer"],
+                         "key_path_v1")
 
     def test_doc_mentions_config_key(self):
         mentions = [(a["proposition"]["caller"],

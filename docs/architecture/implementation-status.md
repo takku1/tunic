@@ -1,7 +1,7 @@
 # Tunic implementation status (single authoritative tracker)
 
 Date: 2026-11-03. Scope: local reference implementation on `main`.
-Full suite: 921 tests green (merged Tier-2/3/4 plus references v1) (`python -m unittest discover -s tests`, ~80-210 s
+Full suite: 922 tests green (merged Tier-2/3/4 plus references v1) (`python -m unittest discover -s tests`, ~80-210 s
 depending on live-repo ingests; always record command, count, and date).
 MCP tools: 14 (see [mcp.md](mcp.md)). This file is the completion/progress tracker;
 the project front page is [`/docs/STATUS.md`](../STATUS.md) (per binding convention below; that file is not yet committed, so this tracker is the current truth until it lands).

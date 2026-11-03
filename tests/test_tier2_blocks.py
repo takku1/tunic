@@ -11,7 +11,12 @@ import unittest
 from pathlib import Path
 
 from tunic import blocks as block_mod
+from tunic import tsgraph
 from tunic.memory import Memory
+
+TS_OR_SKIP = unittest.skipUnless(
+    tsgraph._HAVE_PARSER,
+    "tree-sitter parser not installed (pip install tunic-context[typescript])")
 
 
 def _ingest(files):
@@ -21,12 +26,13 @@ def _ingest(files):
         dest = work / name
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(text, encoding="utf-8")
+    raws = {name: (work / name).read_bytes() for name in files}
     memory = Memory(str(Path(tmp.name) / "t.sqlite"), str(work))
     memory.ingest()
     _snapshot, view = memory.store.view()
     memory.close()
     tmp.cleanup()
-    return view
+    return view, raws
 
 
 def _edges(view):
@@ -121,27 +127,32 @@ square = (x) -> x * x
 class VueTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.view = _ingest(VUE_FILES)
+        cls.view, cls.raws = _ingest(VUE_FILES)
         cls.edges = _edges(cls.view)
 
+    @TS_OR_SKIP
     def test_r2_into_ts(self):
         self.assertIn(("app/App.vue::run", "app/util.ts::helper"),
                       self.edges)
 
+    @TS_OR_SKIP
     def test_shadowed_param(self):
         self.assertIn("shadowed_name",
                       _reasons(self.view, "app/App.vue::shadow"))
 
+    @TS_OR_SKIP
     def test_same_file_r1(self):
         self.assertIn(("app/App.vue::localOnly", "app/App.vue::run"),
                       self.edges)
 
+    @TS_OR_SKIP
     def test_joined_blocks_share_scope(self):
         self.assertIn(("app/Two.vue::boot", "app/Two.vue::base"),
                       self.edges)
         self.assertIn(("app/Two.vue::boot", "app/run.ts::run"),
                       self.edges)
 
+    @TS_OR_SKIP
     def test_setup_top_level_abstains(self):
         diags = [d for d in self.view["diagnostics"]
                  if d.get("path") == "app/Two.vue"
@@ -149,6 +160,7 @@ class VueTest(unittest.TestCase):
                  and d.get("kind") == "unresolved_call"]
         self.assertTrue(diags)
 
+    @TS_OR_SKIP
     def test_r2_into_vue_abstains(self):
         # tsgraph does not resolve member calls through default
         # imports (unsupported_receiver); the .vue target itself is
@@ -178,10 +190,12 @@ class VueTest(unittest.TestCase):
                  and d.get("kind") == "unsupported_block"]
         self.assertTrue(diags)
 
+    @TS_OR_SKIP
     def test_spans_are_parent_absolute(self):
-        # The store normalizes newlines on write; engine spans are in
-        # stored coordinates.
-        raw = VUE_FILES["app/App.vue"].replace("\n", "\r\n").encode()
+        # Engine spans are parent-absolute over the stored file bytes;
+        # compare against the exact bytes written, never a
+        # newline-normalized reconstruction.
+        raw = self.raws["app/App.vue"]
         script_at = raw.index(b"<script>")
         expect = {("app/App.vue::run", "app/util.ts::helper"): b"helper(1)",
                   ("app/App.vue::localOnly", "app/App.vue::run"): b"run()"}
@@ -195,6 +209,7 @@ class VueTest(unittest.TestCase):
             self.assertGreaterEqual(a["start"], script_at)
             self.assertEqual(raw[a["start"]:a["end"]], expect[key])
 
+    @TS_OR_SKIP
     def test_receipt(self):
         self.assertIn("ts_static_binding_v1", _rules(self.view))
 
@@ -226,20 +241,23 @@ export function load() {
 class SvelteAstroTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.view = _ingest(SVELTE_ASTRO_FILES)
+        cls.view, cls.raws = _ingest(SVELTE_ASTRO_FILES)
         cls.edges = _edges(cls.view)
 
+    @TS_OR_SKIP
     def test_svelte_r2(self):
         self.assertIn(("site/Comp.svelte::run", "site/util.ts::helper"),
                       self.edges)
 
+    @TS_OR_SKIP
     def test_astro_frontmatter(self):
         self.assertIn(("site/page.astro::load", "site/util.ts::helper"),
                       self.edges)
 
+    @TS_OR_SKIP
     def test_astro_span_in_fence(self):
-        raw = SVELTE_ASTRO_FILES["site/page.astro"].replace("\n", "\r\n")
-        fence_end = raw.index("---", 3)
+        raw = self.raws["site/page.astro"]
+        fence_end = raw.index(b"---", 3)
         for a in self.view["assertions"]:
             prop = a["proposition"]
             if prop.get("relation") != "static_call":
@@ -248,6 +266,7 @@ class SvelteAstroTest(unittest.TestCase):
                 continue
             self.assertLess(a["start"], fence_end)
 
+    @TS_OR_SKIP
     def test_receipt(self):
         self.assertIn("ts_static_binding_v1", _rules(self.view))
 
