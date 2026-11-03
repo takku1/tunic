@@ -147,7 +147,13 @@ class InventoryTest(unittest.TestCase):
 
     def test_no_assertions_from_harvested_files(self):
         with tempfile.TemporaryDirectory() as tmp:
-            memory, _report, _ws = _ingest(tmp)
+            work = Path(tmp) / "ws"
+            _build_polyglot(work)
+            (work / "src" / "tool.go").write_text(
+                "package main\n\nfunc helper() int {\n\treturn 1\n}\n",
+                encoding="utf-8")
+            memory = Memory(str(Path(tmp) / "poly.sqlite"), str(work))
+            memory.ingest()
             try:
                 _snapshot, view = memory.store.view()
                 by_id = {a["id"]: a for a in view["assertions"]}
@@ -158,9 +164,17 @@ class InventoryTest(unittest.TestCase):
                 self.assertTrue(harvested)
                 rows = memory.store.connection.execute(
                     "SELECT caller, callee FROM assertions").fetchall()
+                # TypeScript/JavaScript now contributes VERIFIED static-call
+                # edges (ts_static_binding_v1 proof rule); every other
+                # harvested language must stay edge-free.
+                self.assertIn(("src/app.ts::render", "src/util.ts::format"),
+                              [tuple(r) for r in rows])
+                rules = {a["resolution"]["rule"] for a in view["assertions"]}
+                self.assertEqual(rules, {"ts_static_binding_v1"})
+                self.assertIn("src/tool.go::helper", sources)
                 self.assertFalse(
                     [r for r in rows
-                     if ".ts::" in r[0] or ".ts::" in r[1]],
+                     if "tool.go" in r[0] or "tool.go" in r[1]],
                     "harvester invented call edges")
                 self.assertEqual(sources["src/app.ts::render"]
                                  ["derivation"], "heuristic_inventory_v1")

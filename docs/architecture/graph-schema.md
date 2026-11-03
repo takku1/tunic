@@ -32,6 +32,7 @@ edge coordinates (stable across profile bumps).
 | Relation | Caller | Callee | Status | Resolution rule | Traverses |
 | --- | --- | --- | --- | --- | --- |
 | `static_call` | code | code | `syntactic_observation` | `unshadowed_static_binding_v1` | yes |
+| `static_call` | code | code | `syntactic_observation` | `ts_static_binding_v1` | yes |
 | `text_mention` (exact) | document | code | `syntactic_observation` | `exact_key_match_v1` | no |
 | `text_mention` (bare) | document | code | `proposed` / `proposed_ambiguous` | `name_match_proposed_v1` + qualification | no |
 | `depends_on` | doc entity | doc/code entity | `asserted_in_source` | exact or proposed (same rules) | yes |

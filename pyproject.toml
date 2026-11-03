@@ -9,6 +9,9 @@ description = "Source-grounded context graph reference implementation"
 requires-python = ">=3.11"
 dependencies = []
 
+[project.optional-dependencies]
+typescript = ["tree-sitter>=0.26", "tree-sitter-typescript>=0.23"]
+
 [project.scripts]
 tunic = "tunic.__main__:main"
 

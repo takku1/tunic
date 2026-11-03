@@ -11,13 +11,14 @@ import tokenize
 import tomllib
 
 from .identity import digest, identity
+from . import tsgraph
 
 PROFILE = "python-static-v7"
 EXCLUDED = {".git", ".venv", "venv", "__pycache__", ".tunic", ".research", "node_modules"}
 EXCLUDED_BUILD = {"dist", "build", ".astro", ".next", ".nuxt", "coverage", "target",
                   "out", ".output", "vendor", "third_party"}
 TEXT_EXTENSIONS = {".md", ".txt", ".rst"}
-INVENTORY_EXTENSIONS = {".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".astro",
+INVENTORY_EXTENSIONS = {".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs", ".astro",
                         ".vue", ".svelte", ".go", ".rs", ".java", ".c", ".h",
                         ".cpp", ".hpp", ".cc", ".cs", ".rb", ".php", ".swift",
                         ".kt", ".kts", ".scala", ".lua", ".pl", ".r", ".sh",
@@ -478,7 +479,7 @@ def _builtin_method_kind(decorator_list):
 # entry is (pattern, kind, scope_disciplined).
 _TOP = rb"^(?P<indent>[ \t]*)(?P<export>export[ \t]+)?"
 INVENTORY_PATTERNS = (
-    (re.compile(_TOP + rb"(?:async[ \t]+)?function[ \t]+([A-Za-z_$][\w$]*)[ \t]*\(", re.MULTILINE), "function", True),
+    (re.compile(_TOP + rb"(?:async[ \t]+)?function[ \t]*(?:\*[ \t]*)?([A-Za-z_$][\w$]*)[ \t]*\(", re.MULTILINE), "function", True),
     (re.compile(_TOP + rb"(?:abstract[ \t]+)?class[ \t]+([A-Za-z_$][\w$]*)", re.MULTILINE), "class", True),
     (re.compile(_TOP + rb"(?:const|let|var)[ \t]+([A-Za-z_$][\w$]*)[ \t]*[=:]", re.MULTILINE), "function", True),
     (re.compile(_TOP + rb"(?:interface|type|enum)[ \t]+([A-Za-z_$][\w$]*)", re.MULTILINE), "type", True),
@@ -2163,6 +2164,20 @@ def _build_bare_mentions(sources, symbols, assertions, diagnostics, claim_spans,
     return seen_mentions
 
 
+def resolve_ts_edges(sources, symbols, assertions, diagnostics,
+                     fetch=None, known_paths=None):
+    """Resolve verified TypeScript/JavaScript static-call edges.
+
+    Parser-backed (tree-sitter) when the optional dependency is present;
+    without it every TS/JS file yields one unsupported_syntax diagnostic
+    and no edges, never invented ones. fetch/known_paths default to the
+    given records, so full rebuilds pass sources directly while refresh
+    supplies the fresh snapshot.
+    """
+    tsgraph.resolve_ts_sources(sources, symbols, assertions, diagnostics,
+                               fetch=fetch, known_paths=known_paths)
+
+
 def extract(root, exclude=()):
     """Full rebuild: capture, code resolution, then document extraction."""
     sources, diagnostics, modules, excluded = capture(root, exclude)
@@ -2170,5 +2185,6 @@ def extract(root, exclude=()):
     _collect_code(sources, symbols, assertions, diagnostics)
     _resolve_code(sources, modules, symbols, assertions, diagnostics)
     _build_dispatch(sources, modules, symbols, assertions, diagnostics)
+    resolve_ts_edges(sources, symbols, assertions, diagnostics)
     _build_docs(sources, symbols, assertions, diagnostics)
     return sources, sorted(symbols.values(), key=lambda x:x["key"]), sorted(assertions, key=lambda x:x["id"]), sorted(diagnostics, key=lambda x: (x["path"], x.get("line") or 0, x["kind"], x.get("start", 0))), excluded
