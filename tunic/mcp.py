@@ -84,6 +84,19 @@ def tool_schemas():
                              "policy": {"type": "string"},
                              "max_depth": {"type": "integer"},
                              "max_nodes": {"type": "integer"}}}},
+        {"name": "references",
+         "description": "Textual identifier occurrences in non-parsed source "
+                        "files (e.g. .astro): investigation leads, NOT "
+                        "verified call edges. Use related/callees for proof.",
+         "inputSchema": {"type": "object",
+                         "required": ["symbol"],
+                         "properties": {
+                             "symbol": {"type": "string"},
+                             "extensions": {"type": "array",
+                                            "items": {"type": "string"}},
+                             "limit": {"type": "integer"},
+                             "max_bytes": {"type": "integer"},
+                             "max_files": {"type": "integer"}}}},
         {"name": "callees",
          "description": "Forward-call traversal for one exact path::symbol key: direct, bounded reachable, and candidate callees plus cold receipts.",
          "inputSchema": {"type": "object",
@@ -218,6 +231,21 @@ def handle_call(memory, name, args):
         return compile_callees(memory.store, _need(args, "symbol", str),
                                policy=_policy(args),
                                max_depth=depth, max_nodes=nodes)
+    if name == "references":
+        symbol = _need(args, "symbol", str)
+        kwargs = {}
+        if args.get("extensions") is not None:
+            exts = args.get("extensions")
+            if (not isinstance(exts, list)
+                    or not all(isinstance(item, str) for item in exts)):
+                _fail("tool argument 'extensions' must be a list of strings")
+            kwargs["extensions"] = exts
+        kwargs["limit"] = _optional(args, "limit", int, 20)
+        for field in ("max_bytes", "max_files"):
+            value = _optional(args, field, int)
+            if value is not None:
+                kwargs[field] = value
+        return memory.references(symbol, **kwargs)
     if name == "timeline":
         return compile_timeline(memory.store, _need(args, "symbol", str),
                                 at=_optional(args, "at", str))

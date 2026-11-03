@@ -925,20 +925,76 @@ def validate_artifact(store, artifact, *, expected_snapshot=None):
         return {"valid": False, "error": str(error)}
 
 
-def compile_references(store, symbol, *, snapshot=None, view=None,
-                       extensions=(".astro",), limit=20):
-    """Textual identifier occurrences in unsupported source languages.
+def _reference_int(name, value, minimum, maximum):
+    """Strict integer gate: bools are not integers here."""
+    if isinstance(value, bool) or not isinstance(value, int):
+        raise ValueError("%s must be an integer" % (name,))
+    if not minimum <= value <= maximum:
+        raise ValueError("%s must be in [%d, %d]" % (name, minimum, maximum))
+    return value
 
-    Prototype for cross-language reference discovery: scans the raw
-    bytes of non-text snapshot-member sources (e.g. .astro templates
-    Tunic cannot parse) for exact identifier-boundary matches. Every
-    row is a ``textual_reference`` with path and byte-exact span; no
-    row is a call edge and nothing here writes to the graph. Deliberately
-    outside the default retrieval path: callers opt in per question and
-    the result carries its own truncation receipt.
+
+_REFERENCE_RESULT_LIMIT = 200
+_REFERENCE_SCAN_BYTES = 4_000_000
+_REFERENCE_SCAN_FILES = 5_000
+
+
+def _reference_extensions(requested):
+    """Validate the extension allowlist; returns a normalized sorted list.
+
+    Unsupported extensions raise loudly instead of silently matching
+    nothing: an empty result must mean "no occurrences", never "the
+    question was quietly dropped".
+    """
+    from .extract import INVENTORY_EXTENSIONS
+    if isinstance(requested, str) or not isinstance(requested,
+                                                    (list, tuple)):
+        raise ValueError("extensions must be a list of dotted extensions")
+    if not requested:
+        raise ValueError("extensions must name at least one extension")
+    normalized = []
+    for entry in requested:
+        if not isinstance(entry, str) or not entry.startswith("."):
+            raise ValueError("extensions must be dotted names like "
+                             "'.astro', got %r" % (entry,))
+        lowered = entry.lower()
+        if lowered not in INVENTORY_EXTENSIONS:
+            raise ValueError("unsupported extension %r (supported: %s)"
+                             % (entry,
+                                ", ".join(sorted(INVENTORY_EXTENSIONS))))
+        normalized.append(lowered)
+    return sorted(set(normalized))
+
+
+def compile_references(store, symbol, *, snapshot=None, view=None,
+                       extensions=(".astro",), limit=20,
+                       max_bytes=_REFERENCE_SCAN_BYTES,
+                       max_files=_REFERENCE_SCAN_FILES):
+    """Textual identifier occurrences in non-parsed source languages.
+
+    Investigation primitive for the "where else should I look?" question:
+    scans the raw bytes of snapshot-member sources with allowlisted
+    extensions (e.g. .astro templates Tunic cannot parse) for exact
+    identifier-boundary matches. Every row is a ``textual_reference``
+    with path, byte-exact span, line, source digest, and one line of
+    context; no row is a call edge and nothing here writes to the graph.
+    Deliberately outside the default retrieval path: callers opt in per
+    question and the result carries its own truncation receipt.
+
+    Matching is Unicode-aware (``str`` pattern over decoded text, so a
+    non-ASCII letter next to the name still counts as a boundary) with
+    ``$`` treated as an identifier character. Files that do not decode
+    as UTF-8 are skipped and counted, never silently dropped: see
+    ``skipped_undecodable``. The scan stops early when ``max_bytes`` or
+    ``max_files`` would be exceeded; then ``complete`` is false and
+    ``total`` is None, because a truncated scan must never report an
+    exact count. ``total`` is exact only when ``complete`` is true.
     """
     from pathlib import PurePosixPath
-    from .extract import INVENTORY_EXTENSIONS
+    limit = _reference_int("limit", limit, 1, _REFERENCE_RESULT_LIMIT)
+    max_bytes = _reference_int("max_bytes", max_bytes, 1, 64 * 1024 * 1024)
+    max_files = _reference_int("max_files", max_files, 1, 100_000)
+    wanted = _reference_extensions(extensions)
     if view is None:
         snapshot, view = store.view(snapshot)
     symbols = {s["key"]: s for s in view["symbols"]}
@@ -949,47 +1005,65 @@ def compile_references(store, symbol, *, snapshot=None, view=None,
         if len(cands) != 1:
             raise ValueError("unknown or ambiguous symbol: " + symbol)
         key = cands[0]
-    name = key.split("::")[-1].encode("utf-8")
-    pattern = re.compile(rb"(?<![\w$])" + name + rb"(?![\w$])")
-    wanted = {e.lower() for e in (extensions or ())
-              if e.lower() in INVENTORY_EXTENSIONS}
+    uname = key.split("::")[-1]
+    pattern = re.compile(r"(?<![\w$])" + re.escape(uname) + r"(?![\w$])")
+    name_bytes = uname.encode("utf-8")
     rows = store.connection.execute(
-        """SELECT s.path, s.data FROM sources s
+        """SELECT s.path, s.data, s.digest FROM sources s
            JOIN members m ON m.source=s.id WHERE m.snapshot=?""",
         (snapshot,)).fetchall()
     found = []
-    for path, blob in sorted(rows, key=lambda r: r[0]):
+    scanned_files = 0
+    scanned_bytes = 0
+    skipped_undecodable = 0
+    complete = True
+    for path, blob, source_digest in sorted(rows, key=lambda r: r[0]):
         if PurePosixPath(path).suffix.lower() not in wanted:
             continue
         data = bytes(blob)
+        if (scanned_files >= max_files
+                or scanned_bytes + len(data) > max_bytes):
+            complete = False
+            break
+        scanned_files += 1
+        scanned_bytes += len(data)
         try:
             text = data.decode("utf-8")
         except UnicodeDecodeError:
+            skipped_undecodable += 1
             continue
-        if name.decode("utf-8", "replace") not in text:
+        if uname not in text:
             continue
-        for match in pattern.finditer(data):
-            start = int(match.start())
-            line = data.count(b"\n", 0, start) + 1
-            streak = data.rfind(b"\n", 0, start) + 1
-            stop = data.find(b"\n", start)
-            context = data[streak:stop if stop != -1 else len(data)]
+        for match in pattern.finditer(text):
+            char = match.start()
+            start = len(text[:char].encode("utf-8"))
+            line = text.count("\n", 0, char) + 1
+            streak = text.rfind("\n", 0, char) + 1
+            stop = text.find("\n", char)
+            context = text[streak:stop if stop != -1 else len(text)]
             found.append({"path": path, "start": start,
-                          "end": int(match.end()), "line": line,
-                          "context": context.decode("utf-8", "replace"
-                                                    ).strip()[:200],
+                          "end": start + len(name_bytes), "line": line,
+                          "context": context.strip()[:200],
+                          "digest": source_digest,
                           "kind": "textual_reference"})
     found.sort(key=lambda r: (r["path"], r["start"]))
-    total = len(found)
-    return {"symbol": key, "name": key.split("::")[-1], "snapshot": snapshot,
-            "kind": "textual_reference", "extensions": sorted(wanted),
-            "limit": int(limit), "total": total,
-            "truncated": total > int(limit),
-            "references": found[:int(limit)],
+    total = len(found) if complete else None
+    return {"symbol": key, "name": uname, "snapshot": snapshot,
+            "kind": "textual_reference", "extensions": wanted,
+            "limit": limit, "total": total, "complete": complete,
+            "truncated": (not complete) or total > limit,
+            "references": found[:limit],
+            "scanned_files": scanned_files,
+            "scanned_bytes": scanned_bytes,
+            "skipped_undecodable": skipped_undecodable,
+            "budgets": {"max_bytes": max_bytes, "max_files": max_files},
             "limitations": ["Textual identifier occurrences only; no row "
                             "is a verified call edge.",
                             "Exact identifier boundaries; matches inside "
                             "longer names are excluded, matches inside "
                             "comments or string literals are included.",
-                            "Non-text snapshot members only; parsed "
-                            "languages already carry graph edges."]}
+                            "Parsed languages already carry graph edges; "
+                            "textual matches there would double-count "
+                            "proven relationships.",
+                            "total is exact only when complete is true; a "
+                            "work-budget stop never reports an exact count."]}
