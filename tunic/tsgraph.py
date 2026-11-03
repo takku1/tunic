@@ -1219,14 +1219,31 @@ def ts_import_targets(path, data, known_paths):
 
 
 def ts_affected_paths(touched, fresh):
-    """Touched TS files plus their transitive importers within fresh."""
+    """Touched TS files plus their transitive importers within fresh.
+
+    Importers of deleted targets are included: resolution runs
+    against known+touched paths so a lexical target that vanished
+    from fresh still matches, and the importer re-resolves instead
+    of keeping a stale row.
+    """
     known = {p for p in fresh if is_ts_path(p)}
+    touched_set = set(touched)
+    superset = known | touched_set
     reverse = {}
-    for path in known:
-        for target in ts_import_targets(path, fresh[path]["data"], known):
-            reverse.setdefault(target, set()).add(path)
     out = set(touched) & known
-    queue = list(touched)
+    for path in known:
+        module, _errors = scan_module(path, fresh[path]["data"],
+                                      _suffix_of(path))
+        for entry in module["imports"].values():
+            target = resolve_specifier(entry.get("specifier"), path,
+                                       superset)
+            if target is None:
+                continue
+            if target in known:
+                reverse.setdefault(target, set()).add(path)
+            if target in touched_set and path not in out:
+                out.add(path)
+    queue = list(out)
     while queue:
         current = queue.pop()
         for importer in reverse.get(current, ()):

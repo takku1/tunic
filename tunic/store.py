@@ -5,8 +5,9 @@ import json
 from pathlib import Path
 import sqlite3
 
-from .extract import DOC_PHASE_KINDS, STRUCTURE_KINDS, TEXT_EXTENSIONS, _build_bare_mentions, _build_claims, _build_dispatch, _build_docs, _build_exact_mentions, _build_mentions, _claim_mention_refs, _code_leaf_names, _collect_code, _exact_mention_refs, _leaf_document_frequency, _requalify, _resolve_code, _scan, extract, module_of, parse_source, resolve_ts_edges, PROFILE
+from .extract import DOC_PHASE_KINDS, STRUCTURE_KINDS, TEXT_EXTENSIONS, _build_bare_mentions, _build_claims, _build_dispatch, _build_docs, _build_exact_mentions, _build_mentions, _claim_mention_refs, _code_leaf_names, _collect_code, _exact_mention_refs, _leaf_document_frequency, _requalify, _resolve_code, _scan, extract, module_of, parse_source, resolve_ts_edges, resolve_unigraph_edges, PROFILE
 from . import tsgraph
+from . import unigraph
 from .identity import canonical, digest, identity
 
 SCHEMA = """
@@ -476,6 +477,7 @@ class GraphStore:
             manifest, touched_set, stored)
         affected |= {p for p in dispatch_extra if p in fresh}
         affected |= tsgraph.ts_affected_paths(touched, fresh)
+        affected |= unigraph.affected_paths(touched, fresh)
         parse_paths = sorted(p for p in affected if p in fresh)
         records, parse_diagnostics, unparsed = {}, [], []
         for path in parse_paths:
@@ -566,6 +568,9 @@ class GraphStore:
         resolve_ts_edges(code_sources, symbols, resolve_assertions,
                          resolve_diags, fetch=fetch,
                          known_paths=set(fresh))
+        resolve_unigraph_edges(code_sources, symbols, resolve_assertions,
+                                 resolve_diags, fetch=fetch,
+                                 known_paths=set(fresh))
         rows = {row[0]: row[1] for row in self.connection.execute(
             """SELECT s.id, s.path FROM sources s
                JOIN members m ON m.source=s.id WHERE m.snapshot=?""", (current,))}
@@ -583,7 +588,8 @@ class GraphStore:
         for key in old_keys | new_keys:
             changed_terms.add(key.split("::")[-1].split(".")[-1])
         for key, symbol in symbols.items():
-            if (tsgraph.is_ts_path(symbol.get("path", ""))
+            if ((tsgraph.is_ts_path(symbol.get("path", ""))
+                    or unigraph.is_unigraph_path(symbol.get("path", "")))
                     and symbol.get("path") in affected):
                 changed_terms.add(key.split("::")[-1].split(".")[-1])
         reprocess = {p for p in touched if p in fresh

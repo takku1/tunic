@@ -11,6 +11,7 @@ dependencies = []
 
 [project.optional-dependencies]
 typescript = ["tree-sitter>=0.26", "tree-sitter-typescript>=0.23"]
+go = ["tree-sitter>=0.26", "tree-sitter-go>=0.25"]
 
 [project.scripts]
 tunic = "tunic.__main__:main"

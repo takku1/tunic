@@ -12,6 +12,7 @@ import tomllib
 
 from .identity import digest, identity
 from . import tsgraph
+from . import unigraph
 
 PROFILE = "python-static-v7"
 EXCLUDED = {".git", ".venv", "venv", "__pycache__", ".tunic", ".research", "node_modules"}
@@ -23,8 +24,42 @@ INVENTORY_EXTENSIONS = {".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".
                         ".cpp", ".hpp", ".cc", ".cs", ".rb", ".php", ".swift",
                         ".kt", ".kts", ".scala", ".lua", ".pl", ".r", ".sh",
                         ".bash", ".ps1"}
-CLAIM_RELATIONS = {"depends_on", "implements", "supersedes", "decided_by", "contradicts",
+CLAIM_RELATIONS = {"depends_on", "implements", "supersedes", "decided_by", "contradicts", "same_as",
                    "corrects", "retracts"}
+RELATION_SIGNATURES = {
+    # Allowed (caller-kind, callee-kind) endpoint pairs per relation.
+    # depends_on deliberately spans document->code: prose cites the
+    # code it documents (provenance), and code cites code. Only the
+    # backwards direction (code depending on prose) is rejected.
+    # Meta relations (supersedes, contradicts, corrects, retracts,
+    # decided_by) span both by design and stay unconstrained.
+    "depends_on": ({"code", "document"}, {"code"}),
+    "implements": ({"code"}, {"code"}),
+    "same_as": ({"code", "document"}, {"code", "document"}),
+}
+
+
+def _endpoint_kind(key):
+    return "document" if key.endswith("::document") else "code"
+
+
+def check_relation_signature(relation, caller, callee):
+    """True when (relation, caller, callee) satisfies the signature table.
+
+    same_as additionally requires same-kind endpoints (code-code or
+    document-document). Unlisted relations (the meta set) accept any
+    endpoint kinds.
+    """
+    if relation == "same_as":
+        return _endpoint_kind(caller) == _endpoint_kind(callee)
+    allowed = RELATION_SIGNATURES.get(relation)
+    if allowed is None:
+        return True
+    callers, callees = allowed
+    return _endpoint_kind(caller) in callers \
+        and _endpoint_kind(callee) in callees
+
+
 TRAVERSABLE_CLAIMS = {"depends_on", "implements"}
 # Relations a retracts claim may target: asserted relationships only.
 # Observations (static_call, text_mention) vanish when their source
@@ -1716,6 +1751,11 @@ def _build_claims(sources, symbols, assertions, diagnostics, text_ids=None):
                                 diagnostics.append({"path": s["path"], "line": fence_line,
                                                     "kind": "invalid_effective", "expression": expression})
                         if s_kind == "exact" and o_kind == "exact":
+                            if not check_relation_signature(rel, s_candidates[0], o_candidates[0]):
+                                diagnostics.append({"path": s["path"], "line": fence_line,
+                                                    "kind": "relation_signature",
+                                                    "expression": expression})
+                                continue
                             proposition = {"relation": rel, "caller": s_candidates[0], "callee": o_candidates[0]}
                             if rel == "retracts":
                                 proposition["retract"] = retract_target
@@ -2178,6 +2218,21 @@ def resolve_ts_edges(sources, symbols, assertions, diagnostics,
                                fetch=fetch, known_paths=known_paths)
 
 
+def resolve_unigraph_edges(sources, symbols, assertions, diagnostics,
+                           fetch=None, known_paths=None):
+    """Resolve verified static-call edges for spec-covered languages.
+
+    Parser-backed (tree-sitter) when the optional grammar is installed;
+    without it every covered file yields one unsupported_syntax
+    diagnostic and no edges, never invented ones. fetch/known_paths
+    default to the given records, so full rebuilds pass sources
+    directly while refresh supplies the fresh snapshot.
+    """
+    unigraph.resolve_unigraph_sources(sources, symbols, assertions,
+                                      diagnostics, fetch=fetch,
+                                      known_paths=known_paths)
+
+
 def extract(root, exclude=()):
     """Full rebuild: capture, code resolution, then document extraction."""
     sources, diagnostics, modules, excluded = capture(root, exclude)
@@ -2186,5 +2241,6 @@ def extract(root, exclude=()):
     _resolve_code(sources, modules, symbols, assertions, diagnostics)
     _build_dispatch(sources, modules, symbols, assertions, diagnostics)
     resolve_ts_edges(sources, symbols, assertions, diagnostics)
+    resolve_unigraph_edges(sources, symbols, assertions, diagnostics)
     _build_docs(sources, symbols, assertions, diagnostics)
     return sources, sorted(symbols.values(), key=lambda x:x["key"]), sorted(assertions, key=lambda x:x["id"]), sorted(diagnostics, key=lambda x: (x["path"], x.get("line") or 0, x["kind"], x.get("start", 0))), excluded
