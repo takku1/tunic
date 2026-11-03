@@ -486,6 +486,26 @@ class TsRobustnessTest(unittest.TestCase):
             finally:
                 memory.close()
 
+    def test_undecodable_bytes_never_crash_nor_edge(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            work = Path(tmp) / "ws"
+            (work / "src").mkdir(parents=True, exist_ok=True)
+            (work / "src" / "ok.ts").write_text(
+                "export function fine(): number {\n  return 1;\n}\n",
+                encoding="utf-8")
+            (work / "src" / "bad-bytes.ts").write_bytes(
+                b"export function broken(): number {\n  return \xff\xfe;\n}\n")
+            memory = Memory(str(Path(tmp) / "ts3.sqlite"), str(work))
+            memory.ingest()
+            try:
+                _snapshot, view = memory.store.view()
+                edges = _edges(view)
+                self.assertFalse([e for e in edges
+                                  if "bad-bytes" in e[0]
+                                  or "bad-bytes" in e[1]])
+            finally:
+                memory.close()
+
 
 REFRESH_V1 = {
     "src/a.ts": """export function f(x: number): number {
@@ -530,6 +550,77 @@ class TsRefreshTest(unittest.TestCase):
                 _snapshot, view = memory.store.view()
                 self.assertIn(("src/b.ts::h", "src/a.ts::g"),
                               _edges(view))
+            finally:
+                memory.close()
+
+    def test_refresh_matches_rebuild_after_export_rename(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            memory = _ingest_files(tmp, REFRESH_V1)
+            try:
+                work = Path(tmp) / "ws"
+                (work / "src" / "a.ts").write_text(
+                    REFRESH_V1["src/a.ts"].replace(
+                        "export function g(x: number): number {",
+                        "export function g2(x: number): number {"),
+                    encoding="utf-8")
+                report = memory.refresh()
+                snap, view2 = self._oracle_view(tmp, "rename")
+                self.assertEqual(report["snapshot"], snap)
+                self.assertEqual(memory.store.view()[1], view2)
+                _snapshot, view = memory.store.view()
+                self.assertNotIn(("src/b.ts::h", "src/a.ts::g"),
+                                 _edges(view))
+                missing = [d for d in _diags(view, "unresolved_call")
+                           if d.get("caller") == "src/b.ts::h"]
+                self.assertTrue(
+                    [d for d in missing
+                     if d.get("reason") == "unresolved_import"])
+            finally:
+                memory.close()
+
+    def test_refresh_matches_rebuild_after_shadow_added(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            memory = _ingest_files(tmp, REFRESH_V1)
+            try:
+                work = Path(tmp) / "ws"
+                (work / "src" / "b.ts").write_text(
+                    """import { g } from "./a";
+export function h(g: (x: number) => number): number {
+  return g(1);
+}
+""",
+                    encoding="utf-8")
+                report = memory.refresh()
+                snap, view2 = self._oracle_view(tmp, "shadow")
+                self.assertEqual(report["snapshot"], snap)
+                self.assertEqual(memory.store.view()[1], view2)
+                _snapshot, view = memory.store.view()
+                self.assertNotIn(("src/b.ts::h", "src/a.ts::g"),
+                                 _edges(view))
+                self.assertTrue(
+                    [d for d in _diags(view, "unresolved_call")
+                     if d.get("caller") == "src/b.ts::h"
+                     and d.get("reason") == "shadowed_name"])
+            finally:
+                memory.close()
+
+    def test_refresh_matches_rebuild_after_target_removed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            memory = _ingest_files(tmp, REFRESH_V1)
+            try:
+                work = Path(tmp) / "ws"
+                (work / "src" / "a.ts").unlink()
+                report = memory.refresh()
+                snap, view2 = self._oracle_view(tmp, "removed")
+                self.assertEqual(report["snapshot"], snap)
+                self.assertEqual(memory.store.view()[1], view2)
+                _snapshot, view = memory.store.view()
+                self.assertNotIn(("src/b.ts::h", "src/a.ts::g"),
+                                 _edges(view))
+                self.assertTrue(
+                    [d for d in _diags(view, "unresolved_call")
+                     if d.get("caller") == "src/b.ts::h"
+                     and d.get("reason") == "unresolved_import"])
             finally:
                 memory.close()
 

@@ -16,3 +16,20 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: full suite (stdlib only, no services)
         run: python -m unittest discover -s tests
+  suite-typescript:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.12"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: install optional parser dependency
+        run: pip install .[typescript]
+      - name: full suite (parser enabled)
+        run: python -m unittest discover -s tests
+      - name: fail if parser-dependent tests skipped
+        run: python -c "import subprocess, sys; r = subprocess.run([sys.executable, '-m', 'unittest', 'tests.test_ts_call_edges', '-v'], capture_output=True, text=True); out = r.stdout + r.stderr; print(out); assert r.returncode == 0, 'TS suite failed'; assert 'skipped' not in out.lower(), 'parser tests skipped in parser-enabled job'"
