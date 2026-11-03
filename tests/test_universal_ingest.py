@@ -11,6 +11,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from tunic import tsgraph
 from tunic.memory import Memory
 
 APP_TS = """import { format } from "./util";
@@ -164,13 +165,20 @@ class InventoryTest(unittest.TestCase):
                 self.assertTrue(harvested)
                 rows = memory.store.connection.execute(
                     "SELECT caller, callee FROM assertions").fetchall()
-                # TypeScript/JavaScript now contributes VERIFIED static-call
-                # edges (ts_static_binding_v1 proof rule); every other
-                # harvested language must stay edge-free.
-                self.assertIn(("src/app.ts::render", "src/util.ts::format"),
-                              [tuple(r) for r in rows])
-                rules = {a["resolution"]["rule"] for a in view["assertions"]}
-                self.assertEqual(rules, {"ts_static_binding_v1"})
+                # TypeScript/JavaScript contributes VERIFIED static-call
+                # edges (ts_static_binding_v1 proof rule) when the optional
+                # parser is present; without it the old edge-free behavior
+                # holds. Every other harvested language stays edge-free.
+                if tsgraph._HAVE_PARSER:
+                    self.assertIn(("src/app.ts::render", "src/util.ts::format"),
+                                  [tuple(r) for r in rows])
+                    rules = {a["resolution"]["rule"] for a in view["assertions"]}
+                    self.assertEqual(rules, {"ts_static_binding_v1"})
+                else:
+                    self.assertFalse(
+                        [r for r in rows
+                         if ".ts::" in r[0] or ".ts::" in r[1]],
+                        "harvester invented call edges")
                 self.assertIn("src/tool.go::helper", sources)
                 self.assertFalse(
                     [r for r in rows
