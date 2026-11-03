@@ -135,7 +135,7 @@ negative and a frozen-artifact-untouched guard.
 Ran 2026-11-02 against a throwaway DB ingesting `tunic/` (18 sources,
 198 symbols). All through `tools/call`:
 
-1. `tools/list` → 13 tools (retrieve, related, impact, callees, timeline, review, note, candidates, acquire, correct, frontier, promote, refresh).
+1. `tools/list` → 13 tools at the time (retrieve, related, impact, callees, timeline, review, note, candidates, acquire, correct, frontier, promote, refresh); now 14 with read-only `references` (see [mcp.md](mcp.md)).
 2. `retrieve("which functions expand container classes")` → real
    evidence (`extract.py::_code_targets`, …); `related` on
    `memory.py::_container_of` → no static callers (true: it is only
