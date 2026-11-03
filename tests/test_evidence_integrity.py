@@ -28,6 +28,8 @@ FILES = {
     "cfg.json": '{"server": {"host": "db.local"}, "$ref": "cfg.json#/server/host"}',
     "s.sql": ("CREATE TABLE orgs (id INTEGER PRIMARY KEY);\n"
               "CREATE TABLE users (org_id INT REFERENCES orgs(id));\n"),
+    "notes.md": ("# Field notes\n\nThe host field matters here.\n"
+                 "See `server.host` for the canonical value.\n"),
 }
 
 
@@ -245,6 +247,28 @@ class EvidenceIntegrityTest(unittest.TestCase):
                 kinds = {u["kind"] for u in impact["units"]}
                 self.assertTrue(kinds)
                 self.assertEqual(kinds, {"static_call_observation"})
+            finally:
+                memory.close()
+
+    def test_bare_data_label_without_signals_not_filed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            memory, _ = _ingest(tmp)
+            try:
+                _, view = memory.store.view()
+                cands = [d for d in view["diagnostics"]
+                         if d.get("kind") == "mention_candidate"
+                         and d.get("expression") == "host"
+                         and d.get("callee", "").startswith("cfg.json")]
+                self.assertFalse(
+                    cands,
+                    "bare data-label word with no signals is not a lead")
+                mentions = [
+                    a for a in view["assertions"]
+                    if a["proposition"].get("relation") == "text_mention"
+                    and a["proposition"].get("callee")
+                    == "cfg.json::server.host"]
+                self.assertEqual(len(mentions), 1)
+                self.assertEqual(mentions[0]["status"], "proposed")
             finally:
                 memory.close()
 

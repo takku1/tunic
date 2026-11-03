@@ -2208,12 +2208,18 @@ def _build_bare_mentions(sources, symbols, assertions, diagnostics, claim_spans,
                                           or "module_path_context" in signals
                                           or "inventory_list" in signals)))
                     if not qualified:
-                        if (not signals and symbols[key].get("derivation")
-                                == "heuristic_inventory_v1"):
+                        if (not signals
+                                and (symbols[key].get("derivation")
+                                     == "heuristic_inventory_v1"
+                                     or _endpoint_kind(key) in
+                                     ("config", "schema"))):
                             # A bare common word with no corroborating
                             # signal is not an investigation lead; filing
                             # it drowns review in noise. The leaf stays
-                            # searchable through the lexical stage.
+                            # searchable through the lexical stage. The
+                            # data-label half covers Tier-3/4 key-path
+                            # entities (a prose "type" is not evidence
+                            # about sbom component 193's type field).
                             continue
                         diagnostics.append({"path": s["path"], "line": lineno,
                                             "kind": "mention_candidate",
