@@ -1,0 +1,61 @@
+{
+ "generator": "derive-v1",
+ "grammar": "tree-sitter-rust v0.24.2",
+ "language": "rust",
+ "mapping": {
+  "call_types": [
+   "call_expression"
+  ],
+  "class_types": [
+   "enum_item",
+   "struct_item",
+   "trait_item",
+   "union_item"
+  ],
+  "ctor_types": [],
+  "def_types": [
+   "function_item"
+  ],
+  "func_literal_types": [
+   "closure_expression"
+  ],
+  "import_types": [
+   "mod_item",
+   "use_declaration"
+  ]
+ },
+ "reviewed_overrides": {
+  "add": {
+   "import_types": [
+    "mod_item"
+   ]
+  },
+  "grammar": "tree-sitter-rust v0.24.2",
+  "notes": [
+   "mod_item as import mechanism (external `mod foo;`) has no syntactic marker; rejected as a generic rule after the optional-body variant over-fired on enum_variant/struct_item"
+  ],
+  "trim": {
+   "call_types": [
+    "attribute"
+   ],
+   "class_types": [
+    "struct_expression"
+   ],
+   "ctor_types": [],
+   "def_types": [
+    "enum_item",
+    "enum_variant",
+    "function_signature_item",
+    "mod_item",
+    "struct_expression",
+    "struct_item",
+    "trait_item",
+    "union_item"
+   ],
+   "func_literal_types": [
+    "closure_parameters"
+   ],
+   "import_types": []
+  }
+ }
+}

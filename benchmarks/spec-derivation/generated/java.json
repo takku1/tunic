@@ -1,0 +1,63 @@
+{
+ "generator": "derive-v1",
+ "grammar": "tree-sitter-java v0.23.5",
+ "language": "java",
+ "mapping": {
+  "call_types": [
+   "method_invocation"
+  ],
+  "class_types": [
+   "class_declaration",
+   "enum_declaration",
+   "interface_declaration",
+   "record_declaration"
+  ],
+  "ctor_types": [
+   "object_creation_expression"
+  ],
+  "def_types": [
+   "constructor_declaration",
+   "method_declaration"
+  ],
+  "func_literal_types": [
+   "lambda_expression"
+  ],
+  "import_types": [
+   "import_declaration"
+  ]
+ },
+ "reviewed_overrides": {
+  "add": {},
+  "grammar": "tree-sitter-java v0.23.5",
+  "trim": {
+   "call_types": [
+    "annotation",
+    "enum_constant"
+   ],
+   "class_types": [
+    "compact_constructor_declaration",
+    "constructor_declaration",
+    "module_declaration"
+   ],
+   "ctor_types": [
+    "compact_constructor_declaration",
+    "constructor_declaration",
+    "explicit_constructor_invocation"
+   ],
+   "def_types": [
+    "annotation_type_declaration",
+    "annotation_type_element_declaration",
+    "class_declaration",
+    "compact_constructor_declaration",
+    "enhanced_for_statement",
+    "enum_constant",
+    "enum_declaration",
+    "interface_declaration",
+    "module_declaration",
+    "record_declaration"
+   ],
+   "func_literal_types": [],
+   "import_types": []
+  }
+ }
+}
