@@ -11,9 +11,12 @@ with sensitivity passes, `triage` CLI; see "Triage" below).
 Demonstrated: S2
 open→resolved cycle, PyQuifer avalanche `retrieval_miss` closure with an
 exported regression case (`benchmarks/frontier/closures/`). Zero-config
-`tunic <path>` ingest implemented (v1.3, spec below). Pending:
-investigation scheduling, triage ranking validated against a second
-real-repo closure.
+`tunic <path>` ingest implemented (v1.3, spec below). Pending: scheduler v1 implemented (see v2 milestone below: ranked clusters become
+persisted jobs with budgets, resume, and proof-backed resolves). Triage ranking has
+since selected real closures on two real repositories (PyQuifer attribute-dispatch
+and constructors, plus the avalanche rank-1 closure). Remaining, see Later below:
+MochiOS-invoked scheduling (no integration yet), procedural learning records, and
+sandboxed system-improvement proposals.
 Motivation: the v4 acquisition benchmark (S2, 0/6 commits on every
 protocol) proved models will not synthesize an edge through registry
 indirection even with the evidence in context, and probes of real

@@ -39,4 +39,4 @@ The example CLI run ingested four source files and five symbols with two static-
 
 ## Blockers and limits
 
-No blocker for this profile. Remaining gaps are dynamic dispatch, inherited/decorated methods, full natural-language claim extraction, unique-name proposal confirmation workflow, authority-ranked conflict resolution, backdated corrections, broader W1 coverage, retrieval selectivity (dense baseline executed; F1 still trails BM25), and the specified-but-unimplemented evidence selection layer.
+No blocker for this profile. Remaining gaps are dynamic dispatch, inherited/decorated methods, full natural-language claim extraction, unique-name proposal confirmation workflow, authority-ranked conflict resolution, backdated corrections, broader W1 coverage, retrieval selectivity (dense baseline executed; F1 still trails BM25), and the evidence selection layer (implemented as opt-in `select=True`, default on since 2026-11-02; see [evidence selection](evidence-selection.md)).

@@ -1,6 +1,6 @@
 # Tunic evaluation and research plan
 
-Status: proposed comparative experiments. No V/G/T baseline measurements have been collected. Separate [local continuation smoke results](continuation-results.md) record integration checks and exploratory model traces.
+Status: proposed comparative experiments. No V/G/T head-to-head comparison has been run. Collected instead: Arena v2 frozen runs, ACQ v1/v2 memory benchmarks, selection acceptance and pilot runs, cross-session reuse and lifecycle benchmarks, and local continuation smoke results (see [implementation status](../architecture/implementation-status.md) and [continuation results](continuation-results.md), which record integration checks and exploratory model traces.
 
 The [three-workload protocol](workloads.md) specifies the next comparison: conventional vector RAG, graph retrieval, and Tunic's graph-plus-typed-compiler path. It owns workload definitions and arm controls; this document supplies broader evaluation guidance.
 

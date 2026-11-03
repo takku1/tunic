@@ -380,6 +380,24 @@ class McpReviewHardeningTests(unittest.TestCase):
             response = self.call("retrieve", args)
             self.assertTrue(response["result"]["isError"], msg=repr(args))
 
+    def test_retrieve_accepts_graph_budget_and_mmr(self):
+        result = json.loads(self.call(
+            "retrieve", {"task": "what breaks if start changes",
+                         "budget": {"graph": 3},
+                         "mmr_lambda": 0.7})["result"]["content"][0]["text"])
+        self.assertEqual(result["mmr"], {"lambda": 0.7, "applied": True})
+        self.assertIn("graph", result["stages"])
+        self.assertFalse(result["stages"]["graph"]["skipped"])
+
+    def test_retrieve_rejects_bad_graph_and_mmr_arguments(self):
+        for args in ({"task": "x", "budget": [1]},
+                     {"task": "x", "budget": "graph"},
+                     {"task": "x", "mmr_lambda": -0.1},
+                     {"task": "x", "mmr_lambda": 1.5},
+                     {"task": "x", "mmr_lambda": "high"}):
+            response = self.call("retrieve", args)
+            self.assertTrue(response["result"]["isError"], msg=repr(args))
+
     def test_frontier_limit_bounds_unfiltered_ledger(self):
         full = json.loads(self.call(
             "frontier", {})["result"]["content"][0]["text"])

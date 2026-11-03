@@ -1,18 +1,18 @@
-"""Kimi Code CLI preset of the generic subscription-CLI backend.
+"""kimi-cli preset of the generic subscription-CLI backend.
 
 Backward-compatible shim: existing runners import configure/chat/
 model_identity and the BenchmarkModelError/BenchmarkQuotaError names
 from here. New code should use cli_backend.CLIBackend directly (any
-subscription CLI can be a preset; Kimi is just the first one).
+subscription CLI can be a preset; kimi-cli is just the first one).
 """
 from cli_backend import (  # noqa: F401,E402
     BackendError as BenchmarkModelError,
     CLIBackend,
     QuotaError as BenchmarkQuotaError,
-    kimi_backend,
+    ai_backend,
 )
 
-_backend = kimi_backend()
+_backend = ai_backend()
 
 
 def configure(model=None, timeout_s=None):
@@ -31,7 +31,7 @@ def is_quota_text(text):
 
 
 def chat(prompt):
-    """One inference call via the installed `kimi` CLI (tool-less agent)."""
+    """One inference call via the configured assistant CLI (tool-less agent)."""
     return _backend.chat(prompt)
 
 

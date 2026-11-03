@@ -16,6 +16,8 @@ the retraction arithmetic and bitemporal surfacing rules below.
 | --- | --- | --- |
 | Code symbol | `relative/path.py::Dotted.Name` | `pkg/mod.py::Parser.parse` |
 | Document | `relative/path.md::document` | `guide.md::document` |
+| Config key (Tier 3) | `relative/path.yaml::dotted.key.path` | `config.yaml::server.port` |
+| Schema entity (Tier 4) | `relative/path.sql::Table` / `::Table.column` | `schema.sql::users` / `schema.sql::users.id` |
 
 Code identity is the exact stable key; document identity is the
 source path plus `::document`. Similarity never establishes identity:
@@ -34,15 +36,18 @@ edge coordinates (stable across profile bumps).
 | `static_call` | code | code | `syntactic_observation` | `unshadowed_static_binding_v1` | yes |
 | `static_call` | code | code | `syntactic_observation` | `ts_static_binding_v1` | yes |
 | `static_call` | code | code | `syntactic_observation` | `ts_enclosed_callback_v1` | yes |
+| `static_call` | code | code | `syntactic_observation` | `go_static_binding_v1` | yes |
 | `text_mention` (exact) | document | code | `syntactic_observation` | `exact_key_match_v1` | no |
 | `text_mention` (bare) | document | code | `proposed` / `proposed_ambiguous` | `name_match_proposed_v1` + qualification | no |
-| `depends_on` | doc entity | doc/code entity | `asserted_in_source` | exact or proposed (same rules) | yes |
-| `implements` | doc entity | doc/code entity | `asserted_in_source` | exact or proposed (same rules) | yes |
+| `depends_on` | code, document, or config entity | code or config entity | `asserted_in_source` (doc claims) / `syntactic_observation` (extracted config $ref/anchor, `key_ref_v1` et al) | exact or proposed (same rules); doc/config→code/config is provenance, code→prose rejected (`relation_signature`) | yes (asserted only) |
+| `implements` | code | code | `asserted_in_source` | exact or proposed (same rules) | yes |
+| `same_as` | code or doc entity (same kind) | code or doc entity (same kind) | `asserted_in_source` | exact keys via governed promote; proposals from `tunic/resolve.py` | no |
 | `supersedes` | claim | claim | `asserted_in_source` | exact claim reference | temporal filter |
 | `corrects` | claim | claim | `asserted_in_source` | exact claim reference | temporal filter (reported as correction) |
 | `retracts` | claim | claim | `asserted_in_source` | exact claim reference + `retract` field | removes one support (see arithmetic) |
 | `decided_by` | claim | doc entity | `asserted_in_source` | exact or proposed | no |
 | `contradicts` | claim | claim | `asserted_in_source` | exact claim reference | blocks promotion |
+| `references` (Tier 4) | schema entity | schema entity | `syntactic_observation` | exact keys (`sql_fk_v1`, `gql_field_v1`, `proto_field_v1`, et al) | no |
 
 Unknown claim relations never become assertions: they are recorded as
 `unknown_relation` diagnostics. Promotion of a `contradicts`-blocked

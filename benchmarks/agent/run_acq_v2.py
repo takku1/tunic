@@ -16,12 +16,12 @@ behavior. Precision and recall are reported separately.
 
 Usage:
   python run_acq_v2.py <out.json> [suite] [scen,...] [--dry-run] [--arms a,b]
-      [--backend=ollama|kimi-cli|cli] [--kimi-model=NAME] [--kimi-timeout=SEC]
+      [--backend=ollama|kimi-cli|cli] [--ai-model=NAME] [--ai-timeout=SEC]
       [--cli-exe=EXE --cli-agent-file=SPEC [--cli-name=N --cli-model=M
        --cli-timeout=SEC --cli-quota-markers=a,b]] [--resume] [--overwrite]
 
 Backend: ollama (default) serves the frozen qwen3:4b comparison arms;
-kimi-cli is the Kimi Code preset of the generic subscription-CLI backend
+kimi-cli is the first preset of the generic subscription-CLI AI backend
 (cli_backend.CLIBackend: any tool-less print-mode agent CLI riding its own
 authenticated subscription, no API keys). Subscription-CLI results must
 be written to their own artifacts -- never overwrite the qwen3 runs.
@@ -46,21 +46,21 @@ from run_model_ab_multisession_v2 import (  # noqa: E402
     CONTEXT_CAP, PROPOSE_PROMPT, chat, parse_proposal, parse_symbols, run_arm)
 from run_model_ab_multisession_v4 import static_edge_visible  # noqa: E402
 
-from cli_backend import CLIBackend, QuotaError, kimi_backend  # noqa: E402
+from cli_backend import CLIBackend, QuotaError, ai_backend  # noqa: E402
 
 # Inference backend. The frozen qwen3:4b Ollama arm is the default; the
-# kimi-cli backend rides the user's authenticated Kimi Code subscription
+# ai backend rides the user's authenticated assistant-CLI subscription
 # (subprocess per call, tool-less agent). run_arm resolves `chat` at call
 # time from its own module globals, so switching backends patches that
 # global; nothing in the frozen v1/v2 modules is modified.
 _BACKEND = {"name": "ollama", "model": MODEL, "chat": chat}
 
 
-def use_backend(name, kimi_model=None, kimi_timeout=None, cli_options=None):
+def use_backend(name, ai_model=None, ai_timeout=None, cli_options=None):
     if name == _BACKEND["name"]:
         return
     if name == "kimi-cli":
-        backend = kimi_backend(model=kimi_model, timeout_s=kimi_timeout)
+        backend = ai_backend(model=ai_model, timeout_s=ai_timeout)
     elif name == "cli":
         backend = CLIBackend(**(cli_options or {}))
     else:
@@ -416,7 +416,7 @@ def apply_stage(memory, code_index, notes_index, arm, prop, check):
 
 def _sum_optional(rows, key):
     """Sum a token field across rows; None when no row reported it (the
-    kimi-cli backend cannot see usage and never fabricates counts)."""
+    ai backend cannot see usage and never fabricates counts)."""
     vals = [r.get(key) for r in rows]
     vals = [v for v in vals if v is not None]
     return sum(vals) if vals else None
@@ -522,8 +522,8 @@ def main():
     scenarios = args[2].split(",") if len(args) > 2 else list(SCENARIOS)
     arms = None
     backend = "ollama"
-    kimi_model = None
-    kimi_timeout = None
+    ai_model = None
+    ai_timeout = None
     cli_options = {}
     cli_quota = None
     for a in sys.argv:
@@ -531,10 +531,10 @@ def main():
             arms = a.split("=", 1)[1].split(",")
         elif a.startswith("--backend="):
             backend = a.split("=", 1)[1]
-        elif a.startswith("--kimi-model="):
-            kimi_model = a.split("=", 1)[1]
-        elif a.startswith("--kimi-timeout="):
-            kimi_timeout = int(a.split("=", 1)[1])
+        elif a.startswith("--ai-model=") or a.startswith("--kimi-model="):
+            ai_model = a.split("=", 1)[1]
+        elif a.startswith("--ai-timeout=") or a.startswith("--kimi-timeout="):
+            ai_timeout = int(a.split("=", 1)[1])
         elif a.startswith("--cli-exe="):
             cli_options["exe"] = a.split("=", 1)[1]
         elif a.startswith("--cli-agent-file="):
@@ -553,7 +553,7 @@ def main():
                              or "agent_file" not in cli_options):
         raise SystemExit("--backend=cli requires --cli-exe and --cli-agent-file")
     arms = arms or list(ARMS)
-    use_backend(backend, kimi_model, kimi_timeout, cli_options or None)
+    use_backend(backend, ai_model, ai_timeout, cli_options or None)
     tunic_commit = subprocess.run(
         ["git", "rev-parse", "HEAD"], capture_output=True, text=True,
         cwd=str(REPO)).stdout.strip()

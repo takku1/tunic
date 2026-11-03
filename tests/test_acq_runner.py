@@ -14,7 +14,9 @@ from unittest import mock
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "benchmarks/agent"))
 
-from cli_backend import BackendError, CLIBackend, QuotaError, kimi_backend  # noqa: E402
+from cli_backend import (  # noqa: E402
+    BackendError, CLIBackend, QuotaError, ai_backend, kimi_backend,
+)
 from run_acq_v2 import (  # noqa: E402
     QUOTA_EXIT_CODE,
     apply_pass,
@@ -186,6 +188,13 @@ class QuotaTests(unittest.TestCase):
         backend = kimi_backend(model="m")
         self.assertTrue(backend.identity().startswith("kimi-cli:"))
         self.assertIn("subscription", backend.identity())
+
+    def test_ai_backend_defaults_to_kimi_preset(self):
+        backend = ai_backend(model="m")
+        self.assertTrue(backend.identity().startswith("kimi-cli:"))
+        aliased = kimi_backend(model="m")
+        self.assertEqual(backend.identity(), aliased.identity())
+        self.assertEqual(backend.name, "kimi-cli")
 
 
 class BackendInjectionTests(unittest.TestCase):

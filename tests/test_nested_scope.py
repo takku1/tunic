@@ -182,8 +182,12 @@ class RealRepoRegressionTests(unittest.TestCase):
         # compile_documents joined when the R2 documents channel landed
         # in answer() (verified by inspection 2026-11-02: the call at
         # memory.py:1197 builds the cited prose passages; read-only,
-        # adds no edges).
+        # adds no edges). _graph_neighbors joined when the graph
+        # expansion stage landed in answer() (verified by inspection
+        # 2026-11-03: the call at memory.py:1340 builds the one-hop
+        # neighborhood; read-only, adds no edges).
         self.assertEqual(direct, {"memory.py::Memory._ensure_discovery",
+                                  "memory.py::Memory._graph_neighbors",
                                   "memory.py::Memory._frontier_upsert",
                                   "memory.py::_container_of",
                                   "memory.py::_dedup_dicts",

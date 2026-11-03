@@ -1,3 +1,8 @@
+---
+name: tunic
+description: Source-grounded code memory for AI agents. Use when working in a code repository to answer dependency questions (what breaks if X changes, who calls X, what does X call) with cited evidence, to record verified outcomes as durable memory, or to inspect unresolved gaps. Prefers local SQLite evidence over guessing; abstains when evidence is missing.
+---
+
 # Tunic skill — source-grounded code memory for AI agents
 
 Tunic is a local code-intelligence graph an agent uses as persistent
@@ -23,15 +28,18 @@ server accepts only the `local` principal: a caller-supplied
 ## Tool workflow
 
 1. **Retrieve first.** `retrieve(task, limit?, policy?, threshold?,
-   select?, snapshot?, container_limit?)` fuses exact, name, lexical,
-   and (if configured) semantic stages. Use `policy="current"` for
-   answers (superseded knowledge excluded). Selection is on by
-   default since 2026-11-02 (frozen-suite acceptance PASS-scoped;
-   `select=false` opts out to raw fusion); it returns its trace;
-   `snapshot`
+   select?, snapshot?, container_limit?, budget?, mmr_lambda?)`
+   fuses exact, name, lexical, and (if configured) semantic stages.
+   Use `policy="current"` for answers (superseded knowledge
+   excluded). Selection is on by default since 2026-11-02
+   (frozen-suite acceptance PASS-scoped; `select=false` opts out to
+   raw fusion); it returns its trace; `snapshot`
    pins a view; `container_limit` (default 2, 0 disables) bounds
-   method-to-class expansion. An empty result is a finding, not a
-   failure: record what is missing.
+   method-to-class expansion. `budget={"graph": N}` adds the
+   dependency-neighborhood expansion stage (default off); `mmr_lambda`
+   in [0, 1] (default 1.0 = pure relevance) diversifies fused order.
+   An empty result is a finding, not a failure: record what is
+   missing.
 2. **Inspect evidence.** `related(symbol)` / `impact(symbol)` /
    `timeline(symbol)` expand one exact `path::symbol` key with
    provenance. `callees(symbol)` traverses forward instead: `direct`

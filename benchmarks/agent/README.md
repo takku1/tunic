@@ -120,12 +120,13 @@ with `--backend=` (default `ollama`):
 
 - `ollama` — the frozen qwen3:4b comparison runs above (temperature 0,
   token counts reported).
-- `kimi-cli` — the Kimi Code preset of the generic subscription-CLI
-  backend (`cli_backend.py`): shells out to the installed Kimi Code CLI
-  (`kimi --quiet --agent-file kimi_agent/agent.yaml -p <prompt>`), riding
-  the user's authenticated Kimi Code subscription. No API keys or OAuth
+- `kimi-cli` — the first preset of the generic subscription-CLI AI
+  backend (`cli_backend.py`, factory `ai_backend`): shells out to the
+  installed assistant CLI
+  (`kimi --quiet --agent-file ai_agent/agent.yaml -p <prompt>`), riding
+  the user's authenticated subscription. No API keys or OAuth
   tokens are handled; no local model is loaded. Safety posture:
-  `kimi_agent/agent.yaml` declares `tools: []`, so the model physically
+  `ai_agent/agent.yaml` declares `tools: []`, so the model physically
   cannot touch the filesystem or shell regardless of prompt content, and
   the process runs in a per-run scratch work directory. One subprocess per
   inference call — a CLI persistent session would accumulate context
@@ -136,7 +137,8 @@ with `--backend=` (default `ollama`):
 
   ```
   python run_acq_v2.py <out.json> [suite] [scen,...] \
-      --backend=kimi-cli [--kimi-model=NAME] [--kimi-timeout=SEC]
+      --backend=kimi-cli [--ai-model=NAME] [--ai-timeout=SEC]
+      (`--kimi-model` / `--kimi-timeout` still accepted as aliases)
   ```
 
 - `cli` — any other subscription CLI as a preset: `--cli-exe` and

@@ -195,10 +195,19 @@ def handle_call(memory, name, args):
         if (not isinstance(exclude, list)
                 or not all(isinstance(item, str) for item in exclude)):
             _fail("tool argument 'exclude' must be a list of strings")
+        budget = args.get("budget", {})
+        if (not isinstance(budget, dict)
+                or not all(isinstance(key, str) for key in budget)):
+            _fail("tool argument 'budget' must be an object")
+        mmr_lambda = args.get("mmr_lambda", 1.0)
+        if (not isinstance(mmr_lambda, (int, float))
+                or not 0.0 <= mmr_lambda <= 1.0):
+            _fail("tool argument 'mmr_lambda' must be a number in [0, 1]")
         return memory.answer(task, limit=limit, policy=_policy(args),
                              threshold=threshold, select=select,
                              snapshot=snapshot, exclude=exclude,
-                             container_limit=container_limit)
+                             container_limit=container_limit,
+                             budget=budget, mmr_lambda=mmr_lambda)
     if name == "related":
         return compile_related(memory.store, _need(args, "symbol", str),
                                policy=_policy(args))

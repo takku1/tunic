@@ -12,6 +12,7 @@ import unittest
 from pathlib import Path
 
 from tunic import tsgraph
+from tunic.extract import _endpoint_kind
 from tunic.memory import Memory
 
 APP_TS = """import { format } from "./util";
@@ -207,14 +208,28 @@ class InventoryTest(unittest.TestCase):
                 second.close()
 
     def test_data_files_ignored(self):
+        # Tier-3: data files are structured config (key-path entities
+        # with a key_path_v1 receipt), never code. The anti-invention
+        # contract stands: no code-kind symbols, no call edges.
         with tempfile.TemporaryDirectory() as tmp:
             memory, _report, _ws = _ingest(tmp)
             try:
                 _snapshot, view = memory.store.view()
                 keys = {s["key"] for s in view["symbols"]}
-                self.assertFalse([k for k in keys
-                                  if k.startswith("config.json")],
-                                 "data file inventoried")
+                self.assertFalse(
+                    [k for k in keys
+                     if k.startswith("config.json")
+                     and _endpoint_kind(k) == "code"],
+                    "data file inventoried as code")
+                self.assertIn("config.json::render", keys)
+                self.assertFalse(
+                    [a for a in view["assertions"]
+                     if a["proposition"].get("relation") == "static_call"
+                     and (a["proposition"].get("caller", "")
+                          .startswith("config.json")
+                          or a["proposition"].get("callee", "")
+                          .startswith("config.json"))],
+                    "data file call edges invented")
             finally:
                 memory.close()
 

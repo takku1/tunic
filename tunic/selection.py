@@ -177,7 +177,8 @@ def select(task, fused, *, view, policy, limit, anchors=None,
     leaves = {}
     for key in code_keys:
         leaves.setdefault(key.split("::")[-1].split(".")[-1], []).append(key)
-    order = {"exact": 0, "name": 1, "lexical": 2, "semantic": 3}
+    order = {"exact": 0, "name": 1, "lexical": 2, "semantic": 3,
+             "graph": 4, "documents": 5}
     decisions, kept = [], []
     superseded_hold = {}
     for score, key, origins in fused:

@@ -29,6 +29,17 @@ python -m unittest discover -s tests -v
 
 The example finds `service.py::process` and `test_service.py::test_process`, with exact call excerpts and dependency paths. The text match in `unrelated.py` is excluded; its callback remains unresolved. Re-run `ingest` after source edits or deletions: the current view is rebuilt atomically and old snapshots remain available. Validation requires the current snapshot by default; `validate --allow-historical` explicitly permits historical evidence validation.
 
+### Optional parser extras
+
+Core ingestion is stdlib-only (Python AST, JSON, TOML, INI). Additional languages install as extras; a missing grammar degrades to an `unsupported_syntax` diagnostic, never an invented edge:
+
+```powershell
+pip install -e ".[typescript]"   # TS/JS/JSX via tree-sitter
+pip install -e ".[go]"           # Go via tree-sitter
+pip install -e ".[unigraph]"     # Java/Kotlin/Scala/C#/C/C++/Rust/Swift/PHP/Ruby/Julia/Lua/Bash/PowerShell
+pip install -e ".[config]"       # YAML key-path entities (PyYAML)
+```
+
 ## Local model continuation
 
 Requires an already running local Ollama with an installed dense `qwen3` or `llama3.2` GGUF model. Tunic does not download models. List installed tags first, then pin a supported one:

@@ -53,7 +53,9 @@ class QuotaError(BackendError):
     retrying. Never retried inside chat()."""
 
 
-def _kimi_argv(exe, agent_file, scratch, model, prompt):
+def _print_mode_argv(exe, agent_file, scratch, model, prompt):
+    """Generic print-mode argv for tool-less agent CLIs: quiet, pinned
+    agent file, isolated work dir, prompt on -p, optional model flag."""
     argv = [exe, "--quiet", "--agent-file", str(agent_file),
             "--work-dir", str(scratch), "-p", prompt]
     if model:
@@ -61,16 +63,12 @@ def _kimi_argv(exe, agent_file, scratch, model, prompt):
     return argv
 
 
-def _kimi_identity(model):
-    return "kimi-cli:%s (managed subscription)" % (model or "default-model")
-
-
-def _kimi_default_model():
-    """Best-effort default-model name from ~/.kimi/config.toml -- the
+def _default_model_from_config(config_path):
+    """Best-effort default-model name from a CLI config file -- the
     name only, never any credential."""
     try:
         match = re.search(r'^\s*default_model\s*=\s*"([^"]+)"',
-                          (Path.home() / ".kimi" / "config.toml").read_text(
+                          Path(config_path).read_text(
                               encoding="utf-8"), re.MULTILINE)
         return match.group(1) if match else None
     except OSError:
@@ -78,13 +76,17 @@ def _kimi_default_model():
 
 
 KIMI_PRESET = {
+    # First preset of the generic backend, kept under its frozen
+    # artifact label: run records say "kimi-cli" and stay comparable.
     "name": "kimi-cli",
     "exe": "kimi",
-    "agent_file": Path(__file__).resolve().parent / "kimi_agent" / "agent.yaml",
-    "argv": _kimi_argv,
+    "agent_file": Path(__file__).resolve().parent / "ai_agent" / "agent.yaml",
+    "argv": _print_mode_argv,
     "quota_markers": ("429", "exceeded_current_quota", "usage limit",
                       "five-hour", "five hour", "quota"),
-    "identity_hint": _kimi_identity,
+    "identity_hint": lambda model: "kimi-cli:%s (managed subscription)"
+                      % (model or "default-model"),
+    "default_model_config": Path.home() / ".kimi" / "config.toml",
 }
 
 GENERIC_QUOTA_MARKERS = ("429", "quota", "usage limit")
@@ -100,7 +102,7 @@ class CLIBackend:
         self.name = name
         self.exe = exe
         self.agent_file = Path(agent_file)
-        self.argv = argv or _kimi_argv
+        self.argv = argv or _print_mode_argv
         self.model = model
         self.timeout_s = int(timeout_s) if timeout_s else DEFAULT_TIMEOUT_S
         self.quota_markers = tuple(quota_markers) if quota_markers \
@@ -192,11 +194,27 @@ class CLIBackend:
         raise last
 
 
-def kimi_backend(model=None, timeout_s=None):
-    """The Kimi Code CLI preset: installed `kimi` riding the user's
-    authenticated subscription with the tool-less kimi_agent spec."""
-    backend = CLIBackend(scratch_prefix="tunic-kimi-", **{
-        key: value for key, value in KIMI_PRESET.items()})
-    backend.configure(model=model or _kimi_default_model(),
-                      timeout_s=timeout_s)
+def ai_backend(model=None, timeout_s=None, preset=None):
+    """A subscription-CLI inference backend from a preset dict.
+
+    Defaults to the kimi-cli preset (first preset; artifact labels
+    say "kimi-cli"). Pass a preset dict to target another assistant CLI.
+    """
+    preset = dict(preset or KIMI_PRESET)
+    config_path = preset.pop("default_model_config", None)
+    backend = CLIBackend(**{
+        key: value for key, value in preset.items()})
+    if model is None and config_path is not None:
+        model = _default_model_from_config(config_path)
+    backend.configure(model=model, timeout_s=timeout_s)
     return backend
+
+
+def kimi_backend(model=None, timeout_s=None):
+    """Deprecated alias: the kimi-cli preset of ai_backend.
+
+    Kept so frozen runners and run records keep working; new code
+    passes preset=KIMI_PRESET (or another preset) to ai_backend.
+    """
+    return ai_backend(model=model, timeout_s=timeout_s,
+                      preset=KIMI_PRESET)

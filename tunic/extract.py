@@ -13,6 +13,10 @@ import tomllib
 from .identity import digest, identity
 from . import tsgraph
 from . import unigraph
+from . import blocks
+from . import notebook
+from . import config
+from . import schemaref
 
 PROFILE = "python-static-v7"
 EXCLUDED = {".git", ".venv", "venv", "__pycache__", ".tunic", ".research", "node_modules"}
@@ -23,7 +27,7 @@ INVENTORY_EXTENSIONS = {".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".
                         ".vue", ".svelte", ".go", ".rs", ".java", ".c", ".h",
                         ".cpp", ".hpp", ".cc", ".cs", ".rb", ".php", ".swift",
                         ".kt", ".kts", ".scala", ".lua", ".pl", ".r", ".sh",
-                        ".bash", ".ps1"}
+                        ".bash", ".ps1", ".psm1", ".jl", ".ipynb", ".zig", ".ex", ".exs", ".f90", ".groovy", ".m", ".v"}
 CLAIM_RELATIONS = {"depends_on", "implements", "supersedes", "decided_by", "contradicts", "same_as",
                    "corrects", "retracts"}
 RELATION_SIGNATURES = {
@@ -33,14 +37,34 @@ RELATION_SIGNATURES = {
     # backwards direction (code depending on prose) is rejected.
     # Meta relations (supersedes, contradicts, corrects, retracts,
     # decided_by) span both by design and stay unconstrained.
-    "depends_on": ({"code", "document"}, {"code"}),
+    "depends_on": ({"code", "document", "config"}, {"code", "config"}),
     "implements": ({"code"}, {"code"}),
     "same_as": ({"code", "document"}, {"code", "document"}),
+    "references": ({"schema"}, {"schema"}),
 }
 
 
+STRUCTURED_EXTENSIONS = (config.CONFIG_EXTENSIONS
+                             | schemaref.SCHEMA_EXTENSIONS)
+
+
 def _endpoint_kind(key):
-    return "document" if key.endswith("::document") else "code"
+    """Endpoint kind derived from the key shape alone (stateless).
+
+    document: path::document prose records; config: Tier-3 key-path
+    entities; schema: Tier-4 schema entities; everything else code.
+    depends_on spans document/code/config to code/config (prose and
+    config cite what they depend on; the reverse stays rejected);
+    references spans schema to schema only.
+    """
+    if key.endswith("::document"):
+        return "document"
+    suffix = PurePosixPath(key.split("::")[0]).suffix
+    if suffix in config.CONFIG_EXTENSIONS:
+        return "config"
+    if suffix in schemaref.SCHEMA_EXTENSIONS:
+        return "schema"
+    return "code"
 
 
 def check_relation_signature(relation, caller, callee):
@@ -413,6 +437,8 @@ def _scan(root, exclude=()):
             suffix = Path(name).suffix
             text = suffix in TEXT_EXTENSIONS
             inventory = suffix in INVENTORY_EXTENSIONS
+            structured = suffix in STRUCTURED_EXTENSIONS
+            inventory = inventory or structured
             if not (name.endswith(".py") or text or inventory):
                 continue
             entries.append({"path": path, "data": p.read_bytes(), "text": text,
@@ -468,7 +494,8 @@ def parse_source(path, data):
     parse step of capture so incremental refresh reuses identical records.
     """
     file_digest = digest(data)
-    if Path(path).suffix in INVENTORY_EXTENSIONS:
+    if (Path(path).suffix in INVENTORY_EXTENSIONS
+            or Path(path).suffix in STRUCTURED_EXTENSIONS):
         return ({"path": path, "digest": file_digest, "data": data,
                  "id": identity("source", [path, file_digest]), "tree": None,
                  "text": False, "inventory": True}, None)
@@ -579,7 +606,15 @@ def _collect_code(sources, symbols, assertions, diagnostics):
                                 "start": 0, "end": len(s["data"]),
                                 "is_test": False}
             elif s.get("inventory") and s["data"]:
-                _harvest_inventory(s, symbols, diagnostics)
+                if notebook.is_notebook_path(s["path"]):
+                    # Notebook bytes mix code, markdown, and outputs;
+                    # the notebook resolver owns their symbols.
+                    pass
+                elif Path(s["path"]).suffix in STRUCTURED_EXTENSIONS:
+                    # Config/schema bytes are owned by their resolvers.
+                    pass
+                else:
+                    _harvest_inventory(s, symbols, diagnostics)
             continue
         # Collect module bindings without descending into function/class scopes.
         wrapper = ast.Module(body=[], type_ignores=[])
@@ -2218,6 +2253,162 @@ def resolve_ts_edges(sources, symbols, assertions, diagnostics,
                                fetch=fetch, known_paths=known_paths)
 
 
+def block_affected_paths(touched, fresh):
+    """Touched component files plus their script-block importers."""
+    out = set(touched) & {p for p in fresh if blocks.is_block_path(p)}
+    reverse = {}
+    for path in fresh:
+        if not blocks.is_block_path(path):
+            continue
+        targets = blocks.block_import_targets(path, fresh[path]["data"],
+                                              set(fresh))
+        if targets & set(touched):
+            out.add(path)
+        for target in targets:
+            reverse.setdefault(target, set()).add(path)
+    queue = list(out)
+    while queue:
+        current = queue.pop()
+        for importer in reverse.get(current, ()):
+            if importer not in out:
+                out.add(importer)
+                queue.append(importer)
+    return out
+
+
+def resolve_block_edges(sources, symbols, assertions, diagnostics,
+                        fetch=None, known_paths=None):
+    """Resolve verified call edges inside component script blocks.
+
+    Splits .vue/.svelte/.astro containers before parsing; script
+    blocks and frontmatter feed the TS grammar as one joined module
+    per file with parent-absolute spans. fetch/known_paths default to
+    the given records, so full rebuilds pass sources directly while
+    refresh supplies the fresh snapshot.
+    """
+    blocks.resolve_block_edges(sources, symbols, assertions,
+                               diagnostics, fetch=fetch,
+                               known_paths=known_paths)
+
+
+def notebook_affected_paths(touched, fresh):
+    """Touched notebooks plus notebooks importing touched modules.
+
+    Cell imports resolve against same-dir stems; a basename match
+    re-resolves the notebook (idempotent), never inventing edges.
+    """
+    out = {p for p in touched if notebook.is_notebook_path(p)}
+    touched_stems = {p.rsplit("/", 1)[-1].rsplit(".", 1)[0]
+                     for p in touched}
+    for path in fresh:
+        if not notebook.is_notebook_path(path):
+            continue
+        if path in out:
+            continue
+        try:
+            cells, _diags = notebook.split_notebook(fresh[path]["data"])
+        except (ValueError, UnicodeError, KeyError):
+            continue
+        for cell in cells:
+            if cell["kind"] != "code":
+                continue
+            for line in cell["source_lines"]:
+                head = line.strip().split()
+                if len(head) >= 2 and head[0] in ("import", "from"):
+                    stem = head[1].split(".")[0].split(";")[0]
+                    if stem in touched_stems:
+                        out.add(path)
+                        break
+            else:
+                continue
+            break
+    return out
+
+
+def resolve_notebook_cells(sources, symbols, assertions, diagnostics,
+                           fetch=None, known_paths=None, modules=None):
+    """Resolve notebook code cells through the shared Python engine.
+
+    Cells share one notebook namespace; spans are line-granular raw
+    line bounds keyed per cell for provenance across re-execution.
+    fetch/known_paths are accepted for pipeline symmetry and ignored;
+    modules defaults to the given records so notebooks resolve
+    cross-cell calls plus R2 imports into sibling .py modules.
+    """
+    notebook.resolve_notebook_cells(sources, symbols, assertions,
+                                    diagnostics, fetch=fetch,
+                                    known_paths=known_paths,
+                                    modules=modules)
+
+
+def config_affected_paths(touched, fresh):
+    """Touched configs plus configs referencing touched files.
+
+    Ref file-parts resolve against the referencing file's directory;
+    a basename match re-resolves the config (idempotent), never
+    inventing edges.
+    """
+    out = {p for p in touched if config.is_config_path(p)}
+    for path, info in fresh.items():
+        if not config.is_config_path(path) or path in out:
+            continue
+        try:
+            targets = config.referenced_files(path, info["data"])
+        except (ValueError, UnicodeError, KeyError):
+            continue
+        if targets & set(touched):
+            out.add(path)
+    return out
+
+
+def schemaref_affected_paths(touched, fresh):
+    """Touched schemas plus schemas referencing touched definitions."""
+    out = {p for p in touched if schemaref.is_schema_path(p)}
+    touched_defs = set()
+    for path in touched:
+        info = fresh.get(path)
+        if info is None or not schemaref.is_schema_path(path):
+            continue
+        suffix = PurePosixPath(path).suffix
+        touched_defs |= {name.lower() for name in
+                         schemaref.defined_names(info["data"], suffix)}
+    if not touched_defs:
+        return out
+    for path, info in fresh.items():
+        if not schemaref.is_schema_path(path) or path in out:
+            continue
+        suffix = PurePosixPath(path).suffix
+        refs = schemaref.referenced_names(info["data"], suffix)
+        if {name.lower() for name in refs} & touched_defs:
+            out.add(path)
+    return out
+
+
+def resolve_config_keys(sources, symbols, assertions, diagnostics,
+                        fetch=None, known_paths=None, modules=None):
+    """Resolve Tier-3 config key-path entities plus ref claims.
+
+    fetch/known_paths/modules are accepted for pipeline symmetry and
+    ignored: configs resolve against the symbol table directly, which
+    already holds untouched files on refresh.
+    """
+    config.resolve_config_keys(sources, symbols, assertions,
+                               diagnostics, fetch=fetch,
+                               known_paths=known_paths)
+
+
+def resolve_schema_refs(sources, symbols, assertions, diagnostics,
+                        fetch=None, known_paths=None, modules=None):
+    """Resolve Tier-4 schema entities plus references claims.
+
+    fetch/known_paths/modules are accepted for pipeline symmetry and
+    ignored, mirroring resolve_config_keys.
+    """
+    schemaref.resolve_schema_refs(sources, symbols, assertions,
+                                  diagnostics, fetch=fetch,
+                                  known_paths=known_paths)
+
+
 def resolve_unigraph_edges(sources, symbols, assertions, diagnostics,
                            fetch=None, known_paths=None):
     """Resolve verified static-call edges for spec-covered languages.
@@ -2242,5 +2433,10 @@ def extract(root, exclude=()):
     _build_dispatch(sources, modules, symbols, assertions, diagnostics)
     resolve_ts_edges(sources, symbols, assertions, diagnostics)
     resolve_unigraph_edges(sources, symbols, assertions, diagnostics)
+    resolve_block_edges(sources, symbols, assertions, diagnostics)
+    resolve_notebook_cells(sources, symbols, assertions, diagnostics,
+                                 modules=modules)
+    resolve_config_keys(sources, symbols, assertions, diagnostics)
+    resolve_schema_refs(sources, symbols, assertions, diagnostics)
     _build_docs(sources, symbols, assertions, diagnostics)
     return sources, sorted(symbols.values(), key=lambda x:x["key"]), sorted(assertions, key=lambda x:x["id"]), sorted(diagnostics, key=lambda x: (x["path"], x.get("line") or 0, x["kind"], x.get("start", 0))), excluded

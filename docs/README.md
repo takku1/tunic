@@ -14,6 +14,7 @@ Read [architecture overview](architecture/overview.md), [semantic graph contract
 | What do durable claims, evidence, identity, time, and snapshots mean? | [Semantic graph](architecture/semantic-graph.md) |
 | What does compilation produce and validate? | [Context IR](architecture/context-ir.md) |
 | Which types and relations can the graph hold? | [Graph schema](architecture/graph-schema.md) |
+| Which file types are ingested, at what proof strength? | [File-type coverage](architecture/file-type-coverage.md) (tiers 0-5 + explicitly out) |
 | What decides what becomes knowledge, is shown, and is acted on? | [Policy contract](architecture/policy-contract.md) |
 | Which evidence reaches an agent for a query, and why? | [Evidence selection](architecture/evidence-selection.md) (implemented, opt-in `select=True`) |
 | How are inputs lowered and execution/cache compatibility checked? | [Lowering and runtime](architecture/runtime.md) |
@@ -33,6 +34,7 @@ Architecture contracts describe proposed behavior, not implemented guarantees. R
 - [Research assessment](research/assessment.md): graph/model integration and transport claims.
 - [Runtime memory assessment](research/runtime-memory.md): active retrieval, compatible KV reuse, graph soft-prompt failure modes, prefetch and security; separates viable controller work from speculative model changes.
 - [Candidate mathematical foundations](research/mathematics.md): objectives and assumptions; these are not selected algorithms.
+- [External coverage](research/external-coverage.md): graphiti/mem0/GraphRAG capabilities picked apart into Tunic-shaped work (covered / partial / open / rejected-by-design), with proposed tracker deltas.
 - [Database/runtime tools](research/tools.md) and [current project landscape](research/project-landscape.md): candidates and comparison questions.
 - [SmartMemory concepts](research/smartmemory-concepts.md): documented memory/retrieval approaches and their limits.
 - [Geometry research](research/geometry/README.md): multidimensional scores, paths, resistance, curvature, causal limits, and learned utility. [Mathematics](research/geometry/mathematics.md), [experiments](research/geometry/experiments.md), and [sources](research/geometry/sources.md) retain the research detail.

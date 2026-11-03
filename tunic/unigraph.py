@@ -207,8 +207,659 @@ GO_SPEC = {
     "exported": _go_exported,
 }
 
+JAVA_SPEC = {
+    "language": "java",
+    "engine": "generic",
+    "extensions": frozenset({".java"}),
+    "grammar_module": "tree_sitter_java",
+    "grammar_attr": "language",
+    "rule": "java_static_binding_v1",
+    "producer": "java-static-v1",
+    "scope_unit": "dir",
+    "def_types": {
+        "method_declaration": ("method",),
+        "constructor_declaration": ("method",),
+    },
+    "class_types": {"class_declaration", "interface_declaration",
+                    "enum_declaration", "record_declaration"},
+    "def_containers": {"class_declaration", "class_body",
+                       "interface_declaration", "interface_body",
+                       "enum_declaration", "enum_body",
+                       "record_declaration", "record_body"},
+    "call_types": {"method_invocation"},
+    "call_shapes": {
+        "method_invocation": {"obj": ["object"], "name": ["name"],
+                              "member": "auto", "first": True},
+    },
+    "member_types": {},
+    "member_shapes": {},
+    "ctor_types": {"object_creation_expression"},
+    "func_literal_types": {"lambda_expression"},
+    "scope_block_types": {"block"},
+    "local_bind_types": {
+        "local_variable_declaration": {"variable_declarator"},
+    },
+    "param_decl_types": {"formal_parameter": set(),
+                         "catch_formal_parameter": set()},
+    "param_container_types": {"formal_parameters"},
+    "walk_skip_types": set(),
+    "self_names": {"this"},
+    "class_name_pattern": "^[A-Z]",
+    "implicit_this_bare": True,
+    "r2_kinds": ("function", "method", "type"),
+    "import_types": {"import_declaration": {"style": "dotted"}},
+    "directive_calls": {},
+    "directive_commands": {},
+    "private_rule": {"kind": "excludes", "markers": ("private",),
+                     "containers": ("modifiers",)},
+}
+
+KOTLIN_SPEC = {
+    "language": "kotlin",
+    "engine": "generic",
+    "extensions": frozenset({".kt", ".kts"}),
+    "grammar_module": "tree_sitter_kotlin",
+    "grammar_attr": "language",
+    "rule": "kotlin_static_binding_v1",
+    "producer": "kotlin-static-v1",
+    "scope_unit": "dir",
+    "def_types": {
+        "function_declaration": ("function",),
+    },
+    "class_types": {"class_declaration", "object_declaration"},
+    "def_containers": {"class_body", "object_body", "interface_body",
+                       "companion_object"},
+    "call_types": {"call_expression"},
+    "call_shapes": {
+        "call_expression": {"func": [], "first": True},
+    },
+    "member_types": {"navigation_expression"},
+    "member_shapes": {},
+    "ctor_types": {},
+    "ctor_by_stem": True,
+    "body_types": {"function_body"},
+    "expr_body": True,
+    "func_literal_types": {"lambda_literal"},
+    "scope_block_types": {"block"},
+    "local_bind_types": {
+        "property_declaration": {"variable_declaration"},
+        "variable_declaration": set(),
+    },
+    "param_decl_types": {"parameter": set()},
+    "param_container_types": {"function_value_parameters"},
+    "walk_skip_types": set(),
+    "self_names": {"this"},
+    "class_name_pattern": "^[A-Z]",
+    "implicit_this_bare": False,
+    "r2_kinds": ("function", "method", "type"),
+    "import_types": {"import": {"style": "dotted"}},
+    "directive_calls": {},
+    "directive_commands": {},
+    "private_rule": {"kind": "excludes", "markers": ("private",),
+                     "containers": ("modifiers",)},
+}
+
+SCALA_SPEC = {
+    "language": "scala",
+    "engine": "generic",
+    "extensions": frozenset({".scala"}),
+    "grammar_module": "tree_sitter_scala",
+    "grammar_attr": "language",
+    "rule": "scala_static_binding_v1",
+    "producer": "scala-static-v1",
+    "scope_unit": "dir",
+    "def_types": {
+        "function_definition": ("function",),
+    },
+    "class_types": {"class_definition", "object_definition",
+                    "trait_definition"},
+    "def_containers": {"template_body", "class_definition",
+                       "object_definition", "trait_definition"},
+    "call_types": {"call_expression"},
+    "call_shapes": {
+        "call_expression": {"func": ["function"]},
+    },
+    "member_types": {},
+    "member_shapes": {
+        "field_expression": {"obj": ["value"], "name": ["field"]},
+    },
+    "ctor_types": {"instance_expression"},
+    "func_literal_types": {"lambda_expression", "anonymous_function"},
+    "scope_block_types": {"block"},
+    "local_bind_types": {
+        "val_definition": {"tuple_pattern"},
+        "var_definition": {"tuple_pattern"},
+    },
+    "param_decl_types": {"parameter": set()},
+    "param_container_types": {"parameters"},
+    "walk_skip_types": set(),
+    "self_names": {"this"},
+    "class_name_pattern": "^[A-Z]",
+    "implicit_this_bare": False,
+    "r2_kinds": ("function", "method", "type"),
+    "import_types": {"import_declaration": {"style": "multi"}},
+    "directive_calls": {},
+    "directive_commands": {},
+    "private_rule": {"kind": "excludes", "markers": ("private",),
+                     "containers": ("modifiers",)},
+}
+
+CSHARP_SPEC = {
+    "language": "csharp",
+    "engine": "generic",
+    "extensions": frozenset({".cs"}),
+    "grammar_module": "tree_sitter_c_sharp",
+    "grammar_attr": "language",
+    "rule": "csharp_static_binding_v1",
+    "producer": "csharp-static-v1",
+    "scope_unit": "dir",
+    "def_types": {
+        "method_declaration": ("method",),
+        "constructor_declaration": ("method",),
+    },
+    "class_types": {"class_declaration", "interface_declaration",
+                    "struct_declaration", "enum_declaration"},
+    "def_containers": {"declaration_list", "class_declaration",
+                       "interface_declaration", "struct_declaration",
+                       "namespace_declaration"},
+    "call_types": {"invocation_expression"},
+    "call_shapes": {
+        "invocation_expression": {"func": ["function"]},
+    },
+    "member_types": {},
+    "member_shapes": {
+        "member_access_expression": {"obj": ["expression"],
+                                    "name": ["name"]},
+    },
+    "ctor_types": {"object_creation_expression"},
+    "func_literal_types": {"lambda_expression",
+                           "anonymous_function_expression",
+                           "simple_lambda_expression"},
+    "scope_block_types": {"block"},
+    "local_bind_types": {
+        "local_declaration_statement": {"variable_declaration",
+                                        "variable_declarator"},
+    },
+    "param_decl_types": {"parameter": set()},
+    "param_container_types": {"parameter_list"},
+    "walk_skip_types": set(),
+    "self_names": {"this"},
+    "class_name_pattern": "^[A-Z]",
+    "implicit_this_bare": True,
+    "r2_kinds": ("function", "method", "type"),
+    "import_types": {"using_directive": {"style": "dotted"}},
+    "directive_calls": {},
+    "directive_commands": {},
+    "private_rule": {"kind": "excludes", "markers": ("private",),
+                     "containers": ("modifier",)},
+}
+
+C_SPEC = {
+    "language": "c",
+    "engine": "generic",
+    "extensions": frozenset({".c", ".h"}),
+    "grammar_module": "tree_sitter_c",
+    "grammar_attr": "language",
+    "rule": "c_static_binding_v1",
+    "producer": "c-static-v1",
+    "scope_unit": "dir",
+    "def_types": {
+        "function_definition": ("function",),
+    },
+    "class_types": set(),
+    "def_containers": {},
+    "call_types": {"call_expression"},
+    "call_shapes": {
+        "call_expression": {"func": ["function"]},
+    },
+    "member_types": {},
+    "member_shapes": {
+        "field_expression": {"obj": ["argument"], "name": ["field"]},
+    },
+    "ctor_types": {},
+    "func_literal_types": set(),
+    "scope_block_types": {"compound_statement"},
+    "local_bind_types": {
+        "declaration": {"init_declarator"},
+    },
+    "param_decl_types": {"parameter_declaration": set()},
+    "param_container_types": {"parameter_list"},
+    "walk_skip_types": set(),
+    "self_names": set(),
+    "class_name_pattern": None,
+    "implicit_this_bare": False,
+    "r2_kinds": ("function",),
+    "import_types": {"preproc_include": {"style": "string"}},
+    "directive_calls": {},
+    "directive_commands": {},
+    "private_rule": {"kind": "excludes", "markers": ("static",),
+                     "containers": ("storage_class_specifier",)},
+    "builtin_names": {"sizeof"},
+}
+
+CPP_SPEC = {
+    "language": "cpp",
+    "engine": "generic",
+    "extensions": frozenset({".cpp", ".hpp", ".cc", ".hh", ".cxx"}),
+    "grammar_module": "tree_sitter_cpp",
+    "grammar_attr": "language",
+    "rule": "cpp_static_binding_v1",
+    "producer": "cpp-static-v1",
+    "scope_unit": "dir",
+    "def_types": {
+        "function_definition": ("function",),
+    },
+    "method_containers": {"class_specifier", "struct_specifier"},
+    "qualified_def_marker": "qualified_identifier",
+    "class_types": {"class_specifier", "struct_specifier"},
+    "def_containers": {"class_specifier", "struct_specifier", "field_declaration_list",
+                       "namespace_definition", "declaration_list"},
+    "call_types": {"call_expression"},
+    "call_shapes": {
+        "call_expression": {"func": ["function"]},
+    },
+    "member_types": {"qualified_identifier"},
+    "member_shapes": {
+        "field_expression": {"obj": ["argument"], "name": ["field"]},
+        "qualified_identifier": {"obj": ["scope"], "name": ["name"]},
+    },
+    "ctor_types": {"new_expression"},
+    "func_literal_types": {"lambda_expression"},
+    "scope_block_types": {"compound_statement"},
+    "local_bind_types": {
+        "declaration": {"init_declarator"},
+    },
+    "param_decl_types": {"parameter_declaration": set()},
+    "param_container_types": {"parameter_list"},
+    "walk_skip_types": set(),
+    "self_names": {"this"},
+    "class_name_pattern": "^[A-Z]",
+    "implicit_this_bare": True,
+    "r2_kinds": ("function", "method", "type"),
+    "import_types": {"preproc_include": {"style": "string"}},
+    "directive_calls": {},
+    "directive_commands": {},
+    "private_rule": None,
+}
+
+RUST_SPEC = {
+    "language": "rust",
+    "engine": "generic",
+    "extensions": frozenset({".rs"}),
+    "grammar_module": "tree_sitter_rust",
+    "grammar_attr": "language",
+    "rule": "rust_static_binding_v1",
+    "producer": "rust-static-v1",
+    "scope_unit": "file",
+    "def_types": {
+        "function_item": ("function",),
+    },
+    "method_containers": {"impl_item", "trait_item"},
+    "class_types": {"struct_item", "enum_item", "union_item",
+                    "trait_item"},
+    "def_containers": {"declaration_list", "impl_item", "trait_item",
+                       "mod_item"},
+    "call_types": {"call_expression"},
+    "call_shapes": {
+        "call_expression": {"func": ["function"]},
+    },
+    "member_types": {"scoped_identifier"},
+    "member_shapes": {
+        "field_expression": {"obj": ["value"], "name": ["field"]},
+    },
+    "ctor_types": {},
+    "ctor_by_stem": True,
+    "func_literal_types": {"closure_expression"},
+    "scope_block_types": {"block"},
+    "local_bind_types": {
+        "let_declaration": {"tuple_pattern"},
+    },
+    "param_decl_types": {"parameter": {"tuple_pattern"}},
+    "param_container_types": {"parameters"},
+    "walk_skip_types": set(),
+    "self_names": {"self"},
+    "class_name_pattern": "^[A-Z]",
+    "implicit_this_bare": False,
+    "r2_kinds": ("function", "method", "type"),
+    "import_types": {"use_declaration": {"style": "paths"},
+                     "mod_item": {"style": "mod"}},
+    "path_prefixes": ("crate::", "super::", "self::"),
+    "directive_calls": {},
+    "directive_commands": {},
+    "private_rule": {"kind": "requires", "markers": ("pub",),
+                     "containers": ("visibility_modifier",)},
+}
+
+SWIFT_SPEC = {
+    "language": "swift",
+    "engine": "generic",
+    "extensions": frozenset({".swift"}),
+    "grammar_module": "tree_sitter_swift",
+    "grammar_attr": "language",
+    "rule": "swift_static_binding_v1",
+    "producer": "swift-static-v1",
+    "scope_unit": "dir",
+    "def_types": {
+        "function_declaration": ("function",),
+    },
+    "class_types": {"class_declaration", "struct_declaration",
+                    "enum_declaration"},
+    "def_containers": {"class_body", "struct_body", "enum_body",
+                       "extension_body"},
+    "call_types": {"call_expression"},
+    "call_shapes": {
+        "call_expression": {"func": [], "first": True},
+    },
+    "member_types": {"navigation_expression"},
+    "member_shapes": {
+        "navigation_expression": {"obj": ["target"], "name": []},
+    },
+    "ctor_types": {},
+    "ctor_by_stem": True,
+    "func_literal_types": {"closure_expression"},
+    "scope_block_types": {"function_body", "code_block"},
+    "local_bind_types": {
+        "property_declaration": {"pattern", "bound_identifier"},
+    },
+    "param_decl_types": {"parameter": set()},
+    "param_container_types": {"parameters"},
+    "walk_skip_types": set(),
+    "self_names": {"self"},
+    "class_name_pattern": "^[A-Z]",
+    "implicit_this_bare": False,
+    "r2_kinds": ("function", "method", "type"),
+    "import_types": {"import_declaration": {"style": "dotted"}},
+    "directive_calls": {},
+    "directive_commands": {},
+    "private_rule": None,
+}
+
+PHP_SPEC = {
+    "language": "php",
+    "engine": "generic",
+    "extensions": frozenset({".php"}),
+    "grammar_module": "tree_sitter_php",
+    "grammar_attr": "language_php",
+    "rule": "php_static_binding_v1",
+    "producer": "php-static-v1",
+    "scope_unit": "file",
+    "def_types": {
+        "function_definition": ("function",),
+        "method_declaration": ("method",),
+    },
+    "class_types": {"class_declaration", "interface_declaration",
+                    "trait_declaration"},
+    "def_containers": {"declaration_list", "class_declaration",
+                       "interface_declaration", "namespace_definition"},
+    "call_types": {"function_call_expression",
+                   "member_call_expression", "scoped_call_expression"},
+    "call_shapes": {
+        "function_call_expression": {"func": ["function"]},
+        "member_call_expression": {"obj": ["object"], "name": ["name"],
+                                   "member": True},
+        "scoped_call_expression": {"obj": ["scope"], "name": ["name"],
+                                   "member": True},
+    },
+    "member_types": {},
+    "member_shapes": {},
+    "ctor_types": {"object_creation_expression"},
+    "func_literal_types": {"anonymous_function_creation",
+                           "arrow_function_creation"},
+    "scope_block_types": {"compound_statement"},
+    "local_bind_types": {
+        "assignment_expression": set(),
+    },
+    "param_decl_types": {"simple_parameter": set(),
+                         "variadic_parameter": set()},
+    "param_container_types": {"formal_parameters"},
+    "walk_skip_types": set(),
+    "self_names": {"this"},
+    "class_name_pattern": "^[A-Z]",
+    "implicit_this_bare": False,
+    "r2_kinds": ("function", "method", "type"),
+    "import_types": {"require_expression": {"style": "string"},
+                     "require_once_expression": {"style": "string"},
+                     "include_expression": {"style": "string"},
+                     "include_once_expression": {"style": "string"}},
+    "directive_calls": {},
+    "directive_commands": {},
+    "private_rule": {"kind": "excludes", "markers": ("private",),
+                     "containers": ("visibility_modifier",)},
+}
+
+RUBY_SPEC = {
+    "language": "ruby",
+    "engine": "generic",
+    "extensions": frozenset({".rb"}),
+    "grammar_module": "tree_sitter_ruby",
+    "grammar_attr": "language",
+    "rule": "ruby_static_binding_v1",
+    "producer": "ruby-static-v1",
+    "scope_unit": "file",
+    "def_types": {
+        "method": ("function",),
+    },
+    "class_types": {"class", "module"},
+    "def_containers": {"class", "module", "body_statement"},
+    "call_types": {"call"},
+    "call_shapes": {
+        "call": {"func": ["method"], "obj": ["receiver"],
+                 "name": ["method"], "member": "auto"},
+    },
+    "member_types": {},
+    "member_shapes": {},
+    "new_method": {"new": "initialize"},
+    "ctor_types": {},
+    "func_literal_types": set(),
+    "scope_block_types": {"body_statement", "block", "do_block"},
+    "local_bind_types": {
+        "assignment": set(),
+    },
+    "param_decl_types": {"method_parameters": {"optional_parameter",
+                                               "splat_parameter",
+                                               "keyword_parameter",
+                                               "block_parameter"},
+                         "block_parameters": set()},
+    "param_container_types": {"method_parameters", "block_parameters"},
+    "walk_skip_types": set(),
+    "self_names": {"self"},
+    "class_name_pattern": "^[A-Z]",
+    "implicit_this_bare": False,
+    "r2_kinds": ("function", "method", "type"),
+    "import_types": {},
+    "directive_calls": {"require": "require", "require_relative": "require",
+                        "load": "require"},
+    "directive_commands": {},
+    "private_rule": None,
+}
+
+JULIA_SPEC = {
+    "language": "julia",
+    "engine": "generic",
+    "extensions": frozenset({".jl"}),
+    "grammar_module": "tree_sitter_julia",
+    "grammar_attr": "language",
+    "rule": "julia_static_binding_v1",
+    "producer": "julia-static-v1",
+    "scope_unit": "file",
+    "def_types": {
+        "function_definition": ("function",),
+    },
+    "class_types": {"struct_definition"},
+    "def_containers": {"module_definition"},
+    "call_types": {"call_expression"},
+    "call_shapes": {
+        "call_expression": {"func": [], "first": True},
+    },
+    "member_types": {"field_expression"},
+    "member_shapes": {
+        "field_expression": {"obj": ["value"], "name": []},
+    },
+    "ctor_types": {},
+    "ctor_by_stem": True,
+    "func_literal_types": {"function_expression"},
+    "scope_block_types": {"block"},
+    "local_bind_types": {
+        "assignment": set(),
+    },
+    "param_decl_types": {},
+    "param_container_types": set(),
+    "signature_params": True,
+    "signature_type": "signature",
+    "body_is_self": True,
+    "walk_skip_types": {"signature"},
+    "self_names": set(),
+    "class_name_pattern": None,
+    "implicit_this_bare": False,
+    "r2_kinds": ("function", "type"),
+    "import_types": {},
+    "directive_calls": {"include": "include"},
+    "directive_commands": {},
+    "private_rule": None,
+}
+
+LUA_SPEC = {
+    "language": "lua",
+    "engine": "generic",
+    "extensions": frozenset({".lua"}),
+    "grammar_module": "tree_sitter_lua",
+    "grammar_attr": "language",
+    "rule": "lua_static_binding_v1",
+    "producer": "lua-static-v1",
+    "scope_unit": "file",
+    "def_types": {
+        "function_declaration": ("function",),
+    },
+    "class_types": set(),
+    "def_containers": {"block"},
+    "call_types": {"function_call"},
+    "call_shapes": {
+        "function_call": {"func": ["name"]},
+    },
+    "member_types": {"method_index_expression"},
+    "member_shapes": {
+        "method_index_expression": {"obj": ["table"],
+                                    "name": ["method"]},
+    },
+    "ctor_types": {},
+    "func_literal_types": {"function_definition"},
+    "scope_block_types": {"block"},
+    "local_bind_types": {
+        "variable_declaration": {"assignment_statement",
+                                 "variable_list"},
+        "assignment_statement": {"variable_list"},
+    },
+    "param_decl_types": {"parameters": set()},
+    "param_container_types": {"parameters"},
+    "walk_skip_types": set(),
+    "self_names": {"self"},
+    "class_name_pattern": None,
+    "implicit_this_bare": False,
+    "r2_kinds": ("function",),
+    "import_types": {},
+    "directive_calls": {"require": "require"},
+    "directive_commands": {},
+    "private_rule": None,
+}
+
+BASH_SPEC = {
+    "language": "bash",
+    "engine": "generic",
+    "extensions": frozenset({".sh", ".bash"}),
+    "grammar_module": "tree_sitter_bash",
+    "grammar_attr": "language",
+    "rule": "bash_static_binding_v1",
+    "producer": "bash-static-v1",
+    "scope_unit": "file",
+    "def_types": {
+        "function_definition": ("function",),
+    },
+    "class_types": set(),
+    "def_containers": {},
+    "call_types": {"command"},
+    "command_types": {"command"},
+    "command_name_fields": ("name", "command_name"),
+    "call_shapes": {
+        "command": {"func": ["name"]},
+    },
+    "member_types": {},
+    "member_shapes": {},
+    "ctor_types": {},
+    "func_literal_types": set(),
+    "scope_block_types": {"compound_statement"},
+    "local_bind_types": {},
+    "param_decl_types": {},
+    "param_container_types": set(),
+    "walk_skip_types": set(),
+    "self_names": set(),
+    "class_name_pattern": None,
+    "implicit_this_bare": False,
+    "r2_kinds": ("function",),
+    "import_types": {},
+    "directive_calls": {},
+    "directive_commands": {"source": "include", ".": "include"},
+    "private_rule": None,
+}
+
+POWERSHELL_SPEC = {
+    "language": "powershell",
+    "engine": "generic",
+    "extensions": frozenset({".ps1", ".psm1"}),
+    "grammar_module": "tree_sitter_powershell",
+    "grammar_attr": "language",
+    "rule": "powershell_static_binding_v1",
+    "producer": "powershell-static-v1",
+    "scope_unit": "file",
+    "def_types": {
+        "function_statement": ("function",),
+    },
+    "class_types": {"class_statement"},
+    "def_containers": {"statement_list"},
+    "call_types": {"command", "invokation_expression"},
+    "command_types": {"command"},
+    "command_name_fields": ("command_name", "name"),
+    "call_shapes": {
+        "command": {"func": ["command_name"]},
+        "invokation_expression": {"obj_child": ["variable"],
+                                  "name_child": ["member_name"],
+                                  "member": True},
+    },
+    "member_types": {},
+    "member_shapes": {},
+    "ctor_types": {},
+    "body_types": {"script_block"},
+    "func_literal_types": {"script_block"},
+    "scope_block_types": {"script_block", "script_block_body"},
+    "local_bind_types": {},
+    "param_decl_types": {},
+    "param_container_types": set(),
+    "walk_skip_types": set(),
+    "self_names": {"this"},
+    "class_name_pattern": None,
+    "implicit_this_bare": False,
+    "r2_kinds": ("function",),
+    "import_types": {},
+    "directive_calls": {},
+    "directive_commands": {"Import-Module": "import"},
+    "private_rule": None,
+}
+
 SPECS = {
     "go": GO_SPEC,
+    "java": JAVA_SPEC,
+    "kotlin": KOTLIN_SPEC,
+    "scala": SCALA_SPEC,
+    "csharp": CSHARP_SPEC,
+    "c": C_SPEC,
+    "cpp": CPP_SPEC,
+    "rust": RUST_SPEC,
+    "swift": SWIFT_SPEC,
+    "php": PHP_SPEC,
+    "ruby": RUBY_SPEC,
+    "julia": JULIA_SPEC,
+    "lua": LUA_SPEC,
+    "bash": BASH_SPEC,
+    "powershell": POWERSHELL_SPEC,
 }
 
 
@@ -288,6 +939,8 @@ def scan_unit(spec, files):
     ERROR nodes mark the file unsupported_syntax; the file is skipped,
     never walked for bindings.
     """
+    if _is_v2(spec):
+        return _scan_unit_v2(spec, files)
     unit = {"decls": {}, "imports": {}, "packages": {},
             "reassigned": set(), "errors": {}, "trees": {}}
     for path in sorted(files):
@@ -459,7 +1112,33 @@ def _ensure_dir_scanned(unit, spec, target_dir, ctx):
     needs the target's declarations, but units only pre-scan their
     own members. fetch supplies records; failures leave decls empty
     and the caller abstains.
+
+    Generic specs track per-file (unit["trees"]) instead of per-dir:
+    a file-unit's own directory is marked scanned at setup, but only
+    its own member was parsed, so required files in the same
+    directory must still merge on demand.
     """
+    if _is_v2(spec):
+        for path in sorted(ctx["known_paths"]):
+            if path in unit.get("trees", ()):
+                continue
+            directory = path.rsplit("/", 1)[0] if "/" in path else ""
+            if directory != target_dir:
+                continue
+            if path.rsplit(".", 1)[-1].lower() not in \
+                    {e.lstrip(".") for e in spec["extensions"]}:
+                continue
+            hit = ctx["fetch"](path)
+            if hit is not None:
+                extra = _scan_unit_v2(spec, {path: hit[1]})
+                for name, decls in extra["decls"].items():
+                    unit["decls"].setdefault(name, []).extend(decls)
+                unit["imports"].update(extra["imports"])
+                unit["trees"].update(extra["trees"])
+                unit["errors"].update(extra["errors"])
+                _ensure_v2_symbols(unit, spec, path, ctx["symbols"],
+                                   hit[0])
+        return
     scanned = unit.setdefault("scanned_dirs", set())
     if target_dir in scanned:
         return
@@ -618,6 +1297,10 @@ def _walk_statement(node, scope, ctx, spec, unit):
 def resolve_unit(spec, unit, path, source_id, symbols, fetch, known_paths,
                  cache, assertions, diagnostics):
     """Resolve verified edges for one file inside its scanned unit."""
+    if _is_v2(spec):
+        _resolve_unit_v2(spec, unit, path, source_id, symbols, fetch,
+                         known_paths, cache, assertions, diagnostics)
+        return
     if path in unit["errors"]:
         diagnostics.append({"path": path, "caller": None, "line": 1,
                             "start": 0, "end": 0,
@@ -694,6 +1377,8 @@ def _caller_entries(spec, unit, path, symbols):
 
 def unit_import_targets(spec, path, data, known_paths):
     """Distinct resolved import dirs of one file (for refresh)."""
+    if _is_v2(spec):
+        return _unit_import_targets_v2(spec, path, data, known_paths)
     tree = _parse(spec, data)
     targets = set()
     if tree is None:
@@ -811,6 +1496,12 @@ def resolve_unigraph_sources(sources, symbols, assertions, diagnostics,
             unit["own_paths"] = set(files)
             unit["scanned_dirs"] = {
                 m.rsplit("/", 1)[0] if "/" in m else "" for m in files}
+            if _is_v2(spec):
+                for member in members:
+                    hit = fetch(member)
+                    if hit is not None:
+                        _ensure_v2_symbols(unit, spec, member, symbols,
+                                           hit[0])
             for member in members:
                 hit = fetch(member)
                 if hit is None:
@@ -838,4 +1529,1102 @@ def affected_paths(touched, fresh):
             continue
         out |= unit_affected_paths(spec, set(touched), fresh)
     return out
+
+
+# ---------------------------------------------------------------------------
+# Generic v2 engine (Tier-1 languages)
+#
+# Same R1/R2 core as the Go path, but every language-shaped decision is
+# data in SPECS, not code: def discovery (def_types + def_containers),
+# name/body location (field cascades with a pruned-DFS fallback), call
+# shapes (func/obj/name fields), member targets (member_shapes), imports
+# (import_types styles + directive names), and binding forms
+# (local_bind_types + param_decl_types). The resolver below never names a
+# language. Specs name only node types probed from the installed
+# grammars; resolution semantics (unique-target-or-diagnostic,
+# abstain-beats-invent, receipted edges) are shared.
+# ---------------------------------------------------------------------------
+
+def _is_v2(spec):
+    return spec.get("engine") == "generic"
+
+
+_V2_NAME_TYPES = frozenset({
+    "identifier", "simple_identifier", "name", "word", "function_name",
+    "command_name", "member_name", "simple_name", "field_identifier",
+    "variable_name", "variable", "constant", "type_identifier",
+    "namespace_identifier",
+})
+
+# Subtrees never entered when searching a bare name or member endpoint:
+# type arguments/parameters, attributes/annotations, comments, decorators.
+_V2_PRUNE_SUBS = ("type_argument", "type_parameter", "attribute",
+                 "annotat", "comment", "decorator")
+
+
+def _is_nameish(node, spec):
+    return (node.type in _V2_NAME_TYPES
+            or node.type in spec.get("extra_name_types", ()))
+
+
+def _search_subtree(node, skip_types=()):
+    """Pre-order named descendants, pruning configured subtrees."""
+    stack = [node]
+    while stack:
+        current = stack.pop()
+        yield current
+        for child in reversed(_named(current)):
+            if child.type in skip_types:
+                continue
+            if any(sub in child.type for sub in _V2_PRUNE_SUBS):
+                continue
+            stack.append(child)
+
+
+def _sig_name(node, spec):
+    """Name from a signature subtree (julia): first bare name outside args."""
+    skip = (set(spec.get("param_container_types", ()))
+            | {"argument_list"})
+    for cand in _search_subtree(node, skip):
+        if cand is node:
+            continue
+        if _is_nameish(cand, spec):
+            return _text_of(cand)
+    return None
+
+
+def _def_name(node, spec):
+    """Decl name via field cascade, else first pruned-DFS name."""
+    sigtype = spec.get("signature_type")
+    if sigtype is not None:
+        for child in _named(node):
+            if child.type == sigtype:
+                found = _sig_name(child, spec)
+                if found:
+                    return found
+    for field in spec.get("name_fields", ("name", "declarator")):
+        hit = node.child_by_field_name(field)
+        if hit is None:
+            continue
+        if hit.type in spec.get("member_types", ()):
+            return _member_name(hit, spec)
+        if _is_nameish(hit, spec):
+            return _text_of(hit)
+        found = _def_name(hit, spec)
+        if found:
+            return found
+    skip = (set(spec.get("body_types", ()))
+            | set(spec.get("param_container_types", ()))
+            | set(spec.get("walk_skip_types", ()))
+            | set(spec.get("qualifier_types", ())))
+    for cand in _search_subtree(node, skip):
+        if cand is node:
+            continue
+        if _is_nameish(cand, spec):
+            return _text_of(cand)
+    return None
+
+
+def _def_body(node, spec):
+    for field in spec.get("body_fields", ("body",)):
+        hit = node.child_by_field_name(field)
+        if hit is not None:
+            return hit
+    for child in _named(node):
+        if child.type in spec.get("body_types", ()):
+            return child
+    return None
+
+
+def _is_nameish_for_bind(node, spec):
+    return _is_nameish(node, spec) or node.type == "variable_name"
+
+
+def _bind_from_spec(node, descend, scope, kind, spec):
+    for child in _named(node):
+        if child.type in descend:
+            _bind_from_spec(child, descend, scope, kind, spec)
+        elif _is_nameish_for_bind(child, spec):
+            scope.bind(_text_of(child), kind)
+
+
+def _iter_def_nodes(tree, spec):
+    """Yield (node, kind) for defs, descending through containers."""
+    containers = spec.get("def_containers", ())
+    methods = spec.get("method_containers", ())
+    qualified = spec.get("qualified_def_marker")
+    classes = spec.get("class_types", ())
+    stack = [(tree.root_node, (), None)]
+    while stack:
+        node, ancestors, parent = stack.pop()
+        for child in _named(node):
+            info = spec["def_types"].get(child.type)
+            if info is not None:
+                kind = info[0]
+                if kind == "function" and (
+                        any(a in methods for a in ancestors)
+                        or (qualified is not None and any(
+                            n.type == qualified
+                            for n in _search_subtree(child)))):
+                    kind = "method"
+                yield child, kind, parent
+                stack.append((child, ancestors + (child.type,), child))
+            elif child.type in classes:
+                yield child, "type", parent
+                stack.append((child, ancestors + (child.type,), parent))
+            elif child.type in containers:
+                stack.append((child, ancestors + (child.type,), parent))
+
+
+def _spec_private(spec, node):
+    """A decl is private only when its own modifier child says so."""
+    rule = spec.get("private_rule")
+    if not rule:
+        return False
+    markers = rule.get("markers", ())
+    containers = rule.get("containers", ())
+    for child in _named(node):
+        if containers and child.type not in containers:
+            continue
+        text = _text_of(child)
+        if rule.get("kind") == "requires":
+            return not any(m in text for m in markers)
+        if any(m in text for m in markers):
+            return True
+    if rule.get("kind") == "requires":
+        return True
+    return False
+
+
+def _spec_visible(spec, decl, caller_path):
+    if decl["path"] == caller_path:
+        return True
+    return not decl.get("private", False)
+
+
+_SIGILS = "$@"
+
+_IMPORT_STRING_TYPES = ("string", "string_literal", "string_content",
+                        "generic_token", "word")
+
+
+def _norm_recv(text, spec):
+    sigils = spec.get("sigils", _SIGILS)
+    stripped = text.lstrip(sigils) if sigils else text
+    out = []
+    for char in stripped:
+        if char.isalnum() or char in "_-":
+            out.append(char)
+        else:
+            break
+    return "".join(out).rstrip("-")
+
+
+def _leftmost_name(node, spec):
+    for cand in _search_subtree(node):
+        if _is_nameish(cand, spec) or cand.type == "variable":
+            return _norm_recv(_text_of(cand), spec)
+    return ""
+
+
+def _rightmost_name(node, spec):
+    best, best_start = None, -1
+    for cand in _search_subtree(node):
+        if _is_nameish(cand, spec):
+            if int(cand.start_byte) >= best_start:
+                best, best_start = _text_of(cand), int(cand.start_byte)
+    return best or ""
+
+
+def _member_name(node, spec):
+    if _is_nameish(node, spec):
+        return _text_of(node)
+    return _rightmost_name(node, spec)
+
+
+def _member_endpoint(shape, callee, spec):
+    """Resolve (receiver_root, name) for a member-access callee."""
+    obj = None
+    for field in shape.get("obj", ()):
+        hit = callee.child_by_field_name(field)
+        if hit is not None:
+            obj = hit
+            break
+    if obj is None:
+        for want in shape.get("obj_child", ()):
+            for cand in _search_subtree(callee):
+                if cand.type == want:
+                    obj = cand
+                    break
+            if obj is not None:
+                break
+    name = None
+    for field in shape.get("name", ()):
+        hit = callee.child_by_field_name(field)
+        if hit is not None:
+            name = _member_name(hit, spec)
+            break
+    if name is None:
+        for want in shape.get("name_child", ()):
+            for cand in _search_subtree(callee):
+                if cand.type == want:
+                    name = _text_of(cand)
+                    break
+            if name is not None:
+                break
+    if name is None:
+        name = _rightmost_name(callee, spec)
+    recv = ""
+    if obj is not None:
+        raw = _text_of(obj).strip()
+        if raw.lstrip(spec.get("sigils", _SIGILS)) in spec.get(
+                "self_names", ()):
+            recv = raw.lstrip(spec.get("sigils", _SIGILS))
+        else:
+            recv = _leftmost_name(obj, spec)
+    if not recv:
+        recv = _norm_recv(_text_of(callee).split(".")[0].split(":")[0],
+                          spec)
+    return recv, name
+
+
+def _unquote(text):
+    if len(text) >= 2 and text[0] == text[-1] and text[0] in "\"'":
+        return text[1:-1]
+    return text
+
+
+def _import_string(node, skip=()):
+    """First string-ish text under node, excluding skip subtrees."""
+    marks = {(s.start_byte, s.end_byte) for s in skip}
+    stack = [node]
+    while stack:
+        current = stack.pop()
+        if (current.start_byte, current.end_byte) in marks:
+            continue
+        if current is not node and current.type in _IMPORT_STRING_TYPES:
+            return _unquote(_text_of(current))
+        for child in reversed(_named(current)):
+            stack.append(child)
+    return ""
+
+
+def _dotted_text(node, spec):
+    parts = [_text_of(c) for c in _search_subtree(node)
+             if _is_nameish(c, spec) and c.type != "variable"]
+    return ".".join(parts)
+
+
+def _collect_imports_v2(tree, spec, data):
+    """Scan one file for import entries: local -> entry dicts.
+
+    Entries carry the raw specifier, candidate file matches, span, and
+    flags (static/wildcard/class_hint). Directives (require/include/
+    source/Import-Module style calls and commands) feed the same
+    table; module-alias forms (using X = ...) are skipped.
+    """
+    out = {}
+    directives = spec.get("directive_calls", {})
+    commands = spec.get("directive_commands", {})
+    for node in _search_subtree(tree.root_node):
+        info = spec["import_types"].get(node.type)
+        if info is not None:
+            style = info.get("style", "dotted")
+            if style == "string":
+                raw = _import_string(node)
+                if not raw:
+                    continue
+                entry = {"original": raw.rsplit("/", 1)[-1],
+                         "candidates": [raw],
+                         "span": (int(node.start_byte), int(node.end_byte)),
+                         "kind": info.get("kind", "import")}
+                out.setdefault(entry["original"], entry)
+            elif style == "dotted":
+                if "=" in [_text_of(c) for c in node.children
+                           if not c.is_named]:
+                    continue
+                dotted = _dotted_text(node, spec)
+                if not dotted:
+                    continue
+                segs = dotted.split(".")
+                tokens = _text_of(node).split()
+                original = segs[-1]
+                if "as" in tokens and len(segs) > 1:
+                    alias = tokens[tokens.index("as") + 1].strip(" ;")
+                    if segs[-1] == alias:
+                        segs = segs[:-1]
+                    original = alias
+                static = "static" in tokens
+                wildcard = any(_text_of(c) in ("*", "_")
+                               for c in node.children)
+                entry = {"original": original,
+                         "candidates": ["/".join(segs), original],
+                         "span": (int(node.start_byte), int(node.end_byte)),
+                         "kind": info.get("kind", "import"),
+                         "static": static, "wildcard": wildcard,
+                         "class_hint": segs[-2] if static and len(segs) > 1
+                         else None}
+                out.setdefault(original, entry)
+            elif style == "multi":
+                ids = [_text_of(c) for c in _search_subtree(node)
+                       if c.type == "identifier"]
+                if any(_text_of(c) in ("*", "_") for c in node.children):
+                    dotted = ".".join(ids)
+                    entry = {"original": ids[0] if ids else "",
+                             "candidates": [dotted.replace(".", "/")],
+                             "span": (int(node.start_byte),
+                                      int(node.end_byte)),
+                             "kind": info.get("kind", "import"),
+                             "wildcard": True}
+                    if entry["original"]:
+                        out.setdefault(entry["original"], entry)
+                else:
+                    for original in ids[1:]:
+                        entry = {"original": original,
+                                 "candidates": [original],
+                                 "span": (int(node.start_byte),
+                                          int(node.end_byte)),
+                                 "kind": info.get("kind", "import")}
+                        out.setdefault(original, entry)
+            elif style == "paths":
+                best = None
+                for cand in _search_subtree(node):
+                    if cand is node:
+                        continue
+                    text = _text_of(cand)
+                    if "::" in text and (best is None
+                                         or len(text) < len(best)):
+                        best = text
+                raw = best.replace(" ", "") if best is not None else ""
+                for prefix in spec.get("path_prefixes", ("crate::",
+                                                         "super::",
+                                                         "self::")):
+                    if raw.startswith(prefix):
+                        raw = raw[len(prefix):]
+                        break
+                segs = raw.split("::")
+                entry = {"original": segs[-1],
+                         "candidates": ["/".join(segs), segs[-1]],
+                         "span": (int(node.start_byte), int(node.end_byte)),
+                         "kind": info.get("kind", "import")}
+                out.setdefault(entry["original"], entry)
+            elif style == "mod":
+                hit = node.child_by_field_name("name")
+                name = _text_of(hit) if hit is not None else ""
+                if not name:
+                    continue
+                entry = {"original": name,
+                         "candidates": [name + ".rs",
+                                        name + "/mod.rs"],
+                         "span": (int(node.start_byte), int(node.end_byte)),
+                         "kind": "mod"}
+                out.setdefault(name, entry)
+            continue
+        name = None
+        if node.type in spec.get("command_types", ()):
+            hit = None
+            for field in spec.get("command_name_fields",
+                                  ("name", "command_name")):
+                hit = node.child_by_field_name(field)
+                if hit is not None:
+                    break
+            if hit is not None:
+                name = _text_of(hit)
+            directive = commands.get(name) if name else None
+            arg = (_import_string(node, skip=(hit,)) if directive else "")
+            if directive and arg:
+                entry = {"original": arg.rsplit("/", 1)[-1],
+                         "candidates": [arg],
+                         "span": (int(node.start_byte), int(node.end_byte)),
+                         "kind": directive}
+                out.setdefault(entry["original"], entry)
+        elif node.type in spec.get("call_types", ()):
+            hit = None
+            for field in ("name", "method", "function"):
+                hit = node.child_by_field_name(field)
+                if hit is not None:
+                    break
+            if hit is None:
+                kids = _named(node)
+                hit = kids[0] if kids else None
+            if hit is not None:
+                name = _text_of(hit)
+            directive = directives.get(name) if name else None
+            arg = _import_string(node) if directive else ""
+            if directive and arg:
+                entry = {"original": arg.rsplit("/", 1)[-1],
+                         "candidates": [arg],
+                         "span": (int(node.start_byte), int(node.end_byte)),
+                         "kind": directive}
+                out.setdefault(entry["original"], entry)
+    return out
+
+
+def _match_import_file(spec, entry, from_path, known_paths):
+    """Resolve an import entry to target files (usually one)."""
+    exts = {e.lstrip(".") for e in spec["extensions"]}
+    if entry.get("wildcard"):
+        want = entry["candidates"][0] if entry["candidates"] else ""
+        dirs = {p.rsplit("/", 1)[0] if "/" in p else "" for p in known_paths
+                if p.rsplit(".", 1)[-1].lower() in exts}
+        hits = [d for d in dirs
+                if d == want or d.endswith("/" + want)] if want else []
+        if len(hits) == 1:
+            return ("dir", hits[0])
+        return None
+    if entry.get("class_hint"):
+        stem = entry["class_hint"]
+        hits = [p for p in known_paths
+                if p.rsplit("/", 1)[-1].rsplit(".", 1)[0] == stem
+                and p.rsplit(".", 1)[-1].lower() in exts]
+        if len(hits) == 1:
+            return ("file", hits[0])
+        return None
+    directory = from_path.rsplit("/", 1)[0] if "/" in from_path else ""
+    matches = set()
+    for cand in entry.get("candidates", ()):
+        if cand.startswith("./"):
+            cand = cand[2:]
+        base = cand.rsplit("/", 1)[-1]
+        for path in known_paths:
+            if path.rsplit(".", 1)[-1].lower() not in exts:
+                continue
+            if "/" in cand:
+                if path == cand or path.endswith("/" + cand):
+                    matches.add(path)
+                stem = cand
+                if path.rsplit(".", 1)[0] == stem or path.endswith(
+                        "/" + stem + "." + path.rsplit(".", 1)[-1].lower()):
+                    matches.add(path)
+            else:
+                name = base.rsplit(".", 1)[0]
+                if (path.rsplit("/", 1)[0] if "/" in path else "") \
+                        == directory and \
+                        path.rsplit("/", 1)[-1].rsplit(".", 1)[0] == name:
+                    matches.add(path)
+    if len(matches) == 1:
+        return ("file", next(iter(matches)))
+    stems = {}
+    for path in matches:
+        stems.setdefault(
+            path.rsplit("/", 1)[-1].rsplit(".", 1)[0], set()).add(path)
+    base = (entry.get("candidates", [""])[-1]).rsplit("/", 1)[-1]
+    base = base.rsplit(".", 1)[0]
+    if base in stems:
+        return ("files", sorted(stems[base]))
+    return None
+
+
+def _v2_single_target(decls):
+    fns = [d for d in decls if d["kind"] == "function"]
+    if len(fns) != 1 or len(decls) != 1:
+        return None
+    return fns[0]
+
+
+def _v2_edge(ctx, spec, callee_key, call_node, extra_support=()):
+    ctx["expression"] = ctx.get("expression") or callee_key
+    return _emit_edge(ctx, spec, ctx.get("caller"), callee_key,
+                      call_node, extra_support)
+
+
+def _v2_resolve_bare(name, scope, unit, ctx, spec):
+    """R1 for generic specs: same-file preference, implicit receivers."""
+    found_scope, kind = scope.lookup(name)
+    if kind in ("local", "param") and found_scope is not ctx["unit_scope"]:
+        return ("diag", "shadowed_name")
+    if kind == "nested":
+        return ("diag", "nested_function")
+    if kind == "import":
+        return _v2_resolve_through_import(name, scope, unit, ctx, spec)
+    if _is_external_test_caller(spec, unit, ctx["path"]):
+        return ("diag", "unresolved_name")
+    if (ctx["path"], name) in unit["reassigned"]:
+        return ("diag", "reassigned_binding")
+    decls = [d for d in unit["decls"].get(name, [])
+             if d["path"] in unit.get("own_paths", {d["path"]})]
+    if decls and all(d["kind"] == "type" for d in decls):
+        visible = [d for d in decls if _spec_visible(spec, d, ctx["path"])]
+        if len(visible) == 1:
+            callee = "%s::%s" % (visible[0]["path"], name)
+            if callee not in ctx["symbols"]:
+                return ("diag", "unproven_target")
+            return ("edge", callee, ())
+        return ("diag", "unproven_target")
+    if not decls:
+        if spec.get("ctor_by_stem"):
+            return _v2_resolve_ctor(name, unit, ctx, spec)
+        return ("diag", "unresolved_name")
+    same = [d for d in decls if d["path"] == ctx["path"]]
+    if len(same) == 1 and _v2_single_target(same) is not None:
+        target = same[0]
+        callee = "%s::%s" % (target["path"], name)
+        if callee not in ctx["symbols"]:
+            return ("diag", "unproven_target")
+        return ("edge", callee, ())
+    if (len(same) == 1 and same[0]["kind"] == "method"
+            and spec.get("implicit_this_bare")):
+        callee = "%s::%s" % (same[0]["path"], name)
+        if callee not in ctx["symbols"]:
+            return ("diag", "unproven_target")
+        return ("edge", callee, ())
+    if same:
+        return ("diag", "unproven_target")
+    visible = [d for d in decls if _spec_visible(spec, d, ctx["path"])]
+    target = _v2_single_target(visible)
+    if target is None:
+        return ("diag", "unproven_target")
+    callee = "%s::%s" % (target["path"], name)
+    if callee not in ctx["symbols"]:
+        return ("diag", "unproven_target")
+    return ("edge", callee, ())
+
+
+def _v2_method_targets(unit, ctx, name, kinds=("function", "method")):
+    return [d for d in unit["decls"].get(name, [])
+            if d["path"] == ctx["path"] and d["kind"] in kinds
+            and d["path"] in unit.get("own_paths", {d["path"]})]
+
+
+def _v2_resolve_self(name, unit, ctx, spec):
+    """this/self receiver: same-file unique method (or function)."""
+    cands = _v2_method_targets(unit, ctx, name)
+    if len(cands) != 1:
+        return ("diag", "unproven_target")
+    callee = "%s::%s" % (cands[0]["path"], name)
+    if callee not in ctx["symbols"]:
+        return ("diag", "unproven_target")
+    return ("edge", callee, ())
+
+
+def _v2_class_files(unit, ctx, classname):
+    stems = set()
+    for path in unit.get("own_paths", ()):
+        stem = path.rsplit("/", 1)[-1].rsplit(".", 1)[0]
+        if stem.lower() == classname.lower():
+            stems.add(path)
+    return sorted(stems)
+
+
+def _v2_resolve_class_member(classname, name, unit, ctx, spec):
+    """ClassName.member: unique method in the stem-matching file."""
+    files = _v2_class_files(unit, ctx, classname)
+    cands = [d for d in unit["decls"].get(name, [])
+             if d["path"] in files and d["kind"] in ("function", "method")
+             and _spec_visible(spec, d, ctx["path"])]
+    if len(cands) != 1:
+        return ("diag", "unproven_target")
+    callee = "%s::%s" % (cands[0]["path"], name)
+    if callee not in ctx["symbols"]:
+        return ("diag", "unproven_target")
+    return ("edge", callee, ())
+
+
+def _v2_resolve_ctor(name, unit, ctx, spec):
+    """Constructor call: unique visible type-decl in the unit."""
+    cands = [d for d in unit["decls"].get(name, [])
+             if d["path"] in unit.get("own_paths", {d["path"]})
+             and d["kind"] == "type"
+             and _spec_visible(spec, d, ctx["path"])]
+    if len(cands) != 1:
+        return ("diag", "unproven_target")
+    callee = "%s::%s" % (cands[0]["path"], name)
+    if callee not in ctx["symbols"]:
+        return ("diag", "unproven_target")
+    return ("edge", callee, ())
+
+
+def _v2_resolve_through_import(name, scope, unit, ctx, spec):
+    entry = unit["imports"].get(ctx["path"], {}).get(name)
+    if entry is None:
+        return ("diag", "unsupported_import")
+    return _v2_resolve_imported(name, entry, unit, ctx, spec)
+
+
+def _v2_resolve_imported(original, entry, unit, ctx, spec):
+    if entry is None:
+        return ("diag", "unsupported_import")
+    match = _match_import_file(spec, entry, ctx["path"], ctx["known_paths"])
+    if match is None:
+        return ("diag", "unresolved_import")
+    kind, target = match
+    if kind == "dir":
+        _ensure_dir_scanned(unit, spec, target, ctx)
+        cands = [d for d in unit["decls"].get(original, [])
+                 if (d["path"].rsplit("/", 1)[0] if "/" in d["path"] else "")
+                 == target and d["kind"] in spec.get(
+                     "r2_kinds", ("function", "method"))
+                 and _spec_visible(spec, d, ctx["path"])]
+        start, end = entry["span"]
+        support = ({"source": ctx["source_id"],
+                    "start": start, "end": end},)
+    else:
+        files = [target] if kind == "file" else list(target)
+        for path in files:
+            directory = path.rsplit("/", 1)[0] if "/" in path else ""
+            _ensure_dir_scanned(unit, spec, directory, ctx)
+        cands = [d for d in unit["decls"].get(original, [])
+                 if d["path"] in files and d["kind"] in spec.get(
+                     "r2_kinds", ("function", "method", "type"))
+                 and _spec_visible(spec, d, ctx["path"])]
+        start, end = entry["span"]
+        support = ({"source": ctx["source_id"],
+                    "start": start, "end": end},)
+    if not cands:
+        return ("diag", "unresolved_import")
+    if len(cands) != 1:
+        return ("diag", "unproven_target")
+    callee = "%s::%s" % (cands[0]["path"], original)
+    if callee not in ctx["symbols"]:
+        return ("diag", "unproven_target")
+    return ("edge", callee, support)
+
+
+def _v2_directive_name(node, spec):
+    """A require/source/Import-Module style call or command, or None."""
+    if node.type in spec.get("command_types", ()):
+        hit = None
+        for field in spec.get("command_name_fields",
+                              ("name", "command_name")):
+            hit = node.child_by_field_name(field)
+            if hit is not None:
+                break
+        name = _text_of(hit) if hit is not None else ""
+        if name in spec.get("directive_commands", {}):
+            return name
+        return None
+    if node.type in spec.get("call_types", ()):
+        hit = None
+        for field in ("name", "method", "function"):
+            hit = node.child_by_field_name(field)
+            if hit is not None:
+                break
+        if hit is None:
+            kids = _named(node)
+            hit = kids[0] if kids else None
+        name = _text_of(hit) if hit is not None else ""
+        if name in spec.get("directive_calls", {}):
+            return name
+    return None
+
+
+def _v2_has_obj(shape, node):
+    for field in shape.get("obj", ()):
+        if node.child_by_field_name(field) is not None:
+            return True
+    for want in shape.get("obj_child", ()):
+        for cand in _search_subtree(node):
+            if cand.type == want:
+                return True
+    return False
+
+
+def _v2_callee(node, spec):
+    """Split a call node into (kind, target) for resolution."""
+    shape = spec["call_shapes"][node.type]
+    member = shape.get("member")
+    if member is True or (member == "auto"
+                          and _v2_has_obj(shape, node)):
+        recv, name = _member_endpoint(shape, node, spec)
+        return ("member", (recv, name))
+    func = None
+    for field in shape.get("func", ()):
+        func = node.child_by_field_name(field)
+        if func is not None:
+            break
+    if func is None and shape.get("first"):
+        kids = _named(node)
+        func = kids[0] if kids else None
+    if func is None:
+        return ("unknown", node)
+    if func.type in spec.get("member_types", ()) or func.type in spec.get(
+            "member_shapes", ()):
+        shape2 = spec.get("member_shapes", {}).get(func.type, {})
+        recv, name = _member_endpoint(shape2, func, spec)
+        return ("member", (recv, name))
+    if _is_nameish(func, spec):
+        return ("plain", _text_of(func))
+    return ("unknown", func)
+
+
+def _v2_resolve_member(recv, name, scope, unit, ctx, spec):
+    if not name:
+        return ("diag", "unresolved_callee")
+    if recv in spec.get("self_names", ()):
+        return _v2_resolve_self(name, unit, ctx, spec)
+    new_method = spec.get("new_method", {})
+    if recv and name in new_method:
+        return _v2_resolve_class_member(recv, new_method[name], unit,
+                                        ctx, spec)
+    if recv:
+        _found, kind = scope.lookup(recv)
+        if kind == "import":
+            return _v2_resolve_imported(name, unit["imports"].get(
+                ctx["path"], {}).get(recv), unit, ctx, spec)
+        pattern = spec.get("class_name_pattern")
+        if pattern and recv[:1].isupper():
+            status = _v2_resolve_class_member(recv, name, unit, ctx, spec)
+            if status[0] == "edge":
+                return status
+        return ("diag", "unsupported_receiver")
+    return ("diag", "unresolved_callee")
+
+
+def _v2_walk_call(node, scope, ctx, spec, unit):
+    if _v2_directive_name(node, spec) is not None:
+        return
+    kind, payload = _v2_callee(node, spec)
+    text = _text_of(node)
+    if ctx.get("nested"):
+        _record_diag(ctx, "nested_call", node, text[:80]
+                     if len(text) > 80 else text)
+    elif ctx.get("caller") is None:
+        _record_diag(ctx, "unresolved_call", node, text[:80]
+                     if len(text) > 80 else text,
+                     {"reason": "module_scope"})
+    elif kind == "plain":
+        if payload in spec.get("builtin_names", ()):
+            return
+        status = _v2_resolve_bare(payload, scope, unit, ctx, spec)
+        if status[0] == "edge":
+            ctx["expression"] = payload
+            _v2_edge(ctx, spec, status[1], node, status[2])
+        else:
+            _record_diag(ctx, "unresolved_call", node, payload,
+                         {"reason": status[1]})
+    elif kind == "member":
+        recv, name = payload
+        status = _v2_resolve_member(recv, name, scope, unit, ctx, spec)
+        if status[0] == "edge":
+            ctx["expression"] = "%s.%s" % (recv, name)
+            _v2_edge(ctx, spec, status[1], node, status[2])
+        else:
+            _record_diag(ctx, "unresolved_call", node,
+                         "%s.%s" % (recv, name),
+                         {"reason": status[1]})
+    else:
+        _record_diag(ctx, "unsupported_call", node, text[:80]
+                     if len(text) > 80 else text,
+                     {"reason": "unsupported_construct"})
+    for child in _named(node):
+        if child.type in spec.get("func_literal_types", ()):
+            nested = dict(ctx)
+            nested["nested"] = True
+            child_scope = scope.child()
+            _v2_bind_params(child, spec, child_scope, nested)
+            for grand in _named(child):
+                _walk_v2(grand, child_scope, nested, spec, unit)
+            continue
+        _walk_v2(child, scope, ctx, spec, unit)
+
+
+def _v2_walk_ctor(node, scope, ctx, spec, unit):
+    name = ""
+    for head in _named(node):
+        if head.type in spec.get("ctor_skip_types",
+                                 ("arguments", "argument_list")):
+            continue
+        if _is_nameish(head, spec):
+            name = _text_of(head)
+        else:
+            inner = _rightmost_name(head, spec)
+            if inner:
+                name = inner
+        break
+    if not name:
+        name = _rightmost_name(node, spec) or _leftmost_name(node, spec)
+    if ctx.get("nested"):
+        _record_diag(ctx, "nested_call", node, "new " + name)
+    elif ctx.get("caller") is None:
+        _record_diag(ctx, "unresolved_call", node, "new " + name,
+                     {"reason": "module_scope"})
+    else:
+        status = _v2_resolve_ctor(name, unit, ctx, spec)
+        if status[0] == "edge":
+            ctx["expression"] = "new " + name
+            _v2_edge(ctx, spec, status[1], node, status[2])
+        else:
+            _record_diag(ctx, "unresolved_call", node, "new " + name,
+                         {"reason": status[1]})
+    for child in _named(node):
+        _walk_v2(child, scope, ctx, spec, unit)
+
+
+def _v2_bind_params(def_node, spec, scope, ctx):
+    if spec.get("signature_params"):
+        for child in _named(def_node):
+            if child.type == "signature":
+                for sub in _search_subtree(child):
+                    if sub.type == "argument_list":
+                        for leaf in _named(sub):
+                            if _is_nameish(leaf, spec):
+                                scope.bind(_text_of(leaf), "param")
+                        break
+                break
+    containers = spec.get("param_container_types", ())
+    found = None
+    for cand in _search_subtree(def_node):
+        if cand is def_node:
+            continue
+        if cand.type in spec.get("body_types", ()):
+            return
+        if cand.type in containers:
+            found = cand
+            break
+    if found is not None:
+        _bind_container_children(found, spec, scope)
+        return
+    for child in _named(def_node):
+        if child.type in spec.get("param_decl_types", ()):
+            _bind_from_spec(child, spec["param_decl_types"][child.type],
+                            scope, "param", spec)
+        elif child.type in spec.get("param_container_types", ()):
+            _bind_container_children(child, spec, scope)
+
+
+def _bind_container_children(container, spec, scope):
+    for child in _named(container):
+        if child.type in spec.get("param_decl_types", ()):
+            _bind_from_spec(child, spec["param_decl_types"][child.type],
+                            scope, "param", spec)
+        elif _is_nameish_for_bind(child, spec):
+            scope.bind(_text_of(child), "param")
+
+
+def _walk_v2(node, scope, ctx, spec, unit):
+    ctx["scope"] = scope
+    if node.type in spec.get("call_types", ()):
+        _v2_walk_call(node, scope, ctx, spec, unit)
+        return
+    if node.type in spec.get("ctor_types", ()):
+        _v2_walk_ctor(node, scope, ctx, spec, unit)
+        return
+    if node.type in spec.get("def_types", ()):
+        if ctx.get("caller") is None:
+            return
+        name = _def_name(node, spec)
+        if name:
+            scope.bind(name, "nested")
+        return
+    if node.type in spec.get("walk_skip_types", ()):
+        return
+    if node.type in spec.get("func_literal_types", ()):
+        nested = dict(ctx)
+        nested["nested"] = True
+        child_scope = scope.child()
+        _v2_bind_params(node, spec, child_scope, nested)
+        for child in _named(node):
+            _walk_v2(child, child_scope, nested, spec, unit)
+        return
+    if node.type in spec.get("local_bind_types", ()):
+        _bind_from_spec(node, spec["local_bind_types"][node.type],
+                        scope, "local", spec)
+    if node.type in spec.get("param_decl_types", ()):
+        _bind_from_spec(node, spec["param_decl_types"][node.type],
+                        scope, "param", spec)
+    if node.type in spec.get("scope_block_types", ()) \
+            and ctx.get("caller") is not None:
+        child_scope = scope.child()
+        for child in _named(node):
+            if child.type in spec.get("param_container_types", ()):
+                for leaf in _named(child):
+                    if leaf.type in spec.get("param_decl_types", ()):
+                        _bind_from_spec(
+                            leaf, spec["param_decl_types"][leaf.type],
+                            child_scope, "param", spec)
+                    elif _is_nameish_for_bind(leaf, spec):
+                        child_scope.bind(_text_of(leaf), "param")
+        for child in _named(node):
+            _walk_v2(child, child_scope, ctx, spec, unit)
+        return
+    for child in _named(node):
+        _walk_v2(child, scope, ctx, spec, unit)
+
+
+def _v2_caller_entries(spec, unit, path, symbols):
+    entries = []
+    for name, decls in unit["decls"].items():
+        for decl in decls:
+            if decl["path"] != path:
+                continue
+            if decl["kind"] not in ("function", "method", "type"):
+                continue
+            if decl["kind"] == "type":
+                continue
+            key = "%s::%s" % (path, name)
+            if key not in symbols:
+                continue
+            body = decl.get("body")
+            if body is None and (spec.get("body_is_self")
+                                 or spec.get("expr_body")):
+                body = decl["node"]
+            if body is None:
+                continue
+            entries.append((key, decl, body))
+    return entries
+
+
+def _ensure_v2_symbols(unit, spec, path, symbols, source_id):
+    language = spec["language"]
+    for name, decls in unit["decls"].items():
+        for decl in decls:
+            if decl["path"] != path:
+                continue
+            key = "%s::%s" % (path, name)
+            if key in symbols:
+                continue
+            node = decl["node"]
+            symbols[key] = {"key": key, "path": path, "name": name,
+                            "source": source_id,
+                            "line": decl.get("line", 1),
+                            "start": int(node.start_byte),
+                            "end": int(node.end_byte),
+                            "kind": decl["kind"] if decl["kind"] in (
+                                "function", "method", "type") else "function",
+                            "is_test": name.startswith("test_"),
+                            "language": language,
+                            "derivation": "unigraph_inventory_v1"}
+
+
+def _scan_unit_v2(spec, files):
+    unit = {"decls": {}, "imports": {}, "packages": {},
+            "reassigned": set(), "errors": {}, "trees": {}}
+    for path in sorted(files):
+        data = files[path]
+        tree = _parse(spec, data)
+        if tree is None or tree.root_node.has_error:
+            unit["errors"][path] = True
+            continue
+        unit["trees"][path] = tree
+        unit["imports"][path] = _collect_imports_v2(tree, spec, data)
+        for node, kind, parent in _iter_def_nodes(tree, spec):
+            name = _def_name(node, spec)
+            if not name:
+                continue
+            body = _def_body(node, spec)
+            if node.type in spec.get("class_types", ()):
+                kind = "type"
+            decl = {"kind": kind, "name": name, "node": node,
+                    "path": path, "body": body,
+                    "private": _spec_private(spec, node),
+                    "parent": parent,
+                    "span": (int(node.start_byte), int(node.end_byte)),
+                    "line": int(node.start_point[0]) + 1}
+            unit["decls"].setdefault(name, []).append(decl)
+    return unit
+
+
+_V2_SCOPE_PULL_KINDS = ("import", "require", "include", "source",
+                          "mod")
+_V2_BIND_KINDS = ("import", "require", "mod")
+
+
+def _v2_pull_scope(unit, spec, path, ctx):
+    """Matched import targets join the visible scope.
+
+    A require/include/source directive evaluates the target file in the
+    caller's scope at runtime; a use/import entry that resolves to a
+    repo file names the same file the R2 edge would cite. Either way
+    the target's declarations are visible to same-unit resolution, so
+    any successfully matched entry pulls its files. Unmatched entries
+    (stdlib, third-party, missing) pull nothing and R2 abstains.
+    """
+    for local, entry in unit["imports"].get(path, {}).items():
+        if entry.get("kind") not in _V2_SCOPE_PULL_KINDS:
+            continue
+        match = _match_import_file(spec, entry, path, ctx["known_paths"])
+        if match is None:
+            continue
+        kind, target = match
+        if kind == "dir":
+            continue
+        files = [target] if kind == "file" else list(target)
+        for file in files:
+            directory = file.rsplit("/", 1)[0] if "/" in file else ""
+            _ensure_dir_scanned(unit, spec, directory, ctx)
+            unit.setdefault("own_paths", set()).add(file)
+
+
+def _resolve_unit_v2(spec, unit, path, source_id, symbols, fetch,
+                     known_paths, cache, assertions, diagnostics):
+    if path in unit["errors"]:
+        diagnostics.append({"path": path, "caller": None, "line": 1,
+                            "start": 0, "end": 0,
+                            "kind": "unsupported_syntax",
+                            "expression": ""})
+        return
+    tree = unit["trees"].get(path)
+    if tree is None:
+        return
+    local_assertions = []
+    early = {"path": path, "source_id": source_id,
+             "symbols": symbols, "fetch": fetch,
+             "known_paths": known_paths, "cache": cache,
+             "assertions": local_assertions, "diagnostics": diagnostics}
+    _v2_pull_scope(unit, spec, path, early)
+    _ensure_v2_symbols(unit, spec, path, symbols, source_id)
+    unit_scope = _Scope()
+    for name in unit["decls"]:
+        unit_scope.bind(name, "module")
+    for bpath, bindings in unit["imports"].items():
+        if bpath != path:
+            continue
+        for local, entry in bindings.items():
+            if entry.get("kind") in _V2_BIND_KINDS:
+                unit_scope.bind(local, "import")
+    ctx = {"path": path, "source_id": source_id,
+           "symbols": symbols, "fetch": fetch,
+           "known_paths": known_paths, "cache": cache,
+           "assertions": local_assertions, "diagnostics": diagnostics,
+           "unit_scope": unit_scope, "caller": None, "nested": False,
+           "expression": "", "scope": unit_scope}
+    scopes = {}
+    entries = sorted(_v2_caller_entries(spec, unit, path, symbols),
+                     key=lambda e: (e[1].get("span", (0, 0))[0],
+                                    e[1].get("span", (0, 0))[1]))
+    for key, decl, body in entries:
+        ctx["caller"] = key
+        ctx["nested"] = False
+        ctx["expression"] = ""
+        base = scopes.get(id(decl.get("parent")), unit_scope)
+        scope = base.child()
+        scopes[id(decl["node"])] = scope
+        _v2_bind_params(decl["node"], spec, scope, ctx)
+        if body is decl["node"]:
+            for child in _named(body):
+                if child.type in spec.get("walk_skip_types", ()):
+                    continue
+                _walk_v2(child, scope, ctx, spec, unit)
+        elif body.type in spec.get("func_literal_types", ()):
+            for child in _named(body):
+                _walk_v2(child, scope, ctx, spec, unit)
+        else:
+            _walk_v2(body, scope, ctx, spec, unit)
+    ctx["caller"] = None
+    for child in _named(tree.root_node):
+        _walk_v2(child, unit_scope.child(), ctx, spec, unit)
+    assertions.extend(local_assertions)
+
+
+def _unit_import_targets_v2(spec, path, data, known_paths):
+    tree = _parse(spec, data)
+    targets = set()
+    if tree is None:
+        return targets
+    entries = _collect_imports_v2(tree, spec, data)
+    for entry in entries.values():
+        match = _match_import_file(spec, entry, path, known_paths)
+        if match is None:
+            continue
+        kind, target = match
+        if kind == "dir":
+            targets.add(target)
+        elif kind == "file":
+            targets.add(target.rsplit("/", 1)[0]
+                        if "/" in target else "")
+        else:
+            for path in target:
+                targets.add(path.rsplit("/", 1)[0]
+                            if "/" in path else "")
+    return targets
 

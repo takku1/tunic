@@ -1,13 +1,19 @@
 # Agent integration: Tunic as model-agnostic memory infrastructure
 
-Status: design + deterministic harness, 2026-11-02. Tunic is used by
-agents; it is not an agent. Hosted-model benchmark backends (Kimi,
-local Ollama, any Muse-as-judge loop) are out of the evaluation plan:
-Kimi is quota-blocked indefinitely, and no assistant CLI exposes a
-stable callable interface with reproducible task inputs. Frozen ACQ v2
-artifacts are preserved untouched. What follows is the integration
-surface, the portable skill contract, and the tool-using evaluation
-adapter that replaces model-in-the-loop benchmarking.
+Status: design + deterministic harness, 2026-11-02; benchmark
+backend generalized 2026-11-03. Tunic is used by agents; it is not
+an agent. Hosted-model benchmark backends go through the generic
+subscription-CLI backend (`benchmarks/agent/cli_backend.py`, factory
+`ai_backend`): any tool-less print-mode assistant CLI is a preset
+dict (argv builder, quota markers, identity), and `kimi-cli` is the
+first preset, kept under its frozen artifact label. The kimi
+subscription is quota-blocked and no Kimi runs are planned; frozen
+ACQ v2 artifacts are preserved untouched. A Muse-as-judge loop stays
+out of the evaluation plan: no assistant CLI exposes a stable
+callable interface with reproducible task inputs. What follows is
+the integration surface, the portable skill contract, and the
+tool-using evaluation adapter that replaces model-in-the-loop
+benchmarking.
 
 ## 1. Capability matrix (MCP tools)
 
@@ -129,7 +135,7 @@ negative and a frozen-artifact-untouched guard.
 Ran 2026-11-02 against a throwaway DB ingesting `tunic/` (18 sources,
 198 symbols). All through `tools/call`:
 
-1. `tools/list` → 12 tools, including the four new ones.
+1. `tools/list` → 13 tools (retrieve, related, impact, callees, timeline, review, note, candidates, acquire, correct, frontier, promote, refresh).
 2. `retrieve("which functions expand container classes")` → real
    evidence (`extract.py::_code_targets`, …); `related` on
    `memory.py::_container_of` → no static callers (true: it is only
@@ -151,10 +157,12 @@ Ran 2026-11-02 against a throwaway DB ingesting `tunic/` (18 sources,
 - **Agent context is fusion-only**: `retrieve` does not expose the
   selection layer, container budget, or snapshot pinning. Deliberate
   for now; revisit with measured need, not speculation.
-- **Kimi decommissioned**: `kimi-cli` backend code remains for the
-  frozen artifacts' provenance, but no Kimi runs are planned; the
-  subscription is quota-blocked. A `muse-cli` preset exists
-  uncommitted in the tree (shelved, not evaluated) — revert or adopt
-  on direction.
+- **Vendor presets generalized**: the `kimi-cli` backend is now one
+  preset of the generic subscription-CLI backend (`ai_backend`
+  factory, `KIMI_PRESET` kept for frozen-artifact provenance); no
+  Kimi runs are planned and the subscription is quota-blocked. A
+  second preset (e.g. a Muse CLI) is the natural next addition: a
+  preset dict plus its tool-less agent spec, no backend code changes.
+  The shelved uncommitted `muse-cli` note above is superseded by this.
 - **Long histories untested**: consolidation/forgetting absent;
   100K+/1M+ behavior unknown (see competitive scorecard next-metrics).

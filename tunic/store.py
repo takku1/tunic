@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import sqlite3
 
-from .extract import DOC_PHASE_KINDS, STRUCTURE_KINDS, TEXT_EXTENSIONS, _build_bare_mentions, _build_claims, _build_dispatch, _build_docs, _build_exact_mentions, _build_mentions, _claim_mention_refs, _code_leaf_names, _collect_code, _exact_mention_refs, _leaf_document_frequency, _requalify, _resolve_code, _scan, extract, module_of, parse_source, resolve_ts_edges, resolve_unigraph_edges, PROFILE
+from .extract import DOC_PHASE_KINDS, STRUCTURE_KINDS, TEXT_EXTENSIONS, _build_bare_mentions, _build_claims, _build_dispatch, _build_docs, _build_exact_mentions, _build_mentions, _claim_mention_refs, _code_leaf_names, _collect_code, _exact_mention_refs, _leaf_document_frequency, _requalify, _resolve_code, _scan, extract, module_of, parse_source, resolve_ts_edges, resolve_unigraph_edges, resolve_block_edges, block_affected_paths, notebook_affected_paths, resolve_notebook_cells, resolve_config_keys, resolve_schema_refs, config_affected_paths, schemaref_affected_paths, PROFILE
 from . import tsgraph
 from . import unigraph
 from .identity import canonical, digest, identity
@@ -477,6 +477,10 @@ class GraphStore:
             manifest, touched_set, stored)
         affected |= {p for p in dispatch_extra if p in fresh}
         affected |= tsgraph.ts_affected_paths(touched, fresh)
+        affected |= block_affected_paths(touched, fresh)
+        affected |= notebook_affected_paths(touched, fresh)
+        affected |= config_affected_paths(touched, fresh)
+        affected |= schemaref_affected_paths(touched, fresh)
         affected |= unigraph.affected_paths(touched, fresh)
         parse_paths = sorted(p for p in affected if p in fresh)
         records, parse_diagnostics, unparsed = {}, [], []
@@ -571,6 +575,19 @@ class GraphStore:
         resolve_unigraph_edges(code_sources, symbols, resolve_assertions,
                                  resolve_diags, fetch=fetch,
                                  known_paths=set(fresh))
+        resolve_block_edges(code_sources, symbols, resolve_assertions,
+                            resolve_diags, fetch=fetch,
+                            known_paths=set(fresh))
+        resolve_notebook_cells(code_sources, symbols, resolve_assertions,
+                               resolve_diags, fetch=fetch,
+                               known_paths=set(fresh),
+                               modules=modules)
+        resolve_config_keys(code_sources, symbols, resolve_assertions,
+                            resolve_diags, fetch=fetch,
+                            known_paths=set(fresh))
+        resolve_schema_refs(code_sources, symbols, resolve_assertions,
+                            resolve_diags, fetch=fetch,
+                            known_paths=set(fresh))
         rows = {row[0]: row[1] for row in self.connection.execute(
             """SELECT s.id, s.path FROM sources s
                JOIN members m ON m.source=s.id WHERE m.snapshot=?""", (current,))}
