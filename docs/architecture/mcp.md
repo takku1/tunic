@@ -14,6 +14,7 @@ minimal MCP-compatible server. The transport is newline-delimited JSON-RPC
 | ---- | ----- | ------ |
 | `retrieve` | fused candidates, impacts, mentions, claims, cited document passages | none |
 | `related`, `impact`, `callees`, `timeline` | compiled evidence for one key (reverse, reverse-impact, forward, timeline) | none |
+| `references` | exact identifier occurrences in non-parsed sources (byte spans, digests; investigation leads, NOT call edges) | none |
 | `review` | acquisition report for one document | none |
 | `candidates` | live proposed dependencies | none |
 | `acquire` | reviewed candidate + justification | commits the candidate through the governed path, then ingest publishes it |

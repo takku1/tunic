@@ -47,7 +47,7 @@ server accepts only the `local` principal: a caller-supplied
    depth and witness premises), `candidates` (proposed, never
    traversed), and `cold` (unresolved call sites with what would
    be needed to resolve them). Use `related` for who calls X,
-   `callees` for what X calls; never present `candidates` as fact. `review(document)` reads the structured acquisition
+   `callees` for what X calls; never present `candidates` as fact. `references(symbol, extensions?, limit?)` finds exact identifier occurrences in non-parsed sources (e.g. `.astro`) with byte spans: investigation leads, NEVER verified call edges. Keep the two questions separate: `related`/`callees` prove what the graph establishes; `references` tells you where else to investigate. Never present the second as the first. `review(document)` reads the structured acquisition
    report for one note file. Never treat a symbol from a question as
    an answer; only symbols the tools return.
 3. **Review candidates, never invent edges.** `candidates` lists live

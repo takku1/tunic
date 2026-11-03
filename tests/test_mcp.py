@@ -48,8 +48,10 @@ class McpProtocolTests(unittest.TestCase):
         names = sorted(tool["name"] for tool in response["result"]["tools"])
         self.assertEqual(names, ["acquire", "callees", "candidates",
                                  "correct", "frontier", "impact", "note",
-                                 "promote", "refresh", "related",
-                                 "retrieve", "review", "timeline"])
+                                 "promote", "references", "refresh",
+                                 "related",
+                                 "retrieve", "review",
+                                 "timeline"])
         for tool in response["result"]["tools"]:
             self.assertIn("inputSchema", tool)
 
@@ -191,7 +193,7 @@ class McpServerTests(unittest.TestCase):
         by_id = {line["id"]: line for line in lines}
         self.assertEqual(len(by_id), 6)
         self.assertEqual(by_id[1]["result"]["serverInfo"]["name"], "tunic")
-        self.assertEqual(len(by_id[2]["result"]["tools"]), 13)
+        self.assertEqual(len(by_id[2]["result"]["tools"]), 14)
         self.assertIn("callees",
                       {t["name"] for t in by_id[2]["result"]["tools"]})
         payload = json.loads(by_id[3]["result"]["content"][0]["text"])
@@ -240,8 +242,10 @@ class McpAgentToolsTests(unittest.TestCase):
         names = sorted(tool["name"] for tool in response["result"]["tools"])
         self.assertEqual(names, ["acquire", "callees", "candidates",
                                  "correct", "frontier", "impact", "note",
-                                 "promote", "refresh", "related",
-                                 "retrieve", "review", "timeline"])
+                                 "promote", "references", "refresh",
+                                 "related",
+                                 "retrieve", "review",
+                                 "timeline"])
 
     def test_candidates_lists_live_proposals(self):
         payload = self.call("candidates", {})
