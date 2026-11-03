@@ -276,74 +276,6 @@ class Memory:
         """Cached BM25 over code; see _ensure_discovery."""
         return self._ensure_discovery(snapshot, exclude)[0]
 
-    @staticmethod
-    def _graph_neighbors(view, subjects, cap=0, suppressed=(), depth=2):
-        """Multi-hop dependency neighborhood ranked by exact PPR.
-
-        Expansion stage for retrieval: BFS layers out to `depth` from
-        the subjects over static_call and asserted traversable claims
-        (including asserted same_as aliases), scored by exact
-        personalized PageRank (teleport on the subjects; see
-        retrieval.ppr_scores), top `cap` by score then key, minus the
-        subjects themselves and suppressed ids (staleness policy stays
-        with selection downstream). cap <= 0 disables the stage.
-        Deterministic: sorted traversal, exact arithmetic, no sampling.
-        Candidates flow into fusion and selection like any other
-        stage -- expansion proposes, the compiler and selection still
-        dispose.
-        """
-        from .extract import TRAVERSABLE_CLAIMS
-        from .retrieval import ppr_scores
-        if cap <= 0 or not subjects:
-            return []
-        suppressed = set(suppressed or ())
-        forward, backward, nodes = {}, {}, set(subjects)
-        for assertion in view["assertions"]:
-            if assertion.get("id") in suppressed:
-                continue
-            proposition = assertion.get("proposition", {})
-            relation = proposition.get("relation")
-            status = assertion.get("status")
-            if relation == "static_call":
-                if status != "syntactic_observation":
-                    continue
-            elif relation in TRAVERSABLE_CLAIMS | {"same_as"}:
-                if status != "asserted_in_source":
-                    continue
-            else:
-                continue
-            caller = proposition.get("caller")
-            callee = proposition.get("callee")
-            if not caller or not callee:
-                continue
-            forward.setdefault(caller, set()).add(callee)
-            backward.setdefault(callee, set()).add(caller)
-            nodes.add(caller)
-            nodes.add(callee)
-        frontier, seen, edges = set(subjects), set(subjects), []
-        for _ in range(max(0, depth)):
-            nxt = set()
-            for node in sorted(frontier):
-                for peer in sorted(forward.get(node, ())):
-                    edges.append((node, peer))
-                    if peer not in seen:
-                        seen.add(peer)
-                        nxt.add(peer)
-                for peer in sorted(backward.get(node, ())):
-                    edges.append((peer, node))
-                    if peer not in seen:
-                        seen.add(peer)
-                        nxt.add(peer)
-            frontier = nxt
-            if not frontier:
-                break
-        scores = ppr_scores(sorted(nodes), edges, sorted(subjects))
-        ranked = sorted(((score, key)
-                         for key, score in scores.items()
-                         if key not in subjects),
-                        key=lambda row: (-row[0], row[1]))
-        return [key for _score, key in ranked[:cap]]
-
     def _notes_index(self, snapshot, exclude=()):
         """Cached lexical index over prose notes; see _ensure_discovery."""
         return self._ensure_discovery(snapshot, exclude)[1]
@@ -1176,35 +1108,9 @@ class Memory:
             return duplicate
         return ("add", "no duplicate, conflict, or endpoint problem found")
 
-    def propose_same_as(self, limit=10, vectors=None):
-        """Propose same_as identity candidates (read-only).
-
-        Normalized-name blocking plus name, structural, and optional
-        embedding signals; pinned weights and threshold; never
-        asserts, never merges. Promotion goes through
-        promote(..., rel="same_as"). See tunic.resolve.
-        """
-        from .resolve import propose_same_as
-        _, view = self.store.view()
-        return propose_same_as(view, limit=limit, vectors=vectors)
-
-    def propose_date_conflicts(self, limit=10):
-        """Propose contradicts for same-pair claims ordered dates apart.
-
-        Read-only; promotion goes through the governed path.
-        Suppressed assertions are excluded. See tunic.temporal.
-        """
-        from .lifecycle import suppressed_ids
-        from .temporal import propose_date_conflicts
-        _, view = self.store.view()
-        return propose_date_conflicts(
-            view, limit=limit,
-            suppressed=suppressed_ids(self.store))
-
     def answer(self, task, *, snapshot=None, limit=3, mode="hybrid",
                policy="transparent", budget=None, threshold=0.0, provider=None,
-               select=True, container_limit=2, exclude=(),
-               mmr_lambda=1.0):
+               select=True, container_limit=2, exclude=()):
         """Task-based retrieval without an exact symbol.
 
         Stages propose candidates: exact keys, bare names, BM25 lexical
@@ -1230,12 +1136,6 @@ class Memory:
         out_of_scope with a trace; only kept candidates expand into
         impacts, mentions, and claims. The default (True) applies selection filtering; pass select=False to
         opt out to raw fusion (default flipped 2026-11-02 after the frozen-suite acceptance PASS-scoped plus a no-regression lexical pilot; rollback is the opt-out flag).
-        An optional graph stage (budget key "graph", 0 disables) adds the
-        one-hop dependency neighborhood of exact/name subjects as fused
-        candidates under origin "graph"; selection still filters them.
-        An optional MMR reorder (mmr_lambda in [0, 1], default 1.0 is the
-        identity) diversifies fused order by token Jaccard before
-        selection; the setting is recorded in result["mmr"].
 
         """
         authorize(self.principal, "answer")
@@ -1250,9 +1150,7 @@ class Memory:
             raise ValueError("limit must be a non-negative integer")
         if type(container_limit) is not int or container_limit < 0:
             raise ValueError("container_limit must be a non-negative integer")
-        if type(mmr_lambda) not in (int, float) or not 0.0 <= mmr_lambda <= 1.0:
-            raise ValueError("mmr_lambda must be a number in [0, 1]")
-        caps = {"exact": limit, "name": limit, "lexical": limit, "semantic": limit, "documents": limit, "graph": 0}
+        caps = {"exact": limit, "name": limit, "lexical": limit, "semantic": limit, "documents": limit}
         if budget is not None:
             unknown = set(budget) - set(caps)
             if unknown:
@@ -1381,23 +1279,9 @@ class Memory:
             semantic = []
             stages["semantic"] = {"candidates": 0, "ms": 0.0, "skipped": True,
                                   "reason": reason}
-        started = time.perf_counter()
-        graph_neighbors = self._graph_neighbors(
-            view, set(exact) | set(names), cap=caps["graph"],
-            suppressed=suppressed_ids(self.store))
-        stages["graph"] = {"candidates": len(graph_neighbors),
-                             "ms": (time.perf_counter() - started) * 1000.0,
-                             "skipped": caps["graph"] <= 0, "depth": 2,
-                             "ranking": "exact_ppr_alpha_0.15"}
         rankings = {"exact": exact, "name": names,
-                    "lexical": lexical, "semantic": semantic,
-                    "graph": graph_neighbors}
+                    "lexical": lexical, "semantic": semantic}
         fused = fuse(rankings, total=limit, threshold=threshold)
-        if mmr_lambda != 1.0:
-            from .retrieval import mmr_order
-            texts = {row["key"]: row["path"] + " " + row["name"]
-                     for row in view["symbols"]}
-            fused = mmr_order(fused, texts, lambda_=mmr_lambda)
         selection = None
         suppressed = suppressed_ids(self.store)
         if select:
@@ -1551,8 +1435,6 @@ class Memory:
                           "unknown_symbols": list(unknown_symbols)}
         result = {"task": task, "snapshot": snapshot, "policy": policy,
                 "fusion": "weighted_rrf_k60", "provider": provider.name,
-                "mmr": {"lambda": mmr_lambda,
-                        "applied": mmr_lambda != 1.0},
                 "budget": caps, "threshold": threshold, "stages": stages,
                 "candidates": cand_entries,
                 "impacts": [impacts[key] for key in sorted(impacts)],
