@@ -649,5 +649,130 @@ export function h(x: number): number {
                 memory.close()
 
 
+ENCLOSED_FILES = {
+    "src/content.ts": """export const releaseHref = (id: string) => `/music/${id}`;
+""",
+    "src/feed.ts": """import { releaseHref } from "./content";
+export function latestFeed(ids: string[]) {
+  return ids.map((id) => releaseHref(id));
+}
+export function latest(ids: string[]) {
+  return ids.map((id) => helper(id));
+}
+function helper(id: string) {
+  return id;
+}
+""",
+    "src/entry.ts": """import { releaseHref } from "./content";
+export const GET = async (ids: string[]) => {
+  const rows = ids.map((id) => releaseHref(id));
+  return rows;
+};
+""",
+    "src/nest.ts": """export function outer() {
+  function inner() {
+    return alpha();
+  }
+  return inner();
+}
+function alpha() {
+  return 1;
+}
+""",
+    "src/shadowed.ts": """import { g } from "./dep";
+export function use(g: (x: number) => number) {
+  return [1].map((x) => g(x));
+}
+""",
+    "src/dep.ts": """export function g(x: number) {
+  return x;
+}
+""",
+}
+
+
+@PARSER_OR_SKIP
+class TsEnclosedTest(unittest.TestCase):
+    def _view(self, tmp):
+        memory = _ingest_files(tmp, ENCLOSED_FILES)
+        try:
+            _snapshot, view = memory.store.view()
+            return memory, view
+        except BaseException:
+            memory.close()
+            raise
+
+    def test_named_function_callback_attributes_enclosed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            memory, view = self._view(tmp)
+            try:
+                edges = {e: a for a, e in
+                         ((x, (x["proposition"]["caller"],
+                               x["proposition"]["callee"]))
+                          for x in view["assertions"]
+                          if x["proposition"].get("relation") == "static_call")}
+                key = ("src/feed.ts::latest", "src/feed.ts::helper")
+                self.assertIn(key, edges)
+                edge = edges[key]
+                self.assertEqual(edge["resolution"]["rule"],
+                                 "ts_enclosed_callback_v1")
+                kinds = {s.get("source") for s in
+                         edge["resolution"]["support"]}
+                self.assertTrue(any(k for k in kinds))
+            finally:
+                memory.close()
+
+    def test_named_arrow_entry_callback_attributes_enclosed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            memory, view = self._view(tmp)
+            try:
+                found = [(a["proposition"]["caller"],
+                          a["proposition"]["callee"],
+                          a["resolution"]["rule"])
+                         for a in view["assertions"]
+                         if a["proposition"].get("relation") == "static_call"]
+                self.assertIn(("src/feed.ts::latestFeed",
+                               "src/content.ts::releaseHref",
+                               "ts_enclosed_callback_v1"), found)
+                self.assertIn(("src/entry.ts::GET",
+                               "src/content.ts::releaseHref",
+                               "ts_enclosed_callback_v1"), found)
+            finally:
+                memory.close()
+
+    def test_named_inner_function_still_blocks(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            memory, view = self._view(tmp)
+            try:
+                edges = {(a["proposition"]["caller"],
+                          a["proposition"]["callee"])
+                         for a in view["assertions"]
+                         if a["proposition"].get("relation") == "static_call"}
+                self.assertNotIn(("src/nest.ts::outer",
+                                  "src/nest.ts::alpha"), edges)
+                nested = [d for d in _diags(view, "nested_call")
+                          if d.get("caller") == "src/nest.ts::outer"]
+                self.assertTrue(nested)
+            finally:
+                memory.close()
+
+    def test_shadowed_name_still_abstains_through_arrow(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            memory, view = self._view(tmp)
+            try:
+                edges = {(a["proposition"]["caller"],
+                          a["proposition"]["callee"])
+                         for a in view["assertions"]
+                         if a["proposition"].get("relation") == "static_call"}
+                self.assertFalse([e for e in edges
+                                  if e[0] == "src/shadowed.ts::use"])
+                reasons = [d.get("reason") for d in
+                           _diags(view, "unresolved_call")
+                           if d.get("caller") == "src/shadowed.ts::use"]
+                self.assertIn("shadowed_name", reasons)
+            finally:
+                memory.close()
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -144,6 +144,24 @@ class CandidateNoiseTest(unittest.TestCase):
                         "zero-signal inventory candidate kept on refresh")
 
 
+EDGED_TS = """export function alpha() {
+  return beta();
+}
+function beta() {
+  return 1;
+}
+"""
+
+
+def _ingest_edged(tmp):
+    work = Path(tmp) / "ws"
+    (work / "src").mkdir(parents=True)
+    (work / "src" / "edged.ts").write_text(EDGED_TS, encoding="utf-8")
+    memory = Memory(str(Path(tmp) / "edged.sqlite"), str(work))
+    memory.ingest()
+    return memory
+
+
 class CoverageLabelTest(unittest.TestCase):
     def test_related_reports_inventory_coverage(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -169,6 +187,36 @@ class CoverageLabelTest(unittest.TestCase):
                                  "unsupported_capability")
                 self.assertEqual(result.get("coverage"), "inventory_only")
                 self.assertEqual(result.get("direct"), [])
+            finally:
+                memory.close()
+
+    def test_edged_ts_symbol_not_inventory_only(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            memory = _ingest_edged(tmp)
+            try:
+                result = memory.related("src/edged.ts::beta")
+                self.assertNotEqual(result.get("coverage"),
+                                    "inventory_only")
+                self.assertFalse(
+                    any("call extraction not available" in line
+                        for line in result["impact"]["limitations"]),
+                    result["impact"]["limitations"])
+                callers = [i.get("symbol")
+                           for i in result["impact"].get("impacts", [])]
+                self.assertIn("src/edged.ts::alpha", callers)
+            finally:
+                memory.close()
+
+    def test_edged_ts_callees_complete(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            memory = _ingest_edged(tmp)
+            try:
+                result = memory.callees("src/edged.ts::alpha")
+                self.assertEqual(result.get("outcome"), "complete")
+                self.assertNotEqual(result.get("coverage"),
+                                    "inventory_only")
+                direct = [d.get("callee") for d in result.get("direct", [])]
+                self.assertIn("src/edged.ts::beta", direct)
             finally:
                 memory.close()
 

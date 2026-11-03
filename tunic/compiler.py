@@ -12,26 +12,57 @@ IR_VERSION = "tunic.w1.v3"
 POLICIES = ("transparent", "evidence_only", "current")
 
 
-def _subject_coverage(symbols, symbol):
+def _has_static_edges(assertions, symbol):
+    """Whether the graph holds verified static-call edges for symbol."""
+    for assertion in assertions or ():
+        proposition = assertion.get("proposition", {})
+        if proposition.get("relation") != "static_call":
+            continue
+        if (proposition.get("caller") == symbol
+                or proposition.get("callee") == symbol):
+            return True
+    return False
+
+
+def _subject_coverage(symbols, symbol, assertions=()):
     """Per-symbol extraction coverage for honest replies.
 
     Inventory-only subjects carry names and locations but no call
     edges; replies about them must report inventory_only instead of
-    wearing the Python profile.
+    wearing the Python profile. Inventory subjects WITH verified
+    static-call edges (TypeScript/JavaScript, Go) report bounded
+    coverage: the name row is heuristic, but the relationships are
+    proven.
     """
     subject = symbols.get(symbol, {})
     if subject.get("derivation") == "heuristic_inventory_v1":
+        if _has_static_edges(assertions, symbol):
+            return "bounded_static_analysis"
         return "inventory_only"
     return "bounded_static_analysis"
 
 
-def _profile_note(symbols, symbol):
+_TS_LANGUAGES = frozenset({"ts", "tsx", "mts", "cts", "js", "jsx", "mjs",
+                           "cjs"})
+
+
+def _profile_note(symbols, symbol, assertions=()):
     """First limitations line, honest about inventory-only subjects."""
     subject = symbols.get(symbol, {})
     if subject.get("derivation") == "heuristic_inventory_v1":
-        return ("heuristic_inventory_v1: name and location only for .%s; "
-                "call extraction not available."
-                % (subject.get("language") or "unknown"))
+        if not _has_static_edges(assertions, symbol):
+            return ("heuristic_inventory_v1: name and location only for .%s; "
+                    "call extraction not available."
+                    % (subject.get("language") or "unknown"))
+        language = subject.get("language") or "unknown"
+        if language in _TS_LANGUAGES:
+            family = "TypeScript/JavaScript"
+        elif language == "go":
+            family = "Go"
+        else:
+            family = language
+        return ("%s verified static calls over inventory-level names; "
+                "bounded proof rules, not full-program analysis." % family)
     return ("Python profile is an under-approximation; "
             "non-observation is not absence.")
 
@@ -193,7 +224,7 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100, 
         "query": {"symbol": symbol, "max_depth": max_depth, "max_nodes": max_nodes, "policy": policy},
         "selection_receipt": {"snapshot": snapshot, "profile": view["profile"],
                               "policy": "reverse-static-call-bfs-v1", "reuse": "none_full_recompute",
-                              "scope": "local_single_principal", "coverage": _subject_coverage(symbols, symbol),
+                              "scope": "local_single_principal", "coverage": _subject_coverage(symbols, symbol, view["assertions"]),
                               "diagnostics": view["diagnostics"], "bounds_hit": sorted(bounds), "cycles_observed": cycles},
         "target": {"entity": symbols[symbol], "evidence": _evidence(store, symbols[symbol], snapshot)},
         "units": units,
@@ -201,7 +232,7 @@ def compile_impact(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100, 
         "validation_scope": "source_integrity_and_static_path_support_not_runtime_effect",
         "policy": policy,
         "outcome": "partial",
-        "limitations": [_profile_note(symbols, symbol),
+        "limitations": [_profile_note(symbols, symbol, view["assertions"]),
                         "A static path establishes possible dependency, not demonstrated execution.",
                         "One shortest witness per caller; alternate paths are not enumerated."],
     }
@@ -381,7 +412,7 @@ def compile_callees(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100,
         "query": {"symbol": symbol, "max_depth": max_depth, "max_nodes": max_nodes, "policy": policy},
         "selection_receipt": {"snapshot": snapshot, "profile": view["profile"],
                               "policy": "forward-static-call-bfs-v1", "reuse": "none_full_recompute",
-                              "scope": "local_single_principal", "coverage": _subject_coverage(symbols, symbol),
+                              "scope": "local_single_principal", "coverage": _subject_coverage(symbols, symbol, view["assertions"]),
                               "diagnostics": view["diagnostics"], "bounds_hit": sorted(bounds), "cycles_observed": cycles},
         "target": {"entity": symbols[symbol], "evidence": _evidence(store, symbols[symbol], snapshot)},
         "direct": direct,
@@ -390,8 +421,8 @@ def compile_callees(store, symbol, *, snapshot=None, max_depth=8, max_nodes=100,
         "cold": cold,
         "validation_scope": "source_integrity_and_static_path_support_not_runtime_effect",
         "policy": policy,
-        "coverage": _subject_coverage(symbols, symbol), "outcome": "unsupported_capability" if _subject_coverage(symbols, symbol) == "inventory_only" else ("complete" if not bounds and not cold else "partial"),
-        "limitations": [_profile_note(symbols, symbol),
+        "coverage": _subject_coverage(symbols, symbol, view["assertions"]), "outcome": "unsupported_capability" if _subject_coverage(symbols, symbol, view["assertions"]) == "inventory_only" else ("complete" if not bounds and not cold else "partial"),
+        "limitations": [_profile_note(symbols, symbol, view["assertions"]),
                         "A static path establishes possible dependency, not demonstrated execution.",
                         "One shortest witness per callee; alternate paths are not enumerated.",
                         "Candidates are proposed, not asserted; cold entries mark where knowledge ends."],
@@ -724,7 +755,7 @@ def compile_related(store, symbol, *, snapshot=None, policy="transparent", view=
     return {"symbol": symbol, "snapshot": snapshot, "profile": view["profile"],
             "impact": compile_impact(store, symbol, snapshot=snapshot, policy=policy,
                                      view=view),
-            "coverage": _subject_coverage({s["key"]: s for s in view["symbols"]}, symbol), "mentions": compile_mentions(store, symbol, snapshot=snapshot, view=view),
+            "coverage": _subject_coverage({s["key"]: s for s in view["symbols"]}, symbol, view["assertions"]), "mentions": compile_mentions(store, symbol, snapshot=snapshot, view=view),
             "claims": compile_claims(store, symbol, snapshot=snapshot, view=view),
             "outcome": "complete"}
 

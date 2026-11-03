@@ -524,7 +524,8 @@ def _func_text(ctx, node):
     return text[:120]
 
 
-def _emit_edge(ctx, caller_key, callee_key, call_node, extra_support=()):
+def _emit_edge(ctx, caller_key, callee_key, call_node, extra_support=(),
+               rule="ts_static_binding_v1"):
     symbols = ctx["symbols"]
     if caller_key not in symbols or callee_key not in symbols:
         return False
@@ -537,7 +538,7 @@ def _emit_edge(ctx, caller_key, callee_key, call_node, extra_support=()):
         "proposition": {"relation": "static_call",
                          "caller": caller_key, "callee": callee_key},
         "resolution": {"expression": ctx.get("expression", callee_key),
-                       "rule": "ts_static_binding_v1",
+                       "rule": rule,
                        "support": list(extra_support) + [target_ref]},
         "producer": TS_PRODUCER,
         "status": "syntactic_observation",
@@ -721,7 +722,11 @@ def _collect_reassigned(node, out):
         _collect_reassigned(child, out)
 
 
-def _child_ctx(ctx, caller=_MISSING, nested=None, decorator=None):
+ENCLOSED_RULE = "ts_enclosed_callback_v1"
+
+
+def _child_ctx(ctx, caller=_MISSING, nested=None, decorator=None,
+               crossed=None, arrow=_MISSING):
     child = dict(ctx)
     if caller is not _MISSING:
         child["caller"] = caller
@@ -729,6 +734,10 @@ def _child_ctx(ctx, caller=_MISSING, nested=None, decorator=None):
         child["nested"] = nested
     if decorator is not None:
         child["decorator"] = decorator
+    if crossed is not None:
+        child["crossed_named"] = crossed
+    if arrow is not _MISSING:
+        child["arrow_span"] = arrow
     return child
 
 
@@ -760,7 +769,9 @@ def _handle_call(node, scope, ctx):
         if not kids:
             break
         fnode = kids[0]
-    if ctx.get("nested"):
+    enclosed = bool(ctx.get("nested") and not ctx.get("crossed_named")
+                    and ctx.get("caller") is not None)
+    if ctx.get("nested") and not enclosed:
         _record_diag(ctx, "nested_call", node, _func_text(ctx, node))
     elif ctx.get("caller") is None:
         _record_diag(ctx, "unresolved_call", node, _func_text(ctx, node),
@@ -771,7 +782,18 @@ def _handle_call(node, scope, ctx):
                                 ctx["namespaces"])
         if status[0] == "edge":
             ctx["expression"] = name
-            _emit_edge(ctx, ctx.get("caller"), status[1], node, status[2])
+            if enclosed:
+                arrow = ctx.get("arrow_span")
+                extra = status[2]
+                if arrow is not None:
+                    extra = extra + ({"source": ctx["source_id"],
+                                      "start": arrow[0],
+                                      "end": arrow[1]},)
+                _emit_edge(ctx, ctx.get("caller"), status[1], node,
+                           extra, rule=ENCLOSED_RULE)
+            else:
+                _emit_edge(ctx, ctx.get("caller"), status[1], node,
+                           status[2])
         else:
             _record_diag(ctx, "unresolved_call", node, name,
                          {"reason": status[1]})
@@ -817,7 +839,16 @@ def _walk_function_like(node, scope, ctx, caller, nested):
     body = _field(node, "body")
     if body is None:
         return
-    child = _child_ctx(ctx, caller=caller, nested=nested, decorator=False)
+    if nested and node.type == "arrow_function":
+        child = _child_ctx(ctx, caller=caller, nested=nested,
+                           decorator=False,
+                           arrow=(node.start_byte, node.end_byte))
+    elif nested:
+        child = _child_ctx(ctx, caller=caller, nested=nested,
+                           decorator=False, crossed=True)
+    else:
+        child = _child_ctx(ctx, caller=caller, nested=nested,
+                           decorator=False, crossed=False, arrow=None)
     if params is not None:
         for param in _named(params):
             if param.type in ("required_parameter", "optional_parameter"):
@@ -838,7 +869,8 @@ def _walk_function_like(node, scope, ctx, caller, nested):
 def _walk_heritage(node, scope, ctx, key):
     for child in _named(node):
         if child.type == "call_expression":
-            sub = _child_ctx(ctx, caller=key, nested=True, decorator=False)
+            sub = _child_ctx(ctx, caller=key, nested=True, decorator=False,
+                             crossed=True)
             _record_diag(sub, "unresolved_call", child,
                          _func_text(sub, child),
                          {"reason": "class_heritage_call"})
@@ -883,7 +915,7 @@ def _walk_class(node, scope, ctx):
         elif ctype == "class_static_block":
             inner = _Scope(scope)
             sub = _child_ctx(ctx, caller=member_caller, nested=True,
-                             decorator=False)
+                             decorator=False, crossed=True)
             for grand in _named(child):
                 if grand.type == "statement_block":
                     _bind_hoisted(inner, grand)
@@ -895,7 +927,7 @@ def _walk_class(node, scope, ctx):
         elif "field_definition" in ctype:
             kids = _named(child)
             sub = _child_ctx(ctx, caller=member_caller, nested=True,
-                             decorator=False)
+                             decorator=False, crossed=True)
             if kids and kids[0].type == "computed_property_name":
                 _walk(kids[0], scope, ctx)
                 kids = kids[1:]
@@ -1121,7 +1153,8 @@ def resolve_file(path, source_id, data, module, errors, symbols, fetch,
            "diagnostics": diagnostics, "module_scope": module_scope,
            "namespaces": namespaces, "reassigned": reassigned,
            "caller": None, "nested": False, "decorator": False,
-           "saw_jsx": False, "expression": "", "caller_bodies": bodies}
+           "saw_jsx": False, "expression": "", "caller_bodies": bodies,
+           "crossed_named": True, "arrow_span": None}
     for key, func_node in entries:
         _walk_function_like(func_node, module_scope, ctx, key, False)
     for stmt in _named(tree.root_node):
