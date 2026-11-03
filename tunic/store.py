@@ -97,6 +97,7 @@ class GraphStore:
             root, exclude)
         result = self._publish(root, sources, symbols, assertions, diagnostics)
         result["excluded"] = excluded
+        result["scope"] = self._scope_policy(root, exclude)
         return result
 
     def _publish(self, root, sources, symbols, assertions, diagnostics):
@@ -130,6 +131,11 @@ class GraphStore:
         return {"snapshot": snapshot, "sources": len(sources), "symbols": len(symbols),
                 "assertions": len(assertions), "diagnostics": diagnostics,
                 "coverage": "bounded_static_analysis"}
+
+    def _scope_policy(self, root, exclude=()):
+        """Effective scope receipt; re-read per operation, never stored."""
+        from .extract import resolve_scope
+        return resolve_scope(root, exclude)[1]
 
     def refresh(self, root, exclude=()):
         """Incrementally re-ingest, differentially equivalent to ingest().
@@ -181,7 +187,8 @@ class GraphStore:
         if not added and not deleted and not changed and structure_now == structure_then:
             return {"snapshot": current, "path": "unchanged", "reused": True,
                     "previous": current, "published_new": False, "work": work,
-                    "excluded": excluded}
+                    "excluded": excluded,
+                    "scope": self._scope_policy(root, exclude)}
         touched = added + deleted + changed
         code_touched = [p for p in touched
                         if Path(p).suffix not in TEXT_EXTENSIONS]
@@ -189,9 +196,10 @@ class GraphStore:
             return self._refresh_full(root, work, dict(fresh), exclude)
         if code_touched:
             return self._refresh_code(root, work, manifest, stored, dict(fresh),
-                                      current, touched, code_touched)
+                                      current, touched, code_touched,
+                                      exclude)
         return self._refresh_documents(root, work, manifest, stored, dict(fresh),
-                                       current, touched)
+                                       current, touched, exclude)
 
     def _refresh_full(self, root, work, fresh, exclude=()):
         """Full extract fallback; also serves databases without a snapshot."""
@@ -210,7 +218,8 @@ class GraphStore:
         result = self._publish(root, sources, symbols, assertions, diagnostics)
         result = dict(result, path="full", reused=False, previous=previous,
                       published_new=result["snapshot"] != previous, work=work,
-                      excluded=excluded)
+                      excluded=excluded,
+                      scope=self._scope_policy(root, exclude))
         return result
 
     @staticmethod
@@ -414,7 +423,7 @@ class GraphStore:
         return assertions, claim_diags, mention_diags
 
     def _refresh_code(self, root, work, manifest, stored, fresh, current,
-                      touched, code_touched):
+                      touched, code_touched, exclude=()):
         """Re-parse and re-resolve only the affected code subset.
 
         Affected files are the changed or added files, stored importers of
@@ -625,9 +634,10 @@ class GraphStore:
                                sorted(assertions, key=lambda x: x["id"]), merged)
         return dict(result, path="code", reused=True, previous=current,
                     published_new=result["snapshot"] != current, work=work,
-                    affected_files=sorted(affected))
+                    affected_files=sorted(affected),
+                    scope=self._scope_policy(root, exclude))
 
-    def _refresh_documents(self, root, work, manifest, stored, fresh, current, touched):
+    def _refresh_documents(self, root, work, manifest, stored, fresh, current, touched, exclude=()):
         """Reuse stored code rows; rerun the document phase over text files."""
         code_ids = {info["id"] for path, info in stored.items()
                     if Path(path).suffix not in TEXT_EXTENSIONS}
@@ -675,7 +685,8 @@ class GraphStore:
         result = self._publish(root, sources_out, symbols_out, assertions_out, merged)
         return dict(result, path="documents", reused=True, previous=current,
                     published_new=result["snapshot"] != current, work=work,
-                    diagnostics=result["diagnostics"])
+                    diagnostics=result["diagnostics"],
+                    scope=self._scope_policy(root, exclude))
 
     def snapshots(self):
         rows = self.connection.execute(

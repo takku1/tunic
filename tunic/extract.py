@@ -6,8 +6,9 @@ import io
 import json
 import os
 import re
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import tokenize
+import tomllib
 
 from .identity import digest, identity
 
@@ -127,9 +128,74 @@ def _pattern_regexes(pattern):
     return matchers
 
 
-def _compile_ignore_rules(root, extra):
+def _check_scope_pattern(value, label):
+    """Fail closed on non-relative explicit scope patterns.
+
+    Leading `!` would invert the rule, and absolute paths (POSIX or
+    Windows, with or without drive) never match workspace-relative
+    paths, so both are rejected loudly instead of silently doing the
+    wrong thing. Returns the stripped pattern.
+    """
+    stripped = value.strip() if isinstance(value, str) else ""
+    if (not stripped or stripped.startswith("!")
+            or PurePosixPath(stripped).is_absolute()
+            or Path(stripped).is_absolute()
+            or (len(stripped) > 1 and stripped[1] == ":")):
+        raise ValueError("invalid %s scope pattern: %r" % (label, value))
+    return stripped
+
+
+def load_scope_config(root):
+    """Read repository scope policy: (config, config_text, config_file).
+
+    Only <root>/.tunic.toml [scope] is honored: `vendored` (extra
+    exclude globs) and `first_party` (re-include globs). Unknown
+    [scope] keys, wrong types, unreadable TOML, and absolute or
+    leading-`!` patterns fail closed with ValueError. A missing file
+    (or a file without [scope]) means ({}, "", None): old behavior.
+    The config is re-read on every operation and never persisted, so
+    crash/restart needs no recovery and snapshots stay atomic.
+    """
+    path = Path(root) / ".tunic.toml"
+    if not path.is_file():
+        return {"vendored": [], "first_party": []}, "", None
+    try:
+        raw = path.read_bytes()
+    except OSError as error:
+        raise ValueError("unreadable .tunic.toml: %s" % (error,)) from error
+    try:
+        data = tomllib.loads(raw.decode("utf-8"))
+    except ValueError as error:
+        raise ValueError("unreadable .tunic.toml: %s" % (error,)) from error
+    scope = data.get("scope", {})
+    if not isinstance(scope, dict):
+        raise ValueError("[scope] must be a table")
+    unknown = set(scope) - {"vendored", "first_party"}
+    if unknown:
+        raise ValueError("unknown [scope] keys: %s" % sorted(unknown))
+    config = {}
+    for key in ("vendored", "first_party"):
+        values = scope.get(key, [])
+        if not isinstance(values, list):
+            raise ValueError("[scope].%s must be a list of relative "
+                             "patterns" % key)
+        config[key] = [_check_scope_pattern(value, key)
+                       for value in values]
+    return config, raw.decode("utf-8"), ".tunic.toml"
+
+
+def _compile_ignore_rules(root, extra, *, vendored=(), first_party=()):
     """Ordered (matchers, negated) rules: defaults, root .gitignore,
-    then explicit excludes. Last matching rule wins."""
+    config vendored excludes, config first_party re-includes, then
+    per-operation excludes. Last matching rule wins, so explicit
+    per-operation excludes beat config, config beats .gitignore, and
+    .gitignore beats the built-ins. First-party entries compile as
+    negations, so git ancestor semantics apply: resurrecting paths
+    beneath an excluded parent requires re-including the parent too."""
+    for values, label in ((vendored, "vendored"),
+                           (first_party, "first_party")):
+        for value in values or ():
+            _check_scope_pattern(value, label)
     raws = [name + "/" for name in sorted(EXCLUDED | EXCLUDED_BUILD)]
     ignore_file = Path(root) / ".gitignore"
     if ignore_file.is_file():
@@ -139,6 +205,8 @@ def _compile_ignore_rules(root, extra):
         except OSError:
             lines = []
         raws.extend(lines)
+    raws.extend(value.strip() for value in vendored or ())
+    raws.extend("!" + value.strip() for value in first_party or ())
     raws.extend(extra or ())
     rules = []
     for raw in raws:
@@ -226,16 +294,42 @@ def iter_scope_files(root, rules, suffixes=None):
     return found, stats
 
 
-def _scope_fingerprint(root, exclude):
-    """Cheap scope identity: explicit excludes + root .gitignore bytes."""
+def _scope_fingerprint(root, exclude, config_text=""):
+    """Cheap scope identity: excludes + .gitignore bytes + config text."""
     ignore_file = Path(root) / ".gitignore"
     try:
         ignored = ignore_file.read_bytes() if ignore_file.is_file() else b""
     except OSError:
         ignored = b""
     return identity("scope", [sorted(set(exclude or ())),
-                              ignored.decode("utf-8", "replace")])
+                              ignored.decode("utf-8", "replace"),
+                              config_text or ""])
 
+
+
+def resolve_scope(root, exclude=()):
+    """One scope evaluator for every stage: ingest, discovery, indexes.
+
+    Reads .tunic.toml once per call (never persisted) and compiles the
+    ordered rule set: built-in defaults, root .gitignore, config
+    vendored excludes, config first_party re-includes, per-operation
+    excludes. Returns (rules, policy) where policy records each source
+    plus a fingerprint, so receipts show exactly which scope a result
+    was computed under.
+    """
+    config, config_text, config_file = load_scope_config(root)
+    rules = _compile_ignore_rules(root, exclude,
+                                   vendored=config["vendored"],
+                                   first_party=config["first_party"])
+    fingerprint = _scope_fingerprint(root, exclude, config_text)
+    policy = {"defaults": sorted(EXCLUDED | EXCLUDED_BUILD),
+              "gitignore": (Path(root) / ".gitignore").is_file(),
+              "config_file": config_file,
+              "vendored": config["vendored"],
+              "first_party": config["first_party"],
+              "exclude": sorted(set(exclude or ())),
+              "fingerprint": fingerprint}
+    return rules, policy
 
 
 def _scan(root, exclude=()):
@@ -250,7 +344,7 @@ def _scan(root, exclude=()):
     root = Path(root).resolve(strict=True)
     if not root.is_dir():
         raise ValueError("source root must be a directory")
-    rules = _compile_ignore_rules(root, exclude)
+    rules, _scope_policy = resolve_scope(root, exclude)
     entries, diagnostics = [], []
     excluded = {"dirs": 0, "files": 0}
     def scan_error(error):

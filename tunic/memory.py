@@ -248,13 +248,13 @@ class Memory:
         the effective scope, or any in-scope file changes.
 
         The scope walk prunes before descent (defaults, the root
-        .gitignore, explicit excludes), so excluded trees cost nothing.
-        The key carries a scope fingerprint: .gitignore edits rebuild
+        .gitignore, repository config, explicit excludes), so excluded trees cost nothing.
+        The key carries a scope fingerprint: .gitignore or config edits rebuild
         even when no member file changed, while churn inside excluded
         trees never invalidates the cache."""
-        from .extract import (_compile_ignore_rules, _scope_fingerprint,
-                              iter_scope_files)
-        rules = _compile_ignore_rules(self.root, exclude)
+        from .extract import iter_scope_files, resolve_scope
+        rules, policy = resolve_scope(self.root, exclude)
+        assert rules is not None and policy.get("fingerprint")
         found, stats = iter_scope_files(
             self.root, rules, {".py", ".md", ".txt"})
         newest, count = 0, 0
@@ -265,7 +265,7 @@ class Memory:
                 continue
             count += 1
         key = (snapshot, newest, count,
-               _scope_fingerprint(self.root, exclude))
+               policy["fingerprint"])
         if self._discovery is None or self._discovery_key != key:
             self._discovery = (BM25(self.root, exclude),
                                TextNotes(self.root, exclude))

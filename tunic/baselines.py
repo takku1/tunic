@@ -39,9 +39,11 @@ class BM25:
     """
     def __init__(self, root, exclude=()):
         from .extract import _compile_ignore_rules, iter_scope_files
+        from .extract import resolve_scope
         root = Path(root)
-        rules = _compile_ignore_rules(root, exclude)
+        rules, policy = resolve_scope(root, exclude)
         found, self.scope_stats = iter_scope_files(root, rules, {".py"})
+        self.scope_stats["policy"] = policy
         self.documents = []
         self.diagnostics = []
         for path, relative in sorted(found, key=lambda item: item[1]):
@@ -114,10 +116,12 @@ class TextNotes:
     def __init__(self, root, exclude=()):
         from .extract import _compile_ignore_rules, iter_scope_files
         from .extract import TEXT_EXTENSIONS as _TEXT_EXTENSIONS
+        from .extract import resolve_scope as _resolve_scope
         self.root = Path(root)
-        rules = _compile_ignore_rules(self.root, exclude)
+        rules, policy = _resolve_scope(self.root, exclude)
         found, self.scope_stats = iter_scope_files(
             self.root, rules, set(_TEXT_EXTENSIONS))
+        self.scope_stats["policy"] = policy
         self.documents = []
         for path, relative in sorted(found, key=lambda item: item[1]):
             try:
