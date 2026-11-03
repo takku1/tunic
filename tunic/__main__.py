@@ -21,7 +21,7 @@ from .eval import run_agent_suite
 COMMANDS = {"ingest", "refresh", "impact", "mentions", "claims", "related",
             "timeline", "note", "candidates", "frontier", "triage", "draft",
             "review", "validate", "render", "models", "pin", "experiment",
-            "benchmark", "mcp"}
+            "benchmark", "mcp", "freshness", "backup", "restore"}
 
 
 def _zero_config_target(argv):
@@ -121,6 +121,15 @@ def main(argv=None):
     ingest.add_argument("--exclude", action="append", default=None,
                         help="Exclude path pattern (repeatable; gitignore syntax)")
     refresh = commands.add_parser("refresh", help="incrementally re-ingest; equivalent to ingest with less work")
+    freshness = commands.add_parser("freshness", help="read-only staleness receipt: compare indexed digests with the workspace without publishing")
+    backup = commands.add_parser("backup", help="atomically copy the database to a validated backup file")
+    restore = commands.add_parser("restore", help="validate a backup file and copy it to a new database path (never overwrites)")
+    freshness.add_argument("root", help="Source root; e.g. repository/src for a src layout")
+    freshness.add_argument("--exclude", action="append", default=None,
+                           help="Exclude path pattern (repeatable; gitignore syntax)")
+    backup.add_argument("--to", required=True, help="Backup destination path")
+    restore.add_argument("--from", dest="src", required=True, help="Backup file to restore")
+    restore.add_argument("--to", dest="dest", required=True, help="New database path (must not exist)")
     refresh.add_argument("root", help="Source root; e.g. repository/src for a src layout")
     refresh.add_argument("--exclude", action="append", default=None,
                          help="Exclude path pattern (repeatable; gitignore syntax)")
@@ -300,6 +309,12 @@ def main(argv=None):
                 result = store.refresh(args.root, args.exclude or ())
                 print(json.dumps(result, ensure_ascii=True, sort_keys=True, indent=2))
                 return 0
+            elif args.command == "freshness":
+                result = store.freshness(args.root, args.exclude or ())
+            elif args.command == "backup":
+                result = store.backup(args.to)
+            elif args.command == "restore":
+                result = store.restore(args.src, args.dest)
             elif args.command == "impact":
                 result = compile_impact(store, args.symbol, snapshot=args.snapshot, policy=args.policy,
                                         max_depth=args.max_depth, max_nodes=args.max_nodes)

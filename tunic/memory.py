@@ -1549,6 +1549,15 @@ class Memory:
             abstention = {"cause": cause, "fused_total": len(fused),
                           "withheld": counts,
                           "unknown_symbols": list(unknown_symbols)}
+        provenance_row = self.store.connection.execute(
+            "SELECT committed_at, manifest FROM snapshots WHERE id=?", (snapshot,)).fetchone()
+        provenance_manifest = json.loads(provenance_row[1]) if provenance_row else {}
+        root_row = self.store.connection.execute(
+            "SELECT value FROM metadata WHERE key='root'").fetchone()
+        provenance = {"snapshot": snapshot,
+                      "profile": provenance_manifest.get("profile"),
+                      "root": root_row[0] if root_row else None,
+                      "committed_at": provenance_row[0] if provenance_row else None}
         result = {"task": task, "snapshot": snapshot, "policy": policy,
                 "fusion": "weighted_rrf_k60", "provider": provider.name,
                 "mmr": {"lambda": mmr_lambda,
@@ -1561,6 +1570,7 @@ class Memory:
                 "selection": selection,
                 "unknown_symbols": unknown_symbols,
                 "abstention": abstention,
+                "provenance": provenance,
                 "container_expansion": {
                     "budget": container_limit,
                     "used": len(expanded_containers) - len(failed_containers),
