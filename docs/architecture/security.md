@@ -12,6 +12,7 @@ Static RAG is not secure merely because content was “sanitized.” Runtime ret
 
 | Boundary | Required behavior | What it does not prove |
 | --- | --- | --- |
+| Ingestion | Refuse credentials before storage: secret-bearing names and private-key headers are ledgered as `sensitive`, never stored or retrieved ([ingestion](ingestion.md)). A name-and-header screen, not secret scanning. |
 | Retrieval and graph writes | Bind principal/capabilities and policy version outside the model. Authorize before candidate lookup, traversal, aggregation, prefetch and source fetch. Only authorized writers can change graph/schema/policy state. | A high trust/relevance score does not authorize reads or writes. |
 | Derived evidence | Preserve all premise visibility obligations or apply an explicitly authorized declassification rule. Recheck artifacts, summaries, indexes, embeddings and caches when policy changes. | Per-node ACLs alone do not prevent hidden-edge, aggregate, ranking or summary leakage. |
 | Framing | A trusted renderer owns roles, template, tool metadata and structural token IDs. Treat evidence as data, never as template code, tool definitions, or caller-selected roles. Test tokenizer-specific literalization/rejection of reserved tokens. | Text quoting, control-token handling and instruction hierarchy are not universal semantic-injection prevention. |

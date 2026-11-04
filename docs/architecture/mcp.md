@@ -23,6 +23,7 @@ minimal MCP-compatible server. The transport is newline-delimited JSON-RPC
 | `note` | — | timestamped append inside the root |
 | `promote` | duplicate/contradiction check | one explicit claim block, then ingest publishes it |
 | `refresh` | — | incremental re-ingest of the fixed root |
+| `coverage` | — | per-rung file counts, ledger reasons, missing grammars for the fixed root |
 
 `retrieve` takes `task`, `limit`, `policy`, and `threshold`, and returns the
 same fused answer as the Python API: per-candidate scores, stage origins,

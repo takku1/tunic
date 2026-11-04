@@ -38,6 +38,7 @@ pip install -e ".[typescript]"   # TS/JS/JSX via tree-sitter
 pip install -e ".[go]"           # Go via tree-sitter
 pip install -e ".[unigraph]"     # Java/Kotlin/Scala/C#/C/C++/Rust/Swift/PHP/Ruby/Julia/Lua/Bash/PowerShell
 pip install -e ".[config]"       # YAML key-path entities (PyYAML)
+pip install -e ".[grammars]"     # symbols for 300+ more languages, fetched on request
 ```
 
 ## Local model continuation

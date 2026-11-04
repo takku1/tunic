@@ -1,7 +1,7 @@
 # File-type coverage: every ingestion tier and the optimal concept per type
 
-Date: 2026-11-03. Goal from the top: a system optimized for AI
-consumers, so every type resolves to the same question -- what can an
+Date: 2026-11-03, ladder added 2026-11-04. Goal from the top: a system
+optimized for AI consumers, so every type resolves to the same question -- what can an
 agent prove from this file? -- answered with receipts, never prose.
 
 Tiers are about proof strength, not effort. Higher tiers reuse the
@@ -46,16 +46,12 @@ the visible scope), class decls indexed as `type` symbols (ctor and
 R1c targets), unique-or-diagnostic everywhere, per-file (not
 per-dir) rescan tracking for file units, case-insensitive stem match.
 
-## Tier 1 — remaining (grammars installed, specs on demand)
+## Tier 1 — symbols without edges
 
-| Types | Status |
-|---|---|
-| `.zig` `.ex` `.exs` `.f90` `.groovy` `.m` `.v` | Extensions inventoried (`.zig` `.ex` `.exs` `.f90` `.groovy` `.m` `.v`); specs unwritten — low repo prevalence, build on first real encounter |
-| `.json` (as data) | n/a — see Tier 3, not code |
-
-Notably out of scope: `.pl` (no grammar installed --
-stays regex inventory), `.r` (no grammar installed -- stays regex
-inventory).
+`.zig` `.ex` `.exs` `.f90` `.groovy` `.m` `.v` `.pl` `.r` and anything else
+with a grammar get parser-backed symbols from `tunic/structure.py`. A spec
+is only needed to move a language up to verified edges, so specs stay on
+demand. `.json` as data is Tier 3, not code.
 
 ## Tier 2 — block splitting (no new grammar, parse what is already parsable)
 
@@ -99,18 +95,14 @@ References between entities are a `references` relation distinct from `static_ca
 excluded from traversable claims with syntactic_observation status, so impact
 queries structurally cannot confuse a foreign key with a call.
 
-## Tier 5 — inventory-only, permanently
+## Everything else — the coverage ladder (2026-11-04)
 
-Regex harvest, zero invented edges, `unsupported_capability` instead
-of empty-complete: `.pl`, `.r`, `.css` `.scss` `.less`, `.html`
-`.xml`, `.csv` `.tsv`, Dockerfiles, `.env`, lockfiles (manifests are
-data for Tier 3-style key paths later, out for now).
-
-## Explicitly out
-
-Binaries, media, archives, generated output directories. Skipped
-silently at scan; documenting the skip here so it reads as a
-decision, not a gap.
+Tiers 0-4 say how strong proof can get for a type. They no longer decide
+whether a file is ingested. Every in-scope file is admitted or ledgered
+with a reason, per [ingestion](ingestion.md): a language with a grammar
+reaches the symbols rung with no spec, any decodable file is retrievable
+text, and binaries, oversize files, generated output, and credentials are
+counted rather than dropped. `tunic coverage <root>` reports the result.
 
 ## Execution rules (all tiers)
 
