@@ -1,101 +1,41 @@
-"""Bounded, non-executing Python AST extraction. Unresolved is not absent."""
+"""Capture and the Python engine: bounded, non-executing AST extraction.
+
+Unresolved is not absent. `extract` is the full-rebuild entry point: scope
+walks files, this module captures them and resolves Python, pipeline runs
+every other family, and prose runs last against the merged symbol table.
+
+Names from scope, relations, and prose are re-exported here because this
+was their historical home; new code should import from the owner.
+"""
 
 import ast
 import copy
 import io
-import json
-import os
 import re
-from pathlib import Path, PurePosixPath
+from pathlib import Path
 import tokenize
-import tomllib
 
 from .identity import digest, identity
-from . import tsgraph
-from . import unigraph
-from . import blocks
-from . import notebook
-from . import config
-from . import schemaref
+from . import filetypes
+from . import pipeline
+from . import structure
+from .prose import (EVIDENCE_DF_THRESHOLD, INVENTORY_HEADER, PATH_TOKEN,  # noqa: F401
+                    _build_bare_mentions, _build_claims, _build_docs,
+                    _build_exact_mentions, _build_mentions,
+                    _claim_mention_refs, _code_leaf_names, _context_hits,
+                    _exact_mention_refs, _leaf_document_frequency,
+                    _mention_signals, _requalify, split_doc_sections)
+from .relations import (CLAIM_RELATIONS, PROFILE, RELATION_SIGNATURES,  # noqa: F401
+                        RETRACTABLE, TRAVERSABLE_CLAIMS, _endpoint_kind,
+                        check_relation_signature, is_iso_date)
+from .scope import (EXCLUDED, EXCLUDED_BUILD, _compile_ignore_rules,  # noqa: F401
+                    _is_ignored, _match_rules, _scan, _scope_fingerprint,
+                    iter_scope_files, load_scope_config, resolve_scope)
+from .structure import INVENTORY_DERIVATIONS  # noqa: F401
 
-PROFILE = "python-static-v7"
-EXCLUDED = {".git", ".venv", "venv", "__pycache__", ".tunic", ".research", "node_modules"}
-EXCLUDED_BUILD = {"dist", "build", ".astro", ".next", ".nuxt", "coverage", "target",
-                  "out", ".output", "vendor", "third_party"}
-TEXT_EXTENSIONS = {".md", ".txt", ".rst"}
-INVENTORY_EXTENSIONS = {".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs", ".astro",
-                        ".vue", ".svelte", ".go", ".rs", ".java", ".c", ".h",
-                        ".cpp", ".hpp", ".cc", ".cs", ".rb", ".php", ".swift",
-                        ".kt", ".kts", ".scala", ".lua", ".pl", ".r", ".sh",
-                        ".bash", ".ps1", ".psm1", ".jl", ".ipynb", ".zig", ".ex", ".exs", ".f90", ".groovy", ".m", ".v"}
-CLAIM_RELATIONS = {"depends_on", "implements", "supersedes", "decided_by", "contradicts", "same_as",
-                   "corrects", "retracts"}
-RELATION_SIGNATURES = {
-    # Allowed (caller-kind, callee-kind) endpoint pairs per relation.
-    # depends_on deliberately spans document->code: prose cites the
-    # code it documents (provenance), and code cites code. Only the
-    # backwards direction (code depending on prose) is rejected.
-    # Meta relations (supersedes, contradicts, corrects, retracts,
-    # decided_by) span both by design and stay unconstrained.
-    "depends_on": ({"code", "document", "config"}, {"code", "config"}),
-    "implements": ({"code"}, {"code"}),
-    "same_as": ({"code", "document"}, {"code", "document"}),
-    "references": ({"schema"}, {"schema"}),
-}
-
-
-STRUCTURED_EXTENSIONS = (config.CONFIG_EXTENSIONS
-                             | schemaref.SCHEMA_EXTENSIONS)
-
-
-def _endpoint_kind(key):
-    """Endpoint kind derived from the key shape alone (stateless).
-
-    document: path::document prose records; config: Tier-3 key-path
-    entities; schema: Tier-4 schema entities; everything else code.
-    depends_on spans document/code/config to code/config (prose and
-    config cite what they depend on; the reverse stays rejected);
-    references spans schema to schema only.
-    """
-    if key.endswith("::document"):
-        return "document"
-    suffix = PurePosixPath(key.split("::")[0]).suffix
-    if suffix in config.CONFIG_EXTENSIONS:
-        return "config"
-    if suffix in schemaref.SCHEMA_EXTENSIONS:
-        return "schema"
-    return "code"
-
-
-def check_relation_signature(relation, caller, callee):
-    """True when (relation, caller, callee) satisfies the signature table.
-
-    same_as additionally requires same-kind endpoints (code-code or
-    document-document). Unlisted relations (the meta set) accept any
-    endpoint kinds.
-    """
-    if relation == "same_as":
-        return _endpoint_kind(caller) == _endpoint_kind(callee)
-    allowed = RELATION_SIGNATURES.get(relation)
-    if allowed is None:
-        return True
-    callers, callees = allowed
-    return _endpoint_kind(caller) in callers \
-        and _endpoint_kind(callee) in callees
-
-
-TRAVERSABLE_CLAIMS = {"depends_on", "implements"}
-# Relations a retracts claim may target: asserted relationships only.
-# Observations (static_call, text_mention) vanish when their source
-# changes; retracting them is meaningless. Meta-operations
-# (corrects, retracts) are superseded, never retracted.
-RETRACTABLE = {"depends_on", "implements", "supersedes", "decided_by", "contradicts"}
-
-
-def is_iso_date(value):
-    """YYYY-MM-DD without importing date parsing; lexicographic order matches time order."""
-    return (isinstance(value, str) and len(value) == 10 and value[4] == "-" and value[7] == "-"
-            and value.replace("-", "").isdigit())
+TEXT_EXTENSIONS = filetypes.PROSE_EXTENSIONS
+INVENTORY_EXTENSIONS = filetypes.HARVEST_EXTENSIONS
+FILE_TEXT_DERIVATION = "file_text_v1"
 
 
 def _bound_names(tree):
@@ -142,308 +82,24 @@ DOC_PHASE_KINDS = {"malformed_claims", "invalid_claim", "unknown_relation",
 STRUCTURE_KINDS = {"excluded_symlink"}
 
 
-def _pattern_regexes(pattern):
-    """Compile one ignore pattern to [(regex, scope)] matchers.
-
-    Documented subset of gitignore: `dir/` (that dir and everything
-    under it), `*.ext`, bare names (any level), `/`-anchored paths,
-    `**` spans, `*`/`?` within a segment, `!` negation (handled by
-    the caller). Only the root `.gitignore` is read. Scopes: "any"
-    matches files and dirs; "dir" matches only the directory itself;
-    "under" matches paths beneath it.
-    """
-    body = pattern.strip("/")
-    if not body:
-        return None
-    parts = []
-    i = 0
-    while i < len(body):
-        if body.startswith("**/", i):
-            parts.append("(.*/)?")
-            i += 3
-        elif body.startswith("**", i):
-            parts.append(".*")
-            i += 2
-        elif body[i] == "*":
-            parts.append("[^/]*")
-            i += 1
-        elif body[i] == "?":
-            parts.append("[^/]")
-            i += 1
-        else:
-            parts.append(re.escape(body[i]))
-            i += 1
-    core = "".join(parts)
-    dir_only = pattern.endswith("/")
-    if "/" not in body:
-        matchers = [(re.compile("^(?:.*/)?" + core + "$"), "any")]
-        if dir_only:
-            matchers = [(re.compile("^(?:.*/)?" + core + "$"), "dir"),
-                        (re.compile("^(?:.*/)?" + core + "/.*$"), "under")]
-    else:
-        matchers = [(re.compile("^" + core + "$"), "any")]
-        if dir_only:
-            matchers = [(re.compile("^" + core + "$"), "dir"),
-                        (re.compile("^" + core + "/.*$"), "under")]
-    return matchers
+def _source_record(path, data, text=False):
+    file_digest = digest(data)
+    return {"path": path, "digest": file_digest, "data": data,
+            "id": identity("source", [path, file_digest]), "tree": None,
+            "text": text}
 
 
-def _check_scope_pattern(value, label):
-    """Fail closed on non-relative explicit scope patterns.
-
-    Leading `!` would invert the rule, and absolute paths (POSIX or
-    Windows, with or without drive) never match workspace-relative
-    paths, so both are rejected loudly instead of silently doing the
-    wrong thing. Returns the stripped pattern.
-    """
-    stripped = value.strip() if isinstance(value, str) else ""
-    if (not stripped or stripped.startswith("!")
-            or PurePosixPath(stripped).is_absolute()
-            or Path(stripped).is_absolute()
-            or (len(stripped) > 1 and stripped[1] == ":")):
-        raise ValueError("invalid %s scope pattern: %r" % (label, value))
-    return stripped
-
-
-def load_scope_config(root):
-    """Read repository scope policy: (config, config_text, config_file).
-
-    Only <root>/.tunic.toml [scope] is honored: `vendored` (extra
-    exclude globs) and `first_party` (re-include globs). Unknown
-    [scope] keys, wrong types, unreadable TOML, and absolute or
-    leading-`!` patterns fail closed with ValueError. A missing file
-    (or a file without [scope]) means ({}, "", None): old behavior.
-    The config is re-read on every operation and never persisted, so
-    crash/restart needs no recovery and snapshots stay atomic.
-    """
-    path = Path(root) / ".tunic.toml"
-    if not path.is_file():
-        return {"vendored": [], "first_party": []}, "", None
+def _parse_python(record):
+    """Attach the AST to a Python record; a diagnostic if it has none."""
+    path, data = record["path"], record["data"]
     try:
-        raw = path.read_bytes()
-    except OSError as error:
-        raise ValueError("unreadable .tunic.toml: %s" % (error,)) from error
-    try:
-        data = tomllib.loads(raw.decode("utf-8"))
-    except ValueError as error:
-        raise ValueError("unreadable .tunic.toml: %s" % (error,)) from error
-    scope = data.get("scope", {})
-    if not isinstance(scope, dict):
-        raise ValueError("[scope] must be a table")
-    unknown = set(scope) - {"vendored", "first_party"}
-    if unknown:
-        raise ValueError("unknown [scope] keys: %s" % sorted(unknown))
-    config = {}
-    for key in ("vendored", "first_party"):
-        values = scope.get(key, [])
-        if not isinstance(values, list):
-            raise ValueError("[scope].%s must be a list of relative "
-                             "patterns" % key)
-        config[key] = [_check_scope_pattern(value, key)
-                       for value in values]
-    return config, raw.decode("utf-8"), ".tunic.toml"
-
-
-def _compile_ignore_rules(root, extra, *, vendored=(), first_party=()):
-    """Ordered (matchers, negated) rules: defaults, root .gitignore,
-    config vendored excludes, config first_party re-includes, then
-    per-operation excludes. Last matching rule wins, so explicit
-    per-operation excludes beat config, config beats .gitignore, and
-    .gitignore beats the built-ins. First-party entries compile as
-    negations, so git ancestor semantics apply: resurrecting paths
-    beneath an excluded parent requires re-including the parent too."""
-    for values, label in ((vendored, "vendored"),
-                           (first_party, "first_party")):
-        for value in values or ():
-            _check_scope_pattern(value, label)
-    raws = [name + "/" for name in sorted(EXCLUDED | EXCLUDED_BUILD)]
-    ignore_file = Path(root) / ".gitignore"
-    if ignore_file.is_file():
-        try:
-            lines = ignore_file.read_text(
-                encoding="utf-8-sig").splitlines()
-        except OSError:
-            lines = []
-        raws.extend(lines)
-    raws.extend(value.strip() for value in vendored or ())
-    raws.extend("!" + value.strip() for value in first_party or ())
-    raws.extend(extra or ())
-    rules = []
-    for raw in raws:
-        line = raw.strip()
-        if not line or line.startswith("#"):
-            continue
-        negated = line.startswith("!")
-        if negated:
-            line = line[1:]
-        compiled = _pattern_regexes(line)
-        if compiled is None:
-            continue
-        rules.append((compiled, negated))
-    return rules
-
-
-def _match_rules(relpath, is_dir, rules):
-    """Last matching rule wins over one path."""
-    ignored = False
-    for matchers, negated in rules:
-        fired = False
-        for rx, scope in matchers:
-            if scope == "dir" and not is_dir:
-                continue
-            if rx.match(relpath):
-                fired = True
-                break
-        if fired:
-            ignored = not negated
-    return ignored
-
-
-def _is_ignored(relpath, is_dir, rules):
-    """Ignore state honoring excluded ancestors (git semantics).
-
-    A file beneath an excluded directory stays excluded unless the
-    directory itself is re-included by a later rule: negations match
-    files, never their excluded parents.
-    """
-    parts = relpath.split("/")
-    for depth in range(1, len(parts)):
-        if _match_rules("/".join(parts[:depth]), True, rules):
-            return True
-    return _match_rules(relpath, is_dir, rules)
-
-
-def iter_scope_files(root, rules, suffixes=None):
-    """Yield (path, relpath) under root honoring ignore rules.
-
-    Prunes excluded directories before descent: excluded trees are
-    never walked. Returns (paths, stats) with files visited, pruned
-    dirs, and excluded files for observability.
-    """
-    root = Path(root).resolve(strict=True)
-    if not root.is_dir():
-        raise ValueError("scope root must be a directory")
-    if suffixes is not None:
-        suffixes = {s.lower() for s in suffixes}
-    stats = {"files": 0, "dirs_pruned": 0, "excluded_files": 0}
-    found = []
-    for base, dirs, files in os.walk(root, followlinks=False):
-        kept = []
-        for name in sorted(dirs):
-            path = Path(base) / name
-            if path.is_symlink():
-                continue
-            rel = path.relative_to(root).as_posix()
-            if _is_ignored(rel, True, rules):
-                stats["dirs_pruned"] += 1
-                continue
-            kept.append(name)
-        dirs[:] = kept
-        for name in sorted(files):
-            path = Path(base) / name
-            if path.is_symlink():
-                continue
-            rel = path.relative_to(root).as_posix()
-            if _is_ignored(rel, False, rules):
-                stats["excluded_files"] += 1
-                continue
-            if suffixes is not None and path.suffix.lower() not in suffixes:
-                continue
-            stats["files"] += 1
-            found.append((path, rel))
-    return found, stats
-
-
-def _scope_fingerprint(root, exclude, config_text=""):
-    """Cheap scope identity: excludes + .gitignore bytes + config text."""
-    ignore_file = Path(root) / ".gitignore"
-    try:
-        ignored = ignore_file.read_bytes() if ignore_file.is_file() else b""
-    except OSError:
-        ignored = b""
-    return identity("scope", [sorted(set(exclude or ())),
-                              ignored.decode("utf-8", "replace"),
-                              config_text or ""])
-
-
-
-def resolve_scope(root, exclude=()):
-    """One scope evaluator for every stage: ingest, discovery, indexes.
-
-    Reads .tunic.toml once per call (never persisted) and compiles the
-    ordered rule set: built-in defaults, root .gitignore, config
-    vendored excludes, config first_party re-includes, per-operation
-    excludes. Returns (rules, policy) where policy records each source
-    plus a fingerprint, so receipts show exactly which scope a result
-    was computed under.
-    """
-    config, config_text, config_file = load_scope_config(root)
-    rules = _compile_ignore_rules(root, exclude,
-                                   vendored=config["vendored"],
-                                   first_party=config["first_party"])
-    fingerprint = _scope_fingerprint(root, exclude, config_text)
-    policy = {"defaults": sorted(EXCLUDED | EXCLUDED_BUILD),
-              "gitignore": (Path(root) / ".gitignore").is_file(),
-              "config_file": config_file,
-              "vendored": config["vendored"],
-              "first_party": config["first_party"],
-              "exclude": sorted(set(exclude or ())),
-              "fingerprint": fingerprint}
-    return rules, policy
-
-
-def _scan(root, exclude=()):
-    """Walk the source root and read candidate files without parsing.
-
-    Returns (entries, diagnostics, excluded) where each entry carries
-    path, data, text, and inventory flags. Build output, vendored code,
-    root-.gitignore matches, and explicit excludes are pruned (counts
-    reported, not per-path diagnostics). Shared by full capture and
-    incremental change detection so both observe the same file set.
-    """
-    root = Path(root).resolve(strict=True)
-    if not root.is_dir():
-        raise ValueError("source root must be a directory")
-    rules, _scope_policy = resolve_scope(root, exclude)
-    entries, diagnostics = [], []
-    excluded = {"dirs": 0, "files": 0}
-    def scan_error(error):
-        raise error
-    for base, dirs, files in os.walk(root, followlinks=False, onerror=scan_error):
-        for name in sorted(dirs):
-            p = Path(base) / name
-            if p.is_symlink():
-                diagnostics.append({"path": p.relative_to(root).as_posix(), "kind": "excluded_symlink"})
-        kept = []
-        for name in sorted(dirs):
-            p = Path(base) / name
-            rel = p.relative_to(root).as_posix()
-            if p.is_symlink() or name in EXCLUDED:
-                continue
-            if _is_ignored(rel, True, rules):
-                excluded["dirs"] += 1
-                continue
-            kept.append(name)
-        dirs[:] = kept
-        for name in sorted(files):
-            p = Path(base)/name
-            path = p.relative_to(root).as_posix()
-            if p.is_symlink():
-                diagnostics.append({"path": path, "kind": "excluded_symlink"})
-                continue
-            if _is_ignored(path, False, rules):
-                excluded["files"] += 1
-                continue
-            suffix = Path(name).suffix
-            text = suffix in TEXT_EXTENSIONS
-            inventory = suffix in INVENTORY_EXTENSIONS
-            structured = suffix in STRUCTURED_EXTENSIONS
-            inventory = inventory or structured
-            if not (name.endswith(".py") or text or inventory):
-                continue
-            entries.append({"path": path, "data": p.read_bytes(), "text": text,
-                            "inventory": inventory})
-    return entries, diagnostics, excluded
+        encoding, _ = tokenize.detect_encoding(io.BytesIO(data).readline)
+        if encoding not in {"utf-8", "utf-8-sig"}:
+            return {"path": path, "kind": "unsupported_encoding", "encoding": encoding}
+        record["tree"] = ast.parse(data.decode("utf-8-sig"), filename=path)
+    except (SyntaxError, UnicodeError, ValueError) as error:
+        return {"path": path, "kind": "parse_error", "line": getattr(error, "lineno", None)}
+    return None
 
 
 def capture(root, exclude=()):
@@ -451,31 +107,18 @@ def capture(root, exclude=()):
     entries, walk_diagnostics, excluded = _scan(root, exclude)
     diagnostics.extend(walk_diagnostics)
     for entry in entries:
-        path, data, text = entry["path"], entry["data"], entry["text"]
-        file_digest = digest(data)
-        source = {"path": path, "digest": file_digest, "data": data,
-                  "id": identity("source", [path, file_digest]), "tree": None, "text": text}
-        if text:
-            sources.append(source)
+        source = _source_record(entry["path"], entry["data"], entry["text"])
+        sources.append(source)
+        if entry["text"]:
             continue
         if entry.get("inventory"):
             source["inventory"] = True
-            sources.append(source)
             continue
-        parts = list(Path(path).with_suffix("").parts)
-        if parts[-1] == "__init__":
-            parts.pop()
-        source["module"] = ".".join(parts)
+        source["module"] = module_of(entry["path"])
         modules.setdefault(source["module"], []).append(source)
-        sources.append(source)
-        try:
-            encoding, _ = tokenize.detect_encoding(io.BytesIO(data).readline)
-            if encoding not in {"utf-8", "utf-8-sig"}:
-                diagnostics.append({"path": path, "kind": "unsupported_encoding", "encoding": encoding})
-                continue
-            source["tree"] = ast.parse(data.decode("utf-8-sig"), filename=path)
-        except (SyntaxError, UnicodeError, ValueError) as error:
-            diagnostics.append({"path": path, "kind": "parse_error", "line": getattr(error, "lineno", None)})
+        diagnostic = _parse_python(source)
+        if diagnostic is not None:
+            diagnostics.append(diagnostic)
     return sources, diagnostics, modules, excluded
 
 
@@ -493,25 +136,13 @@ def parse_source(path, data):
     Returns (record, diagnostic): exactly one is None. Mirrors the per-file
     parse step of capture so incremental refresh reuses identical records.
     """
-    file_digest = digest(data)
-    if (Path(path).suffix in INVENTORY_EXTENSIONS
-            or Path(path).suffix in STRUCTURED_EXTENSIONS):
-        return ({"path": path, "digest": file_digest, "data": data,
-                 "id": identity("source", [path, file_digest]), "tree": None,
-                 "text": False, "inventory": True}, None)
-    record = {"path": path, "digest": file_digest, "data": data,
-              "id": identity("source", [path, file_digest]), "tree": None,
-              "text": False, "module": module_of(path)}
-    try:
-        encoding, _ = tokenize.detect_encoding(io.BytesIO(data).readline)
-        if encoding not in {"utf-8", "utf-8-sig"}:
-            return None, {"path": path, "kind": "unsupported_encoding",
-                          "encoding": encoding}
-        record["tree"] = ast.parse(data.decode("utf-8-sig"), filename=path)
-    except (SyntaxError, UnicodeError, ValueError) as error:
-        return None, {"path": path, "kind": "parse_error",
-                      "line": getattr(error, "lineno", None)}
-    return record, None
+    record = _source_record(path, data)
+    if not filetypes.is_python(path):
+        record["inventory"] = True
+        return record, None
+    record["module"] = module_of(path)
+    diagnostic = _parse_python(record)
+    return (None, diagnostic) if diagnostic is not None else (record, None)
 
 
 def _builtin_method_kind(decorator_list):
@@ -588,6 +219,32 @@ def _harvest_inventory(source, symbols, diagnostics):
     return found
 
 
+def _collect_inventory(source, symbols, diagnostics):
+    """Symbols for a non-Python, non-prose file, at the best rung it has.
+
+    Families with a resolver stage own their bytes. Files an edge engine
+    will re-key keep the frozen harvest it builds on. Everything else
+    gets grammar-backed symbols when a grammar is local, the regex
+    harvest where one is receipted, and in every case one whole-file
+    text record, so the file stays retrievable whatever else failed.
+    """
+    path = source["path"]
+    filetype = filetypes.classify(path, source["data"][:filetypes.SNIFF_BYTES])
+    if filetype.family in (filetypes.NOTEBOOK, filetypes.CONFIG, filetypes.SCHEMA):
+        return
+    if pipeline.has_edge_engine(path):
+        _harvest_inventory(source, symbols, diagnostics)
+        return
+    if not structure.harvest(source, filetype.language, symbols, diagnostics) \
+            and filetypes.suffix_of(path) in INVENTORY_EXTENSIONS:
+        _harvest_inventory(source, symbols, diagnostics)
+    key = path + "::document"
+    symbols[key] = {"key": key, "path": path, "name": "document",
+                    "source": source["id"], "line": 1, "start": 0,
+                    "end": len(source["data"]), "is_test": False,
+                    "derivation": FILE_TEXT_DERIVATION}
+
+
 def _collect_code(sources, symbols, assertions, diagnostics):
     """Populate symbols and per-file tables from parsed Python sources.
 
@@ -606,15 +263,7 @@ def _collect_code(sources, symbols, assertions, diagnostics):
                                 "start": 0, "end": len(s["data"]),
                                 "is_test": False}
             elif s.get("inventory") and s["data"]:
-                if notebook.is_notebook_path(s["path"]):
-                    # Notebook bytes mix code, markdown, and outputs;
-                    # the notebook resolver owns their symbols.
-                    pass
-                elif Path(s["path"]).suffix in STRUCTURED_EXTENSIONS:
-                    # Config/schema bytes are owned by their resolvers.
-                    pass
-                else:
-                    _harvest_inventory(s, symbols, diagnostics)
+                _collect_inventory(s, symbols, diagnostics)
             continue
         # Collect module bindings without descending into function/class scopes.
         wrapper = ast.Module(body=[], type_ignores=[])
@@ -1670,760 +1319,6 @@ def _build_dispatch(sources, modules, symbols, assertions, diagnostics, invalid_
                     break
 
 
-def _build_docs(sources, symbols, assertions, diagnostics):
-    """Populate document mentions and typed-claim assertions.
-
-    Reads only text sources against an already built symbol table, so this
-    phase can rerun alone when code bytes are unchanged. The mention dedup
-    set restarts here exactly as in a full rebuild, which refresh replicates
-    by always processing every text source.
-    Mutates the passed-in containers; see extract for the full pipeline.
-    """
-    return _build_mentions(sources, symbols, assertions, diagnostics,
-                             _build_claims(sources, symbols, assertions, diagnostics))
-
-
-def _build_claims(sources, symbols, assertions, diagnostics, text_ids=None):
-    """Populate typed-claim assertions from document claim blocks.
-
-    Returns the per-source claim spans that hide claimed text from mention
-    extraction. Order-independent: claims never deduplicate across sources.
-    Pass the full-build text ids when running over a subset of sources so
-    other documents' symbols are not mistaken for code.
-    """
-    if text_ids is None:
-        text_ids = {s["id"] for s in sources if s.get("text")}
-    code_keys = sorted(key for key, record in symbols.items()
-                    if record["source"] not in text_ids
-                    and record.get("kind") != "class")
-
-    def _resolve_reference(ref):
-        if ref in symbols:
-            return ("exact", [ref])
-        matches = sorted(key for key in code_keys
-                         if symbols[key]["name"] == ref or key.split("::", 1)[-1].split(".")[-1] == ref)
-        if matches:
-            return ("named", matches)
-        return ("missing", [])
-
-    claim_spans = {}
-    for s in sources:
-        if not s.get("text"):
-            continue
-        mentioner = s["path"] + "::document"
-        offset = 0
-        lineno = 0
-        in_fence = False
-        fence_start = 0
-        fence_line = 0
-        body = []
-        for raw_line in s["data"].splitlines(keepends=True):
-            start, end = offset, offset + len(raw_line)
-            offset = end
-            lineno += 1
-            try:
-                stripped = raw_line.decode("utf-8").strip()
-            except UnicodeError:
-                stripped = ""
-            if not in_fence and stripped == "```tunic-claims":
-                in_fence = True
-                fence_start = start
-                fence_line = lineno
-                body = []
-                continue
-            if in_fence:
-                if stripped == "```":
-                    in_fence = False
-                    claim_spans.setdefault(s["id"], []).append((fence_start, end))
-                    try:
-                        block = b"".join(chunk for _, _, chunk in body).decode("utf-8")
-                        claims = json.loads(block)
-                        if not isinstance(claims, list):
-                            raise ValueError("claim block must be a JSON list")
-                    except (UnicodeError, ValueError) as error:
-                        diagnostics.append({"path": s["path"], "line": fence_line,
-                                            "kind": "malformed_claims", "error": str(error)})
-                        continue
-                    for claim in claims:
-                        if (not isinstance(claim, dict) or not isinstance(claim.get("rel"), str)
-                                or not isinstance(claim.get("subject"), str)
-                                or not isinstance(claim.get("object"), str)):
-                            diagnostics.append({"path": s["path"], "line": fence_line,
-                                                "kind": "invalid_claim"})
-                            continue
-                        rel = claim["rel"]
-                        if rel not in CLAIM_RELATIONS:
-                            diagnostics.append({"path": s["path"], "line": fence_line,
-                                                "kind": "unknown_relation", "relation": rel})
-                            continue
-                        retract_target = claim.get("retract")
-                        if rel == "retracts":
-                            if not isinstance(retract_target, str) or retract_target not in RETRACTABLE:
-                                diagnostics.append({"path": s["path"], "line": fence_line,
-                                                    "kind": "invalid_retract",
-                                                    "expression": (claim.get("subject", "?") + " retracts "
-                                                                   + claim["object"]),
-                                                    "retract": retract_target})
-                                continue
-                        elif retract_target is not None:
-                            diagnostics.append({"path": s["path"], "line": fence_line,
-                                                "kind": "invalid_retract",
-                                                "expression": (claim.get("subject", "?") + " " + rel + " "
-                                                               + claim["object"]),
-                                                "retract": retract_target})
-                            continue
-                        subject = claim["subject"]
-                        s_kind, s_candidates = _resolve_reference(subject)
-                        o_kind, o_candidates = _resolve_reference(claim["object"])
-                        expression = subject + " " + rel + " " + claim["object"]
-                        qualifiers = {}
-                        if isinstance(claim.get("authority"), str):
-                            qualifiers["authority"] = claim["authority"]
-                        if "effective" in claim:
-                            if is_iso_date(claim["effective"]):
-                                qualifiers["effective"] = claim["effective"]
-                            else:
-                                diagnostics.append({"path": s["path"], "line": fence_line,
-                                                    "kind": "invalid_effective", "expression": expression})
-                        if s_kind == "exact" and o_kind == "exact":
-                            if not check_relation_signature(rel, s_candidates[0], o_candidates[0]):
-                                diagnostics.append({"path": s["path"], "line": fence_line,
-                                                    "kind": "relation_signature",
-                                                    "expression": expression})
-                                continue
-                            proposition = {"relation": rel, "caller": s_candidates[0], "callee": o_candidates[0]}
-                            if rel == "retracts":
-                                proposition["retract"] = retract_target
-                            proposition.update(qualifiers)
-                            if isinstance(claim.get("note"), str):
-                                proposition["note"] = claim["note"]
-                            assertion = {"proposition": proposition, "source": s["id"],
-                                         "start": fence_start, "end": end,
-                                         "resolution": {"expression": expression, "rule": "exact_key_match_v1",
-                                                        "support": []},
-                                         "producer": PROFILE, "status": "asserted_in_source"}
-                            assertion["id"] = identity("assertion", assertion)
-                            assertions.append(assertion)
-                            continue
-                        if (s_kind, o_kind) in (("exact", "named"), ("named", "exact")):
-                            if s_kind == "exact":
-                                fixed, candidates = s_candidates[0], o_candidates
-                                subject_named = False
-                            else:
-                                fixed, candidates = o_candidates[0], s_candidates
-                                subject_named = True
-                            ambiguous = len(candidates) > 1
-                            for candidate in candidates:
-                                caller = candidate if subject_named else fixed
-                                callee = fixed if subject_named else candidate
-                                record = symbols[candidate]
-                                support = [{"source": record["source"], "start": record["start"],
-                                            "end": record["end"]}]
-                                proposition = {"relation": rel, "caller": caller, "callee": callee,
-                                               "candidate": candidate}
-                                if rel == "retracts":
-                                    proposition["retract"] = retract_target
-                                proposition.update(qualifiers)
-                                if isinstance(claim.get("note"), str):
-                                    proposition["note"] = claim["note"]
-                                assertion = {"proposition": proposition, "source": s["id"],
-                                             "start": fence_start, "end": end,
-                                             "resolution": {"expression": expression,
-                                                            "rule": "name_match_proposed_v1",
-                                                            "support": support},
-                                             "producer": PROFILE,
-                                             "status": "proposed_ambiguous" if ambiguous else "proposed"}
-                                assertion["id"] = identity("assertion", assertion)
-                                assertions.append(assertion)
-                            if ambiguous:
-                                diagnostics.append({"path": s["path"], "line": fence_line,
-                                                    "kind": "ambiguous_reference", "expression": expression,
-                                                    "candidates": sorted(candidates)})
-                            continue
-                        diagnostics.append({"path": s["path"], "line": fence_line,
-                                            "kind": ("ambiguous_reference"
-                                                     if s_kind == "named" or o_kind == "named"
-                                                     else "unresolved_reference"),
-                                            "expression": expression,
-                                            "candidates": sorted(s_candidates + o_candidates)})
-                else:
-                    body.append((start, end, raw_line))
-                continue
-        if in_fence:
-            diagnostics.append({"path": s["path"], "line": fence_line, "kind": "unclosed_claims"})
-    return claim_spans
-
-
-def _code_leaf_names(symbols, text_ids):
-    """Mappable bare leaves over code symbols: {leaf: [keys]}."""
-    leaf_names = {}
-    for key, record in symbols.items():
-        if record["source"] in text_ids or record.get("kind") == "class":
-            continue
-        leaf = record["name"].split(".")[-1]
-        if len(leaf) >= 2:
-            leaf_names.setdefault(leaf, []).append(key)
-    return leaf_names
-
-
-def _exact_mention_refs(assertion_list):
-    """(source id, callee) pairs of exact text mentions for corroboration."""
-    return {(record.get("source"), record["proposition"].get("callee"))
-            for record in assertion_list
-            if record.get("proposition", {}).get("relation") == "text_mention"
-            and record.get("resolution", {}).get("rule") == "exact_key_match_v1"}
-
-
-def _slugify_heading(text):
-    """GitHub-style slug for a heading line, never empty."""
-    slug = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
-    return slug or "section"
-
-
-def split_doc_sections(path, data):
-    """Split a prose document into deterministic retrieval sections.
-
-    Returns [(slug_or_None, start_byte, end_byte)]: byte-exact spans
-    over the raw bytes, in document order. Markdown headings (ATX,
-    outside fenced code blocks and YAML frontmatter) start sections;
-    duplicate headings get -2/-3 suffixes; leading prose before the
-    first heading is a slug-less preamble. Non-markdown prose (.txt,
-    .rst) is one whole-document unit. Setext underlines, headings
-    inside fenced code, and RST section adornments are NOT parsed:
-    those spans stay in their enclosing section rather than risking
-    false boundaries. Deterministic: same bytes always give the same
-    sections, so citations stay stable across refreshes.
-    """
-    if Path(path).suffix.lower() != ".md":
-        return [(None, 0, len(data))]
-    lines = data.splitlines(keepends=True)
-    offsets, heads = [0], []
-    for raw in lines:
-        offsets.append(offsets[-1] + len(raw))
-    fence, frontmatter, fm_done = None, False, False
-    index = 0
-    if lines and lines[0].strip() == b"---":
-        frontmatter = True
-        index = 1
-    for lineno in range(index, len(lines)):
-        try:
-            line = lines[lineno].decode("utf-8")
-        except UnicodeError:
-            continue
-        stripped = line.strip()
-        if frontmatter and not fm_done:
-            if stripped in ("---", "..."):
-                fm_done = True
-            continue
-        if stripped.startswith("```") or stripped.startswith("~~~"):
-            if fence is None:
-                fence = stripped[:3]
-            elif fence == stripped[:3]:
-                fence = None
-            continue
-        if fence is not None:
-            continue
-        match = re.match(r"^(#{1,6})[ \t]+(.*?)[ \t]*#*[ \t]*$", stripped)
-        if match and match.group(2):
-            heads.append((len(match.group(1)), match.group(2), offsets[lineno]))
-    sections, counts = [], {}
-    for pos, (level, title, start) in enumerate(heads):
-        end = offsets[len(lines)]
-        for deeper_level, _, deeper_start in heads[pos + 1:]:
-            if deeper_level <= level:
-                end = deeper_start
-                break
-        base = _slugify_heading(title)
-        counts[base] = counts.get(base, 0) + 1
-        slug = base if counts[base] == 1 else "%s-%d" % (base, counts[base])
-        if end > start:
-            sections.append((slug, start, end))
-    if not heads:
-        return [(None, 0, len(data))]
-    if heads[0][2] > 0 and data[:heads[0][2]].strip():
-        sections.insert(0, (None, 0, heads[0][2]))
-    sections.sort(key=lambda section: section[1])
-    return sections
-
-
-def _build_mentions(sources, symbols, assertions, diagnostics, claim_spans, seen=None):
-    """Populate document mention assertions in source order.
-
-    Exact key matches across every document take priority over bare leaf
-    matches anywhere: the exact pass runs to completion before the bare
-    pass starts. Takes an optional seen set of (start, key) pairs so
-    incremental refresh can seed mentions from unchanged documents and
-    preserve full-rebuild first-wins dedup order. Returns the seen set.
-    """
-    seen_mentions = set() if seen is None else seen
-    _build_exact_mentions(sources, symbols, assertions, claim_spans, seen_mentions)
-    text_ids = {s["id"] for s in sources if s.get("text")}
-    doc_freq = _leaf_document_frequency(
-        [s for s in sources if s.get("text")],
-        _code_leaf_names(symbols, text_ids))
-    _build_bare_mentions(sources, symbols, assertions, diagnostics, claim_spans,
-                         seen_mentions, text_ids,
-                         doc_freq, _exact_mention_refs(assertions),
-                         _claim_mention_refs(assertions))
-    return seen_mentions
-
-
-def _build_exact_mentions(sources, symbols, assertions, claim_spans, seen, text_ids=None):
-    """Populate exact `path::symbol` mention assertions in source order."""
-    if text_ids is None:
-        text_ids = {s["id"] for s in sources if s.get("text")}
-    code_keys = sorted(key for key, record in symbols.items()
-                    if record["source"] not in text_ids
-                    and record.get("kind") != "class")
-    seen_mentions = seen
-    for s in sources:
-        if not s.get("text"):
-            continue
-        mentioner = s["path"] + "::document"
-        hidden = claim_spans.get(s["id"], [])
-        offset = 0
-        for raw_line in s["data"].splitlines(keepends=True):
-            start, end = offset, offset + len(raw_line)
-            offset = end
-            if any(first <= start < last for first, last in hidden):
-                continue
-            try:
-                line = raw_line.decode("utf-8")
-            except UnicodeError:
-                continue
-            for key in code_keys:
-                if key in line and (start, key) not in seen_mentions:
-                    seen_mentions.add((start, key))
-                    proposition = {"relation": "text_mention", "caller": mentioner, "callee": key}
-                    assertion = {"proposition": proposition, "source": s["id"], "start": start, "end": end,
-                                 "resolution": {"expression": key, "rule": "exact_key_match_v1", "support": []},
-                                 "producer": PROFILE, "status": "syntactic_observation"}
-                    assertion["id"] = identity("assertion", assertion)
-                    assertions.append(assertion)
-    return seen_mentions
-
-
-EVIDENCE_DF_THRESHOLD = 0.05
-
-
-def _leaf_document_frequency(text_sources, leaf_names):
-    """Fraction of text sources containing each bare leaf, one scan per doc.
-
-    Corpus-relative, never a fixed stopword list: a leaf that appears
-    everywhere carries no identity evidence for any single occurrence.
-    Must run over every text source, not a subset, or frequencies skew.
-    """
-    pattern = re.compile("|".join(
-        r"\b" + re.escape(leaf) + r"\b"
-        for leaf in sorted(leaf_names, key=len, reverse=True))) if leaf_names else None
-    counts = {leaf: 0 for leaf in leaf_names}
-    total = 0
-    for source in text_sources:
-        try:
-            text = source["data"].decode("utf-8")
-        except UnicodeError:
-            continue
-        total += 1
-        if pattern is None:
-            continue
-        for leaf in {match.group(0) for match in pattern.finditer(text)}:
-            counts[leaf] += 1
-    return {leaf: (counts[leaf] / total if total else 0.0) for leaf in leaf_names}
-
-
-def _claim_mention_refs(assertion_list):
-    """(source id, entity) pairs touched by asserted doc claims."""
-    refs = set()
-    for record in assertion_list:
-        proposition = record.get("proposition", {})
-        if (record.get("status") != "asserted_in_source"
-                or proposition.get("relation") in ("static_call", "text_mention")):
-            continue
-        refs.add((record.get("source"), proposition.get("caller")))
-        refs.add((record.get("source"), proposition.get("callee")))
-    return refs
-
-
-def _requalify(leaf, line, source_id, callee, doc_freq, exact_refs, claim_refs=frozenset(), inventory_keys=frozenset()):
-    """Recompute admission for a kept mention under current corpus state.
-
-    Lets incremental refresh reprocess documents whose bare mentions flip
-    verdicts when frequencies or exact references change, so refresh output
-    stays identical to a full rebuild without reprocessing everything.
-    """
-    frequency = doc_freq.get(leaf, 0.0)
-    class_hit, module_hit, inventory = _context_hits(line, callee)
-    signals = _mention_signals(line, leaf, (source_id, callee) in exact_refs, (source_id, callee) in claim_refs, class_hit, module_hit, inventory)
-    if not signals and callee in inventory_keys:
-        # Full rebuilds no longer file zero-signal inventory candidates
-        # (see _build_bare_mentions); a kept one of that shape is stale,
-        # so mark its document for reprocessing.
-        return True
-    return ("exact_same_document" in signals
-            or "asserted_claim_same_document" in signals
-            or "class_context" in signals
-            or (frequency <= EVIDENCE_DF_THRESHOLD
-                and ("dotted_or_call" in signals
-                     or "module_path_context" in signals
-                     or "inventory_list" in signals)))
-
-
-INVENTORY_HEADER = re.compile(
-    r"^\s*[-*]?\s*(defs?|classes?|functions?|methods?|members?|exports?|"
-    r"symbols?|apis?|attributes?)\s*:", re.IGNORECASE)
-
-PATH_TOKEN = re.compile(r"[\w$./-]+\.\w+")
-
-
-def _mention_signals(line, leaf, exact_same_doc, claimed_same_doc,
-                     class_hit=False, module_hit=False, inventory=False):
-    """Independent corroborating signals for one bare occurrence.
-
-    exact_same_document: the same document already references the entity
-    exactly, so identity is established, not guessed. asserted_claim_same_
-    document: the document asserts a typed claim touching the entity, which
-    corroborates identity as strongly as an exact mention. class_context:
-    the line names the candidate's own class next to the leaf, which is
-    joint identity evidence as discriminating as an exact key. dotted_or_
-    call: `recv.leaf` or `leaf(` syntax denotes the code entity, not a
-    prose verb. module_path_context: the line names the candidate's file,
-    corroborating identity by location. inventory_list: the leaf sits in
-    an explicit member inventory (`defs:`, `classes:`, ...), which lists
-    entities rather than using their names as prose. code_span: the leaf
-    sits inside backticks. A backticked span alone is weak (prose backticks
-    file names too) and never qualifies by itself.
-    """
-    signals = []
-    if exact_same_doc:
-        signals.append("exact_same_document")
-    if claimed_same_doc:
-        signals.append("asserted_claim_same_document")
-    if class_hit:
-        signals.append("class_context")
-    if re.search(r"[\w$]+\." + re.escape(leaf) + r"\b|\b" + re.escape(leaf) + r"\s*\(",
-                 line):
-        signals.append("dotted_or_call")
-    if module_hit:
-        signals.append("module_path_context")
-    if inventory:
-        signals.append("inventory_list")
-    if re.search(r"`[^`]*\b" + re.escape(leaf) + r"\b[^`]*`", line):
-        signals.append("code_span")
-    return signals
-
-
-def _context_hits(line, callee_key):
-    """Structural corroboration available to any bare occurrence.
-
-    Returns (class_hit, module_hit, inventory): whether the line names the
-    candidate's own class, names the candidate's file, or sits in an
-    explicit member-inventory list. Derived from the key and the line
-    alone, so full rebuilds and incremental refreshes agree exactly.
-    """
-    parts = callee_key.split("::")
-    dotted = parts[1].split(".") if len(parts) > 1 else []
-    class_hit = (len(dotted) > 1
-                 and re.search(r"\b" + re.escape(dotted[-2]) + r"\b", line) is not None)
-    cand_path = parts[0]
-    module_hit = any(cand_path == token or cand_path.endswith("/" + token)
-                     for token in PATH_TOKEN.findall(line))
-    return class_hit, module_hit, INVENTORY_HEADER.match(line) is not None
-
-
-def _build_bare_mentions(sources, symbols, assertions, diagnostics, claim_spans, seen,
-                         text_ids=None, doc_freq=None, exact_refs=None,
-                         claim_refs=None):
-    """Populate bare leaf-name mention assertions in source order.
-
-    Must run after the exact pass over every document: a bare match is
-    suppressed when its (start, key) pair was already claimed by an exact
-    match, even in a different document.
-
-    Bare matches are qualified, not merely collected. A token match
-    becomes a graph assertion with same-doc exact or claim evidence, with
-    class context, or with dotted/call, file-path, or inventory-list
-    syntax on a low-frequency leaf; anything weaker is recorded as a
-    mention_candidate diagnostic. Backticked spans are recorded as a
-    signal but never qualify alone: prose backticks tool names too.
-    Candidates stay searchable through the lexical stage and visible for
-    review, but never become evidence edges. doc_freq must cover every
-    text source and exact_refs every exact mention, or subset refreshes
-    diverge from full rebuilds.
-    """
-    if text_ids is None:
-        text_ids = {s["id"] for s in sources if s.get("text")}
-    code_keys = sorted(key for key, record in symbols.items()
-                    if record["source"] not in text_ids
-                    and record.get("kind") != "class")
-    seen_mentions = seen
-    leaf_names = _code_leaf_names(symbols, text_ids)
-    if doc_freq is None:
-        doc_freq = _leaf_document_frequency(
-            [s for s in sources if s.get("text")], leaf_names)
-    if exact_refs is None:
-        exact_refs = set()
-    if claim_refs is None:
-        claim_refs = set()
-    leaf_pattern = None
-    if leaf_names:
-        leaf_pattern = re.compile("|".join(
-            r"\b" + re.escape(leaf) + r"\b"
-            for leaf in sorted(leaf_names, key=len, reverse=True)))
-    for s in sources:
-        if not s.get("text"):
-            continue
-        mentioner = s["path"] + "::document"
-        hidden = claim_spans.get(s["id"], [])
-        offset = 0
-        for lineno, raw_line in enumerate(s["data"].splitlines(keepends=True), start=1):
-            start, end = offset, offset + len(raw_line)
-            offset = end
-            if any(first <= start < last for first, last in hidden):
-                continue
-            try:
-                line = raw_line.decode("utf-8")
-            except UnicodeError:
-                continue
-            exact_here = {key for key in code_keys if key in line}
-            if leaf_pattern is None:
-                continue
-            present = {match.group(0) for match in leaf_pattern.finditer(line)}
-            for leaf in sorted(present):
-                candidates = leaf_names[leaf]
-                for key in candidates:
-                    if key in exact_here or (start, key) in seen_mentions:
-                        continue
-                    seen_mentions.add((start, key))
-                    frequency = doc_freq.get(leaf, 0.0)
-                    class_hit, module_hit, inventory = _context_hits(line, key)
-                    signals = _mention_signals(
-                        line, leaf, (s["id"], key) in exact_refs,
-                        (s["id"], key) in claim_refs,
-                        class_hit, module_hit, inventory)
-                    qualified = ("exact_same_document" in signals
-                                 or "asserted_claim_same_document" in signals
-                                 or "class_context" in signals
-                                 or (frequency <= EVIDENCE_DF_THRESHOLD
-                                     and ("dotted_or_call" in signals
-                                          or "module_path_context" in signals
-                                          or "inventory_list" in signals)))
-                    if not qualified:
-                        if (not signals and symbols[key].get("derivation")
-                                == "heuristic_inventory_v1"):
-                            # A bare common word with no corroborating
-                            # signal is not an investigation lead; filing
-                            # it drowns review in noise. The leaf stays
-                            # searchable through the lexical stage.
-                            continue
-                        diagnostics.append({"path": s["path"], "line": lineno,
-                                            "kind": "mention_candidate",
-                                            "expression": leaf, "callee": key,
-                                            "candidate": key,
-                                            "document_frequency": round(frequency, 4),
-                                            "signals": signals})
-                        continue
-                    record = symbols[key]
-                    support = [{"source": record["source"], "start": record["start"],
-                                "end": record["end"]}]
-                    proposition = {"relation": "text_mention", "caller": mentioner, "callee": key,
-                                   "candidate": key}
-                    assertion = {"proposition": proposition, "source": s["id"], "start": start, "end": end,
-                                 "resolution": {"expression": leaf, "rule": "name_match_proposed_v1",
-                                                "support": support,
-                                                "qualification": {"document_frequency": round(frequency, 4),
-                                                                  "signals": signals}},
-                                 "producer": PROFILE,
-                                 "status": "proposed_ambiguous" if len(candidates) > 1 else "proposed"}
-                    assertion["id"] = identity("assertion", assertion)
-                    assertions.append(assertion)
-    return seen_mentions
-
-
-def resolve_ts_edges(sources, symbols, assertions, diagnostics,
-                     fetch=None, known_paths=None):
-    """Resolve verified TypeScript/JavaScript static-call edges.
-
-    Parser-backed (tree-sitter) when the optional dependency is present;
-    without it every TS/JS file yields one unsupported_syntax diagnostic
-    and no edges, never invented ones. fetch/known_paths default to the
-    given records, so full rebuilds pass sources directly while refresh
-    supplies the fresh snapshot.
-    """
-    tsgraph.resolve_ts_sources(sources, symbols, assertions, diagnostics,
-                               fetch=fetch, known_paths=known_paths)
-
-
-def block_affected_paths(touched, fresh):
-    """Touched component files plus their script-block importers."""
-    out = set(touched) & {p for p in fresh if blocks.is_block_path(p)}
-    reverse = {}
-    for path in fresh:
-        if not blocks.is_block_path(path):
-            continue
-        targets = blocks.block_import_targets(path, fresh[path]["data"],
-                                              set(fresh))
-        if targets & set(touched):
-            out.add(path)
-        for target in targets:
-            reverse.setdefault(target, set()).add(path)
-    queue = list(out)
-    while queue:
-        current = queue.pop()
-        for importer in reverse.get(current, ()):
-            if importer not in out:
-                out.add(importer)
-                queue.append(importer)
-    return out
-
-
-def resolve_block_edges(sources, symbols, assertions, diagnostics,
-                        fetch=None, known_paths=None):
-    """Resolve verified call edges inside component script blocks.
-
-    Splits .vue/.svelte/.astro containers before parsing; script
-    blocks and frontmatter feed the TS grammar as one joined module
-    per file with parent-absolute spans. fetch/known_paths default to
-    the given records, so full rebuilds pass sources directly while
-    refresh supplies the fresh snapshot.
-    """
-    blocks.resolve_block_edges(sources, symbols, assertions,
-                               diagnostics, fetch=fetch,
-                               known_paths=known_paths)
-
-
-def notebook_affected_paths(touched, fresh):
-    """Touched notebooks plus notebooks importing touched modules.
-
-    Cell imports resolve against same-dir stems; a basename match
-    re-resolves the notebook (idempotent), never inventing edges.
-    """
-    out = {p for p in touched if notebook.is_notebook_path(p)}
-    touched_stems = {p.rsplit("/", 1)[-1].rsplit(".", 1)[0]
-                     for p in touched}
-    for path in fresh:
-        if not notebook.is_notebook_path(path):
-            continue
-        if path in out:
-            continue
-        try:
-            cells, _diags = notebook.split_notebook(fresh[path]["data"])
-        except (ValueError, UnicodeError, KeyError):
-            continue
-        for cell in cells:
-            if cell["kind"] != "code":
-                continue
-            for line in cell["source_lines"]:
-                head = line.strip().split()
-                if len(head) >= 2 and head[0] in ("import", "from"):
-                    stem = head[1].split(".")[0].split(";")[0]
-                    if stem in touched_stems:
-                        out.add(path)
-                        break
-            else:
-                continue
-            break
-    return out
-
-
-def resolve_notebook_cells(sources, symbols, assertions, diagnostics,
-                           fetch=None, known_paths=None, modules=None):
-    """Resolve notebook code cells through the shared Python engine.
-
-    Cells share one notebook namespace; spans are line-granular raw
-    line bounds keyed per cell for provenance across re-execution.
-    fetch/known_paths are accepted for pipeline symmetry and ignored;
-    modules defaults to the given records so notebooks resolve
-    cross-cell calls plus R2 imports into sibling .py modules.
-    """
-    notebook.resolve_notebook_cells(sources, symbols, assertions,
-                                    diagnostics, fetch=fetch,
-                                    known_paths=known_paths,
-                                    modules=modules)
-
-
-def config_affected_paths(touched, fresh):
-    """Touched configs plus configs referencing touched files.
-
-    Ref file-parts resolve against the referencing file's directory;
-    a basename match re-resolves the config (idempotent), never
-    inventing edges.
-    """
-    out = {p for p in touched if config.is_config_path(p)}
-    for path, info in fresh.items():
-        if not config.is_config_path(path) or path in out:
-            continue
-        try:
-            targets = config.referenced_files(path, info["data"])
-        except (ValueError, UnicodeError, KeyError):
-            continue
-        if targets & set(touched):
-            out.add(path)
-    return out
-
-
-def schemaref_affected_paths(touched, fresh):
-    """Touched schemas plus schemas referencing touched definitions."""
-    out = {p for p in touched if schemaref.is_schema_path(p)}
-    touched_defs = set()
-    for path in touched:
-        info = fresh.get(path)
-        if info is None or not schemaref.is_schema_path(path):
-            continue
-        suffix = PurePosixPath(path).suffix
-        touched_defs |= {name.lower() for name in
-                         schemaref.defined_names(info["data"], suffix)}
-    if not touched_defs:
-        return out
-    for path, info in fresh.items():
-        if not schemaref.is_schema_path(path) or path in out:
-            continue
-        suffix = PurePosixPath(path).suffix
-        refs = schemaref.referenced_names(info["data"], suffix)
-        if {name.lower() for name in refs} & touched_defs:
-            out.add(path)
-    return out
-
-
-def resolve_config_keys(sources, symbols, assertions, diagnostics,
-                        fetch=None, known_paths=None, modules=None):
-    """Resolve Tier-3 config key-path entities plus ref claims.
-
-    fetch/known_paths/modules are accepted for pipeline symmetry and
-    ignored: configs resolve against the symbol table directly, which
-    already holds untouched files on refresh.
-    """
-    config.resolve_config_keys(sources, symbols, assertions,
-                               diagnostics, fetch=fetch,
-                               known_paths=known_paths)
-
-
-def resolve_schema_refs(sources, symbols, assertions, diagnostics,
-                        fetch=None, known_paths=None, modules=None):
-    """Resolve Tier-4 schema entities plus references claims.
-
-    fetch/known_paths/modules are accepted for pipeline symmetry and
-    ignored, mirroring resolve_config_keys.
-    """
-    schemaref.resolve_schema_refs(sources, symbols, assertions,
-                                  diagnostics, fetch=fetch,
-                                  known_paths=known_paths)
-
-
-def resolve_unigraph_edges(sources, symbols, assertions, diagnostics,
-                           fetch=None, known_paths=None):
-    """Resolve verified static-call edges for spec-covered languages.
-
-    Parser-backed (tree-sitter) when the optional grammar is installed;
-    without it every covered file yields one unsupported_syntax
-    diagnostic and no edges, never invented ones. fetch/known_paths
-    default to the given records, so full rebuilds pass sources
-    directly while refresh supplies the fresh snapshot.
-    """
-    unigraph.resolve_unigraph_sources(sources, symbols, assertions,
-                                      diagnostics, fetch=fetch,
-                                      known_paths=known_paths)
-
-
 def extract(root, exclude=()):
     """Full rebuild: capture, code resolution, then document extraction."""
     sources, diagnostics, modules, excluded = capture(root, exclude)
@@ -2431,12 +1326,7 @@ def extract(root, exclude=()):
     _collect_code(sources, symbols, assertions, diagnostics)
     _resolve_code(sources, modules, symbols, assertions, diagnostics)
     _build_dispatch(sources, modules, symbols, assertions, diagnostics)
-    resolve_ts_edges(sources, symbols, assertions, diagnostics)
-    resolve_unigraph_edges(sources, symbols, assertions, diagnostics)
-    resolve_block_edges(sources, symbols, assertions, diagnostics)
-    resolve_notebook_cells(sources, symbols, assertions, diagnostics,
-                                 modules=modules)
-    resolve_config_keys(sources, symbols, assertions, diagnostics)
-    resolve_schema_refs(sources, symbols, assertions, diagnostics)
+    pipeline.resolve_all(sources, symbols, assertions, diagnostics,
+                         modules=modules)
     _build_docs(sources, symbols, assertions, diagnostics)
     return sources, sorted(symbols.values(), key=lambda x:x["key"]), sorted(assertions, key=lambda x:x["id"]), sorted(diagnostics, key=lambda x: (x["path"], x.get("line") or 0, x["kind"], x.get("start", 0))), excluded

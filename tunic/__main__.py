@@ -21,7 +21,7 @@ from .eval import run_agent_suite
 COMMANDS = {"ingest", "refresh", "impact", "mentions", "claims", "related",
             "timeline", "note", "candidates", "frontier", "triage", "draft",
             "review", "validate", "render", "models", "pin", "experiment",
-            "benchmark", "mcp"}
+            "benchmark", "mcp", "coverage"}
 
 
 def _zero_config_target(argv):
@@ -116,10 +116,16 @@ def main(argv=None):
     parser = argparse.ArgumentParser(prog="tunic")
     parser.add_argument("--db", help="SQLite database path (required for graph/render/experiment commands)")
     commands = parser.add_subparsers(dest="command", required=True)
-    ingest = commands.add_parser("ingest", help="fully rebuild and atomically publish a Python source snapshot")
+    ingest = commands.add_parser("ingest", help="fully rebuild and atomically publish a source snapshot")
     ingest.add_argument("root", help="Source root; e.g. repository/src for a src layout")
     ingest.add_argument("--exclude", action="append", default=None,
                         help="Exclude path pattern (repeatable; gitignore syntax)")
+    coverage = commands.add_parser("coverage", help="report what each in-scope file can establish, and why anything was left out")
+    coverage.add_argument("root", help="Source root; e.g. repository/src for a src layout")
+    coverage.add_argument("--exclude", action="append", default=None,
+                          help="Exclude path pattern (repeatable; gitignore syntax)")
+    coverage.add_argument("--fetch-grammars", action="store_true",
+                          help="download grammars this repository is missing (network; needs tunic-context[grammars])")
     refresh = commands.add_parser("refresh", help="incrementally re-ingest; equivalent to ingest with less work")
     refresh.add_argument("root", help="Source root; e.g. repository/src for a src layout")
     refresh.add_argument("--exclude", action="append", default=None,
@@ -239,6 +245,15 @@ def main(argv=None):
             with target.open("a", encoding="utf-8") as handle:
                 handle.write("\n\n## " + stamp + "\n\n" + args.text.rstrip("\n") + "\n")
             print(json.dumps({"outcome": "appended", "path": str(target)}, ensure_ascii=True, sort_keys=True))
+            return 0
+        if args.command == "coverage":
+            from . import coverage as coverage_report
+            exclude = args.exclude or ()
+            result = coverage_report.report(args.root, exclude)
+            if args.fetch_grammars:
+                result["grammars"] = coverage_report.fetch_grammars(result["missing_grammars"])
+                result = dict(coverage_report.report(args.root, exclude), grammars=result["grammars"])
+            print(json.dumps(result, ensure_ascii=True, sort_keys=True, indent=2))
             return 0
         if not args.db:
             parser.error("--db is required for this command")

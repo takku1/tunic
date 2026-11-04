@@ -16,7 +16,9 @@ import bisect
 import re
 from pathlib import Path
 
-BLOCK_EXTENSIONS = frozenset({".vue", ".svelte", ".astro"})
+from . import filetypes
+
+BLOCK_EXTENSIONS = filetypes.BLOCK_EXTENSIONS
 
 _TS_LANGS = frozenset({"ts", "tsx", "js", "jsx", "mts", "cts", "mjs",
                         "cjs", None})
@@ -244,6 +246,29 @@ def _shift_joined(joined, segments, alias, path, symbols, created,
                 symbols[parent_key] = record
                 record["key"] = parent_key
                 record["path"] = path
+
+
+def affected_paths(touched, fresh):
+    """Touched component files plus their script-block importers."""
+    touched, known = set(touched), set(fresh)
+    out = {p for p in touched & known if is_block_path(p)}
+    reverse = {}
+    for path in fresh:
+        if not is_block_path(path):
+            continue
+        targets = block_import_targets(path, fresh[path]["data"], known)
+        if targets & touched:
+            out.add(path)
+        for target in targets:
+            reverse.setdefault(target, set()).add(path)
+    queue = list(out)
+    while queue:
+        current = queue.pop()
+        for importer in reverse.get(current, ()):
+            if importer not in out:
+                out.add(importer)
+                queue.append(importer)
+    return out
 
 
 def resolve_block_edges(sources, symbols, assertions, diagnostics,

@@ -5,9 +5,16 @@ import json
 from pathlib import Path
 import sqlite3
 
-from .extract import DOC_PHASE_KINDS, STRUCTURE_KINDS, TEXT_EXTENSIONS, _build_bare_mentions, _build_claims, _build_dispatch, _build_docs, _build_exact_mentions, _build_mentions, _claim_mention_refs, _code_leaf_names, _collect_code, _exact_mention_refs, _leaf_document_frequency, _requalify, _resolve_code, _scan, extract, module_of, parse_source, resolve_ts_edges, resolve_unigraph_edges, resolve_block_edges, block_affected_paths, notebook_affected_paths, resolve_notebook_cells, resolve_config_keys, resolve_schema_refs, config_affected_paths, schemaref_affected_paths, PROFILE
-from . import tsgraph
-from . import unigraph
+from . import pipeline
+from .filetypes import is_prose, is_python
+from .extract import (DOC_PHASE_KINDS, STRUCTURE_KINDS, _build_dispatch, _collect_code,
+                      _resolve_code, extract, module_of, parse_source)
+from .prose import (_build_bare_mentions, _build_claims, _build_exact_mentions,
+                    _claim_mention_refs, _code_leaf_names, _exact_mention_refs,
+                    _leaf_document_frequency, _requalify)
+from .relations import PROFILE
+from .scope import _scan, resolve_scope
+from .structure import INVENTORY_DERIVATIONS
 from .identity import canonical, digest, identity
 
 SCHEMA = """
@@ -136,7 +143,6 @@ class GraphStore:
 
     def _scope_policy(self, root, exclude=()):
         """Effective scope receipt; re-read per operation, never stored."""
-        from .extract import resolve_scope
         return resolve_scope(root, exclude)[1]
 
     def refresh(self, root, exclude=()):
@@ -192,8 +198,7 @@ class GraphStore:
                     "excluded": excluded,
                     "scope": self._scope_policy(root, exclude)}
         touched = added + deleted + changed
-        code_touched = [p for p in touched
-                        if Path(p).suffix not in TEXT_EXTENSIONS]
+        code_touched = [p for p in touched if not is_prose(p)]
         if structure_now != structure_then:
             return self._refresh_full(root, work, dict(fresh), exclude)
         if code_touched:
@@ -334,7 +339,7 @@ class GraphStore:
         doc_freq = _leaf_document_frequency(
             text_sources, _code_leaf_names(symbols, all_text_ids))
         inventory_keys = {k for k, r in symbols.items()
-                          if r.get("derivation") == "heuristic_inventory_v1"}
+                          if r.get("derivation") in INVENTORY_DERIVATIONS}
         kept_claim_refs = set()
         for entry in manifest["assertions"]:
             proposition = entry.get("proposition", {})
@@ -435,17 +440,15 @@ class GraphStore:
         merged symbol table to preserve mention-dedup order.
         """
         touched_set = set(code_touched)
-        touched_modules = {module_of(p) for p in code_touched}
-        stored_code_paths = [p for p in stored
-                             if Path(p).suffix not in TEXT_EXTENSIONS]
+        # Modules are Python's namespace. Other files share a stem with a
+        # module (foo.ts beside foo.py) without being a member of it.
+        touched_modules = {module_of(p) for p in code_touched if is_python(p)}
+        stored_code_paths = [p for p in stored if not is_prose(p)]
+        stored_python = [p for p in stored_code_paths if is_python(p)]
         affected = set(p for p in code_touched if p in fresh)
-        for path in stored_code_paths:
-            if path in touched_set:
-                affected.add(path)
-                continue
-            if module_of(path) in {module_of(p) for p in touched_set}:
-                affected.add(path)
-                continue
+        affected.update(p for p in stored_code_paths if p in touched_set)
+        affected.update(p for p in stored_python
+                        if module_of(p) in touched_modules)
         for assertion in manifest["assertions"]:
             proposition = assertion.get("proposition", {})
             callee = proposition.get("callee", "")
@@ -453,7 +456,7 @@ class GraphStore:
             if callee_path in touched_set or module_of(callee_path) in touched_modules:
                 caller = proposition.get("caller", "").split("::")[0]
                 if (caller in stored and caller not in touched_set
-                        and Path(caller).suffix not in TEXT_EXTENSIONS):
+                        and not is_prose(caller)):
                     affected.add(caller)
         for diagnostic in manifest["diagnostics"]:
             if diagnostic.get("kind") == "star_import":
@@ -464,7 +467,7 @@ class GraphStore:
                             if d.get("kind") == "unresolved_call"}
         for path in sorted(unresolved_paths):
             if (path not in stored or path in affected
-                    or Path(path).suffix in TEXT_EXTENSIONS
+                    or is_prose(path)
                     or path not in fresh):
                 continue
             try:
@@ -476,12 +479,7 @@ class GraphStore:
         dispatch_extra, dispatch_invalid = self._dispatch_scope(
             manifest, touched_set, stored)
         affected |= {p for p in dispatch_extra if p in fresh}
-        affected |= tsgraph.ts_affected_paths(touched, fresh)
-        affected |= block_affected_paths(touched, fresh)
-        affected |= notebook_affected_paths(touched, fresh)
-        affected |= config_affected_paths(touched, fresh)
-        affected |= schemaref_affected_paths(touched, fresh)
-        affected |= unigraph.affected_paths(touched, fresh)
+        affected |= pipeline.affected_paths(touched, fresh)
         parse_paths = sorted(p for p in affected if p in fresh)
         records, parse_diagnostics, unparsed = {}, [], []
         for path in parse_paths:
@@ -496,15 +494,16 @@ class GraphStore:
         work["parse_skipped"] = (sum(1 for entry in fresh.values() if not entry["text"])
                                  - len(parse_paths))
         modules = {}
-        for path in stored_code_paths:
+        symbols_by_path = {}
+        for symbol in manifest["symbols"]:
+            symbols_by_path.setdefault(symbol.get("path"), []).append(symbol)
+        for path in stored_python:
             if path in affected:
                 continue
             module = module_of(path)
             members = modules.setdefault(module, [])
             functions, classes, class_names = {}, {}, set()
-            for symbol in manifest["symbols"]:
-                if symbol.get("path") != path:
-                    continue
+            for symbol in symbols_by_path.get(path, ()):
                 name = symbol.get("name", "")
                 if symbol.get("kind") == "class":
                     # class entities are resolved by _resolve_class_symbol,
@@ -532,9 +531,12 @@ class GraphStore:
             module = module_of(path)
             members = modules.setdefault(module, [])
             members.append({"module": module, "functions": {}, "classes": {}})
+        # Prose ::document records regenerate below; those of other files
+        # belong to the file and survive with it.
         symbols = {s["key"]: s for s in manifest["symbols"]
                    if s.get("path") not in affected
-                   and not s["key"].endswith("::document")}
+                   and not (s["key"].endswith("::document")
+                            and is_prose(s["path"]))}
         text_sources = [{"id": info["id"], "path": path, "digest": info["digest"],
                          "data": info["data"], "tree": None, "text": True}
                         for path, info in sorted(fresh.items()) if info["text"]]
@@ -569,25 +571,9 @@ class GraphStore:
                         invalid_tables=dispatch_invalid)
         fetch = lambda p: ((fresh[p]["id"], fresh[p]["data"])
                            if p in fresh else None)
-        resolve_ts_edges(code_sources, symbols, resolve_assertions,
-                         resolve_diags, fetch=fetch,
-                         known_paths=set(fresh))
-        resolve_unigraph_edges(code_sources, symbols, resolve_assertions,
-                                 resolve_diags, fetch=fetch,
-                                 known_paths=set(fresh))
-        resolve_block_edges(code_sources, symbols, resolve_assertions,
-                            resolve_diags, fetch=fetch,
-                            known_paths=set(fresh))
-        resolve_notebook_cells(code_sources, symbols, resolve_assertions,
-                               resolve_diags, fetch=fetch,
-                               known_paths=set(fresh),
-                               modules=modules)
-        resolve_config_keys(code_sources, symbols, resolve_assertions,
-                            resolve_diags, fetch=fetch,
-                            known_paths=set(fresh))
-        resolve_schema_refs(code_sources, symbols, resolve_assertions,
-                            resolve_diags, fetch=fetch,
-                            known_paths=set(fresh))
+        pipeline.resolve_all(code_sources, symbols, resolve_assertions,
+                             resolve_diags, fetch=fetch,
+                             known_paths=set(fresh), modules=modules)
         rows = {row[0]: row[1] for row in self.connection.execute(
             """SELECT s.id, s.path FROM sources s
                JOIN members m ON m.source=s.id WHERE m.snapshot=?""", (current,))}
@@ -605,12 +591,10 @@ class GraphStore:
         for key in old_keys | new_keys:
             changed_terms.add(key.split("::")[-1].split(".")[-1])
         for key, symbol in symbols.items():
-            if ((tsgraph.is_ts_path(symbol.get("path", ""))
-                    or unigraph.is_unigraph_path(symbol.get("path", "")))
-                    and symbol.get("path") in affected):
+            if (symbol.get("path") in affected
+                    and pipeline.has_edge_engine(symbol.get("path", ""))):
                 changed_terms.add(key.split("::")[-1].split(".")[-1])
-        reprocess = {p for p in touched if p in fresh
-                     and Path(p).suffix in TEXT_EXTENSIONS}
+        reprocess = {p for p in touched if p in fresh and is_prose(p)}
         for info in text_sources:
             if info["path"] not in stored:
                 reprocess.add(info["path"])
@@ -626,15 +610,15 @@ class GraphStore:
         for record in manifest["assertions"]:
             path = doc_of_source.get(record.get("source"))
             if (path is None or path in reprocess or path not in stored
-                    or Path(path).suffix not in TEXT_EXTENSIONS):
+                    or not is_prose(path)):
                 continue
             if _referenced_sources(record, set()) - member_ids:
                 reprocess.add(path)
         drop = set(affected) | {p for p in touched if p not in fresh}
-        code_assertions = [a for a in manifest["assertions"]
-                           if rows.get(a.get("source")) not in drop
-                           and rows.get(a.get("source")) not in {s["path"] for s in text_sources}]
-        code_assertions.extend(resolve_assertions)
+        drop_or_text = drop | {s["path"] for s in text_sources}
+        code_reused = [a for a in manifest["assertions"]
+                       if rows.get(a.get("source")) not in drop_or_text]
+        code_assertions = code_reused + resolve_assertions
         assertions, claim_diags, mention_diags = self._doc_subset(
             text_sources, symbols, code_assertions, manifest, reprocess)
         doc_diags = claim_diags + mention_diags
@@ -647,9 +631,6 @@ class GraphStore:
         merged.sort(key=lambda x: (x["path"], x.get("line") or 0, x["kind"], x.get("start", 0)))
         work["doc_files_processed"] = len(text_sources)
         work["docs_reprocessed"] = len(reprocess)
-        code_reused = [a for a in manifest["assertions"]
-                       if rows.get(a.get("source")) not in drop
-                       and rows.get(a.get("source")) not in {s["path"] for s in text_sources}]
         work["assertions_reused"] = len(code_reused)
         work["assertions_built"] = len(assertions) - len(code_reused)
         work["diagnostics_reused"] = len(kept)
@@ -661,7 +642,7 @@ class GraphStore:
                                "data": bytes(row[3]), "tree": None, "text": False}
                               for row in member_rows
                               if row[1] not in affected and row[1] in fresh
-                              and Path(row[1]).suffix not in TEXT_EXTENSIONS]
+                              and not is_prose(row[1])]
         sources_out = unaffected_sources + code_sources + text_sources
         result = self._publish(root, sources_out,
                                sorted(symbols.values(), key=lambda x: x["key"]),
@@ -674,7 +655,7 @@ class GraphStore:
     def _refresh_documents(self, root, work, manifest, stored, fresh, current, touched, exclude=()):
         """Reuse stored code rows; rerun the document phase over text files."""
         code_ids = {info["id"] for path, info in stored.items()
-                    if Path(path).suffix not in TEXT_EXTENSIONS}
+                    if not is_prose(path)}
         rows = self.connection.execute(
             """SELECT s.id, s.path, s.digest, s.data FROM sources s
                JOIN members m ON m.source=s.id WHERE m.snapshot=?""", (current,)).fetchall()
@@ -696,8 +677,7 @@ class GraphStore:
                                     "start": 0, "end": len(source["data"]), "is_test": False}
         symbols = {s["key"]: s for s in code_symbols}
         symbols.update(doc_symbols)
-        reprocess = {path for path in touched if path in fresh
-                     and Path(path).suffix in TEXT_EXTENSIONS}
+        reprocess = {path for path in touched if path in fresh and is_prose(path)}
         assertions, claim_diags, mention_diags = self._doc_subset(
             text_sources, symbols, code_assertions, manifest, reprocess)
         doc_diagnostics = claim_diags + mention_diags
@@ -758,6 +738,14 @@ class GraphStore:
         if symbols != manifest["symbols"] or assertions != manifest["assertions"] or sources != manifest["sources"]:
             raise ValueError("snapshot graph rows differ from committed manifest")
         return snapshot, manifest
+
+    def snapshot_sources(self, snapshot):
+        """{source id: (path, data)} for every member, in one query."""
+        return {row[0]: (row[1], bytes(row[2]))
+                for row in self.connection.execute(
+                    """SELECT s.id, s.path, s.data FROM sources s
+                       JOIN members m ON m.source=s.id WHERE m.snapshot=?""",
+                    (snapshot,))}
 
     def source(self, source_id, snapshot):
         row = self.connection.execute("""SELECT s.path,s.digest,s.data FROM sources s

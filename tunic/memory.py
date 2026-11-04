@@ -14,7 +14,8 @@ import subprocess
 from pathlib import Path
 
 from . import compiler
-from .baselines import BM25, TextNotes
+from .baselines import BM25, SnapshotLexical, TextNotes
+from .filetypes import PROSE_EXTENSIONS
 from .extract import CLAIM_RELATIONS, is_iso_date
 from .identity import digest as _digest
 from .lifecycle import suppressed_ids
@@ -47,6 +48,8 @@ MENTION_TIERS = {"syntactic_observation": 0, "asserted_in_source": 0,
 # costs a bounded re-rank, not context.
 DOCUMENT_RECALL_MULTIPLE = 3
 DOCUMENT_RECALL_MINIMUM = 10
+# Passages from files outside the prose channel, per retrieval.
+FILE_PASSAGE_DEFAULT = 2
 
 
 def _mention_tier(mention):
@@ -242,6 +245,8 @@ class Memory:
         self.principal = principal
         self._discovery = None
         self._discovery_key = None
+        self._snapshot_lexical = None
+        self._snapshot_lexical_key = None
 
     def _ensure_discovery(self, snapshot, exclude=()):
         """Cached code + notes indexes; rebuilt only when the snapshot,
@@ -252,11 +257,11 @@ class Memory:
         The key carries a scope fingerprint: .gitignore or config edits rebuild
         even when no member file changed, while churn inside excluded
         trees never invalidates the cache."""
-        from .extract import iter_scope_files, resolve_scope
+        from .scope import iter_scope_files, resolve_scope
         rules, policy = resolve_scope(self.root, exclude)
         assert rules is not None and policy.get("fingerprint")
         found, stats = iter_scope_files(
-            self.root, rules, {".py", ".md", ".txt"})
+            self.root, rules, {".py"} | PROSE_EXTENSIONS)
         newest, count = 0, 0
         for path, _rel in found:
             try:
@@ -271,6 +276,13 @@ class Memory:
                                TextNotes(self.root, exclude))
             self._discovery_key = key
         return self._discovery
+
+    def _snapshot_index(self, snapshot, view):
+        """Cached lexical index over non-Python content; one per snapshot."""
+        if self._snapshot_lexical_key != snapshot:
+            self._snapshot_lexical = SnapshotLexical(self.store, snapshot, view)
+            self._snapshot_lexical_key = snapshot
+        return self._snapshot_lexical
 
     def _lexical_index(self, snapshot, exclude=()):
         """Cached BM25 over code; see _ensure_discovery."""
@@ -1252,7 +1264,7 @@ class Memory:
             raise ValueError("container_limit must be a non-negative integer")
         if type(mmr_lambda) not in (int, float) or not 0.0 <= mmr_lambda <= 1.0:
             raise ValueError("mmr_lambda must be a number in [0, 1]")
-        caps = {"exact": limit, "name": limit, "lexical": limit, "semantic": limit, "documents": limit, "graph": 0}
+        caps = {"exact": limit, "name": limit, "lexical": limit, "semantic": limit, "documents": limit, "graph": 0, "files": min(limit, FILE_PASSAGE_DEFAULT)}
         if budget is not None:
             unknown = set(budget) - set(caps)
             if unknown:
@@ -1302,6 +1314,11 @@ class Memory:
             index, notes = discovery
             lexical = [hit["symbol"] for hit in
                        index.search_text(task, top_k=caps["lexical"])]
+            # Fill-only: frozen Python rankings keep their positions; a
+            # repository with no Python gets its whole budget from here.
+            lexical += [hit["symbol"] for hit in
+                        self._snapshot_index(snapshot, view).symbols.search(
+                            task, caps["lexical"] - len(lexical))]
             note_mentions = []
             for hit in notes.search_text(task, top_k=caps["lexical"]):
                 mentioner = hit["symbol"] + "::document"
@@ -1340,6 +1357,17 @@ class Memory:
                 top_k=caps["documents"], exact=doc_exact)
         else:
             documents = []
+        if mode == "hybrid" and caps["files"] > 0 and task.strip():
+            # Additive: prose passages are untouched, and unrecognized file
+            # types ride behind them under their own small budget.
+            files = self._snapshot_index(snapshot, view).files
+            cited = {passage["unit"] for passage in documents}
+            documents = documents + [
+                passage for passage in compiler.compile_documents(
+                    self.store, snapshot=snapshot, view=view, task=task,
+                    hits=files.search(task, caps["files"]),
+                    frequency=files.frequency, top_k=caps["files"])
+                if passage["unit"] not in cited]
         stages["documents"] = {"candidates": len(documents),
                                "ms": (time.perf_counter() - started) * 1000.0,
                                "skipped": not (caps["documents"] > 0

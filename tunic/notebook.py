@@ -295,6 +295,39 @@ def _merged_spans(record, ctx, source_id, is_assertion):
             record["line"] = mapped
     return True
 
+def affected_paths(touched, fresh):
+    """Touched notebooks plus notebooks importing touched modules.
+
+    Cell imports resolve against same-dir stems; a basename match
+    re-resolves the notebook (idempotent), never inventing edges.
+    """
+    out = {p for p in touched if is_notebook_path(p)}
+    touched_stems = {p.rsplit("/", 1)[-1].rsplit(".", 1)[0]
+                     for p in touched}
+    for path in fresh:
+        if not is_notebook_path(path) or path in out:
+            continue
+        try:
+            cells, _diags = split_notebook(fresh[path]["data"])
+        except (ValueError, UnicodeError, KeyError):
+            continue
+        if _imports_any(cells, touched_stems):
+            out.add(path)
+    return out
+
+
+def _imports_any(cells, stems):
+    for cell in cells:
+        if cell["kind"] != "code":
+            continue
+        for line in cell["source_lines"]:
+            head = line.strip().split()
+            if (len(head) >= 2 and head[0] in ("import", "from")
+                    and head[1].split(".")[0].split(";")[0] in stems):
+                return True
+    return False
+
+
 def resolve_notebook_cells(sources, symbols, assertions, diagnostics,
                            fetch=None, known_paths=None, modules=None):
     """Resolve notebook code cells through the shared Python engine."""

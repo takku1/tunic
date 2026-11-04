@@ -18,6 +18,7 @@ import re
 import tomllib
 from pathlib import PurePosixPath
 
+from . import filetypes
 from .identity import identity
 
 try:
@@ -25,7 +26,7 @@ try:
 except ImportError:
     yaml = None
 
-CONFIG_EXTENSIONS = {".json", ".yaml", ".yml", ".toml", ".ini"}
+CONFIG_EXTENSIONS = filetypes.CONFIG_EXTENSIONS
 PRODUCER = "key_path_v1"
 REF_KEYS = {"$ref", "$include", "include"}
 LOCKFILE_NAMES = {"package-lock.json", "pnpm-lock.yaml", "yarn.lock",
@@ -36,7 +37,7 @@ MAX_KEYS_PER_FILE = 5000
 
 
 def is_config_path(path):
-    return PurePosixPath(path).suffix in CONFIG_EXTENSIONS
+    return filetypes.suffix_of(path) in CONFIG_EXTENSIONS
 
 
 def _escape_segment(segment):
@@ -744,7 +745,7 @@ def _parse_toml(data, path, source_id):
                                    full, emit, navigate)
             else:
                 emit(full, line_start + key_start,
-                     line_start + key_end, value)
+                     line_start + key_end, raw_value)
         else:
             emit(full, line_start + key_start, line_start + key_end,
                  navigate(full))
@@ -864,6 +865,27 @@ def _resolve_ref_target(ref, current, symbols):
     return target_key, None
 
 
+def affected_paths(touched, fresh):
+    """Touched configs plus configs referencing touched files.
+
+    Ref file-parts resolve against the referencing file's directory;
+    a basename match re-resolves the config (idempotent), never
+    inventing edges.
+    """
+    touched = set(touched)
+    out = {p for p in touched if is_config_path(p)}
+    for path, info in fresh.items():
+        if not is_config_path(path) or path in out:
+            continue
+        try:
+            targets = referenced_files(path, info["data"])
+        except (ValueError, UnicodeError, KeyError):
+            continue
+        if targets & touched:
+            out.add(path)
+    return out
+
+
 def resolve_config_keys(sources, symbols, assertions, diagnostics,
                         fetch=None, known_paths=None):
     """Parse config sources into key-path entities plus ref claims."""
@@ -878,7 +900,7 @@ def resolve_config_keys(sources, symbols, assertions, diagnostics,
             diagnostics.append(_diag(path, "inventory_deferred", 1,
                                      path))
             continue
-        suffix = PurePosixPath(path).suffix
+        suffix = filetypes.suffix_of(path)
         parser = {"json": _parse_json, "yaml": _parse_yaml,
                   "yml": _parse_yaml, "toml": _parse_toml,
                   "ini": _parse_ini}.get(suffix.lstrip("."))

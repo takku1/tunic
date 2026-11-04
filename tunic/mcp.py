@@ -175,6 +175,9 @@ def tool_schemas():
         {"name": "refresh",
          "description": "Incrementally re-ingest the fixed workspace root.",
          "inputSchema": {"type": "object", "properties": {}}},
+        {"name": "coverage",
+         "description": "Report what each in-scope file can establish (edges, entities, symbols, text), what was left out and why, and which grammars are missing. Check this before reading an empty answer as absence.",
+         "inputSchema": {"type": "object", "properties": {}}},
     ]
 
 
@@ -279,6 +282,9 @@ def handle_call(memory, name, args):
                                        _need(args, "object", str), **kwargs)}
     if name == "refresh":
         return memory.refresh()
+    if name == "coverage":
+        from . import coverage
+        return coverage.report(memory.root)
     if name == "candidates":
         if args:
             _fail("candidates takes no arguments")

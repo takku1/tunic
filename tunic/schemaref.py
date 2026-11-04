@@ -14,14 +14,15 @@ constructs, documented here, not gaps.
 import re
 from pathlib import PurePosixPath
 
+from . import filetypes
 from .identity import identity
 
-SCHEMA_EXTENSIONS = {".sql", ".graphql", ".gql", ".proto"}
+SCHEMA_EXTENSIONS = filetypes.SCHEMA_EXTENSIONS
 PRODUCER = "schema_reference_v1"
 
 
 def is_schema_path(path):
-    return PurePosixPath(path).suffix in SCHEMA_EXTENSIONS
+    return filetypes.suffix_of(path) in SCHEMA_EXTENSIONS
 
 
 def _diag(path, kind, line, expression):
@@ -719,7 +720,7 @@ def _schema_index(symbols):
     lowered, exact = {}, {}
     for key in symbols:
         path = key.split("::")[0]
-        if PurePosixPath(path).suffix not in SCHEMA_EXTENSIONS:
+        if not is_schema_path(path):
             continue
         leaf = key.split("::", 1)[-1]
         lowered.setdefault(leaf.lower(), []).append(key)
@@ -745,6 +746,27 @@ def _schema_target_key(index, kind, table, column=None):
     return None
 
 
+def affected_paths(touched, fresh):
+    """Touched schemas plus schemas referencing touched definitions."""
+    out = {p for p in touched if is_schema_path(p)}
+    touched_defs = set()
+    for path in touched:
+        info = fresh.get(path)
+        if info is None or not is_schema_path(path):
+            continue
+        touched_defs |= {name.lower() for name in defined_names(
+            info["data"], filetypes.suffix_of(path))}
+    if not touched_defs:
+        return out
+    for path, info in fresh.items():
+        if not is_schema_path(path) or path in out:
+            continue
+        refs = referenced_names(info["data"], filetypes.suffix_of(path))
+        if {name.lower() for name in refs} & touched_defs:
+            out.add(path)
+    return out
+
+
 def resolve_schema_refs(sources, symbols, assertions, diagnostics,
                         fetch=None, known_paths=None):
     """Parse schema sources into entities plus references claims."""
@@ -756,7 +778,7 @@ def resolve_schema_refs(sources, symbols, assertions, diagnostics,
     pending = []
     for record in sorted(records, key=lambda s: s["path"]):
         path = record["path"]
-        suffix = PurePosixPath(path).suffix
+        suffix = filetypes.suffix_of(path)
         parser = {"sql": _parse_sql, "graphql": _parse_graphql,
                   "gql": _parse_graphql,
                   "proto": _parse_proto}.get(suffix.lstrip("."))
@@ -784,7 +806,7 @@ def resolve_schema_refs(sources, symbols, assertions, diagnostics,
                                 "kind": "dangling_caller",
                                 "expression": caller})
             continue
-        kind = "sql" if PurePosixPath(path).suffix == ".sql" \
+        kind = "sql" if filetypes.suffix_of(path) == ".sql" \
             else "other"
         if "." in callee:
             table, _, column = callee.partition(".")

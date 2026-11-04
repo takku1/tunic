@@ -7,6 +7,7 @@ from .baselines import _rank, _tokens
 from .extract import TRAVERSABLE_CLAIMS, is_iso_date, split_doc_sections
 from .identity import canonical, digest, identity
 from .lifecycle import suppressed_ids
+from .structure import INVENTORY_DERIVATIONS
 
 IR_VERSION = "tunic.w1.v3"
 POLICIES = ("transparent", "evidence_only", "current")
@@ -35,7 +36,7 @@ def _subject_coverage(symbols, symbol, assertions=()):
     proven.
     """
     subject = symbols.get(symbol, {})
-    if subject.get("derivation") == "heuristic_inventory_v1":
+    if subject.get("derivation") in INVENTORY_DERIVATIONS:
         if _has_static_edges(assertions, symbol):
             return "bounded_static_analysis"
         return "inventory_only"
@@ -49,11 +50,12 @@ _TS_LANGUAGES = frozenset({"ts", "tsx", "mts", "cts", "js", "jsx", "mjs",
 def _profile_note(symbols, symbol, assertions=()):
     """First limitations line, honest about inventory-only subjects."""
     subject = symbols.get(symbol, {})
-    if subject.get("derivation") == "heuristic_inventory_v1":
+    if subject.get("derivation") in INVENTORY_DERIVATIONS:
         if not _has_static_edges(assertions, symbol):
-            return ("heuristic_inventory_v1: name and location only for .%s; "
+            return ("%s: name and location only for .%s; "
                     "call extraction not available."
-                    % (subject.get("language") or "unknown"))
+                    % (subject["derivation"],
+                       subject.get("language") or "unknown"))
         language = subject.get("language") or "unknown"
         if language in _TS_LANGUAGES:
             family = "TypeScript/JavaScript"

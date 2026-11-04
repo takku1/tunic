@@ -47,8 +47,8 @@ class McpProtocolTests(unittest.TestCase):
         response = handle_request(self.memory, _rpc("tools/list"))
         names = sorted(tool["name"] for tool in response["result"]["tools"])
         self.assertEqual(names, ["acquire", "callees", "candidates",
-                                 "correct", "frontier", "impact", "note",
-                                 "promote", "references", "refresh",
+                                 "correct", "coverage", "frontier", "impact",
+                                 "note", "promote", "references", "refresh",
                                  "related",
                                  "retrieve", "review",
                                  "timeline"])
@@ -193,7 +193,7 @@ class McpServerTests(unittest.TestCase):
         by_id = {line["id"]: line for line in lines}
         self.assertEqual(len(by_id), 6)
         self.assertEqual(by_id[1]["result"]["serverInfo"]["name"], "tunic")
-        self.assertEqual(len(by_id[2]["result"]["tools"]), 14)
+        self.assertEqual(len(by_id[2]["result"]["tools"]), 15)
         self.assertIn("callees",
                       {t["name"] for t in by_id[2]["result"]["tools"]})
         payload = json.loads(by_id[3]["result"]["content"][0]["text"])
@@ -237,12 +237,18 @@ class McpAgentToolsTests(unittest.TestCase):
         self.assertFalse(response["result"]["isError"], msg=name)
         return _text(response)
 
+    def test_coverage_reports_rungs_for_the_fixed_root(self):
+        result = self.call("coverage", {})
+        self.assertGreater(result["files"], 0)
+        self.assertEqual(sum(result["rungs"].values()), result["files"])
+        self.assertIn("ledger", result)
+
     def test_tool_list_includes_agent_tools(self):
         response = handle_request(self.memory, _rpc("tools/list"))
         names = sorted(tool["name"] for tool in response["result"]["tools"])
         self.assertEqual(names, ["acquire", "callees", "candidates",
-                                 "correct", "frontier", "impact", "note",
-                                 "promote", "references", "refresh",
+                                 "correct", "coverage", "frontier", "impact",
+                                 "note", "promote", "references", "refresh",
                                  "related",
                                  "retrieve", "review",
                                  "timeline"])

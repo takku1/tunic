@@ -38,8 +38,7 @@ class BM25:
     excluded trees are never walked.
     """
     def __init__(self, root, exclude=()):
-        from .extract import _compile_ignore_rules, iter_scope_files
-        from .extract import resolve_scope
+        from .scope import iter_scope_files, resolve_scope
         root = Path(root)
         rules, policy = resolve_scope(root, exclude)
         found, self.scope_stats = iter_scope_files(root, rules, {".py"})
@@ -114,13 +113,13 @@ class TextNotes:
     explicit excludes prune before descent.
     """
     def __init__(self, root, exclude=()):
-        from .extract import _compile_ignore_rules, iter_scope_files
-        from .extract import TEXT_EXTENSIONS as _TEXT_EXTENSIONS
-        from .extract import resolve_scope as _resolve_scope
+        from .filetypes import PROSE_EXTENSIONS
+        from .scope import iter_scope_files
+        from .scope import resolve_scope as _resolve_scope
         self.root = Path(root)
         rules, policy = _resolve_scope(self.root, exclude)
         found, self.scope_stats = iter_scope_files(
-            self.root, rules, set(_TEXT_EXTENSIONS))
+            self.root, rules, set(PROSE_EXTENSIONS))
         self.scope_stats["policy"] = policy
         self.documents = []
         for path, relative in sorted(found, key=lambda item: item[1]):
@@ -145,6 +144,69 @@ class TextNotes:
                        self.frequency, set(_tokens(query)), None, top_k)
         texts = {d["symbol"]: d["text"] for d in self.documents}
         return [{**hit, "text": texts[hit["symbol"]]} for hit in ranked]
+
+
+class _Lexicon:
+    """BM25 statistics over one set of documents."""
+
+    def __init__(self, documents):
+        self.documents = documents
+        self.lengths = [sum(d["tokens"].values()) for d in documents]
+        self.average_length = (sum(self.lengths) / len(self.lengths)
+                               if self.lengths else 1)
+        self.frequency = Counter(t for d in documents for t in d["tokens"])
+
+    def search(self, query, top_k):
+        if top_k < 1 or not self.documents:
+            return []
+        return _rank(self.documents, self.lengths, self.average_length,
+                     self.frequency, set(_tokens(query)), None, top_k)
+
+
+class SnapshotLexical:
+    """Lexical reach over what BM25 and TextNotes cannot see.
+
+    Those two walk the filesystem for Python and prose, and their
+    rankings are frozen. Everything else exists only in the snapshot, so
+    it is indexed from there: non-Python symbols, and whole files on the
+    text rung. Reading the snapshot also means excluded paths cannot
+    leak in. Callers add these results after the frozen stages, which
+    is what keeps existing rankings byte-stable.
+    """
+
+    # Harvested names span one line; a symbol's text runs to the next one.
+    MAX_CHUNK_BYTES = 4096
+
+    def __init__(self, store, snapshot, view):
+        from .filetypes import is_prose, is_python
+        sources = store.snapshot_sources(snapshot)
+        by_source = {}
+        for symbol in view["symbols"]:
+            path = symbol.get("path", "")
+            if not (is_python(path) or is_prose(path)):
+                by_source.setdefault(symbol["source"], []).append(symbol)
+        chunks, files = [], []
+        for source_id, symbols in sorted(by_source.items()):
+            path, data = sources.get(source_id, ("", b""))
+            symbols.sort(key=lambda s: (s.get("start", 0), s["key"]))
+            for index, symbol in enumerate(symbols):
+                if symbol["key"].endswith("::document"):
+                    text = data.decode("utf-8", "replace")
+                    files.append({"symbol": path, "is_test": False,
+                                  "tokens": Counter(_tokens(path + " " + text))})
+                    continue
+                start = symbol.get("start", 0)
+                following = symbols[index + 1].get("start", 0) \
+                    if index + 1 < len(symbols) else len(data)
+                end = min(max(symbol.get("end", start), following),
+                          start + self.MAX_CHUNK_BYTES)
+                text = data[start:end].decode("utf-8", "replace")
+                chunks.append({"symbol": symbol["key"],
+                               "is_test": bool(symbol.get("is_test")),
+                               "tokens": Counter(_tokens(
+                                   path + " " + symbol.get("name", "") + " " + text))})
+        self.symbols = _Lexicon(chunks)
+        self.files = _Lexicon(files)
 
 
 def direct_callers(store, symbol, snapshot):

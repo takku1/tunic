@@ -13,10 +13,11 @@ per-language proof rules R1/R2 have the same shape in every language
 that resolves to one indexed file with a unique exported definition).
 Stack graphs (GitHub) and tree-sitter tags queries (.scm) prove the
 pattern: a language-agnostic core with declarative per-language rules.
-Neither ships query files with the installed grammar packages and a
-Rust engine is out of scope for this stdlib-first reference, so specs
-here name concrete node types (probed empirically from the installed
-grammars) instead of query captures.
+Tags queries name definitions and references but not the binding rules
+an edge needs, and a stack-graph engine is out of scope for this
+stdlib-first reference, so specs here name concrete node types (probed
+empirically from the installed grammars). Definitions alone need no
+spec: structure.py gets those from any grammar.
 
 Status: v1 covers Go (`go_static_binding_v1`). TypeScript/JavaScript
 stays on tsgraph.py (`ts_static_binding_v1` receipts are frozen in
