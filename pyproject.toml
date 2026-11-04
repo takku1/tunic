@@ -21,9 +21,13 @@ unigraph = ["tree-sitter>=0.26",
             "tree-sitter-julia>=0.23", "tree-sitter-lua>=0.5",
             "tree-sitter-bash>=0.25", "tree-sitter-powershell>=0.26"]
 config = ["pyyaml>=6"]
+grammars = ["tree-sitter>=0.26", "tree-sitter-language-pack>=1.22"]
 
 [project.scripts]
 tunic = "tunic.__main__:main"
 
 [tool.setuptools.packages.find]
 include = ["tunic*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

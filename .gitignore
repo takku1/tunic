@@ -4,5 +4,9 @@ __pycache__/
 .venv/
 .tunic/
 .research/
+.pytest_cache/
+.benchmarks/
+.deepeval/
 build/
 dist/
+docs/references/graphiti/

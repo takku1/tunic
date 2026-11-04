@@ -1,0 +1,641 @@
+{
+ "benchmark": "acq-v2-kimi-constructor-dev",
+ "protocol": "ACQ v2: candidate-aided acquisition; 5 arms (none/lexical/tunic/tunic-candidates/tunic-commit-cand); product commit paths; exact-triple scorer; precision and recall reported separately; a candidate being present is not an acquisition success",
+ "model": "kimi-cli:kimi-code/kimi-for-coding (managed subscription)",
+ "backend": "kimi-cli",
+ "decoding": {
+  "temperature": "server-side (not exposed by kimi-cli)",
+  "seed": null
+ },
+ "context_cap": 4000,
+ "tunic_commit": "3659ad87fbcb277be1674226612efe43ba61b869",
+ "dry_run": false,
+ "suite": "dev",
+ "scenarios": [
+  "constructor"
+ ],
+ "arms": [
+  "tunic-commit-cand",
+  "tunic-candidates"
+ ],
+ "summary": {
+  "dev/constructor/tunic-candidates": {
+   "n": 5,
+   "pass_rate": 0.4,
+   "apply_pass_rate": 0.0,
+   "commits": 2,
+   "committed_correct": 2,
+   "acquisition_precision": 1.0,
+   "acquisition_recall": 0.4,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 15,
+   "prompt_tokens": null,
+   "completion_tokens": null
+  },
+  "dev/constructor/tunic-commit-cand": {
+   "n": 5,
+   "pass_rate": 0.8,
+   "apply_pass_rate": 0.0,
+   "commits": 4,
+   "committed_correct": 4,
+   "acquisition_precision": 1.0,
+   "acquisition_recall": 0.8,
+   "false_promotions": 0,
+   "decoy_commits": 0,
+   "model_calls": 15,
+   "prompt_tokens": null,
+   "completion_tokens": null
+  }
+ },
+ "tasks": [
+  {
+   "id": "dev-constructor-rep0-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 0,
+   "question": "Which functions break if start changes?",
+   "gold": [
+    "depends_on",
+    "use.py::create",
+    "lib.py::Widget"
+   ],
+   "lure": null,
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "proposal": null,
+   "receipt": {
+    "candidate_id": "id assertion:4b747fa703d17057adc4bafa87076be20c59a06e8c6e0f762cdf351290ff9e9c",
+    "justification": "use.py::create constructs lib.py::Widget via constructor_call, and Widget's start method is part of the constructed class's behavior, so a change to start reaches create.",
+    "proposition": null,
+    "committed": false,
+    "action": "invalid",
+    "reason": "candidate 'id assertion:4b747fa703d17057adc4bafa87076be20c59a06e8c6e0f762cdf351290ff9e9c' is not a live proposed candidate"
+   },
+   "committed": false,
+   "reconcile_action": "invalid",
+   "commit_reason": "candidate 'id assertion:4b747fa703d17057adc4bafa87076be20c59a06e8c6e0f762cdf351290ff9e9c' is not a live proposed candidate",
+   "model_calls": 2,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 6375.0,
+   "fixture_digest": "a10f26976b5b",
+   "proposal_exact": false,
+   "committed_correct": false,
+   "false_promotion": false,
+   "decoy_committed": false,
+   "pass": false
+  },
+  {
+   "id": "dev-constructor-rep0-apply",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 0,
+   "question": "Which functions break if start changes?",
+   "gold": [
+    "use.py::create"
+   ],
+   "obsolete": [],
+   "parsed": [],
+   "stale": [],
+   "pass": false,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 10485.0
+  },
+  {
+   "id": "dev-constructor-rep0-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 0,
+   "question": "Which functions break if start changes?",
+   "gold": [
+    "depends_on",
+    "use.py::create",
+    "lib.py::Widget"
+   ],
+   "lure": null,
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "proposal": null,
+   "receipt": null,
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 11563.0,
+   "fixture_digest": "a10f26976b5b",
+   "proposal_exact": false,
+   "committed_correct": false,
+   "false_promotion": false,
+   "decoy_committed": false,
+   "pass": false
+  },
+  {
+   "id": "dev-constructor-rep0-apply",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 0,
+   "question": "Which functions break if start changes?",
+   "gold": [
+    "use.py::create"
+   ],
+   "obsolete": [],
+   "parsed": [],
+   "stale": [],
+   "pass": false,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 12282.0
+  },
+  {
+   "id": "dev-constructor-rep1-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 1,
+   "question": "What must change if start changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::create",
+    "shop.py::Gadget"
+   ],
+   "lure": null,
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "proposal": null,
+   "receipt": {
+    "candidate_id": "assertion:f8d387c1962d71c2def9ef87a1baaa8b8834cea985873feccc7a361bdfbf3334",
+    "justification": "The candidate's callee is the class shop.py::Gadget (constructor_call via rule constructor_call_candidate_v1), and its derivation lists start among the class methods; per dependency semantics, constructing the class embeds its behavior, so a change to Gadget.start reaches every function that constructs the class \ufffd here, shop.py::create.",
+    "proposition": {
+     "caller": "shop.py::create",
+     "callee": "shop.py::Gadget",
+     "via": "constructor_call"
+    },
+    "committed": true,
+    "action": "add",
+    "reason": "no duplicate, conflict, or endpoint problem found"
+   },
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 9093.0,
+   "fixture_digest": "5f8dfb4afa37",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "decoy_committed": false,
+   "pass": true
+  },
+  {
+   "id": "dev-constructor-rep1-apply",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 1,
+   "question": "What must change if start changes, and why?",
+   "gold": [
+    "shop.py::create"
+   ],
+   "obsolete": [],
+   "parsed": [],
+   "stale": [],
+   "pass": false,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 16157.0
+  },
+  {
+   "id": "dev-constructor-rep1-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 1,
+   "question": "What must change if start changes, and why?",
+   "gold": [
+    "depends_on",
+    "shop.py::create",
+    "shop.py::Gadget"
+   ],
+   "lure": null,
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "shop.py::create",
+    "object": "shop.py::Gadget"
+   },
+   "receipt": null,
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 21016.0,
+   "fixture_digest": "5f8dfb4afa37",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "decoy_committed": false,
+   "pass": true
+  },
+  {
+   "id": "dev-constructor-rep1-apply",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 1,
+   "question": "What must change if start changes, and why?",
+   "gold": [
+    "shop.py::create"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "shop.py::Gadget.start"
+   ],
+   "stale": [],
+   "pass": false,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 8484.0
+  },
+  {
+   "id": "dev-constructor-rep2-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 2,
+   "question": "If start changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "use.py::create",
+    "lib.py::Gizmo"
+   ],
+   "lure": null,
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "proposal": null,
+   "receipt": {
+    "candidate_id": "assertion:276e72aa57283894d9b67b6a692ed6433dc273ee1b612f7ffbc14f2a91b793a2",
+    "justification": "use.py::create depends on lib.py::Gizmo via constructor_call, and Gizmo.start is a method of that class, so a change to start reaches use.py::create through construction.",
+    "proposition": {
+     "caller": "use.py::create",
+     "callee": "lib.py::Gizmo",
+     "via": "constructor_call"
+    },
+    "committed": true,
+    "action": "add",
+    "reason": "no duplicate, conflict, or endpoint problem found"
+   },
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 6953.0,
+   "fixture_digest": "901f200083ae",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "decoy_committed": false,
+   "pass": true
+  },
+  {
+   "id": "dev-constructor-rep2-apply",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 2,
+   "question": "If start changes, what else is affected?",
+   "gold": [
+    "use.py::create"
+   ],
+   "obsolete": [],
+   "parsed": [],
+   "stale": [],
+   "pass": false,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 8046.0
+  },
+  {
+   "id": "dev-constructor-rep2-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 2,
+   "question": "If start changes, what else is affected?",
+   "gold": [
+    "depends_on",
+    "use.py::create",
+    "lib.py::Gizmo"
+   ],
+   "lure": null,
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "proposal": {
+    "rel": "depends_on",
+    "subject": "use.py::create",
+    "object": "lib.py::Gizmo"
+   },
+   "receipt": null,
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 19297.0,
+   "fixture_digest": "901f200083ae",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "decoy_committed": false,
+   "pass": true
+  },
+  {
+   "id": "dev-constructor-rep2-apply",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 2,
+   "question": "If start changes, what else is affected?",
+   "gold": [
+    "use.py::create"
+   ],
+   "obsolete": [],
+   "parsed": [],
+   "stale": [],
+   "pass": false,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 5062.0
+  },
+  {
+   "id": "dev-constructor-rep3-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 3,
+   "question": "Which functions break if start changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::create",
+    "shop.py::Doohickey"
+   ],
+   "lure": null,
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "proposal": null,
+   "receipt": {
+    "candidate_id": "assertion:54420f051e05bac549750071a020d21bffc9bdc91eb4d6f4dbbabe4990cc58e2",
+    "justification": "shop.py::create constructs Doohickey, whose class methods include start, so a change to start reaches create via the class-construction dependency.",
+    "proposition": {
+     "caller": "shop.py::create",
+     "callee": "shop.py::Doohickey",
+     "via": "constructor_call"
+    },
+    "committed": true,
+    "action": "add",
+    "reason": "no duplicate, conflict, or endpoint problem found"
+   },
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 5016.0,
+   "fixture_digest": "ddf3aba6d5d5",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "decoy_committed": false,
+   "pass": true
+  },
+  {
+   "id": "dev-constructor-rep3-apply",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 3,
+   "question": "Which functions break if start changes?",
+   "gold": [
+    "shop.py::create"
+   ],
+   "obsolete": [],
+   "parsed": [],
+   "stale": [],
+   "pass": false,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 15234.0
+  },
+  {
+   "id": "dev-constructor-rep3-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 3,
+   "question": "Which functions break if start changes?",
+   "gold": [
+    "depends_on",
+    "shop.py::create",
+    "shop.py::Doohickey"
+   ],
+   "lure": null,
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "proposal": null,
+   "receipt": null,
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 7391.0,
+   "fixture_digest": "ddf3aba6d5d5",
+   "proposal_exact": false,
+   "committed_correct": false,
+   "false_promotion": false,
+   "decoy_committed": false,
+   "pass": false
+  },
+  {
+   "id": "dev-constructor-rep3-apply",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 3,
+   "question": "Which functions break if start changes?",
+   "gold": [
+    "shop.py::create"
+   ],
+   "obsolete": [],
+   "parsed": [],
+   "stale": [],
+   "pass": false,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 6406.0
+  },
+  {
+   "id": "dev-constructor-rep4-propose",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 4,
+   "question": "What must change if start changes, and why?",
+   "gold": [
+    "depends_on",
+    "use.py::create",
+    "lib.py::Thingamajig"
+   ],
+   "lure": null,
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "proposal": null,
+   "receipt": {
+    "candidate_id": "assertion:02365566fc7f8265f2cc005c0d88d0bce080c45cdce1ffd27ee6693d8c847b60",
+    "justification": "use.py::create constructs lib.py::Thingamajig (constructor_call, spans 59\ufffd72), and per dependency semantics constructing a class embeds its behavior, so a change to the class method start reaches create.",
+    "proposition": {
+     "caller": "use.py::create",
+     "callee": "lib.py::Thingamajig",
+     "via": "constructor_call"
+    },
+    "committed": true,
+    "action": "add",
+    "reason": "no duplicate, conflict, or endpoint problem found"
+   },
+   "committed": true,
+   "reconcile_action": "add",
+   "commit_reason": "no duplicate, conflict, or endpoint problem found",
+   "model_calls": 2,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 5516.0,
+   "fixture_digest": "8409609f687f",
+   "proposal_exact": true,
+   "committed_correct": true,
+   "false_promotion": false,
+   "decoy_committed": false,
+   "pass": true
+  },
+  {
+   "id": "dev-constructor-rep4-apply",
+   "arm": "tunic-commit-cand",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 4,
+   "question": "What must change if start changes, and why?",
+   "gold": [
+    "use.py::create"
+   ],
+   "obsolete": [],
+   "parsed": [
+    "lib.py::Thingamajig.start"
+   ],
+   "stale": [],
+   "pass": false,
+   "had_commit": true,
+   "model_calls": 1,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 8078.0
+  },
+  {
+   "id": "dev-constructor-rep4-propose",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 4,
+   "question": "What must change if start changes, and why?",
+   "gold": [
+    "depends_on",
+    "use.py::create",
+    "lib.py::Thingamajig"
+   ],
+   "lure": null,
+   "candidate_vias": [
+    "constructor_call"
+   ],
+   "proposal": null,
+   "receipt": null,
+   "committed": false,
+   "reconcile_action": "abstain",
+   "commit_reason": "model abstained; filed for future acquisition",
+   "model_calls": 2,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 18828.0,
+   "fixture_digest": "8409609f687f",
+   "proposal_exact": false,
+   "committed_correct": false,
+   "false_promotion": false,
+   "decoy_committed": false,
+   "pass": false
+  },
+  {
+   "id": "dev-constructor-rep4-apply",
+   "arm": "tunic-candidates",
+   "suite": "dev",
+   "scenario": "constructor",
+   "rep": 4,
+   "question": "What must change if start changes, and why?",
+   "gold": [
+    "use.py::create"
+   ],
+   "obsolete": [],
+   "parsed": [],
+   "stale": [],
+   "pass": false,
+   "had_commit": false,
+   "model_calls": 1,
+   "prompt_tokens": null,
+   "completion_tokens": null,
+   "latency_ms": 16782.0
+  }
+ ],
+ "limitations": [
+  "n=5 reps per cell; directional evidence only; heldout run once, not tuned against",
+  "kimi-cli backend: decoding is server-side (temperature not pinned); token usage not reported by the CLI (null, never fabricated); each call is a fresh subprocess + session so trials are independent but startup latency is included in latency_ms",
+  "cross-model comparisons with the frozen qwen3 artifacts are directional only, not controlled"
+ ]
+}
