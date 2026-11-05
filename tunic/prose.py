@@ -562,12 +562,16 @@ def _build_bare_mentions(sources, symbols, assertions, diagnostics, claim_spans,
                                           or "module_path_context" in signals
                                           or "inventory_list" in signals)))
                     if not qualified:
-                        if (not signals and symbols[key].get("derivation")
-                                in INVENTORY_DERIVATIONS):
+                        if (not signals
+                                and (symbols[key].get("derivation") in INVENTORY_DERIVATIONS
+                                     or (_endpoint_kind(key) in ("config", "schema")
+                                         and not _CONSTANT_LEAF.match(leaf)))):
                             # A bare common word with no corroborating
                             # signal is not an investigation lead; filing
                             # it drowns review in noise. The leaf stays
-                            # searchable through the lexical stage.
+                            # searchable through the lexical stage. Bare
+                            # data labels are likewise not evidence about
+                            # a particular config or schema entity.
                             continue
                         diagnostics.append({"path": s["path"], "line": lineno,
                                             "kind": "mention_candidate",

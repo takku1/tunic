@@ -1,0 +1,58 @@
+{
+ "generator": "derive-v1",
+ "grammar": "tree-sitter-cpp v0.23.4",
+ "language": "cpp",
+ "mapping": {
+  "call_types": [
+   "call_expression"
+  ],
+  "class_types": [
+   "class_specifier",
+   "struct_specifier"
+  ],
+  "ctor_types": [
+   "new_expression"
+  ],
+  "def_types": [
+   "function_definition"
+  ],
+  "func_literal_types": [
+   "lambda_expression"
+  ],
+  "import_types": [
+   "preproc_include"
+  ]
+ },
+ "reviewed_overrides": {
+  "add": {},
+  "grammar": "tree-sitter-cpp v0.23.4",
+  "trim": {
+   "call_types": [
+    "template_function",
+    "template_method",
+    "template_type"
+   ],
+   "class_types": [
+    "enum_specifier",
+    "namespace_definition",
+    "union_specifier"
+   ],
+   "ctor_types": [],
+   "def_types": [
+    "class_specifier",
+    "enum_specifier",
+    "for_range_loop",
+    "namespace_definition",
+    "preproc_function_def",
+    "struct_specifier",
+    "union_specifier"
+   ],
+   "func_literal_types": [
+    "lambda_capture_initializer",
+    "lambda_capture_specifier",
+    "lambda_default_capture"
+   ],
+   "import_types": []
+  }
+ }
+}

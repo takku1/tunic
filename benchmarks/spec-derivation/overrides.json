@@ -1,0 +1,41 @@
+{
+  "java": {
+    "grammar": "tree-sitter-java v0.23.5",
+    "trim": {
+      "def_types": ["annotation_type_declaration", "annotation_type_element_declaration", "class_declaration", "compact_constructor_declaration", "enhanced_for_statement", "enum_constant", "enum_declaration", "interface_declaration", "module_declaration", "record_declaration"],
+      "class_types": ["compact_constructor_declaration", "constructor_declaration", "module_declaration"],
+      "call_types": ["annotation", "enum_constant"],
+      "ctor_types": ["compact_constructor_declaration", "constructor_declaration", "explicit_constructor_invocation"],
+      "func_literal_types": [],
+      "import_types": []
+    },
+    "add": {}
+  },
+  "rust": {
+    "grammar": "tree-sitter-rust v0.24.2",
+    "trim": {
+      "def_types": ["enum_item", "enum_variant", "function_signature_item", "mod_item", "struct_expression", "struct_item", "trait_item", "union_item"],
+      "class_types": ["struct_expression"],
+      "call_types": ["attribute"],
+      "ctor_types": [],
+      "func_literal_types": ["closure_parameters"],
+      "import_types": []
+    },
+    "add": {
+      "import_types": ["mod_item"]
+    },
+    "notes": ["mod_item as import mechanism (external `mod foo;`) has no syntactic marker; rejected as a generic rule after the optional-body variant over-fired on enum_variant/struct_item"]
+  },
+  "cpp": {
+    "grammar": "tree-sitter-cpp v0.23.4",
+    "trim": {
+      "def_types": ["class_specifier", "enum_specifier", "for_range_loop", "namespace_definition", "preproc_function_def", "struct_specifier", "union_specifier"],
+      "class_types": ["enum_specifier", "namespace_definition", "union_specifier"],
+      "call_types": ["template_function", "template_method", "template_type"],
+      "ctor_types": [],
+      "func_literal_types": ["lambda_capture_initializer", "lambda_capture_specifier", "lambda_default_capture"],
+      "import_types": []
+    },
+    "add": {}
+  }
+}

@@ -2,7 +2,9 @@
 
 from datetime import datetime, timezone
 import json
+import os
 from pathlib import Path
+import shutil
 import sqlite3
 
 from . import pipeline
@@ -701,6 +703,97 @@ class GraphStore:
                     published_new=result["snapshot"] != current, work=work,
                     diagnostics=result["diagnostics"],
                     scope=self._scope_policy(root, exclude))
+
+    def freshness(self, root, exclude=()):
+        """Read-only staleness receipt: compare indexed digests with the live tree.
+
+        Walks and digests the workspace exactly like refresh() but publishes
+        nothing and parses nothing: the report names added/deleted/changed
+        paths against the current published snapshot, plus the snapshot id,
+        extraction profile, owning root, and commit time that produced the
+        current answers. A fresh receipt means answer() reflects the
+        workspace; anything else names what refresh would reconsider.
+        """
+        root = str(Path(root).resolve(strict=True))
+        binding = self.connection.execute("SELECT value FROM metadata WHERE key='root'").fetchone()
+        if binding and binding[0] != root:
+            raise ValueError("database belongs to a different source root")
+        entries, _walk_diagnostics, _excluded = _scan(root, exclude)
+        current = self.current()
+        row = self.connection.execute(
+            "SELECT committed_at, manifest FROM snapshots WHERE id=?", (current,)).fetchone()
+        committed_at, manifest = row[0], json.loads(row[1])
+        stored = {row[0]: row[1] for row in self.connection.execute(
+            "SELECT s.path, s.digest FROM sources s JOIN members m ON m.source=s.id WHERE m.snapshot=?", (current,))}
+        fresh = {}
+        for entry in entries:
+            fresh[entry["path"]] = digest(entry["data"])
+        added = sorted(set(fresh) - set(stored))
+        deleted = sorted(set(stored) - set(fresh))
+        changed = sorted(path for path in fresh if path in stored and fresh[path] != stored[path])
+        return {"snapshot": current, "profile": manifest.get("profile"), "root": root,
+                "committed_at": committed_at,
+                "fresh": not (added or deleted or changed),
+                "added": added, "deleted": deleted, "changed": changed}
+
+    def backup(self, dest):
+        """Atomically copy the database to dest; the copy is self-validating.
+
+        VACUUM INTO writes a compacted consistent copy to a temporary sibling,
+        which is then atomically renamed over dest. The returned receipt
+        carries the current snapshot id so a later restore can prove the
+        evidence survived the round trip.
+        """
+        snapshot = self.current()
+        tmp = str(dest) + ".tmp"
+        if os.path.exists(tmp):
+            os.remove(tmp)
+        self.connection.execute("VACUUM INTO ?", (tmp,))
+        self.connection.commit()
+        receipt = self._validate_copy(tmp, expect=snapshot)
+        os.replace(tmp, dest)
+        return dict(receipt, path=str(dest))
+
+    def restore(self, src, dest):
+        """Copy src to dest after validation; never overwrites, never half-writes.
+
+        Refuses an existing dest outright. The source must open as a
+        supported schema with a clean integrity check; the copied file is
+        validated again before restore reports success, and a failed copy is
+        removed so no half-written database is left behind.
+        """
+        if os.path.exists(dest):
+            raise ValueError("restore destination already exists: " + str(dest))
+        receipt = self._validate_copy(src)
+        try:
+            shutil.copyfile(src, dest)
+            final = self._validate_copy(dest, expect=receipt["snapshot"])
+        except Exception:
+            if os.path.exists(dest):
+                os.remove(dest)
+            raise
+        return dict(final, path=str(dest))
+
+    def _validate_copy(self, path, expect=None):
+        """Open path read-only-ish and prove it is a usable evidence database."""
+        try:
+            connection = sqlite3.connect(path)
+            try:
+                version = connection.execute("PRAGMA user_version").fetchone()[0]
+                if version not in (0, 1):
+                    raise ValueError("unsupported database schema: user_version=%r" % (version,))
+                integrity = connection.execute("PRAGMA integrity_check").fetchone()[0]
+                if integrity != "ok":
+                    raise ValueError("backup integrity check failed: %s" % (integrity,))
+                row = connection.execute("SELECT value FROM metadata WHERE key='current'").fetchone()
+                snapshot = row[0] if row else None
+            finally:
+                connection.close()
+        except sqlite3.Error as error:
+            raise ValueError("not a readable evidence database: %s" % (error,))
+        if expect is not None and snapshot != expect:
+            raise ValueError("backup snapshot mismatch: %r != %r" % (snapshot, expect))
+        return {"snapshot": snapshot, "integrity": "ok"}
 
     def snapshots(self):
         rows = self.connection.execute(
