@@ -1,0 +1,18 @@
+{
+  "launch-gateway":{"answer":["Cedar"],"evidence":["corpus/01-launch.md"]},
+  "launch-owner":{"answer":["Mira"],"evidence":["corpus/01-launch.md"]},
+  "retry-policy":{"answer":["2"],"evidence":["corpus/02-policy.md"]},
+  "retry-reason":{"answer":["invoice_token"],"evidence":["corpus/02-policy.md"]},
+  "migration-gateway":{"answer":["Birch"],"evidence":["corpus/03-migration.md"]},
+  "migration-endpoint":{"answer":["/invoice/v2"],"evidence":["corpus/03-migration.md"]},
+  "corrected-owner":{"answer":["Suri"],"evidence":["corpus/04-correction.md"]},
+  "corrected-hop":{"answer":["Suri"],"evidence":["corpus/03-migration.md","corpus/04-correction.md"]},
+  "historical-gateway":{"answer":["Cedar"],"evidence":["corpus/01-launch.md","corpus/03-migration.md"]},
+  "historical-deadline":{"answer":["240"],"evidence":["corpus/01-launch.md","corpus/05-scheduling.md"]},
+  "current-deadline":{"answer":["360"],"evidence":["corpus/05-scheduling.md"]},
+  "rumor-not-fact":{"answer":["Birch"],"evidence":["corpus/03-migration.md","corpus/06-rumor.md"]},
+  "unchanged-region":{"answer":["eu-west"],"evidence":["corpus/01-launch.md"]},
+  "unknown-key":{"answer":[],"evidence":["corpus/06-rumor.md"]},
+  "unknown-contact":{"answer":[],"evidence":["corpus/06-rumor.md"]},
+  "unknown-database":{"answer":[],"evidence":["corpus/06-rumor.md"]}
+}

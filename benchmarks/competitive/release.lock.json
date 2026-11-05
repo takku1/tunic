@@ -1,0 +1,19 @@
+{
+  "digest": "bec41b2481c988e81356faa41e641c1ff914ceb4ec2cb0e05c7a413acceeff7a",
+  "files": {
+    ".gitattributes": "a79691a93b46e49ce460c26ef22afcc03d6eca1e63bf2edbc20e96159510f6c9",
+    "corpus/01-launch.md": "f00dc2f8317148e0c21b0714b121dcd11b80889ad3958a3981e507fb24376cb8",
+    "corpus/02-policy.md": "301e929fa209980f008b721da830291c46dd9660cd129362d462817df73d3444",
+    "corpus/03-migration.md": "d35a1c6e1eb2161071cb59d06343a8c8e8e591d046cacf2e4ac16e531b467420",
+    "corpus/04-correction.md": "0f8f970015ba3aa36f5377e86b6b8b5694ece585c52e9a96652cd5d72d9d4a1c",
+    "corpus/05-scheduling.md": "3b1349420ae0a136e5e439530b299b86ea942dfaa56ca6d6f2ab0de133668a3a",
+    "corpus/06-rumor.md": "a9a1697a9836fbd6f7dedf905a845630eee5ffaa5506d46afb2a28648bb7a2bb",
+    "gold.json": "dcfc974fd88eff95c223de8f0fe59ebbb45b461fac30a855e31d94578ce2a0fd",
+    "manifest.json": "ae9c800061138f37032aaf4be9c68ce794527c57582c5b8fd3c2c0e58633d733",
+    "release.py": "47753127554254301005b655746f9b198a41ee035f1833c640ef89a50c05e2c9",
+    "run_tunic.py": "ecb2273cc224465eea41136bd0f20a6c25fb5822de30d8856eaadfd718e3daed",
+    "score.py": "6cd587445ef338cd2e1eb82d48862d38f8bd8c64baeedfecb3b89d4b8ab11954",
+    "tasks.json": "118361731ff8bec368abd849e3952b00f174c3095f49dc0278acf702df3bb39a"
+  },
+  "schema": "tunic.benchmark-lock/1"
+}

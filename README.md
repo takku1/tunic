@@ -1,5 +1,12 @@
 # Tunic
 
+Tunic targets a model-oriented compilation layer for graph and memory:
+arrange evidence so an LLM can use it with minimal reconstruction.
+Human readability is secondary. Development is governed by a
+[fixed competitive benchmark](docs/evaluation/competitive-benchmark.md)
+against Graphiti/Zep, Cognee, Mem0, LightRAG, Hindsight, and native agent
+operation; complete comparable results are not yet established.
+
 Tunic is an evidence compiler for AI context. It separates source-grounded graph evidence, reusable typed context, and model-specific rendering/execution.
 
 The compiler emits a bounded W1 **typed context IR**. A faithful renderer preserves its evidence and source mappings; a local Ollama adapter supports a two-segment continuation experiment with pinned models.
@@ -40,6 +47,21 @@ pip install -e ".[unigraph]"     # Java/Kotlin/Scala/C#/C/C++/Rust/Swift/PHP/Rub
 pip install -e ".[config]"       # YAML key-path entities (PyYAML)
 pip install -e ".[grammars]"     # symbols for 300+ more languages, fetched on request
 ```
+
+## Use Tunic directly from the current agent
+
+Load [the Tunic skill](skills/tunic/SKILL.md) and connect its stdio MCP
+server. When the host has no registered Tunic tool, the model-free
+[direct client](benchmarks/agent/direct_mcp.py) lets the current agent
+inspect real MCP responses without a secondary model:
+
+```powershell
+py -3.12 benchmarks/agent/direct_mcp.py --root tunic --db .tunic/direct.sqlite --refresh --calls benchmarks/agent/direct_calls.json --out .tunic/direct.json
+```
+
+The output file retains full evidence and timings; stdout summarizes the
+batch. See [direct exercise results](docs/evaluation/direct-agent-2026-11-04.md)
+for measured behavior and limitations. This does not require Ollama.
 
 ## Local model continuation
 

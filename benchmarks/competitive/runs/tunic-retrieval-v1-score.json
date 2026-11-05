@@ -1,0 +1,211 @@
+{
+  "abstention_accuracy": null,
+  "arm": "tunic",
+  "benchmark_digest": "bec41b2481c988e81356faa41e641c1ff914ceb4ec2cb0e05c7a413acceeff7a",
+  "by_category": {},
+  "cohort": {
+    "agent_model": "none; retrieval instrumentation only",
+    "commit": "3748cb23ad83da385fd016c4dc94f52c3579c316",
+    "implementation": {
+      "__init__.py": "fa9cc6472dd5890fe2048a9cdd4978219b7462381ee236dd0230be96b92385b5",
+      "__main__.py": "a62c8eb214bc10a91dc1fee9d491309a787860d6d7105f941a54636d9ad98c2c",
+      "baselines.py": "7ad91c57256a06b904fb28afe6bd8a9cae2011443507e2fc45e2359a4b595d12",
+      "benchmark.py": "d4307d9627941290672748325936f6fceb4779dfe57b09ce9d65d5719cffe50f",
+      "blocks.py": "f44173a9d374a47933693c70e9de96fe5f36ab0c2142198bea5152f6b843174a",
+      "bounded.py": "603c9bdc7cd10770e5d99d778832f1f33a80ec9dd3008d428eb8ebab194082e2",
+      "community.py": "bf51937392a279d626deb951d965df391a90f1d12cd8cc438344e8659857730f",
+      "compiler.py": "fab7facd141f438c16ce64d969f57791d9cff4b004f726a00c97d248706112a0",
+      "config.py": "370934316761528112452e3dc818d3a622ea41a5e9a7123cb76fae4f774c7e71",
+      "continuation.py": "de73f9004fbd01c1ddf41172d64176ca988c7cb5f02ada5ed1715bfeece06f9c",
+      "coverage.py": "5107622d638f795dd274bdda8d304586707caff5322569f170c00f6481758b61",
+      "embedcache.py": "36c41cdaa8e21c9adf26e49ee0b2d6ccb450595036d840b7fc85ef5009f8051e",
+      "eval.py": "917495976ce67c40eddb4e803207b8363c860c565cdda266089dec961cc858c6",
+      "extract.py": "018bb68d987e2804747935bd07aaf9a9cd283bbbc35f807dae2be6393bda1ed4",
+      "filetypes.py": "b4bfa104b67d117b77a7f4f04ccfa2d0672a0faf0e10943d2b180ca86ad9e040",
+      "identity.py": "83df663de5b3f5316e72bca45d2fe6eae908143c9f17e4b1bdb2d4752286cab8",
+      "investigate.py": "f8fd2420c6aa47a96e862e6e947f94965f534620bb659da9cd42ac2d9b1f848f",
+      "lifecycle.py": "4aec152eb3a1e124ad5de5699c61dd044b0168637926f12631d0908b97a32dfb",
+      "mcp.py": "f3a387350a74bfb71be17960f93af6a0b9496ad36b63abf7ca368f55d11357da",
+      "memory.py": "133dff1608dc33b231e60f179f61f6271ec48483eb99fe17d3504fe57f7830c1",
+      "notebook.py": "f15996a4698138ad2a5315be45b4fea3cc6abaa26ecfae09847b1641708e807c",
+      "ollama.py": "f00000f1d4f49398f798e61d08d639908f50a169d2b2edeebe192929c42813a4",
+      "pack.py": "2b346d3ae0dcfb20c1cb1711ecaa0d9f025685ecd20b13e88d87a70f186bdbfa",
+      "pipeline.py": "551643816c5ba18f73a1cdf69074817786031e4277700d6957132ddec9bced3f",
+      "prose.py": "8e4bb171ac7fbd3afc821ca8f0f916b852ffff5eebea1b4a237406a4c1c36c98",
+      "relations.py": "a34d687f14148ad3bf6fc660a412f91fa8a4a2a8226d4ce78f5a59139bee412f",
+      "render.py": "fce61df49fe9a79f031eac53472f05836b1d2e8bd8fba05b919eb7564f8a5958",
+      "resolve.py": "6bae674ef2e5cd4b59dd432f628d5455d88699e6c9b946c9d57aa8041532714c",
+      "retrieval.py": "e639c60b1f98549f2998bc09fe9125093e3ec83af108ee056a49aaa82a02ac2e",
+      "schedule.py": "3e891d14bf8b48ce26a01d99ce7892dc88904917a2d4a960d0d222079f0f4b6f",
+      "schemaref.py": "9a7d99a5659130cf7da19b330be8696bbadd5c55bd876d399e90619a3ec61098",
+      "scope.py": "2c9ce77cee4df89e3c79502c7f95125153b189689a5f2e6e19ac01167c9aeac6",
+      "selection.py": "5a277886310b1562390b5e0689edd0ae3ae4bfcc5c634082f18b4fa12f545dcb",
+      "store.py": "bff1c4dce7697401650f5c0594ea5d5a06a51d3a915e07767b677fc790191f8f",
+      "structure.py": "9df89f819ac912f1d8556e5f7c2040f111475263492e81a741cc6ac250840693",
+      "temporal.py": "64a773541fb5e91074b4e270f1731f57f77139f55c6f78babc18240e87f0c2a0",
+      "triage.py": "d43908fe8e45f93ef9e5cf503d822056d3b2fcb52ff2240a307d90598a33428b",
+      "tsgraph.py": "387c39467010329318056a865dc2900013ba978576026c8e1fe21d08c4cc4a75",
+      "unigraph.py": "46cecae38cb16bbbf043b68ed47bfb3ffb9cc0802dcf0c94f40bfef32756ad3b"
+    },
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10",
+    "transport_sha256": "4dfac0fbcee277eeafd540cb145213e835b95dff52996a88d21641f39b7f040c"
+  },
+  "completed_tasks": 16,
+  "evidence_source_precision": 0.3125,
+  "evidence_source_recall": 1.0,
+  "limitations": [
+    "Public synthetic development corpus, not held out.",
+    "Evidence scores measure annotated source localization, not claim entailment.",
+    "No cross-arm superiority is inferred by this scorer."
+  ],
+  "resources": {
+    "context_tokens": {
+      "mean": null,
+      "measured_tasks": 0,
+      "p95": null,
+      "scheduled_tasks": 16
+    },
+    "cost_usd": {
+      "mean": null,
+      "measured_tasks": 0,
+      "p95": null,
+      "scheduled_tasks": 16
+    },
+    "end_to_end_latency_ms": {
+      "mean": null,
+      "measured_tasks": 0,
+      "p95": null,
+      "scheduled_tasks": 16
+    },
+    "peak_memory_bytes": {
+      "mean": null,
+      "measured_tasks": 0,
+      "p95": null,
+      "scheduled_tasks": 16
+    },
+    "retrieval_latency_ms": {
+      "mean": null,
+      "measured_tasks": 0,
+      "p95": null,
+      "scheduled_tasks": 16
+    }
+  },
+  "scheduled_tasks": 16,
+  "task_success": null,
+  "tasks": [
+    {
+      "id": "launch-gateway",
+      "source_hits": 1,
+      "source_required": 1,
+      "status": "complete",
+      "success": null
+    },
+    {
+      "id": "launch-owner",
+      "source_hits": 1,
+      "source_required": 1,
+      "status": "complete",
+      "success": null
+    },
+    {
+      "id": "retry-policy",
+      "source_hits": 1,
+      "source_required": 1,
+      "status": "complete",
+      "success": null
+    },
+    {
+      "id": "retry-reason",
+      "source_hits": 1,
+      "source_required": 1,
+      "status": "complete",
+      "success": null
+    },
+    {
+      "id": "migration-gateway",
+      "source_hits": 1,
+      "source_required": 1,
+      "status": "complete",
+      "success": null
+    },
+    {
+      "id": "migration-endpoint",
+      "source_hits": 1,
+      "source_required": 1,
+      "status": "complete",
+      "success": null
+    },
+    {
+      "id": "corrected-owner",
+      "source_hits": 1,
+      "source_required": 1,
+      "status": "complete",
+      "success": null
+    },
+    {
+      "id": "corrected-hop",
+      "source_hits": 2,
+      "source_required": 2,
+      "status": "complete",
+      "success": null
+    },
+    {
+      "id": "historical-gateway",
+      "source_hits": 2,
+      "source_required": 2,
+      "status": "complete",
+      "success": null
+    },
+    {
+      "id": "historical-deadline",
+      "source_hits": 2,
+      "source_required": 2,
+      "status": "complete",
+      "success": null
+    },
+    {
+      "id": "current-deadline",
+      "source_hits": 1,
+      "source_required": 1,
+      "status": "complete",
+      "success": null
+    },
+    {
+      "id": "rumor-not-fact",
+      "source_hits": 2,
+      "source_required": 2,
+      "status": "complete",
+      "success": null
+    },
+    {
+      "id": "unchanged-region",
+      "source_hits": 1,
+      "source_required": 1,
+      "status": "complete",
+      "success": null
+    },
+    {
+      "id": "unknown-key",
+      "source_hits": 1,
+      "source_required": 1,
+      "status": "complete",
+      "success": null
+    },
+    {
+      "id": "unknown-contact",
+      "source_hits": 1,
+      "source_required": 1,
+      "status": "complete",
+      "success": null
+    },
+    {
+      "id": "unknown-database",
+      "source_hits": 1,
+      "source_required": 1,
+      "status": "complete",
+      "success": null
+    }
+  ],
+  "track": "retrieval"
+}

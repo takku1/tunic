@@ -251,7 +251,8 @@ def build(memory, task, *, limit=5, max_bytes=12000, snapshot=None, exclude=()):
     open_entries = memory.frontier_list(status="open")
     keys = [entry["symbol"] for entry in answer["candidates"]
             if entry["symbol"] in index.symbols]
-    hints = _word_hints(index, lexical, task, set(keys), limit - len(keys))
+    hints = ([] if answer.get("query_scope", {}).get("missing_exact") else
+             _word_hints(index, lexical, task, set(keys), limit - len(keys)))
     nodes = [_node(memory, index, lexical, snapshot, key, open_entries)
              for key in keys]
     nodes += [dict(_node(memory, index, lexical, snapshot, key, open_entries),

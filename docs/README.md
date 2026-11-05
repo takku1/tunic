@@ -10,6 +10,7 @@ Read [architecture overview](architecture/overview.md), [semantic graph contract
 
 | Question | Authoritative document |
 | --- | --- |
+| What fixed competitors and metrics guide Tunic development? | [Competitive benchmark contract](evaluation/competitive-benchmark.md) |
 | What is Tunic, who owns state, and how does a request flow? | [Architecture overview](architecture/overview.md) |
 | What do durable claims, evidence, identity, time, and snapshots mean? | [Semantic graph](architecture/semantic-graph.md) |
 | What does compilation produce and validate? | [Context IR](architecture/context-ir.md) |

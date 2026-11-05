@@ -74,6 +74,27 @@ class Shape(Base):
         self.assertEqual(result["nodes"], [])
         self.assertTrue(result["gaps"])
 
+    def test_missing_exact_key_does_not_return_lexical_bycatch(self):
+        result = pack.build(self.memory, "nonexistent.py::imaginary_symbol")
+        self.assertEqual(result["nodes"], [])
+        self.assertEqual(result["docs"], [])
+        self.assertIn("not in this snapshot: nonexistent.py::imaginary_symbol",
+                      result["gaps"])
+
+    def test_missing_key_with_existing_name_does_not_resolve_elsewhere(self):
+        result = pack.build(self.memory, "nonexistent.py::settle_invoice")
+        self.assertEqual(result["nodes"], [])
+
+    def test_exact_key_prefix_is_not_an_existing_symbol(self):
+        result = pack.build(self.memory, "core.py::settle_invoice_extra")
+        self.assertEqual(result["nodes"], [])
+
+    def test_mixed_question_keeps_known_evidence_and_missing_key_gap(self):
+        result = pack.build(self.memory,
+                            "Compare core.py::settle_invoice and missing.py::unknown")
+        self.node(result, "core.py::settle_invoice")
+        self.assertTrue(any("missing.py::unknown" in gap for gap in result["gaps"]))
+
     def test_rejects_an_empty_task(self):
         with self.assertRaises(ValueError):
             pack.build(self.memory, "  ")

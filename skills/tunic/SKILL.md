@@ -27,6 +27,26 @@ server accepts only the `local` principal: a caller-supplied
 
 ## Tool workflow
 
+### Direct use by the current agent
+
+When Tunic is not registered in the host's MCP tool inventory, use its
+real stdio server through the repository's model-free client:
+
+```powershell
+py -3.12 benchmarks/agent/direct_mcp.py --root tunic --db .tunic/direct.sqlite --refresh --calls benchmarks/agent/direct_calls.json --out .tunic/direct.json
+```
+
+Read the saved `receipts[].payload` yourself. The client performs the
+initialize/list/call exchange; it never calls an assistant CLI, Ollama,
+Qwen, or an embedding service. Omit `--refresh` for subsequent calls
+until source changes. Use `--tool context --arguments <JSON>` for one
+task, or provide a JSON array of `{name, arguments}` with `--calls`.
+For another repository, change `--root` and use a separate `--db`.
+This is a transport fallback, not installation into the host's tool
+inventory. Timing covers the batch, not agent reasoning or answer quality.
+
+### Evidence procedure
+
 0. **Start with `context(task, limit?, max_bytes?, snapshot?)`.** One
    bounded pack: each relevant node with its code, proven `calls` and
    `called_by`, unverified `maybe_uses` and `maybe_used_by`, claims, open questions,

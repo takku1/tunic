@@ -1435,6 +1435,22 @@ class Memory:
         rankings = {"exact": exact, "name": names,
                     "lexical": lexical, "semantic": semantic,
                     "graph": graph_neighbors}
+        known = {row["key"] for row in view["symbols"]}
+        symbol_pattern = r"[A-Za-z0-9_./-]+\.[A-Za-z0-9_]+::[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)*"
+        exact_subject = task.strip().strip("`")
+        missing_exact = (re.fullmatch(symbol_pattern, exact_subject) is not None
+                         and exact_subject not in known)
+        # An exact address is not a fuzzy query. Keep discovery counts for
+        # audit, but never substitute another file's same-named function,
+        # a key prefix, or generic extension matches for an absent subject.
+        query_scope = {"missing_exact": missing_exact}
+        if missing_exact:
+            query_scope["withheld_by_stage"] = {name: len(keys)
+                                                for name, keys in rankings.items()}
+            query_scope["withheld_documents"] = len(documents)
+            rankings = {name: [] for name in rankings}
+            documents = []
+            note_mentions = []
         fused = fuse(rankings, total=limit, threshold=threshold)
         if mmr_lambda != 1.0:
             from .retrieval import mmr_order
@@ -1473,9 +1489,8 @@ class Memory:
             top = [key for _, key, _ in fused]
         origins = {key: ranks for _, key, ranks in fused}
         order = {"exact": 0, "name": 1, "lexical": 2, "semantic": 3, "graph": -1}
-        known = {row["key"] for row in view["symbols"]}
         unknown_symbols = ([key for key in top if key not in known] + sorted(
-            {m for m in re.findall(r"[A-Za-z0-9_./-]+\.py::[A-Za-z0-9_]+(?:\.[A-Za-z0-9_]+)*", task)}
+            set(re.findall(symbol_pattern, task))
             - known - set(top)))
         top = [key for key in top if key in known]
         scores = {name: score for score, name, _ in fused}
@@ -1602,6 +1617,7 @@ class Memory:
                 "documents": documents,
                 "mentions": mentions, "claims": claims,
                 "selection": selection,
+                "query_scope": query_scope,
                 "unknown_symbols": unknown_symbols,
                 "abstention": abstention,
                 "container_expansion": {

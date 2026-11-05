@@ -1,0 +1,7 @@
+[
+  {"name": "context", "arguments": {"task": "what calls bounded.bound and how are tool responses limited?"}},
+  {"name": "callees", "arguments": {"symbol": "mcp.py::handle_request"}},
+  {"name": "context", "arguments": {"task": "how does pack.build assemble evidence and report omissions?"}},
+  {"name": "related", "arguments": {"symbol": "bounded.py::bound"}},
+  {"name": "context", "arguments": {"task": "nonexistent.py::imaginary_symbol"}}
+]

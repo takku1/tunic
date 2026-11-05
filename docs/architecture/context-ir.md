@@ -4,6 +4,27 @@ Status: target logical contract, with a bounded versioned JSON implementation in
 
 ## Purpose and choices
 
+Tunic's primary consumer is an LLM/transformer, not a human reader.
+The guiding analogy is a compiler lowering a program toward machine
+instructions: lower graph and memory state toward a representation the
+model can use with as little reconstruction as possible. Human-readable
+prose is an inspection surface, not the optimization target. The aim is
+minimal interpretation friction: explicitly arranged relationships,
+premises, temporal state, evidence, and uncertainty rather than making
+the model reconstruct them from a pile of retrieved text.
+
+This is a design objective, not a claim that today's JSON IR is a
+transformer instruction set or bypasses tokenization. The durable graph
+owns meaning; the compiler selects and resolves context; model-specific
+lowering owns the representation delivered to the consumer. Compact
+records, symbolic layouts, token-oriented encodings, or deeper runtime
+integration must earn their place through measured model use. Neither
+human readability nor opacity establishes model suitability. Optimize
+successful grounded use per unit of context and computation, preserving
+the evidence and trust invariants below. The fixed
+[competitive benchmark contract](../evaluation/competitive-benchmark.md)
+owns the long-term outcome target.
+
 The context compiler produces a reusable typed artifact describing selected assertions and evidence. Model-specific lowering produces messages, tokens, position/mask policy, and execution fingerprints. This separates durable evidence meaning from a model's input representation.
 
 The first contract favors faithful excerpts and explicit structured records. Rewriting, summarization, learned compression, and lossy KV retention remain separately identified transformations. Direct prompt emission remains the simpler comparison baseline. Revisit the IR choice if validation and metadata costs outweigh its measured benefits.

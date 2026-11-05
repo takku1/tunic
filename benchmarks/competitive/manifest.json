@@ -1,0 +1,17 @@
+{
+  "id": "tunic-competitive-core-v1",
+  "status": "development-candidate",
+  "description": "Public synthetic common-memory core; not the complete competitive release or a held-out quality evaluation.",
+  "arms": ["tunic", "graphiti", "zep", "cognee", "mem0", "lightrag", "hindsight", "native"],
+  "events": [
+    "corpus/01-launch.md", "corpus/02-policy.md", "corpus/03-migration.md",
+    "corpus/04-correction.md", "corpus/05-scheduling.md", "corpus/06-rumor.md"
+  ],
+  "tasks": "tasks.json",
+  "gold": "gold.json",
+  "parameters": {"context_bytes": 12000, "retrieval_limit": 5, "timeout_seconds": 120},
+  "answer_protocol": "Exact unordered string atoms and source-file citations; unknown questions require abstain=true and an empty answer.",
+  "quality_metrics": ["task_success", "evidence_precision", "evidence_recall", "temporal_accuracy", "update_correctness", "abstention_accuracy", "cross_session_recall"],
+  "cost_metrics": ["retrieval_latency_ms", "end_to_end_latency_ms", "context_tokens", "cost_usd", "peak_memory_bytes"],
+  "freeze_requirements_pending": ["independent label audit", "broader ingestion formats and scale", "real competitor adapters", "fixed model and hardware cohort", "fixed repeats and uncertainty procedure"]
+}

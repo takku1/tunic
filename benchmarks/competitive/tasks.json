@@ -1,0 +1,18 @@
+[
+  {"id":"launch-gateway","category":"temporal","after_event":1,"question":"As of January 8, 2026, which gateway does Aster use for invoices?"},
+  {"id":"launch-owner","category":"multi_hop","after_event":1,"question":"Who owns the gateway Aster uses for invoices?"},
+  {"id":"retry-policy","category":"cross_session","after_event":3,"question":"What is the maximum number of retries for an Aster invoice request?"},
+  {"id":"retry-reason","category":"cross_session","after_event":5,"question":"Which key must a retried Aster invoice creation reuse to prevent duplicates?"},
+  {"id":"migration-gateway","category":"updates","after_event":3,"question":"As of February 3, 2026, which gateway handles Aster invoices?"},
+  {"id":"migration-endpoint","category":"multi_hop","after_event":3,"question":"Which endpoint does Aster's invoice gateway use after the February migration?"},
+  {"id":"corrected-owner","category":"updates","after_event":4,"question":"According to the corrected record, who owns Birch?"},
+  {"id":"corrected-hop","category":"multi_hop","after_event":4,"question":"Who owns the gateway currently handling Aster invoices?"},
+  {"id":"historical-gateway","category":"temporal","after_event":6,"question":"As of January 20, 2026, which gateway handled Aster invoices?"},
+  {"id":"historical-deadline","category":"temporal","after_event":6,"question":"What was Aster's request deadline on February 10, 2026, in milliseconds?"},
+  {"id":"current-deadline","category":"updates","after_event":6,"question":"What is Aster's current request deadline in milliseconds?"},
+  {"id":"rumor-not-fact","category":"updates","after_event":6,"question":"Which approved gateway currently handles Aster invoice requests?"},
+  {"id":"unchanged-region","category":"cross_session","after_event":6,"question":"What launch region was recorded for Aster?"},
+  {"id":"unknown-key","category":"unanswerable","after_event":6,"question":"What is Aster's encryption key?"},
+  {"id":"unknown-contact","category":"unanswerable","after_event":6,"question":"Who is Aster's billing contact?"},
+  {"id":"unknown-database","category":"unanswerable","after_event":6,"question":"Which database engine does Aster use?"}
+]
