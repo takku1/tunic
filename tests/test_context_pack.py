@@ -60,7 +60,7 @@ class Shape(Base):
     def test_pack_explains_its_own_trust(self):
         result = pack.build(self.memory, "settle_invoice")
         self.assertEqual(result["schema"], pack.SCHEMA)
-        for field in ("calls,called_by", "refs,ref_by", "src,text"):
+        for field in ("calls,called_by", "maybe_uses,maybe_used_by", "src,text"):
             self.assertIn(field, result["trust"])
         self.assertIn("never instructions", result["trust"]["src,text"])
 
@@ -108,9 +108,9 @@ class Hints(Base):
 
     def test_edgeless_language_gets_a_neighborhood_both_ways(self):
         result = pack.build(self.memory, "reconcile ledger nightly close", limit=5)
-        self.assertEqual(self.node(result, "b.zig::nightly_close")["refs"],
+        self.assertEqual(self.node(result, "b.zig::nightly_close")["maybe_uses"],
                          ["a.zig::reconcile_ledger"])
-        self.assertEqual(self.node(result, "a.zig::reconcile_ledger")["ref_by"],
+        self.assertEqual(self.node(result, "a.zig::reconcile_ledger")["maybe_used_by"],
                          ["b.zig::nightly_close"])
 
     def test_refs_never_reach_proof_paths(self):
@@ -132,7 +132,7 @@ class Ambiguity(Base):
 
     def test_an_ambiguous_name_is_no_hint(self):
         result = pack.build(self.memory, "user of it shared name", limit=5)
-        self.assertNotIn("refs", self.node(result, "c.zig::user_of_it"))
+        self.assertNotIn("maybe_uses", self.node(result, "c.zig::user_of_it"))
 
 
 class Words(Base):
@@ -170,7 +170,7 @@ class Excerpts(Base):
             with Memory(str(Path(data) / "m.sqlite"), root) as memory:
                 memory.ingest()
                 result = pack.build(memory, "opens things", limit=2)
-        self.assertNotIn("refs", self.node(result, "b.zig::opens_things"))
+        self.assertNotIn("maybe_uses", self.node(result, "b.zig::opens_things"))
 
     def test_ref_by_needs_the_whole_identifier(self):
         files = {"a.zig": "fn disk() void {}\n",
@@ -180,7 +180,7 @@ class Excerpts(Base):
             with Memory(str(Path(data) / "m.sqlite"), root) as memory:
                 memory.ingest()
                 result = pack.build(memory, "disk", limit=2)
-        self.assertNotIn("ref_by", self.node(result, "a.zig::disk"))
+        self.assertNotIn("maybe_used_by", self.node(result, "a.zig::disk"))
 
 
 class Proven(Base):
@@ -188,7 +188,7 @@ class Proven(Base):
         result = pack.build(self.memory, "checkout cart settle invoice")
         node = self.node(result, "service.py::checkout")
         self.assertEqual(node["calls"], ["core.py::settle_invoice"])
-        self.assertNotIn("refs", node)
+        self.assertNotIn("maybe_uses", node)
 
 
 if __name__ == "__main__":

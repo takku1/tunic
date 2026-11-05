@@ -1,8 +1,10 @@
-"""Agent memory evaluation: no-memory vs lexical vs Tunic graph retrieval.
+"""Retrieval regression suite: no-memory vs lexical vs Tunic graph retrieval.
 
-Held-out by construction: the suite fixtures live outside every other
-benchmark, and the comparison replays three retrieval conditions over the
-same ingested graph. The Tunic arm answers under policy="current", so
+No model runs here, despite the name, and the no-memory condition is empty
+by definition. It guards against regressions; it is not evidence of agent
+benefit (docs/evaluation/integrity-audit.md). The fixtures live outside
+every other benchmark, and the comparison replays three retrieval
+conditions over the same ingested graph. The Tunic arm answers under policy="current", so
 superseded evidence is excluded while disputes stay visible. stdlib only;
 no embeddings, no network. Latency and context size are measured, not
 modeled: no model is called, so token counts are not reported.

@@ -8,7 +8,7 @@ bounded call instead of one call per symbol.
 Two kinds of relationship travel side by side and never mix:
 
     calls, called_by   proven by a static binding rule
-    refs, ref_by       a unique name appears in the body; a hint
+    maybe_uses, maybe_used_by       a unique name appears in the body; a hint
 
 Refs exist so every language has a connected neighborhood, including
 languages with no edge spec. They are computed when a pack is built:
@@ -30,7 +30,7 @@ from .relations import _endpoint_kind
 SCHEMA = "tunic.pack/1"
 TRUST = {
     "calls,called_by": "proven by static binding rules; bounded, so a missing edge is not proof of no call",
-    "refs,ref_by": "unverified: a unique symbol name appears in the code; interpret, do not cite as proof",
+    "maybe_uses,maybe_used_by": "unverified: a unique symbol name appears in the code; interpret, do not cite as proof",
     "via=words": "matched on words in the code, not by the graph; relevance is yours to judge",
     "claims": "asserted in project documents, by the named authority",
     "open": "known unresolved questions touching this node",
@@ -184,8 +184,8 @@ def _node(memory, index, lexical, snapshot, key, open_entries):
     if cut:
         node["src_cut"] = True
     links = {"calls": index.calls.get(key), "called_by": index.called_by.get(key),
-             "refs": _refs(index, key, text),
-             "ref_by": _ref_by(index, lexical, key, record),
+             "maybe_uses": _refs(index, key, text),
+             "maybe_used_by": _ref_by(index, lexical, key, record),
              "docs": index.docs.get(key)}
     for name, values in links.items():
         if values:

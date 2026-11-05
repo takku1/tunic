@@ -25,7 +25,7 @@ tunic --db x.sqlite context "how does the scan cache snapshots" --root .
 {"schema": "tunic.pack/1", "snapshot": "...", "task": "...", "trust": {},
  "nodes": [{"id": "src/scan.rs::scan", "kind": "function", "rung": "edges",
             "at": "src/scan.rs:143", "src": "pub fn scan(...",
-            "calls": [], "called_by": [], "refs": [], "ref_by": [],
+            "calls": [], "called_by": [], "maybe_uses": [], "maybe_used_by": [],
             "docs": [], "claims": [], "open": [], "superseded_by": [],
             "via": "words", "src_cut": true}],
  "docs": [{"id": "...", "at": "README.md@0-1200", "text": "..."}],
@@ -43,7 +43,7 @@ digests are gone. Whatever the byte budget cuts is counted in `omitted`.
 | Field | Meaning | Source |
 |---|---|---|
 | `calls`, `called_by` | Proven by a static binding rule | Snapshot assertions |
-| `refs`, `ref_by` | A unique symbol name is used in the code | Computed at read time |
+| `maybe_uses`, `maybe_used_by` | A unique symbol name is used in the code | Computed at read time |
 | `via: "words"` | The task's words match; the graph did not select it | Computed at read time |
 
 Hints are how every language gets a connected neighborhood, including
@@ -62,7 +62,9 @@ like a type.
 | hhdm (Rust) | 0.73 | 0.31 |
 | tunic (Python) | 0.45 | 0.82 |
 
-The last column is a floor, since verified edges under-approximate. It is
+Against calls the interpreter actually made, hints reach recall 0.429 and
+0.732 confirmed, and static edges 0.812 and 0.830. The last column above
+is a floor, since verified edges under-approximate. It is
 still why `trust` says to interpret these rather than cite them. A model
 should expect a meaningful share to be wrong, especially in Rust, where
 `.field` access looks like a use. Recall is low in Python because unique
@@ -77,12 +79,14 @@ suite from 12/12 to 11/12 by surfacing superseded symbols. They are
 offered here instead, labeled `via: "words"`, only when most of the
 task's content words match, and never for a superseded symbol.
 
-## Not measured
+## Measured benefit
 
-No model has been run against packs. The evidence above covers what a
-pack contains, not whether a model answers better with it, because
-model access is blocked (see [status](../STATUS.md)). Comparing
-`retrieve` and `context` on the agent suite with a real model is the
-acceptance test still owed. A pack is not always smaller than `retrieve`:
-on the sampled tasks it ranged from about half the size to about 1.7
-times, while carrying code and links that `retrieve` does not.
+Packs have not been shown to help a capable agent. With Grep, Glob, and
+Read available, Claude Sonnet scored the same with and without `context`,
+on direct and transitive call questions, while using more input tokens.
+Small local models did read packs better than `retrieve`, and that gap
+narrowed with model size and vanished for Claude. See the
+[integrity audit](../evaluation/integrity-audit.md). A pack remains a
+smaller, bounded replacement for `retrieve`, which is a modest claim.
+Naming hints `maybe_uses` did not stop a 7B model from marking them
+`verified`, so do not rely on a small model to honor trust labels.

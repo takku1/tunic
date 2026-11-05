@@ -350,7 +350,10 @@ def load_memory_suite(path):
 
 
 def run_memory_suite(suite_path, *, top_k=5, scratch_root=None):
-    """Held-out memory recall evaluation: baseline arms, then oracle-recorded outcomes.
+    """Storage round-trip: the oracle writes gold edges, then they are read back.
+
+    Shows recorded outcomes survive and reach impact. It is not evidence of
+    learning or memory quality (docs/evaluation/integrity-audit.md).
 
     The oracle records gold edges as verified claims (teacher), then a fresh
     session recalls them. Static, one-hop, and lexical arms run without memory.

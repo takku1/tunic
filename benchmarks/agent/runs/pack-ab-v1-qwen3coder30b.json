@@ -1,0 +1,4158 @@
+{
+ "arms": [
+  "retrieve",
+  "context",
+  "context_noedges"
+ ],
+ "benchmark": "pack-ab-v1",
+ "decoding": {
+  "num_ctx": 16384,
+  "seed": 7,
+  "temperature": 0
+ },
+ "model": "hf.co/mradermacher/Huihui-Qwen3-Coder-30B-A3B-Instruct-abliterated-i1-GGUF:Q4_K_M",
+ "pack_schema": "tunic.pack/1",
+ "repos": [
+  "comply",
+  "hhdm",
+  "seancarneywebsite"
+ ],
+ "rows": [
+  {
+   "arm": "retrieve",
+   "bytes": 7577,
+   "complete": false,
+   "f1": 0.5,
+   "false_verified": [
+    "api.py::handle_modern"
+   ],
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::route"
+   ],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 2875,
+   "recall": 1.0,
+   "seconds": 13.5,
+   "set": "suite",
+   "task": "stale-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "api.py::handle_legacy",
+    "api.py::handle_modern"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 2398,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "api.py::handle_modern"
+   ],
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 838,
+   "recall": 0.0,
+   "seconds": 0.29,
+   "set": "suite",
+   "task": "stale-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "api.py::handle_modern"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 2339,
+   "complete": true,
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "api.py::handle_modern"
+   ],
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::handle_legacy"
+   ],
+   "precision": 0.5,
+   "prompt_tokens": 819,
+   "recall": 1.0,
+   "seconds": 0.27,
+   "set": "suite",
+   "task": "stale-task",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "api.py::handle_modern"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 10514,
+   "complete": true,
+   "f1": 0.5,
+   "false_verified": [
+    "api.py::handle_modern"
+   ],
+   "gold": [
+    "api.py::route"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::handle_legacy"
+   ],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 4044,
+   "recall": 1.0,
+   "seconds": 0.74,
+   "set": "suite",
+   "task": "conflict-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "api.py::route",
+    "api.py::handle_modern"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 2454,
+   "complete": true,
+   "f1": 0.6666666666666666,
+   "false_verified": [],
+   "gold": [
+    "api.py::route"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::handle_modern"
+   ],
+   "precision": 0.5,
+   "prompt_tokens": 869,
+   "recall": 1.0,
+   "seconds": 0.33,
+   "set": "suite",
+   "task": "conflict-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "api.py::route"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 2394,
+   "complete": true,
+   "f1": 0.6666666666666666,
+   "false_verified": [],
+   "gold": [
+    "api.py::route"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::handle_modern"
+   ],
+   "precision": 0.5,
+   "prompt_tokens": 850,
+   "recall": 1.0,
+   "seconds": 0.27,
+   "set": "suite",
+   "task": "conflict-task",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "api.py::route"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 9378,
+   "complete": true,
+   "f1": 0.5,
+   "false_verified": [
+    "api.py::handle_legacy",
+    "api.py::handle_modern"
+   ],
+   "gold": [
+    "api.py::route"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 3626,
+   "recall": 1.0,
+   "seconds": 0.65,
+   "set": "suite",
+   "task": "irrelevant-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "api.py::route",
+    "api.py::handle_modern",
+    "api.py::handle_legacy"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 2497,
+   "complete": true,
+   "f1": 0.5,
+   "false_verified": [
+    "api.py::handle_legacy",
+    "api.py::handle_modern"
+   ],
+   "gold": [
+    "api.py::route"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 885,
+   "recall": 1.0,
+   "seconds": 0.37,
+   "set": "suite",
+   "task": "irrelevant-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "api.py::route",
+    "api.py::handle_modern",
+    "api.py::handle_legacy"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 2465,
+   "complete": true,
+   "f1": 0.5,
+   "false_verified": [],
+   "gold": [
+    "api.py::route"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::handle_modern",
+    "api.py::handle_legacy"
+   ],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 874,
+   "recall": 1.0,
+   "seconds": 0.28,
+   "set": "suite",
+   "task": "irrelevant-task",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "api.py::route"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 8761,
+   "complete": false,
+   "f1": 0.5,
+   "false_verified": [
+    "api.py::route"
+   ],
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::handle_modern"
+   ],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 3376,
+   "recall": 1.0,
+   "seconds": 0.64,
+   "set": "suite",
+   "task": "evolve-para",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "api.py::handle_legacy",
+    "api.py::route"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 2459,
+   "complete": false,
+   "f1": 0.5,
+   "false_verified": [
+    "api.py::route"
+   ],
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::handle_modern"
+   ],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 875,
+   "recall": 1.0,
+   "seconds": 0.38,
+   "set": "suite",
+   "task": "evolve-para",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "api.py::handle_legacy",
+    "api.py::route"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 2428,
+   "complete": false,
+   "f1": 0.5,
+   "false_verified": [],
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::route",
+    "api.py::handle_modern"
+   ],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 864,
+   "recall": 1.0,
+   "seconds": 0.27,
+   "set": "suite",
+   "task": "evolve-para",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "api.py::handle_legacy"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 8063,
+   "complete": true,
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "catalog.py::find_book"
+   ],
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "gold_in_payload": 2,
+   "kind": "suite",
+   "possible": [
+    "loans.py::overdue_fine"
+   ],
+   "precision": 0.5,
+   "prompt_tokens": 2961,
+   "recall": 1.0,
+   "seconds": 0.66,
+   "set": "suite",
+   "task": "lib-impact",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "catalog.py::find_book",
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 2188,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "gold_in_payload": 2,
+   "kind": "suite",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 761,
+   "recall": 1.0,
+   "seconds": 0.34,
+   "set": "suite",
+   "task": "lib-impact",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 2156,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "gold_in_payload": 2,
+   "kind": "suite",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 750,
+   "recall": 1.0,
+   "seconds": 0.28,
+   "set": "suite",
+   "task": "lib-impact",
+   "unproven_verified": 2,
+   "valid_json": true,
+   "verified": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 6906,
+   "complete": true,
+   "f1": 0.4,
+   "false_verified": [
+    "loans.py::overdue_fine"
+   ],
+   "gold": [
+    "loans.py::checkout_book"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "catalog.py::find_book",
+    "loans.py::return_book"
+   ],
+   "precision": 0.25,
+   "prompt_tokens": 2517,
+   "recall": 1.0,
+   "seconds": 0.62,
+   "set": "suite",
+   "task": "lib-outcome",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "loans.py::checkout_book",
+    "loans.py::overdue_fine"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 1819,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "loans.py::checkout_book"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 673,
+   "recall": 1.0,
+   "seconds": 0.24,
+   "set": "suite",
+   "task": "lib-outcome",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "loans.py::checkout_book"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 1789,
+   "complete": true,
+   "f1": 0.5,
+   "false_verified": [],
+   "gold": [
+    "loans.py::checkout_book"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "loans.py::overdue_fine",
+    "catalog.py::find_book"
+   ],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 662,
+   "recall": 1.0,
+   "seconds": 0.3,
+   "set": "suite",
+   "task": "lib-outcome",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "loans.py::checkout_book"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 8152,
+   "complete": true,
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "loans.py::overdue_fine"
+   ],
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "gold_in_payload": 2,
+   "kind": "suite",
+   "possible": [
+    "catalog.py::find_book",
+    "loans.py::return_book"
+   ],
+   "precision": 0.5,
+   "prompt_tokens": 3001,
+   "recall": 1.0,
+   "seconds": 0.68,
+   "set": "suite",
+   "task": "lib-para",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "loans.py::checkout_book",
+    "loans.py::overdue_fine"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 2430,
+   "complete": true,
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "catalog.py::find_book"
+   ],
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "gold_in_payload": 2,
+   "kind": "suite",
+   "possible": [
+    "loans.py::overdue_fine"
+   ],
+   "precision": 0.5,
+   "prompt_tokens": 841,
+   "recall": 1.0,
+   "seconds": 0.43,
+   "set": "suite",
+   "task": "lib-para",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "catalog.py::find_book",
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 2400,
+   "complete": true,
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "catalog.py::find_book"
+   ],
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "gold_in_payload": 2,
+   "kind": "suite",
+   "possible": [
+    "loans.py::overdue_fine"
+   ],
+   "precision": 0.5,
+   "prompt_tokens": 830,
+   "recall": 1.0,
+   "seconds": 0.35,
+   "set": "suite",
+   "task": "lib-para",
+   "unproven_verified": 3,
+   "valid_json": true,
+   "verified": [
+    "catalog.py::find_book",
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 6158,
+   "complete": true,
+   "f1": 0.5,
+   "false_verified": [
+    "cart.py::total"
+   ],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "pricing.py::round_total"
+   ],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 2361,
+   "recall": 1.0,
+   "seconds": 0.53,
+   "set": "suite",
+   "task": "code-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "cart.py::total",
+    "checkout.py::place_order"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 1534,
+   "complete": true,
+   "f1": 0.4,
+   "false_verified": [
+    "cart.py::total"
+   ],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "pricing.py::discount",
+    "pricing.py::round_total"
+   ],
+   "precision": 0.25,
+   "prompt_tokens": 548,
+   "recall": 1.0,
+   "seconds": 0.33,
+   "set": "suite",
+   "task": "code-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "cart.py::total",
+    "checkout.py::place_order"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 1501,
+   "complete": true,
+   "f1": 0.4,
+   "false_verified": [
+    "cart.py::total"
+   ],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "pricing.py::round_total",
+    "pricing.py::discount"
+   ],
+   "precision": 0.25,
+   "prompt_tokens": 537,
+   "recall": 1.0,
+   "seconds": 0.31,
+   "set": "suite",
+   "task": "code-task",
+   "unproven_verified": 2,
+   "valid_json": true,
+   "verified": [
+    "cart.py::total",
+    "checkout.py::place_order"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 5326,
+   "complete": true,
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "checkout.py::place_order"
+   ],
+   "gold": [
+    "pricing.py::round_total"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [],
+   "precision": 0.5,
+   "prompt_tokens": 2112,
+   "recall": 1.0,
+   "seconds": 0.43,
+   "set": "suite",
+   "task": "decision-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "pricing.py::round_total",
+    "checkout.py::place_order"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 1603,
+   "complete": true,
+   "f1": 0.5,
+   "false_verified": [
+    "notes/decisions.md::rounding-decision"
+   ],
+   "gold": [
+    "pricing.py::round_total"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "notes/outcome.md::verified-outcome"
+   ],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 605,
+   "recall": 1.0,
+   "seconds": 0.36,
+   "set": "suite",
+   "task": "decision-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "notes/decisions.md::rounding-decision",
+    "pricing.py::round_total"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 1572,
+   "complete": true,
+   "f1": 0.5,
+   "false_verified": [
+    "notes/decisions.md::rounding-decision"
+   ],
+   "gold": [
+    "pricing.py::round_total"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "notes/outcome.md::verified-outcome"
+   ],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 594,
+   "recall": 1.0,
+   "seconds": 0.34,
+   "set": "suite",
+   "task": "decision-task",
+   "unproven_verified": 2,
+   "valid_json": true,
+   "verified": [
+    "notes/decisions.md::rounding-decision",
+    "pricing.py::round_total"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 5323,
+   "complete": true,
+   "f1": 0.4,
+   "false_verified": [
+    "pricing.py::round_total"
+   ],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "notes/decisions.md::document",
+    "notes/outcome.md::document"
+   ],
+   "precision": 0.25,
+   "prompt_tokens": 2113,
+   "recall": 1.0,
+   "seconds": 0.51,
+   "set": "suite",
+   "task": "outcome-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "pricing.py::round_total",
+    "checkout.py::place_order"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 1611,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "notes/decisions.md::rounding-decision",
+    "notes/outcome.md::verified-outcome",
+    "pricing.py::round_total"
+   ],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 607,
+   "recall": 0.0,
+   "seconds": 0.32,
+   "set": "suite",
+   "task": "outcome-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "pricing.py::round_total",
+    "notes/decisions.md::rounding-decision",
+    "notes/outcome.md::verified-outcome"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 1580,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "notes/decisions.md::rounding-decision",
+    "notes/outcome.md::verified-outcome",
+    "pricing.py::round_total"
+   ],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 596,
+   "recall": 0.0,
+   "seconds": 0.32,
+   "set": "suite",
+   "task": "outcome-task",
+   "unproven_verified": 3,
+   "valid_json": true,
+   "verified": [
+    "notes/decisions.md::rounding-decision",
+    "notes/outcome.md::verified-outcome",
+    "pricing.py::round_total"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 5197,
+   "complete": true,
+   "f1": 0.5,
+   "false_verified": [
+    "pricing.py::round_total"
+   ],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "cart.py::total"
+   ],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 2020,
+   "recall": 1.0,
+   "seconds": 0.49,
+   "set": "suite",
+   "task": "lexical-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "checkout.py::place_order",
+    "pricing.py::round_total"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 1885,
+   "complete": true,
+   "f1": 0.5,
+   "false_verified": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "cart.py::total",
+    "pricing.py::round_total"
+   ],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 669,
+   "recall": 1.0,
+   "seconds": 0.33,
+   "set": "suite",
+   "task": "lexical-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "checkout.py::place_order"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 1853,
+   "complete": true,
+   "f1": 0.5,
+   "false_verified": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "pricing.py::round_total",
+    "cart.py::total"
+   ],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 658,
+   "recall": 1.0,
+   "seconds": 0.28,
+   "set": "suite",
+   "task": "lexical-task",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "checkout.py::place_order"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 7002,
+   "complete": true,
+   "f1": 0.5,
+   "false_verified": [
+    "cart.py::total",
+    "pricing.py::round_total"
+   ],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 2686,
+   "recall": 1.0,
+   "seconds": 0.5,
+   "set": "suite",
+   "task": "shop-para",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "cart.py::total",
+    "checkout.py::place_order",
+    "pricing.py::round_total"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 1779,
+   "complete": true,
+   "f1": 0.4,
+   "false_verified": [
+    "cart.py::total"
+   ],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "pricing.py::round_total",
+    "pricing.py::discount"
+   ],
+   "precision": 0.25,
+   "prompt_tokens": 628,
+   "recall": 1.0,
+   "seconds": 0.35,
+   "set": "suite",
+   "task": "shop-para",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "cart.py::total",
+    "checkout.py::place_order"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 1746,
+   "complete": true,
+   "f1": 0.5,
+   "false_verified": [
+    "cart.py::total"
+   ],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "pricing.py::round_total"
+   ],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 617,
+   "recall": 1.0,
+   "seconds": 0.29,
+   "set": "suite",
+   "task": "shop-para",
+   "unproven_verified": 2,
+   "valid_json": true,
+   "verified": [
+    "cart.py::total",
+    "checkout.py::place_order"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 11766,
+   "complete": true,
+   "f1": 0.33333333333333337,
+   "false_verified": [
+    "internal/theme/themes_bindata.go::complySoc2ProceduresWorkstationMdBytes"
+   ],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2ProceduresWorkstationMd"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [
+    "internal/theme/themes_bindata.go::complySoc2ProceduresWorkstationMd",
+    "internal/theme/themes_bindata.go::complySoc2PoliciesWorkstationMdBytes",
+    "internal/theme/themes_bindata.go::complySoc2PoliciesWorkstationMd",
+    "internal/theme/themes_bindata.go::complySoc2ProceduresOffboardingMdBytes"
+   ],
+   "precision": 0.2,
+   "prompt_tokens": 3927,
+   "recall": 1.0,
+   "seconds": 1.37,
+   "set": "real",
+   "task": "comply-callers-complySoc2ProceduresWorkstationMdBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complySoc2ProceduresWorkstationMdBytes"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 8419,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2ProceduresWorkstationMd"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2443,
+   "recall": 1.0,
+   "seconds": 0.53,
+   "set": "real",
+   "task": "comply-callers-complySoc2ProceduresWorkstationMdBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complySoc2ProceduresWorkstationMd"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 8141,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2ProceduresWorkstationMd"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2369,
+   "recall": 1.0,
+   "seconds": 0.35,
+   "set": "real",
+   "task": "comply-callers-complySoc2ProceduresWorkstationMdBytes",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complySoc2ProceduresWorkstationMd"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 11148,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2TemplatesIndexAce"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 3691,
+   "recall": 1.0,
+   "seconds": 0.67,
+   "set": "real",
+   "task": "comply-callers-complySoc2TemplatesIndexAceBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complySoc2TemplatesIndexAce"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 8010,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2TemplatesIndexAce"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2283,
+   "recall": 1.0,
+   "seconds": 0.35,
+   "set": "real",
+   "task": "comply-callers-complySoc2TemplatesIndexAceBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complySoc2TemplatesIndexAce"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 7815,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2TemplatesIndexAce"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2234,
+   "recall": 1.0,
+   "seconds": 0.27,
+   "set": "real",
+   "task": "comply-callers-complySoc2TemplatesIndexAceBytes",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complySoc2TemplatesIndexAce"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 14432,
+   "complete": true,
+   "f1": 0.33333333333333337,
+   "false_verified": [
+    "internal/cli/app.go::newApp"
+   ],
+   "gold": [
+    "internal/cli/app.go::Main"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [
+    "internal/cli/app.go::Main",
+    "internal/cli/app.go::feedbackError",
+    "internal/config/config.go::SetPandoc",
+    "internal/util/test_utils.go::ExecuteTests"
+   ],
+   "precision": 0.2,
+   "prompt_tokens": 5236,
+   "recall": 1.0,
+   "seconds": 1.11,
+   "set": "real",
+   "task": "comply-callers-newApp",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/cli/app.go::newApp"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 8913,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/cli/app.go::Main"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2471,
+   "recall": 1.0,
+   "seconds": 0.42,
+   "set": "real",
+   "task": "comply-callers-newApp",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/cli/app.go::Main"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 8608,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/cli/app.go::Main"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2398,
+   "recall": 1.0,
+   "seconds": 0.26,
+   "set": "real",
+   "task": "comply-callers-newApp",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "internal/cli/app.go::Main"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 21147,
+   "complete": false,
+   "f1": 0.25,
+   "false_verified": [],
+   "gold": [
+    "internal/cli/app.go::projectMustExist",
+    "internal/cli/init.go::initAction",
+    "internal/config/config.go::Exists",
+    "internal/config/config.go::YAML"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callers",
+   "possible": [
+    "internal/config/config.go::ProjectRoot",
+    "internal/config/config.go::WhichPandoc",
+    "internal/config/config.go::SetProjectRoot"
+   ],
+   "precision": 0.25,
+   "prompt_tokens": 9168,
+   "recall": 0.25,
+   "seconds": 1.47,
+   "set": "real",
+   "task": "comply-callers-ProjectRoot",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/config/config.go::Exists"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 8596,
+   "complete": false,
+   "f1": 0.3333333333333333,
+   "false_verified": [
+    "internal/config/config.go::WhichPandoc"
+   ],
+   "gold": [
+    "internal/cli/app.go::projectMustExist",
+    "internal/cli/init.go::initAction",
+    "internal/config/config.go::Exists",
+    "internal/config/config.go::YAML"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.5,
+   "prompt_tokens": 2364,
+   "recall": 0.25,
+   "seconds": 0.54,
+   "set": "real",
+   "task": "comply-callers-ProjectRoot",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/config/config.go::Exists",
+    "internal/config/config.go::WhichPandoc"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 8470,
+   "complete": false,
+   "f1": 0.4444444444444445,
+   "false_verified": [
+    "internal/config/config.go::ProjectRoot"
+   ],
+   "gold": [
+    "internal/cli/app.go::projectMustExist",
+    "internal/cli/init.go::initAction",
+    "internal/config/config.go::Exists",
+    "internal/config/config.go::YAML"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callers",
+   "possible": [
+    "internal/cli/app.go::projectMustExist",
+    "internal/cli/init.go::initAction",
+    "internal/model/db.go::DB",
+    "internal/render/document.go::renderToFilesystem"
+   ],
+   "precision": 0.4,
+   "prompt_tokens": 2333,
+   "recall": 0.5,
+   "seconds": 0.4,
+   "set": "real",
+   "task": "comply-callers-ProjectRoot",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "internal/config/config.go::ProjectRoot"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 11947,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesReadmeMdBytes"
+   ],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesReadmeMd"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 4047,
+   "recall": 0.0,
+   "seconds": 0.72,
+   "set": "real",
+   "task": "comply-callers-complySoc2PoliciesReadmeMdBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesReadmeMdBytes"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 8096,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesReadmeMd"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2361,
+   "recall": 1.0,
+   "seconds": 0.46,
+   "set": "real",
+   "task": "comply-callers-complySoc2PoliciesReadmeMdBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesReadmeMd"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 7764,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesReadmeMd"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2268,
+   "recall": 1.0,
+   "seconds": 0.33,
+   "set": "real",
+   "task": "comply-callers-complySoc2PoliciesReadmeMdBytes",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesReadmeMd"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 11988,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "internal/theme/themes_bindata.go::complyBlankProceduresGitkeepBytes"
+   ],
+   "gold": [
+    "internal/theme/themes_bindata.go::complyBlankProceduresGitkeep"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 3981,
+   "recall": 0.0,
+   "seconds": 0.7,
+   "set": "real",
+   "task": "comply-callers-complyBlankProceduresGitkeepBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complyBlankProceduresGitkeepBytes"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 8152,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complyBlankProceduresGitkeep"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2299,
+   "recall": 1.0,
+   "seconds": 0.35,
+   "set": "real",
+   "task": "comply-callers-complyBlankProceduresGitkeepBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complyBlankProceduresGitkeep"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 7811,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complyBlankProceduresGitkeep"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2216,
+   "recall": 1.0,
+   "seconds": 0.27,
+   "set": "real",
+   "task": "comply-callers-complyBlankProceduresGitkeepBytes",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complyBlankProceduresGitkeep"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 11458,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [
+    "internal/theme/themes_bindata.go::complySoc2ProceduresWorkstationMdBytes"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 3769,
+   "recall": 0.0,
+   "seconds": 0.72,
+   "set": "real",
+   "task": "comply-callees-complySoc2ProceduresWorkstationMdBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 8106,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2276,
+   "recall": 1.0,
+   "seconds": 0.49,
+   "set": "real",
+   "task": "comply-callees-complySoc2ProceduresWorkstationMdBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 7828,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2202,
+   "recall": 1.0,
+   "seconds": 0.32,
+   "set": "real",
+   "task": "comply-callees-complySoc2ProceduresWorkstationMdBytes",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 10603,
+   "complete": true,
+   "f1": 0.5,
+   "false_verified": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesMediaMd"
+   ],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesMediaMdBytes"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesMediaMdBytes",
+    "internal/theme/themes_bindata.go::complySoc2PoliciesAccessMdBytes"
+   ],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 3497,
+   "recall": 1.0,
+   "seconds": 0.89,
+   "set": "real",
+   "task": "comply-callees-complySoc2PoliciesMediaMd",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesMediaMd"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 9019,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesMediaMdBytes"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2608,
+   "recall": 1.0,
+   "seconds": 0.45,
+   "set": "real",
+   "task": "comply-callees-complySoc2PoliciesMediaMd",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesMediaMdBytes"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 8840,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesMediaMdBytes"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2557,
+   "recall": 1.0,
+   "seconds": 0.43,
+   "set": "real",
+   "task": "comply-callees-complySoc2PoliciesMediaMd",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesMediaMdBytes"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 10839,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "internal/theme/themes_bindata.go::complySoc2TemplatesIndexAceBytes"
+   ],
+   "gold": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 3532,
+   "recall": 0.0,
+   "seconds": 0.64,
+   "set": "real",
+   "task": "comply-callees-complySoc2TemplatesIndexAceBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complySoc2TemplatesIndexAceBytes"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 7697,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2116,
+   "recall": 1.0,
+   "seconds": 0.37,
+   "set": "real",
+   "task": "comply-callees-complySoc2TemplatesIndexAceBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 7502,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2067,
+   "recall": 1.0,
+   "seconds": 0.3,
+   "set": "real",
+   "task": "comply-callees-complySoc2TemplatesIndexAceBytes",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 10820,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "internal/model/fs_test.go::TestReadStandards"
+   ],
+   "gold": [
+    "internal/model/fs.go::ReadStandards",
+    "internal/util/test_utils.go::GetRootPath"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 3534,
+   "recall": 0.0,
+   "seconds": 0.61,
+   "set": "real",
+   "task": "comply-callees-TestReadStandards",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/model/fs_test.go::TestReadStandards"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 9753,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "internal/model/fs_test.go::TestReadStandards"
+   ],
+   "gold": [
+    "internal/model/fs.go::ReadStandards",
+    "internal/util/test_utils.go::GetRootPath"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2663,
+   "recall": 0.0,
+   "seconds": 0.42,
+   "set": "real",
+   "task": "comply-callees-TestReadStandards",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/model/fs_test.go::TestReadStandards"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 9687,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "internal/model/fs_test.go::TestReadStandards"
+   ],
+   "gold": [
+    "internal/model/fs.go::ReadStandards",
+    "internal/util/test_utils.go::GetRootPath"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2644,
+   "recall": 0.0,
+   "seconds": 0.4,
+   "set": "real",
+   "task": "comply-callees-TestReadStandards",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "internal/model/fs_test.go::TestReadStandards"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 14125,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "internal/cli/app.go::newApp"
+   ],
+   "gold": [
+    "internal/cli/app.go::beforeCommand",
+    "internal/gitlab/gitlab.go::Register",
+    "internal/jira/jira.go::Register",
+    "internal/plugin/github/github.go::Register"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [
+    "internal/cli/app.go::Main",
+    "internal/cli/app.go::feedbackError",
+    "internal/config/config.go::SetPandoc",
+    "internal/util/test_utils.go::ExecuteTests"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 5079,
+   "recall": 0.0,
+   "seconds": 1.07,
+   "set": "real",
+   "task": "comply-callees-newApp",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/cli/app.go::newApp"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 8600,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/cli/app.go::beforeCommand",
+    "internal/gitlab/gitlab.go::Register",
+    "internal/jira/jira.go::Register",
+    "internal/plugin/github/github.go::Register"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2304,
+   "recall": 1.0,
+   "seconds": 0.58,
+   "set": "real",
+   "task": "comply-callees-newApp",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/cli/app.go::beforeCommand",
+    "internal/gitlab/gitlab.go::Register",
+    "internal/jira/jira.go::Register",
+    "internal/plugin/github/github.go::Register"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 8295,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "internal/cli/app.go::Main",
+    "internal/cli/app.go::newApp"
+   ],
+   "gold": [
+    "internal/cli/app.go::beforeCommand",
+    "internal/gitlab/gitlab.go::Register",
+    "internal/jira/jira.go::Register",
+    "internal/plugin/github/github.go::Register"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [
+    "internal/cli/app.go::feedbackError",
+    "internal/config/config.go::SetPandoc",
+    "internal/util/test_utils.go::ExecuteTests"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 2231,
+   "recall": 0.0,
+   "seconds": 0.55,
+   "set": "real",
+   "task": "comply-callees-newApp",
+   "unproven_verified": 2,
+   "valid_json": true,
+   "verified": [
+    "internal/cli/app.go::newApp",
+    "internal/cli/app.go::Main"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 12761,
+   "complete": true,
+   "f1": 0.14285714285714288,
+   "false_verified": [
+    "comply.go::main",
+    "internal/config/config.go::SetPandoc",
+    "internal/config/config.go::WhichPandoc"
+   ],
+   "gold": [
+    "internal/cli/app.go::Main"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [
+    "internal/cli/app.go::Version",
+    "internal/cli/app.go::pandocMustExist",
+    "internal/cli/app_test.go::WhenBinaryAndImageDontExists",
+    "internal/cli/app_test.go::WhenBinaryExists",
+    "internal/cli/app_test.go::WhenCannotPullPandoc",
+    "internal/cli/app_test.go::WhenImageExists",
+    "internal/cli/app_test.go::WhenMustUseLocalPandoc",
+    "internal/cli/app_test.go::WhenPandocDontExistsAndCannotPull",
+    "internal/render/pandoc.go::pandoc"
+   ],
+   "precision": 0.07692307692307693,
+   "prompt_tokens": 4531,
+   "recall": 1.0,
+   "seconds": 1.63,
+   "set": "real",
+   "task": "comply-callees-main",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "comply.go::main",
+    "internal/cli/app.go::Main",
+    "internal/config/config.go::SetPandoc",
+    "internal/config/config.go::WhichPandoc"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 6927,
+   "complete": true,
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "comply.go::main"
+   ],
+   "gold": [
+    "internal/cli/app.go::Main"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.5,
+   "prompt_tokens": 1885,
+   "recall": 1.0,
+   "seconds": 0.36,
+   "set": "real",
+   "task": "comply-callees-main",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "comply.go::main",
+    "internal/cli/app.go::Main"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 6891,
+   "complete": true,
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "comply.go::main"
+   ],
+   "gold": [
+    "internal/cli/app.go::Main"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.5,
+   "prompt_tokens": 1874,
+   "recall": 1.0,
+   "seconds": 0.29,
+   "set": "real",
+   "task": "comply-callees-main",
+   "unproven_verified": 2,
+   "valid_json": true,
+   "verified": [
+    "comply.go::main",
+    "internal/cli/app.go::Main"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 7235,
+   "complete": false,
+   "f1": 0.5,
+   "false_verified": [],
+   "gold": [
+    "src/query.rs::overview",
+    "src/query.rs::tree",
+    "src/query.rs::tree_children"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callers",
+   "possible": [
+    "src/query.rs::tree",
+    "src/snapshot.rs::children",
+    "src/scan.rs::flatten",
+    "src/snapshot.rs::descendants"
+   ],
+   "precision": 0.4,
+   "prompt_tokens": 3044,
+   "recall": 0.6666666666666666,
+   "seconds": 0.96,
+   "set": "real",
+   "task": "hhdm-callers-tree_children",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/query.rs::tree_children"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 5165,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/query.rs::overview",
+    "src/query.rs::tree",
+    "src/query.rs::tree_children"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callers",
+   "possible": [
+    "src/query.rs::tree_children"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 1698,
+   "recall": 1.0,
+   "seconds": 0.46,
+   "set": "real",
+   "task": "hhdm-callers-tree_children",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/query.rs::tree",
+    "src/query.rs::overview"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 4888,
+   "complete": false,
+   "f1": 0.5,
+   "false_verified": [],
+   "gold": [
+    "src/query.rs::overview",
+    "src/query.rs::tree",
+    "src/query.rs::tree_children"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1624,
+   "recall": 0.3333333333333333,
+   "seconds": 0.33,
+   "set": "real",
+   "task": "hhdm-callers-tree_children",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "src/query.rs::tree"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 3908,
+   "complete": true,
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "src/win.rs::file_identity"
+   ],
+   "gold": [
+    "src/dupes.rs::full_hash"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [
+    "src/dupes.rs::full_hash"
+   ],
+   "precision": 0.5,
+   "prompt_tokens": 1453,
+   "recall": 1.0,
+   "seconds": 0.4,
+   "set": "real",
+   "task": "hhdm-callers-file_identity",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/win.rs::file_identity"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 1871,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/dupes.rs::full_hash"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 729,
+   "recall": 1.0,
+   "seconds": 0.25,
+   "set": "real",
+   "task": "hhdm-callers-file_identity",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/dupes.rs::full_hash"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 1829,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/dupes.rs::full_hash"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 716,
+   "recall": 1.0,
+   "seconds": 0.22,
+   "set": "real",
+   "task": "hhdm-callers-file_identity",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "src/dupes.rs::full_hash"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 7447,
+   "complete": true,
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "src/install.rs::uninstall"
+   ],
+   "gold": [
+    "src/main.rs::main"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [
+    "src/main.rs::main"
+   ],
+   "precision": 0.5,
+   "prompt_tokens": 2679,
+   "recall": 1.0,
+   "seconds": 0.55,
+   "set": "real",
+   "task": "hhdm-callers-uninstall",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/install.rs::uninstall"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 6453,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/main.rs::main"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2060,
+   "recall": 1.0,
+   "seconds": 0.36,
+   "set": "real",
+   "task": "hhdm-callers-uninstall",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/main.rs::main"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 6341,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/main.rs::main"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2031,
+   "recall": 1.0,
+   "seconds": 0.31,
+   "set": "real",
+   "task": "hhdm-callers-uninstall",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "src/main.rs::main"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 5781,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/cleanup.rs::command"
+   ],
+   "gold": [
+    "src/cleanup.rs::describe",
+    "src/cleanup.rs::plan"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callers",
+   "possible": [
+    "src/install.rs::powershell",
+    "src/cleanup.rs::Cmd",
+    ".claude-flow/policy/state.json::receipts[0].payload.request.action.type"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 2299,
+   "recall": 0.0,
+   "seconds": 0.67,
+   "set": "real",
+   "task": "hhdm-callers-command",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/cleanup.rs::command"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 3499,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/cleanup.rs::describe",
+    "src/cleanup.rs::plan"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1133,
+   "recall": 1.0,
+   "seconds": 0.34,
+   "set": "real",
+   "task": "hhdm-callers-command",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/cleanup.rs::describe",
+    "src/cleanup.rs::plan"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 3300,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/cleanup.rs::command"
+   ],
+   "gold": [
+    "src/cleanup.rs::describe",
+    "src/cleanup.rs::plan"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callers",
+   "possible": [
+    "src/main.rs::Cli",
+    "src/cleanup.rs::Finding",
+    "src/cleanup.rs::cmd",
+    "src/config.rs::path",
+    "src/install.rs::powershell",
+    "src/store.rs::new",
+    "src/tools.rs::tool"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 1078,
+   "recall": 0.0,
+   "seconds": 0.59,
+   "set": "real",
+   "task": "hhdm-callers-command",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "src/cleanup.rs::command"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 6823,
+   "complete": true,
+   "f1": 0.4,
+   "false_verified": [
+    "src/store.rs::list_metas"
+   ],
+   "gold": [
+    "src/store.rs::covering_meta",
+    "src/store.rs::resolve"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callers",
+   "possible": [
+    "src/drives.rs::volume",
+    "src/main.rs::main",
+    "src/query.rs::overview",
+    "src/store.rs::covering_meta",
+    "src/store.rs::resolve",
+    "src/tools.rs::run",
+    "src/tools.rs::run_inner"
+   ],
+   "precision": 0.25,
+   "prompt_tokens": 3050,
+   "recall": 1.0,
+   "seconds": 0.85,
+   "set": "real",
+   "task": "hhdm-callers-list_metas",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/store.rs::list_metas"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 3251,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/store.rs::covering_meta",
+    "src/store.rs::resolve"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1100,
+   "recall": 1.0,
+   "seconds": 0.33,
+   "set": "real",
+   "task": "hhdm-callers-list_metas",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/store.rs::covering_meta",
+    "src/store.rs::resolve"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 3094,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/store.rs::covering_meta",
+    "src/store.rs::resolve"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1059,
+   "recall": 1.0,
+   "seconds": 0.3,
+   "set": "real",
+   "task": "hhdm-callers-list_metas",
+   "unproven_verified": 2,
+   "valid_json": true,
+   "verified": [
+    "src/store.rs::covering_meta",
+    "src/store.rs::resolve"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 5618,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/cleanup.rs::save_script"
+   ],
+   "gold": [
+    "src/cleanup.rs::plan"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [
+    "src/main.rs::main",
+    "src/install.rs::powershell",
+    "src/config.rs::save"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 2246,
+   "recall": 0.0,
+   "seconds": 0.56,
+   "set": "real",
+   "task": "hhdm-callers-save_script",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/cleanup.rs::save_script"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 4147,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/cleanup.rs::save_script"
+   ],
+   "gold": [
+    "src/cleanup.rs::plan"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 1370,
+   "recall": 0.0,
+   "seconds": 0.33,
+   "set": "real",
+   "task": "hhdm-callers-save_script",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/cleanup.rs::save_script"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 3910,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "src/cleanup.rs::plan"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callers",
+   "possible": [
+    "src/cleanup.rs::save_script",
+    "src/main.rs::main"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 1305,
+   "recall": 0.0,
+   "seconds": 0.36,
+   "set": "real",
+   "task": "hhdm-callers-save_script",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 10081,
+   "complete": false,
+   "f1": 0.25,
+   "false_verified": [],
+   "gold": [
+    "src/query.rs::entry",
+    "src/query.rs::pct",
+    "src/query.rs::tree_children"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [
+    "src/query.rs::tree",
+    "src/snapshot.rs::children",
+    "src/scan.rs::flatten",
+    "src/snapshot.rs::descendants"
+   ],
+   "precision": 0.2,
+   "prompt_tokens": 4072,
+   "recall": 0.3333333333333333,
+   "seconds": 0.83,
+   "set": "real",
+   "task": "hhdm-callees-tree_children",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/query.rs::tree_children"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 7440,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/query.rs::entry",
+    "src/query.rs::pct",
+    "src/query.rs::tree_children"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2411,
+   "recall": 1.0,
+   "seconds": 0.48,
+   "set": "real",
+   "task": "hhdm-callees-tree_children",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/query.rs::entry",
+    "src/query.rs::pct",
+    "src/query.rs::tree_children"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 7163,
+   "complete": false,
+   "f1": 0.5,
+   "false_verified": [],
+   "gold": [
+    "src/query.rs::entry",
+    "src/query.rs::pct",
+    "src/query.rs::tree_children"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2337,
+   "recall": 0.3333333333333333,
+   "seconds": 0.31,
+   "set": "real",
+   "task": "hhdm-callees-tree_children",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "src/query.rs::tree_children"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 7085,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/win.rs::query"
+   ],
+   "gold": [
+    "src/win.rs::filetime_to_unix"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2539,
+   "recall": 0.0,
+   "seconds": 0.41,
+   "set": "real",
+   "task": "hhdm-callees-query",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/win.rs::query"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 5206,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/win.rs::filetime_to_unix"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1712,
+   "recall": 1.0,
+   "seconds": 0.3,
+   "set": "real",
+   "task": "hhdm-callees-query",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/win.rs::filetime_to_unix"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 5132,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "src/win.rs::filetime_to_unix"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [
+    "src/win.rs::NtQueryDirectoryFile",
+    "src/win.rs::IoStatusBlock",
+    "src/win.rs::RawEntry"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 1691,
+   "recall": 0.0,
+   "seconds": 0.37,
+   "set": "real",
+   "task": "hhdm-callees-query",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 7458,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/install.rs::uninstall"
+   ],
+   "gold": [
+    "src/install.rs::install_dir"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2687,
+   "recall": 0.0,
+   "seconds": 0.43,
+   "set": "real",
+   "task": "hhdm-callees-uninstall",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/install.rs::uninstall"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 6458,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/install.rs::uninstall"
+   ],
+   "gold": [
+    "src/install.rs::install_dir"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2062,
+   "recall": 0.0,
+   "seconds": 0.35,
+   "set": "real",
+   "task": "hhdm-callees-uninstall",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/install.rs::uninstall"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 6346,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/install.rs::uninstall"
+   ],
+   "gold": [
+    "src/install.rs::install_dir"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2033,
+   "recall": 0.0,
+   "seconds": 0.32,
+   "set": "real",
+   "task": "hhdm-callees-uninstall",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "src/install.rs::uninstall"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 8626,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/cleanup.rs::command"
+   ],
+   "gold": [
+    "src/cleanup.rs::ps_quote"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [
+    "src/cleanup.rs::describe",
+    "src/cleanup.rs::plan",
+    "src/install.rs::powershell",
+    "src/install.rs::claude",
+    "src/install.rs::install",
+    "src/install.rs::set_user_path",
+    "src/main.rs::main"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 3326,
+   "recall": 0.0,
+   "seconds": 0.91,
+   "set": "real",
+   "task": "hhdm-callees-command",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/cleanup.rs::command"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 5774,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/cleanup.rs::ps_quote"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1846,
+   "recall": 1.0,
+   "seconds": 0.3,
+   "set": "real",
+   "task": "hhdm-callees-command",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/cleanup.rs::ps_quote"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 5575,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/cleanup.rs::command"
+   ],
+   "gold": [
+    "src/cleanup.rs::ps_quote"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 1791,
+   "recall": 0.0,
+   "seconds": 0.27,
+   "set": "real",
+   "task": "hhdm-callees-command",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "src/cleanup.rs::command"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 9670,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/store.rs::list_metas"
+   ],
+   "gold": [
+    "src/store.rs::cache_dir"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [
+    "src/store.rs::covering_meta",
+    "src/store.rs::resolve",
+    "src/drives.rs::drives"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 4079,
+   "recall": 0.0,
+   "seconds": 0.85,
+   "set": "real",
+   "task": "hhdm-callees-list_metas",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/store.rs::list_metas"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 5526,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/store.rs::cache_dir"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1813,
+   "recall": 1.0,
+   "seconds": 0.3,
+   "set": "real",
+   "task": "hhdm-callees-list_metas",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/store.rs::cache_dir"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 5369,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/store.rs::list_metas"
+   ],
+   "gold": [
+    "src/store.rs::cache_dir"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 1772,
+   "recall": 0.0,
+   "seconds": 0.3,
+   "set": "real",
+   "task": "hhdm-callees-list_metas",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "src/store.rs::list_metas"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 12867,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/cleanup.rs::collect"
+   ],
+   "gold": [
+    "src/cleanup.rs::dir_rule",
+    "src/cleanup.rs::file_rule",
+    "src/util.rs::is_drive_root",
+    "src/util.rs::join"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [
+    "src/cleanup.rs::cleanup",
+    "src/cleanup.rs::plan"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 5616,
+   "recall": 0.0,
+   "seconds": 0.96,
+   "set": "real",
+   "task": "hhdm-callees-collect",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/cleanup.rs::collect"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 6690,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/cleanup.rs::dir_rule",
+    "src/cleanup.rs::file_rule",
+    "src/util.rs::is_drive_root",
+    "src/util.rs::join"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2217,
+   "recall": 1.0,
+   "seconds": 0.56,
+   "set": "real",
+   "task": "hhdm-callees-collect",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/cleanup.rs::dir_rule",
+    "src/cleanup.rs::file_rule",
+    "src/util.rs::is_drive_root",
+    "src/util.rs::join"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 6345,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/cleanup.rs::collect"
+   ],
+   "gold": [
+    "src/cleanup.rs::dir_rule",
+    "src/cleanup.rs::file_rule",
+    "src/util.rs::is_drive_root",
+    "src/util.rs::join"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2119,
+   "recall": 0.0,
+   "seconds": 0.37,
+   "set": "real",
+   "task": "hhdm-callees-collect",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "src/cleanup.rs::collect"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 17744,
+   "complete": false,
+   "f1": 0.75,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::dock"
+   ],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::dockSession",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::play_",
+    "apps/web/src/lib/media/player.ts::showDock"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callers",
+   "possible": [
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::dockSession",
+    "apps/web/src/lib/media/player.ts::showDock"
+   ],
+   "precision": 0.75,
+   "prompt_tokens": 6332,
+   "recall": 0.75,
+   "seconds": 1.53,
+   "set": "real",
+   "task": "seancarneywebsite-callers-dock",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::dock"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 10784,
+   "complete": false,
+   "f1": 0.8571428571428571,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::dockSession",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::play_",
+    "apps/web/src/lib/media/player.ts::showDock"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 3146,
+   "recall": 0.75,
+   "seconds": 0.73,
+   "set": "real",
+   "task": "seancarneywebsite-callers-dock",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::dockSession",
+    "apps/web/src/lib/media/player.ts::showDock"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 10279,
+   "complete": false,
+   "f1": 0.8571428571428571,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::dockSession",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::play_",
+    "apps/web/src/lib/media/player.ts::showDock"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 3022,
+   "recall": 0.75,
+   "seconds": 0.43,
+   "set": "real",
+   "task": "seancarneywebsite-callers-dock",
+   "unproven_verified": 3,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::dockSession",
+    "apps/web/src/lib/media/player.ts::showDock"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 13555,
+   "complete": true,
+   "f1": 0.4,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::offerNext"
+   ],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::onEnded"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [
+    "apps/web/src/lib/media/player.ts::onEnded",
+    "apps/web/src/lib/media/player.ts::play",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "precision": 0.25,
+   "prompt_tokens": 4545,
+   "recall": 1.0,
+   "seconds": 1.0,
+   "set": "real",
+   "task": "seancarneywebsite-callers-offerNext",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::offerNext"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 10671,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::onEnded"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2924,
+   "recall": 1.0,
+   "seconds": 0.57,
+   "set": "real",
+   "task": "seancarneywebsite-callers-offerNext",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::onEnded"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 10328,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::onEnded"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2837,
+   "recall": 1.0,
+   "seconds": 0.33,
+   "set": "real",
+   "task": "seancarneywebsite-callers-offerNext",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::onEnded"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 18832,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/analytics/experiments.ts::getExperimentProps"
+   ],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 7166,
+   "recall": 0.0,
+   "seconds": 1.11,
+   "set": "real",
+   "task": "seancarneywebsite-callers-getExperimentProps",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/analytics/experiments.ts::getExperimentProps"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 11049,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 3013,
+   "recall": 1.0,
+   "seconds": 0.48,
+   "set": "real",
+   "task": "seancarneywebsite-callers-getExperimentProps",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/analytics/track.ts::track"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 10752,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2935,
+   "recall": 1.0,
+   "seconds": 0.34,
+   "set": "real",
+   "task": "seancarneywebsite-callers-getExperimentProps",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/analytics/track.ts::track"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 14224,
+   "complete": true,
+   "f1": 0.6,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::undock"
+   ],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::back",
+    "apps/web/src/lib/media/player.ts::observeTile",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callers",
+   "possible": [
+    "apps/web/src/lib/media/player.ts::back",
+    "apps/web/src/lib/media/player.ts::observeTile",
+    "apps/web/src/lib/media/player.ts::offerNext",
+    "apps/web/src/lib/media/player.ts::onEnded",
+    "apps/web/src/lib/media/player.ts::play",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "precision": 0.42857142857142855,
+   "prompt_tokens": 4790,
+   "recall": 1.0,
+   "seconds": 1.21,
+   "set": "real",
+   "task": "seancarneywebsite-callers-undock",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::undock"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 9661,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::back",
+    "apps/web/src/lib/media/player.ts::observeTile",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2661,
+   "recall": 1.0,
+   "seconds": 0.52,
+   "set": "real",
+   "task": "seancarneywebsite-callers-undock",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::back",
+    "apps/web/src/lib/media/player.ts::observeTile",
+    "apps/web/src/lib/media/player.ts::play_"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 9472,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::undock"
+   ],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::back",
+    "apps/web/src/lib/media/player.ts::observeTile",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callers",
+   "possible": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::Session",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::move",
+    "apps/web/src/lib/media/yt-player.ts::embedUrl"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 2614,
+   "recall": 0.0,
+   "seconds": 0.66,
+   "set": "real",
+   "task": "seancarneywebsite-callers-undock",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::undock"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 12482,
+   "complete": true,
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "apps/web/src/lib/scout/integrity.ts::visitorText"
+   ],
+   "gold": [
+    "apps/web/src/pages/api/scout.ts::POST"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [
+    "apps/web/src/pages/api/scout.ts::POST"
+   ],
+   "precision": 0.5,
+   "prompt_tokens": 4002,
+   "recall": 1.0,
+   "seconds": 0.75,
+   "set": "real",
+   "task": "seancarneywebsite-callers-visitorText",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/scout/integrity.ts::visitorText"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 9849,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/scout/integrity.ts::visitorText"
+   ],
+   "gold": [
+    "apps/web/src/pages/api/scout.ts::POST"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [
+    "apps/web/src/lib/scout/tools.ts::ToolContext"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 2685,
+   "recall": 0.0,
+   "seconds": 0.44,
+   "set": "real",
+   "task": "seancarneywebsite-callers-visitorText",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/scout/integrity.ts::visitorText"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 9804,
+   "complete": true,
+   "f1": 0.5,
+   "false_verified": [
+    "apps/web/src/lib/scout/integrity.ts::visitorText"
+   ],
+   "gold": [
+    "apps/web/src/pages/api/scout.ts::POST"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [
+    "apps/web/src/lib/scout/tools.ts::executeTool",
+    "apps/web/src/pages/api/scout.ts::POST"
+   ],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 2672,
+   "recall": 1.0,
+   "seconds": 0.46,
+   "set": "real",
+   "task": "seancarneywebsite-callers-visitorText",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/scout/integrity.ts::visitorText"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 13612,
+   "complete": true,
+   "f1": 0.5714285714285715,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::close"
+   ],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::onEnded",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callers",
+   "possible": [
+    "apps/web/src/lib/media/player.ts::offerNext",
+    "apps/web/src/lib/media/player.ts::onEnded",
+    "apps/web/src/lib/media/player.ts::play",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "precision": 0.4,
+   "prompt_tokens": 4521,
+   "recall": 1.0,
+   "seconds": 1.01,
+   "set": "real",
+   "task": "seancarneywebsite-callers-close",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::close"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 9470,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::onEnded",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2610,
+   "recall": 1.0,
+   "seconds": 0.47,
+   "set": "real",
+   "task": "seancarneywebsite-callers-close",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::onEnded",
+    "apps/web/src/lib/media/player.ts::play_"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 9335,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::close"
+   ],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::onEnded",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2575,
+   "recall": 0.0,
+   "seconds": 0.29,
+   "set": "real",
+   "task": "seancarneywebsite-callers-close",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::close"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 12766,
+   "complete": false,
+   "f1": 0.22222222222222224,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::offerNext"
+   ],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::inView",
+    "apps/web/src/lib/media/player.ts::nextTile",
+    "apps/web/src/lib/media/player.ts::play_",
+    "apps/web/src/lib/media/player.ts::reduceMotion"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [
+    "apps/web/src/lib/media/player.ts::onEnded",
+    "apps/web/src/lib/media/player.ts::play",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "precision": 0.25,
+   "prompt_tokens": 4447,
+   "recall": 0.2,
+   "seconds": 0.96,
+   "set": "real",
+   "task": "seancarneywebsite-callees-offerNext",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::offerNext"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 9881,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::offerNext"
+   ],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::inView",
+    "apps/web/src/lib/media/player.ts::nextTile",
+    "apps/web/src/lib/media/player.ts::play_",
+    "apps/web/src/lib/media/player.ts::reduceMotion"
+   ],
+   "gold_in_payload": 5,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2797,
+   "recall": 0.0,
+   "seconds": 0.6,
+   "set": "real",
+   "task": "seancarneywebsite-callees-offerNext",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::offerNext"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 9538,
+   "complete": false,
+   "f1": 0.33333333333333337,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::inView",
+    "apps/web/src/lib/media/player.ts::nextTile",
+    "apps/web/src/lib/media/player.ts::play_",
+    "apps/web/src/lib/media/player.ts::reduceMotion"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2710,
+   "recall": 0.2,
+   "seconds": 0.33,
+   "set": "real",
+   "task": "seancarneywebsite-callees-offerNext",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::nextTile"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 13432,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::undock"
+   ],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::move",
+    "apps/web/src/lib/media/yt-player.ts::embedUrl"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [
+    "apps/web/src/lib/media/player.ts::back",
+    "apps/web/src/lib/media/player.ts::observeTile",
+    "apps/web/src/lib/media/player.ts::offerNext",
+    "apps/web/src/lib/media/player.ts::onEnded",
+    "apps/web/src/lib/media/player.ts::play",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 4689,
+   "recall": 0.0,
+   "seconds": 1.2,
+   "set": "real",
+   "task": "seancarneywebsite-callees-undock",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::undock"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 8871,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::undock"
+   ],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::move",
+    "apps/web/src/lib/media/yt-player.ts::embedUrl"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2534,
+   "recall": 0.0,
+   "seconds": 0.37,
+   "set": "real",
+   "task": "seancarneywebsite-callees-undock",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::undock"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 8682,
+   "complete": false,
+   "f1": 0.8571428571428571,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::move",
+    "apps/web/src/lib/media/yt-player.ts::embedUrl"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callees",
+   "possible": [
+    "apps/web/src/lib/analytics/track.ts::track"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 2487,
+   "recall": 0.75,
+   "seconds": 0.42,
+   "set": "real",
+   "task": "seancarneywebsite-callees-undock",
+   "unproven_verified": 2,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::move"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 13101,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::close"
+   ],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::flush",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::restoreTile",
+    "apps/web/src/lib/media/player.ts::signal"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [
+    "apps/web/src/lib/media/player.ts::offerNext",
+    "apps/web/src/lib/media/player.ts::onEnded",
+    "apps/web/src/lib/media/player.ts::play",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 4566,
+   "recall": 0.0,
+   "seconds": 1.03,
+   "set": "real",
+   "task": "seancarneywebsite-callees-close",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::close"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 8985,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::close"
+   ],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::flush",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::restoreTile",
+    "apps/web/src/lib/media/player.ts::signal"
+   ],
+   "gold_in_payload": 5,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2649,
+   "recall": 0.0,
+   "seconds": 0.54,
+   "set": "real",
+   "task": "seancarneywebsite-callees-close",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::close"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 8850,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::close"
+   ],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::flush",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::restoreTile",
+    "apps/web/src/lib/media/player.ts::signal"
+   ],
+   "gold_in_payload": 5,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2614,
+   "recall": 0.0,
+   "seconds": 0.27,
+   "set": "real",
+   "task": "seancarneywebsite-callees-close",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::close"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 14883,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::showDock"
+   ],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::dock"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [
+    "apps/web/src/lib/media/player.ts::back",
+    "apps/web/src/lib/media/player.ts::close",
+    "apps/web/src/lib/media/player.ts::dockSession",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::observeTile",
+    "apps/web/src/lib/media/player.ts::offerNext",
+    "apps/web/src/lib/media/player.ts::onEnded",
+    "apps/web/src/lib/media/player.ts::play",
+    "apps/web/src/lib/media/player.ts::play_",
+    "apps/web/src/lib/media/player.ts::undock"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 5437,
+   "recall": 0.0,
+   "seconds": 1.56,
+   "set": "real",
+   "task": "seancarneywebsite-callees-showDock",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::showDock"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 9271,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::dock"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2618,
+   "recall": 1.0,
+   "seconds": 0.41,
+   "set": "real",
+   "task": "seancarneywebsite-callees-showDock",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::dock"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 8766,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::showDock"
+   ],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::dock"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2493,
+   "recall": 0.0,
+   "seconds": 0.25,
+   "set": "real",
+   "task": "seancarneywebsite-callees-showDock",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::showDock"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 16569,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/analytics/autotrack.ts::engagedTime",
+    "apps/web/src/lib/analytics/autotrack.ts::onClick",
+    "apps/web/src/lib/analytics/autotrack.ts::scrollDepth",
+    "apps/web/src/lib/analytics/autotrack.ts::sectionViews",
+    "apps/web/src/lib/analytics/autotrack.ts::startAutotrack",
+    "apps/web/src/lib/analytics/autotrack.ts::webVitals",
+    "apps/web/src/lib/analytics/new-since.ts::markNewSinceLastVisit",
+    "apps/web/src/lib/media/player.ts::back",
+    "apps/web/src/lib/media/player.ts::close",
+    "apps/web/src/lib/media/player.ts::dockSession",
+    "apps/web/src/lib/media/player.ts::flush",
+    "apps/web/src/lib/media/player.ts::observeTile",
+    "apps/web/src/lib/media/player.ts::offerNext",
+    "apps/web/src/lib/media/player.ts::onEnded",
+    "apps/web/src/lib/media/player.ts::play",
+    "apps/web/src/lib/media/player.ts::play_",
+    "apps/web/src/lib/media/player.ts::undock"
+   ],
+   "gold": [
+    "apps/web/src/lib/analytics/experiments.ts::getExperimentProps",
+    "apps/web/src/lib/analytics/retention.ts::retentionProps",
+    "apps/web/src/lib/analytics/track.ts::clean"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 5880,
+   "recall": 0.0,
+   "seconds": 2.25,
+   "set": "real",
+   "task": "seancarneywebsite-callees-track",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/analytics/autotrack.ts::engagedTime",
+    "apps/web/src/lib/analytics/autotrack.ts::onClick",
+    "apps/web/src/lib/analytics/autotrack.ts::scrollDepth",
+    "apps/web/src/lib/analytics/autotrack.ts::sectionViews",
+    "apps/web/src/lib/analytics/autotrack.ts::startAutotrack",
+    "apps/web/src/lib/analytics/autotrack.ts::webVitals",
+    "apps/web/src/lib/analytics/new-since.ts::markNewSinceLastVisit",
+    "apps/web/src/lib/media/player.ts::back",
+    "apps/web/src/lib/media/player.ts::close",
+    "apps/web/src/lib/media/player.ts::dockSession",
+    "apps/web/src/lib/media/player.ts::flush",
+    "apps/web/src/lib/media/player.ts::observeTile",
+    "apps/web/src/lib/media/player.ts::offerNext",
+    "apps/web/src/lib/media/player.ts::onEnded",
+    "apps/web/src/lib/media/player.ts::play",
+    "apps/web/src/lib/media/player.ts::play_",
+    "apps/web/src/lib/media/player.ts::undock"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 9744,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/analytics/experiments.ts::getExperimentProps",
+    "apps/web/src/lib/analytics/retention.ts::retentionProps",
+    "apps/web/src/lib/analytics/track.ts::clean"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2690,
+   "recall": 1.0,
+   "seconds": 0.75,
+   "set": "real",
+   "task": "seancarneywebsite-callees-track",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/analytics/track.ts::clean",
+    "apps/web/src/lib/analytics/experiments.ts::getExperimentProps",
+    "apps/web/src/lib/analytics/retention.ts::retentionProps"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 9441,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/analytics/experiments.ts::getExperimentProps",
+    "apps/web/src/lib/analytics/retention.ts::retentionProps",
+    "apps/web/src/lib/analytics/track.ts::clean"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2613,
+   "recall": 1.0,
+   "seconds": 0.48,
+   "set": "real",
+   "task": "seancarneywebsite-callees-track",
+   "unproven_verified": 3,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/analytics/track.ts::clean",
+    "apps/web/src/lib/analytics/experiments.ts::getExperimentProps",
+    "apps/web/src/lib/analytics/retention.ts::retentionProps"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 11546,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/feeds/youtube.ts::fetchChannelVideos"
+   ],
+   "gold": [
+    "apps/web/src/lib/feeds/youtube.ts::isoToSec"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [
+    "apps/web/src/lib/feeds/media.ts::loadMedia"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 3857,
+   "recall": 0.0,
+   "seconds": 0.74,
+   "set": "real",
+   "task": "seancarneywebsite-callees-fetchChannelVideos",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/feeds/youtube.ts::fetchChannelVideos"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 8594,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/feeds/youtube.ts::isoToSec"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2438,
+   "recall": 1.0,
+   "seconds": 0.39,
+   "set": "real",
+   "task": "seancarneywebsite-callees-fetchChannelVideos",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/feeds/youtube.ts::isoToSec"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 8503,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/feeds/youtube.ts::fetchChannelVideos"
+   ],
+   "gold": [
+    "apps/web/src/lib/feeds/youtube.ts::isoToSec"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2412,
+   "recall": 0.0,
+   "seconds": 0.31,
+   "set": "real",
+   "task": "seancarneywebsite-callees-fetchChannelVideos",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/feeds/youtube.ts::fetchChannelVideos"
+   ]
+  }
+ ],
+ "summary": {
+  "real/context": {
+   "complete": 27,
+   "false_verified": 9,
+   "gold_in_payload": "71/71",
+   "invalid_json": 0,
+   "mean_bytes": 7739,
+   "mean_f1": 0.774,
+   "mean_precision": 0.778,
+   "mean_recall": 0.778,
+   "tasks": 36,
+   "unproven_verified": 0
+  },
+  "real/context_noedges": {
+   "complete": 16,
+   "false_verified": 16,
+   "gold_in_payload": "51/71",
+   "invalid_json": 0,
+   "mean_bytes": 7519,
+   "mean_f1": 0.518,
+   "mean_precision": 0.562,
+   "mean_recall": 0.524,
+   "tasks": 36,
+   "unproven_verified": 42
+  },
+  "real/retrieve": {
+   "complete": 12,
+   "false_verified": 49,
+   "gold_in_payload": "36/71",
+   "invalid_json": 0,
+   "mean_bytes": 11622,
+   "mean_f1": 0.229,
+   "mean_precision": 0.18,
+   "mean_recall": 0.394,
+   "tasks": 36,
+   "unproven_verified": 0
+  },
+  "suite/context": {
+   "complete": 9,
+   "false_verified": 11,
+   "gold_in_payload": "14/14",
+   "invalid_json": 0,
+   "mean_bytes": 2055,
+   "mean_f1": 0.511,
+   "mean_precision": 0.403,
+   "mean_recall": 0.833,
+   "tasks": 12,
+   "unproven_verified": 0
+  },
+  "suite/context_noedges": {
+   "complete": 10,
+   "false_verified": 8,
+   "gold_in_payload": "14/14",
+   "invalid_json": 0,
+   "mean_bytes": 2019,
+   "mean_f1": 0.533,
+   "mean_precision": 0.396,
+   "mean_recall": 0.917,
+   "tasks": 12,
+   "unproven_verified": 20
+  },
+  "suite/retrieve": {
+   "complete": 10,
+   "false_verified": 14,
+   "gold_in_payload": "14/14",
+   "invalid_json": 0,
+   "mean_bytes": 7363,
+   "mean_f1": 0.525,
+   "mean_precision": 0.361,
+   "mean_recall": 1.0,
+   "tasks": 12,
+   "unproven_verified": 0
+  }
+ }
+}

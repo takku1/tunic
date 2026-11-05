@@ -1,0 +1,2524 @@
+{
+ "arms": [
+  "search",
+  "retrieve",
+  "context"
+ ],
+ "benchmark": "claude-skill-ab-v1",
+ "budget_per_run_usd": 0.5,
+ "model": "sonnet",
+ "rows": [
+  {
+   "arm": "search",
+   "complete": true,
+   "cost_usd": 0.018432200000000003,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::affected_paths"
+   ],
+   "input_tokens": 18097,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 316,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`referenced_files` has one direct caller. `affected_paths` in `config.py` calls it at line 881. The only other match for the name is its definition at `config.py:980`. A text search for the name found no other call sites.\n\n```json\n{\"verified\": [\"config.py::affected_paths\"], \"possible\": []}\n```",
+   "seconds": 5.7,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-referenced_files",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "config.py::affected_paths"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": true,
+   "cost_usd": 0.020957800000000002,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::resolve_file"
+   ],
+   "input_tokens": 26400,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 569,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`_walk_module_statement` has one direct caller, `resolve_file`. The only call site in the package is `tsgraph.py:1161`. That line falls inside `resolve_file`, which starts at line 1101 and runs until the next top-level `def` at line 1171. A search for the name found only that call and the definition at line 1031.\n\n```json\n{\"verified\": [\"tsgraph.py::resolve_file\"], \"possible\": []}\n```",
+   "seconds": 10.4,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_walk_module_statement",
+   "turns": 4,
+   "valid": true,
+   "verified": [
+    "tsgraph.py::resolve_file"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": true,
+   "cost_usd": 0.0176503,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::_JsonWalker._parse_object",
+    "config.py::_JsonWalker._parse_value"
+   ],
+   "input_tokens": 19270,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 393,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`_parse_string` has two direct callers, both in `config.py`. I read the code around each call site to confirm them.\n\n- `_JsonWalker._parse_value` calls it at line 166, when the next character is `\"`.\n- `_JsonWalker._parse_object` calls it at line 217, to read an object key.\n\nA search for `_parse_string` found only those two calls and the definition at line 140.\n\n{\"verified\": [\"config.py::_JsonWalker._parse_value\", \"config.py::_JsonWalker._parse_object\"], \"possible\": []}",
+   "seconds": 6.0,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_parse_string",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "config.py::_JsonWalker._parse_value",
+    "config.py::_JsonWalker._parse_object"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": true,
+   "cost_usd": 0.0258034,
+   "denied": [],
+   "f1": 0.8,
+   "false_verified": [
+    "unigraph.py::unit_affected_paths.admit"
+   ],
+   "gold": [
+    "unigraph.py::resolve_unigraph_sources",
+    "unigraph.py::unit_affected_paths"
+   ],
+   "input_tokens": 28281,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 752,
+   "possible": [],
+   "precision": 0.6666666666666666,
+   "recall": 1.0,
+   "reply_tail": "ed inside `unit_affected_paths`.\n- **`unigraph.py::unit_affected_paths`:** the call is at line 1439, in the loop over `known`. It sits in the outer function body, after `admit` ends.\n- **`unigraph.py::resolve_unigraph_sources`:** the call is at line 1482. I placed it in this function by line range (1456\u20131513) and did not read the surrounding code.\n\n{\"verified\": [\"unigraph.py::unit_affected_paths\", \"unigraph.py::unit_affected_paths.admit\", \"unigraph.py::resolve_unigraph_sources\"], \"possible\": []}",
+   "seconds": 9.5,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_unit_paths",
+   "turns": 4,
+   "valid": true,
+   "verified": [
+    "unigraph.py::unit_affected_paths",
+    "unigraph.py::unit_affected_paths.admit",
+    "unigraph.py::resolve_unigraph_sources"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": true,
+   "cost_usd": 0.023698700000000003,
+   "denied": [],
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "__main__.py::main",
+    "memory.py::Memory.mentions"
+   ],
+   "gold": [
+    "compiler.py::compile_related",
+    "compiler.py::compile_timeline"
+   ],
+   "input_tokens": 20464,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 670,
+   "possible": [],
+   "precision": 0.5,
+   "recall": 1.0,
+   "reply_tail": "Line 760 is in compile_related (751\u2013764), line 840 is in compile_timeline (816\u2013880), and line 334 is in main.\n\n```json\n{\"verified\": [\"compiler.py::compile_related\", \"compiler.py::compile_timeline\", \"memory.py::Memory.mentions\", \"__main__.py::main\"], \"possible\": []}\n```",
+   "seconds": 7.1,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-compile_mentions",
+   "turns": 5,
+   "valid": true,
+   "verified": [
+    "compiler.py::compile_related",
+    "compiler.py::compile_timeline",
+    "memory.py::Memory.mentions",
+    "__main__.py::main"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": true,
+   "cost_usd": 0.0235587,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "prose.py::_build_bare_mentions",
+    "prose.py::_requalify"
+   ],
+   "input_tokens": 20857,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 374,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`_context_hits` has two direct callers in `prose.py`. The only other match is an import in `extract.py:25`, which isn't a call.\n\n- `prose.py::_requalify` calls it at line 408.\n- `prose.py::_build_bare_mentions` calls it at line 552.\n\nI found these with a text search for the name and read both call sites to confirm.\n\n{\"verified\": [\"prose.py::_requalify\", \"prose.py::_build_bare_mentions\"], \"possible\": []}",
+   "seconds": 5.3,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_context_hits",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "prose.py::_requalify",
+    "prose.py::_build_bare_mentions"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": true,
+   "cost_usd": 0.020311799999999998,
+   "denied": [],
+   "f1": 0.4,
+   "false_verified": [
+    "tsgraph.py::_walk_class",
+    "tsgraph.py::_walk_function_like",
+    "tsgraph.py::_walk_module_statement"
+   ],
+   "gold": [
+    "tsgraph.py::_walk"
+   ],
+   "input_tokens": 26570,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 647,
+   "possible": [],
+   "precision": 0.25,
+   "recall": 1.0,
+   "reply_tail": "Line 830 is in `_walk_function_like`, not a recursive call. So the callers are `_walk_function_like` (830), `_walk_class` (907, 914, 936), `_walk` (973) and `_walk_module_statement` (1037, 1049).\n\n{\"verified\": [\"tsgraph.py::_walk_function_like\", \"tsgraph.py::_walk_class\", \"tsgraph.py::_walk\", \"tsgraph.py::_walk_module_statement\"], \"possible\": []}",
+   "seconds": 8.1,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_walk_decorator",
+   "turns": 4,
+   "valid": true,
+   "verified": [
+    "tsgraph.py::_walk_function_like",
+    "tsgraph.py::_walk_class",
+    "tsgraph.py::_walk",
+    "tsgraph.py::_walk_module_statement"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": true,
+   "cost_usd": 0.0255631,
+   "denied": [],
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "blocks.py::resolve_block_edges"
+   ],
+   "gold": [
+    "tsgraph.py::resolve_ts_sources"
+   ],
+   "input_tokens": 28003,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 838,
+   "possible": [],
+   "precision": 0.5,
+   "recall": 1.0,
+   "reply_tail": " it at `blocks.py:319`. That line sits inside the loop of the function that starts at line 274, the last `def` before it.\n- `tsgraph.py::resolve_ts_sources` calls it at `tsgraph.py:1308`. That line falls inside the function that starts at line 1289.\n\nI found both with a text search for `resolve_file`. I found no other calls, but a call made through an alias or `getattr` wouldn't match that search.\n\n{\"verified\": [\"blocks.py::resolve_block_edges\", \"tsgraph.py::resolve_ts_sources\"], \"possible\": []}",
+   "seconds": 9.0,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-resolve_file",
+   "turns": 5,
+   "valid": true,
+   "verified": [
+    "blocks.py::resolve_block_edges",
+    "tsgraph.py::resolve_ts_sources"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": true,
+   "cost_usd": 0.0193524,
+   "denied": [],
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "blocks.py::block_import_targets",
+    "blocks.py::resolve_block_edges",
+    "tsgraph.py::ts_import_targets"
+   ],
+   "gold": [
+    "tsgraph.py::_import_target",
+    "tsgraph.py::resolve_ts_sources",
+    "tsgraph.py::ts_affected_paths"
+   ],
+   "input_tokens": 19322,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 613,
+   "possible": [],
+   "precision": 0.5,
+   "recall": 1.0,
+   "reply_tail": "Mapping lines: blocks 134 \u2192 block_import_targets (125\u2013143); 299 \u2192 resolve_block_edges (274+); tsgraph 699 \u2192 _import_target (680); 1244 \u2192 ts_import_targets; 1268 \u2192 ts_affected_paths; 1306 \u2192 resolve_ts_sources.\n\n{\"verified\": [\"blocks.py::block_import_targets\", \"blocks.py::resolve_block_edges\", \"tsgraph.py::_import_target\", \"tsgraph.py::ts_import_targets\", \"tsgraph.py::ts_affected_paths\", \"tsgraph.py::resolve_ts_sources\"], \"possible\": []}",
+   "seconds": 6.6,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-scan_module",
+   "turns": 4,
+   "valid": true,
+   "verified": [
+    "blocks.py::block_import_targets",
+    "blocks.py::resolve_block_edges",
+    "tsgraph.py::_import_target",
+    "tsgraph.py::ts_import_targets",
+    "tsgraph.py::ts_affected_paths",
+    "tsgraph.py::resolve_ts_sources"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": true,
+   "cost_usd": 0.0178725,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "unigraph.py::_resolve_bare",
+    "unigraph.py::_v2_resolve_bare"
+   ],
+   "input_tokens": 19516,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 341,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "Line 1058 is in `_resolve_bare` (1051\u20131076), and line 2041 is in `_v2_resolve_bare` (2032\u20132083).\n\n{\"verified\": [\"unigraph.py::_resolve_bare\", \"unigraph.py::_v2_resolve_bare\"], \"possible\": []}",
+   "seconds": 5.4,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_is_external_test_caller",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "unigraph.py::_resolve_bare",
+    "unigraph.py::_v2_resolve_bare"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": true,
+   "cost_usd": 0.0243584,
+   "denied": [],
+   "f1": 0.888888888888889,
+   "false_verified": [
+    "config.py::_parse_yaml.walk"
+   ],
+   "gold": [
+    "config.py::_entity",
+    "config.py::_parse_ini",
+    "config.py::_parse_toml",
+    "config.py::_toml_navigate"
+   ],
+   "input_tokens": 26611,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 905,
+   "possible": [],
+   "precision": 0.8,
+   "recall": 1.0,
+   "reply_tail": "at lines 353 and 380.\n- `_toml_navigate` calls it at line 481.\n- `_parse_toml` calls it at line 739.\n- `_parse_ini` calls it at line 806. That call is in the function body, not in the nested `emit`.\n\nFor `walk`, `_toml_navigate` and `_parse_toml`, I placed the call by line range only, without reading the surrounding code.\n\n```json\n{\"verified\": [\"config.py::_entity\", \"config.py::_parse_ini\", \"config.py::_parse_yaml.walk\", \"config.py::_toml_navigate\", \"config.py::_parse_toml\"], \"possible\": []}\n```",
+   "seconds": 10.7,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_is_small_scalar",
+   "turns": 4,
+   "valid": true,
+   "verified": [
+    "config.py::_entity",
+    "config.py::_parse_ini",
+    "config.py::_parse_yaml.walk",
+    "config.py::_toml_navigate",
+    "config.py::_parse_toml"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": true,
+   "cost_usd": 0.0129259,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "extract.py::_without_nested_scopes"
+   ],
+   "input_tokens": 18253,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 318,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`_header_calls` has one direct caller, `_without_nested_scopes` in `extract.py`. It calls `_header_calls(node)` at line 765. A search of the package found no other references to the name.\n\n```json\n{\"verified\": [\"extract.py::_without_nested_scopes\"], \"possible\": []}\n```",
+   "seconds": 5.7,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_header_calls",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "extract.py::_without_nested_scopes"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": true,
+   "cost_usd": 0.011209700000000001,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::_sibling_path"
+   ],
+   "input_tokens": 17821,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 412,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "ckage, `_sibling_path` (config.py:836). I read the body of `referenced_files` and confirmed the `_sibling_path` definition exists. I did not read the body of `_sibling_path`.\n\nThe rest of the body is method calls on built-in types and a regex object: `data.decode`, `_REF_SCAN.finditer`, `match.group`, `ref.partition` and `out.add`. It also calls `set()`. I left these out of the lists because they aren't functions defined in the package.\n\n{\"verified\": [\"config.py::_sibling_path\"], \"possible\": []}",
+   "seconds": 6.1,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-referenced_files",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "config.py::_sibling_path"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": true,
+   "cost_usd": 0.0189807,
+   "denied": [],
+   "f1": 0.888888888888889,
+   "false_verified": [
+    "tsgraph.py::_walk_decorator"
+   ],
+   "gold": [
+    "tsgraph.py::_decl_name",
+    "tsgraph.py::_named",
+    "tsgraph.py::_walk",
+    "tsgraph.py::_walk_function_like"
+   ],
+   "input_tokens": 19409,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 472,
+   "possible": [],
+   "precision": 0.8,
+   "recall": 1.0,
+   "reply_tail": "I read the whole body of `_walk_module_statement` (`tsgraph.py:1031-1058`). It directly calls these functions, all in `tsgraph.py`:\n\n- `_named`\n- `_decl_name`\n- `_walk_decorator`\n- `_walk_function_like`\n- `_walk`\n\nI counted only calls to functions. Attribute access like `node.children` and `node.type` isn't a call to one.\n\n{\"verified\": [\"tsgraph.py::_walk_decorator\", \"tsgraph.py::_walk_function_like\", \"tsgraph.py::_walk\", \"tsgraph.py::_named\", \"tsgraph.py::_decl_name\"], \"possible\": []}",
+   "seconds": 6.2,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-_walk_module_statement",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "tsgraph.py::_walk_decorator",
+    "tsgraph.py::_walk_function_like",
+    "tsgraph.py::_walk",
+    "tsgraph.py::_named",
+    "tsgraph.py::_decl_name"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": false,
+   "cost_usd": 0.0145882,
+   "denied": [],
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "compiler.py::suppressed_ids"
+   ],
+   "gold": [
+    "compiler.py::_evidence",
+    "lifecycle.py::suppressed_ids",
+    "store.py::GraphStore.view"
+   ],
+   "input_tokens": 13000,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 332,
+   "possible": [],
+   "precision": 0.6666666666666666,
+   "recall": 0.6666666666666666,
+   "reply_tail": "idence`. The others in the body are builtins or methods on plain objects: `set`, `.get`, `.append`, `.add`, `.pop`, `.sort`. `ValueError` is only raised, not called as a function in the sense of the question.\n\nI read the function body in `compiler.py` but didn't open the definitions of `suppressed_ids` or `_evidence`. I'm assuming both are module-level functions in `compiler.py`.\n\n{\"verified\": [\"store.py::GraphStore.view\", \"compiler.py::suppressed_ids\", \"compiler.py::_evidence\"], \"possible\": []}",
+   "seconds": 4.9,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-compile_mentions",
+   "turns": 2,
+   "valid": true,
+   "verified": [
+    "store.py::GraphStore.view",
+    "compiler.py::suppressed_ids",
+    "compiler.py::_evidence"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": true,
+   "cost_usd": 0.013817,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_child_ctx",
+    "tsgraph.py::_named",
+    "tsgraph.py::_walk"
+   ],
+   "input_tokens": 18489,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 395,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`_walk_decorator` (tsgraph.py:821) makes three direct calls: `_child_ctx`, `_named` and `_walk`. I read the whole function body, which is three lines, to confirm this.\n\n```\nchild = _child_ctx(ctx, decorator=True)\nfor kid in _named(node):\n    _walk(kid, scope, child)\n```\n\n{\"verified\": [\"tsgraph.py::_child_ctx\", \"tsgraph.py::_named\", \"tsgraph.py::_walk\"], \"possible\": []}",
+   "seconds": 6.1,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-_walk_decorator",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "tsgraph.py::_child_ctx",
+    "tsgraph.py::_named",
+    "tsgraph.py::_walk"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": true,
+   "cost_usd": 0.0136705,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "baselines.py::_evidence_edges",
+    "store.py::GraphStore.view"
+   ],
+   "input_tokens": 18240,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 400,
+   "possible": [
+    "store.py::GraphStore.view"
+   ],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`pagerank` (in `baselines.py`) directly calls two functions from the package:\n\n- `store.view`, which is the `view` method on the store object passed in. The code doesn't show the store's class, so I can't give its exact path.\n- `baselines.py::_evidence_edges`.\n\nIt also calls built-ins: `type`, `ValueError`, `isinstance`, `sorted`, `sum`, `len` and `range`.\n\n{\"verified\": [\"baselines.py::_evidence_edges\"], \"possible\": [\"store.py::GraphStore.view\"]}",
+   "seconds": 5.6,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-pagerank",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "baselines.py::_evidence_edges"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": true,
+   "cost_usd": 0.0311745,
+   "denied": [],
+   "f1": 0.4615384615384615,
+   "false_verified": [
+    "tsgraph.py::_decl_name",
+    "tsgraph.py::_field",
+    "tsgraph.py::_function_decl",
+    "tsgraph.py::_has_decorator",
+    "tsgraph.py::_pattern_names",
+    "tsgraph.py::_scan_import",
+    "tsgraph.py::_specifier_string"
+   ],
+   "gold": [
+    "tsgraph.py::_named",
+    "tsgraph.py::parse_ts",
+    "tsgraph.py::scan_reassigned"
+   ],
+   "input_tokens": 23362,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 671,
+   "possible": [],
+   "precision": 0.3,
+   "recall": 1.0,
+   "reply_tail": "rn_names`, `_field`\n\nI listed the helper-level calls as well because the nested functions are part of `scan_module`'s body. If you only want calls made in the body itself, use the first group.\n\n{\"verified\": [\"tsgraph.py::parse_ts\", \"tsgraph.py::_named\", \"tsgraph.py::scan_reassigned\", \"tsgraph.py::_decl_name\", \"tsgraph.py::_function_decl\", \"tsgraph.py::_has_decorator\", \"tsgraph.py::_scan_import\", \"tsgraph.py::_specifier_string\", \"tsgraph.py::_pattern_names\", \"tsgraph.py::_field\"], \"possible\": []}",
+   "seconds": 7.5,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-scan_module",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "tsgraph.py::parse_ts",
+    "tsgraph.py::_named",
+    "tsgraph.py::scan_reassigned",
+    "tsgraph.py::_decl_name",
+    "tsgraph.py::_function_decl",
+    "tsgraph.py::_has_decorator",
+    "tsgraph.py::_scan_import",
+    "tsgraph.py::_specifier_string",
+    "tsgraph.py::_pattern_names",
+    "tsgraph.py::_field"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": true,
+   "cost_usd": 0.0107239,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "structure.py::_clean_name",
+    "structure.py::_kind_of",
+    "structure.py::_name_node"
+   ],
+   "input_tokens": 12246,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 246,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`definitions` in `structure.py` directly calls three functions: `_kind_of`, `_name_node` and `_clean_name`. I read the function body but didn't open the helpers' definitions. The other calls in it are methods on tree-sitter nodes and the list/stack builtins, so I left them out.\n\n{\"verified\": [\"structure.py::_kind_of\", \"structure.py::_name_node\", \"structure.py::_clean_name\"], \"possible\": []}",
+   "seconds": 4.8,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-definitions",
+   "turns": 2,
+   "valid": true,
+   "verified": [
+    "structure.py::_kind_of",
+    "structure.py::_name_node",
+    "structure.py::_clean_name"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": false,
+   "cost_usd": 0.0463077,
+   "denied": [],
+   "f1": 0.30000000000000004,
+   "false_verified": [
+    "__main__.py::GraphStore",
+    "__main__.py::Ollama",
+    "__main__.py::_run_zero_config",
+    "__main__.py::compare_continuation",
+    "__main__.py::compile_claims",
+    "__main__.py::compile_drafts",
+    "__main__.py::compile_impact",
+    "__main__.py::compile_mentions",
+    "__main__.py::compile_related",
+    "__main__.py::compile_review",
+    "__main__.py::compile_timeline",
+    "__main__.py::render_context",
+    "__main__.py::run_agent_suite",
+    "__main__.py::run_benchmark",
+    "__main__.py::run_memory_suite",
+    "__main__.py::validate_artifact",
+    "coverage.py::fetch_grammars",
+    "coverage.py::report",
+    "mcp.py::serve",
+    "memory.py::Memory",
+    "pack.py::build",
+    "schedule.py::run_schedule",
+    "triage.py::analyze"
+   ],
+   "gold": [
+    "__main__.py::_zero_config_target",
+    "memory.py::Memory.__init__",
+    "memory.py::Memory.candidates",
+    "memory.py::Memory.close",
+    "memory.py::Memory.frontier_export_regression",
+    "memory.py::Memory.frontier_list",
+    "memory.py::Memory.frontier_replay"
+   ],
+   "input_tokens": 24314,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 1231,
+   "possible": [
+    "memory.py::Memory.candidates",
+    "memory.py::Memory.frontier_replay",
+    "memory.py::Memory.frontier_record_miss",
+    "memory.py::Memory.frontier_list",
+    "memory.py::Memory.frontier_export_regression",
+    "memory.py::Memory.close",
+    "store.py::GraphStore.ingest",
+    "store.py::GraphStore.refresh",
+    "store.py::GraphStore.current"
+   ],
+   "precision": 0.18181818181818182,
+   "recall": 0.8571428571428571,
+   "reply_tail": "re\", \"coverage.py::report\", \"coverage.py::fetch_grammars\", \"memory.py::Memory\", \"pack.py::build\", \"mcp.py::serve\", \"triage.py::analyze\", \"schedule.py::run_schedule\"], \"possible\": [\"memory.py::Memory.candidates\", \"memory.py::Memory.frontier_replay\", \"memory.py::Memory.frontier_record_miss\", \"memory.py::Memory.frontier_list\", \"memory.py::Memory.frontier_export_regression\", \"memory.py::Memory.close\", \"store.py::GraphStore.ingest\", \"store.py::GraphStore.refresh\", \"store.py::GraphStore.current\"]}\n```",
+   "seconds": 10.3,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-main",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "__main__.py::_zero_config_target",
+    "__main__.py::_run_zero_config",
+    "__main__.py::run_agent_suite",
+    "__main__.py::run_memory_suite",
+    "__main__.py::run_benchmark",
+    "__main__.py::Ollama",
+    "__main__.py::compare_continuation",
+    "__main__.py::compile_impact",
+    "__main__.py::compile_mentions",
+    "__main__.py::compile_claims",
+    "__main__.py::compile_related",
+    "__main__.py::compile_timeline",
+    "__main__.py::compile_drafts",
+    "__main__.py::compile_review",
+    "__main__.py::render_context",
+    "__main__.py::validate_artifact",
+    "__main__.py::GraphStore",
+    "coverage.py::report",
+    "coverage.py::fetch_grammars",
+    "memory.py::Memory",
+    "pack.py::build",
+    "mcp.py::serve",
+    "triage.py::analyze",
+    "schedule.py::run_schedule"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": false,
+   "cost_usd": 0.0114157,
+   "denied": [],
+   "f1": 0.5,
+   "false_verified": [
+    "coverage.py::_scan"
+   ],
+   "gold": [
+    "coverage.py::rung_of",
+    "scope.py::_scan"
+   ],
+   "input_tokens": 12302,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 292,
+   "possible": [],
+   "precision": 0.5,
+   "recall": 0.5,
+   "reply_tail": "`report` is defined in `coverage.py` (lines 48\u201364). It makes two direct calls to functions: `_scan` and `rung_of`. Calls to builtins (`len`, `dict`, `sorted`) and to dict methods (`.get`, `.setdefault`, `.items`) are excluded. The slice `filetypes.SNIFF_BYTES` is a constant lookup, not a call. I did not open `_scan` or `rung_of` to check their definitions.\n\n{\"verified\": [\"coverage.py::_scan\", \"coverage.py::rung_of\"], \"possible\": []}",
+   "seconds": 11.1,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-report",
+   "turns": 2,
+   "valid": true,
+   "verified": [
+    "coverage.py::_scan",
+    "coverage.py::rung_of"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": true,
+   "cost_usd": 0.0116192,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_named",
+    "tsgraph.py::_text_of"
+   ],
+   "input_tokens": 17809,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 370,
+   "possible": [
+    "tsgraph.py::_named"
+   ],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`_specifier_string` (tsgraph.py:100) calls two functions directly: `_named`, in the loops over `node` and `child`, and `_text_of`, on the string fragment. I didn't open the definition of `_named`, so I'm treating it as a module-level function in `tsgraph.py` because the code uses it that way.\n\n{\"verified\": [\"tsgraph.py::_text_of\"], \"possible\": [\"tsgraph.py::_named\"]}",
+   "seconds": 5.9,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-_specifier_string",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "tsgraph.py::_text_of"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": true,
+   "cost_usd": 0.0145015,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "identity.py::canonical",
+    "identity.py::digest"
+   ],
+   "input_tokens": 19587,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 346,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`identity` in `identity.py` directly calls two functions. I read its body (line 16): `return kind + \":\" + digest(canonical(value).encode(\"utf-8\"))`.\n\n- `identity.py::canonical` serializes the value to JSON.\n- `identity.py::digest` hashes the encoded bytes with SHA-256.\n\nIt also calls the built-in `str.encode`, which isn't a function defined in this package.\n\n{\"verified\": [\"identity.py::canonical\", \"identity.py::digest\"], \"possible\": []}",
+   "seconds": 5.8,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-identity",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "identity.py::canonical",
+    "identity.py::digest"
+   ]
+  },
+  {
+   "arm": "search",
+   "complete": false,
+   "cost_usd": 0.0162681,
+   "denied": [],
+   "f1": 0.5,
+   "false_verified": [
+    "memory.py::BM25",
+    "memory.py::TextNotes"
+   ],
+   "gold": [
+    "baselines.py::BM25.__init__",
+    "baselines.py::TextNotes.__init__",
+    "scope.py::iter_scope_files",
+    "scope.py::resolve_scope"
+   ],
+   "input_tokens": 18688,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 557,
+   "possible": [],
+   "precision": 0.5,
+   "recall": 0.5,
+   "reply_tail": "y::TextNotes` constructor, called only when the cache is rebuilt\n\nI read the method body but didn't open `scope.py`, `BM25` or `TextNotes`. I'm assuming `resolve_scope` and `iter_scope_files` live in `scope.py` because of the relative import. I'm assuming `BM25` and `TextNotes` resolve to classes imported into `memory.py`, since I didn't check where they're defined.\n\n{\"verified\": [\"scope.py::resolve_scope\", \"scope.py::iter_scope_files\", \"memory.py::BM25\", \"memory.py::TextNotes\"], \"possible\": []}",
+   "seconds": 6.6,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-_ensure_discovery",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "scope.py::resolve_scope",
+    "scope.py::iter_scope_files",
+    "memory.py::BM25",
+    "memory.py::TextNotes"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": true,
+   "cost_usd": 0.044410399999999996,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::affected_paths"
+   ],
+   "input_tokens": 27472,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 358,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`referenced_files` has one direct caller, `affected_paths` in `config.py`. A text search for `referenced_files` found only that call at `config.py:881` and the definition at `config.py:980`. I didn't run the graph tools, so calls that don't use the plain name, such as through an alias or `getattr`, wouldn't have shown up.\n\n```json\n{\"verified\": [\"config.py::affected_paths\"], \"possible\": []}\n```",
+   "seconds": 5.7,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-referenced_files",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "config.py::affected_paths"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": true,
+   "cost_usd": 0.0211049,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::resolve_file"
+   ],
+   "input_tokens": 38936,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 472,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "The call at line 1161 sits inside `resolve_file`, which starts at line 1101. A search for the name found no other uses in the package.\n\n{\"verified\": [\"tsgraph.py::resolve_file\"], \"possible\": []}",
+   "seconds": 6.2,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_walk_module_statement",
+   "turns": 4,
+   "valid": true,
+   "verified": [
+    "tsgraph.py::resolve_file"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": true,
+   "cost_usd": 0.0174217,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::_JsonWalker._parse_object",
+    "config.py::_JsonWalker._parse_value"
+   ],
+   "input_tokens": 28416,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 391,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`_parse_string` has two direct callers. I grepped for the name, which found the definition and two call sites. Then I read `config.py` to see which methods contain them. Both are in the `_JsonWalker` class.\n\n- `_JsonWalker._parse_value` calls it at `config.py:166`.\n- `_JsonWalker._parse_object` calls it at `config.py:217`.\n\n{\"verified\": [\"config.py::_JsonWalker._parse_value\", \"config.py::_JsonWalker._parse_object\"], \"possible\": []}",
+   "seconds": 6.3,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_parse_string",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "config.py::_JsonWalker._parse_value",
+    "config.py::_JsonWalker._parse_object"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": true,
+   "cost_usd": 0.0266932,
+   "denied": [],
+   "f1": 0.8,
+   "false_verified": [
+    "unigraph.py::unit_affected_paths.admit"
+   ],
+   "gold": [
+    "unigraph.py::resolve_unigraph_sources",
+    "unigraph.py::unit_affected_paths"
+   ],
+   "input_tokens": 40825,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 721,
+   "possible": [
+    "unigraph.py::resolve_unigraph_sources"
+   ],
+   "precision": 0.6666666666666666,
+   "recall": 1.0,
+   "reply_tail": "list.\n\n- **`unigraph.py::unit_affected_paths.admit`** calls it at line 1419. `admit` is a nested function inside `unit_affected_paths`.\n- **`unigraph.py::unit_affected_paths`** calls it directly at line 1439, in the loop over known paths.\n- **`unigraph.py::resolve_unigraph_sources`** calls it at line 1482. This one is inferred from line ranges only.\n\n{\"verified\": [\"unigraph.py::unit_affected_paths\", \"unigraph.py::unit_affected_paths.admit\"], \"possible\": [\"unigraph.py::resolve_unigraph_sources\"]}",
+   "seconds": 9.0,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_unit_paths",
+   "turns": 4,
+   "valid": true,
+   "verified": [
+    "unigraph.py::unit_affected_paths",
+    "unigraph.py::unit_affected_paths.admit"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": true,
+   "cost_usd": 0.024761699999999998,
+   "denied": [],
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "__main__.py::main",
+    "memory.py::Memory.mentions"
+   ],
+   "gold": [
+    "compiler.py::compile_related",
+    "compiler.py::compile_timeline"
+   ],
+   "input_tokens": 29884,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 686,
+   "possible": [],
+   "precision": 0.5,
+   "recall": 1.0,
+   "reply_tail": "Call sites: line 760 is in compile_related (751\u2013764), line 840 is in compile_timeline (816\u2013880), memory.py:470 is in Memory.mentions, and __main__.py:334 is in main.\n\n```json\n{\"verified\": [\"compiler.py::compile_related\", \"compiler.py::compile_timeline\", \"memory.py::Memory.mentions\", \"__main__.py::main\"], \"possible\": []}\n```",
+   "seconds": 6.9,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-compile_mentions",
+   "turns": 5,
+   "valid": true,
+   "verified": [
+    "compiler.py::compile_related",
+    "compiler.py::compile_timeline",
+    "memory.py::Memory.mentions",
+    "__main__.py::main"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": true,
+   "cost_usd": 0.014348099999999999,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "prose.py::_build_bare_mentions",
+    "prose.py::_requalify"
+   ],
+   "input_tokens": 27435,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 501,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "ns line 400 up to the next definition at line 432, so the call at line 408 is inside it.\n- **`prose.py::_build_bare_mentions`:** it starts at line 487 and is the last top-level function in the file. The call at line 552 falls inside it, unless a nested function is defined between those lines. The `def` search showed none.\n\n`extract.py` only imports `_context_hits` at line 25. It doesn't call it.\n\n```json\n{\"verified\": [\"prose.py::_requalify\", \"prose.py::_build_bare_mentions\"], \"possible\": []}\n```",
+   "seconds": 7.2,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_context_hits",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "prose.py::_requalify",
+    "prose.py::_build_bare_mentions"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": true,
+   "cost_usd": 0.0166478,
+   "denied": [],
+   "f1": 0.4,
+   "false_verified": [
+    "tsgraph.py::_walk_class",
+    "tsgraph.py::_walk_decorator",
+    "tsgraph.py::_walk_module_statement"
+   ],
+   "gold": [
+    "tsgraph.py::_walk"
+   ],
+   "input_tokens": 28319,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 423,
+   "possible": [],
+   "precision": 0.25,
+   "recall": 1.0,
+   "reply_tail": "Line 830 is within _walk_decorator itself (recursion); 907 \u2192 _walk_class (889\u2013951), 914, 936 \u2192 _walk_class; 973 \u2192 _walk; 1037, 1049 \u2192 _walk_module_statement.\n\n{\"verified\": [\"tsgraph.py::_walk_decorator\", \"tsgraph.py::_walk_class\", \"tsgraph.py::_walk\", \"tsgraph.py::_walk_module_statement\"], \"possible\": []}",
+   "seconds": 5.8,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_walk_decorator",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "tsgraph.py::_walk_decorator",
+    "tsgraph.py::_walk_class",
+    "tsgraph.py::_walk",
+    "tsgraph.py::_walk_module_statement"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": true,
+   "cost_usd": 0.018620499999999998,
+   "denied": [],
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "blocks.py::resolve_block_edges"
+   ],
+   "gold": [
+    "tsgraph.py::resolve_ts_sources"
+   ],
+   "input_tokens": 28480,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 504,
+   "possible": [],
+   "precision": 0.5,
+   "recall": 1.0,
+   "reply_tail": "Line 319 in blocks.py falls in resolve_block_edges (274+). Line 1308 in tsgraph.py falls in resolve_ts_sources (1289\u20131312).\n\n```json\n{\"verified\": [\"blocks.py::resolve_block_edges\", \"tsgraph.py::resolve_ts_sources\"], \"possible\": []}\n```",
+   "seconds": 6.9,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-resolve_file",
+   "turns": 4,
+   "valid": true,
+   "verified": [
+    "blocks.py::resolve_block_edges",
+    "tsgraph.py::resolve_ts_sources"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": true,
+   "cost_usd": 0.0200754,
+   "denied": [],
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "blocks.py::block_import_targets",
+    "blocks.py::resolve_block_edges",
+    "tsgraph.py::ts_import_targets"
+   ],
+   "gold": [
+    "tsgraph.py::_import_target",
+    "tsgraph.py::resolve_ts_sources",
+    "tsgraph.py::ts_affected_paths"
+   ],
+   "input_tokens": 28727,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 601,
+   "possible": [],
+   "precision": 0.5,
+   "recall": 1.0,
+   "reply_tail": "Mapping: 699 \u2192 `_import_target` (680\u2013703); 1244 \u2192 `ts_import_targets`; 1268 \u2192 `ts_affected_paths`; 1306 \u2192 `resolve_ts_sources`; blocks 134 \u2192 `block_import_targets`; blocks 299 \u2192 `resolve_block_edges`.\n\n{\"verified\": [\"tsgraph.py::_import_target\", \"tsgraph.py::ts_import_targets\", \"tsgraph.py::ts_affected_paths\", \"tsgraph.py::resolve_ts_sources\", \"blocks.py::block_import_targets\", \"blocks.py::resolve_block_edges\"], \"possible\": []}",
+   "seconds": 7.6,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-scan_module",
+   "turns": 4,
+   "valid": true,
+   "verified": [
+    "tsgraph.py::_import_target",
+    "tsgraph.py::ts_import_targets",
+    "tsgraph.py::ts_affected_paths",
+    "tsgraph.py::resolve_ts_sources",
+    "blocks.py::block_import_targets",
+    "blocks.py::resolve_block_edges"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": true,
+   "cost_usd": 0.0191271,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "unigraph.py::_resolve_bare",
+    "unigraph.py::_v2_resolve_bare"
+   ],
+   "input_tokens": 28955,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 367,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "The calls at line 1058 and 2041 sit inside `_resolve_bare` (1051\u20131076) and `_v2_resolve_bare` (2032\u20132083).\n\n```json\n{\"verified\": [\"unigraph.py::_resolve_bare\", \"unigraph.py::_v2_resolve_bare\"], \"possible\": []}\n```",
+   "seconds": 6.0,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_is_external_test_caller",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "unigraph.py::_resolve_bare",
+    "unigraph.py::_v2_resolve_bare"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": true,
+   "cost_usd": 0.0238002,
+   "denied": [],
+   "f1": 0.888888888888889,
+   "false_verified": [],
+   "gold": [
+    "config.py::_entity",
+    "config.py::_parse_ini",
+    "config.py::_parse_toml",
+    "config.py::_toml_navigate"
+   ],
+   "input_tokens": 39168,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 724,
+   "possible": [
+    "config.py::_parse_yaml"
+   ],
+   "precision": 0.8,
+   "recall": 1.0,
+   "reply_tail": "Line 806 is in `_parse_ini`. I didn't check whether the calls at lines 353 and 380 sit inside `walk` or inside a nested helper. I put both in `walk` because it spans lines 342\u2013410.\n\n{\"verified\": [\"config.py::_entity\", \"config.py::_toml_navigate\", \"config.py::_parse_toml\", \"config.py::_parse_ini\"], \"possible\": [\"config.py::_parse_yaml\"]}",
+   "seconds": 8.8,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_is_small_scalar",
+   "turns": 4,
+   "valid": true,
+   "verified": [
+    "config.py::_entity",
+    "config.py::_toml_navigate",
+    "config.py::_parse_toml",
+    "config.py::_parse_ini"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": true,
+   "cost_usd": 0.013769299999999998,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "extract.py::_without_nested_scopes"
+   ],
+   "input_tokens": 27587,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 348,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`_header_calls` has one direct caller, `_without_nested_scopes` in `extract.py`. A text search found only two occurrences of the name. One is the definition at line 772. The other is the call at line 765, inside `_without_nested_scopes`. I didn't check other files for dynamic or indirect references.\n\n{\"verified\": [\"extract.py::_without_nested_scopes\"], \"possible\": []}",
+   "seconds": 5.7,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_header_calls",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "extract.py::_without_nested_scopes"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": true,
+   "cost_usd": 0.0089928,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::_sibling_path"
+   ],
+   "input_tokens": 17935,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 250,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`referenced_files` (config.py:980) makes one call to a function defined in the package: `_sibling_path`. The other calls in its body are methods on built-in types: `data.decode`, `_REF_SCAN.finditer`, `match.group`, `partition`, and `out.add`. I didn't open `_sibling_path` itself. I only read the body of `referenced_files`.\n\n{\"verified\": [\"config.py::_sibling_path\"], \"possible\": []}",
+   "seconds": 4.2,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-referenced_files",
+   "turns": 2,
+   "valid": true,
+   "verified": [
+    "config.py::_sibling_path"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": true,
+   "cost_usd": 0.0184026,
+   "denied": [],
+   "f1": 0.888888888888889,
+   "false_verified": [
+    "tsgraph.py::_walk_decorator"
+   ],
+   "gold": [
+    "tsgraph.py::_decl_name",
+    "tsgraph.py::_named",
+    "tsgraph.py::_walk",
+    "tsgraph.py::_walk_function_like"
+   ],
+   "input_tokens": 29924,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 451,
+   "possible": [],
+   "precision": 0.8,
+   "recall": 1.0,
+   "reply_tail": "All five callees are defined in `tsgraph.py`, so I've listed them as verified.\n\n{\"verified\": [\"tsgraph.py::_walk_decorator\", \"tsgraph.py::_named\", \"tsgraph.py::_decl_name\", \"tsgraph.py::_walk_function_like\", \"tsgraph.py::_walk\"], \"possible\": []}",
+   "seconds": 6.3,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-_walk_module_statement",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "tsgraph.py::_walk_decorator",
+    "tsgraph.py::_named",
+    "tsgraph.py::_decl_name",
+    "tsgraph.py::_walk_function_like",
+    "tsgraph.py::_walk"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": false,
+   "cost_usd": 0.0181134,
+   "denied": [],
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "compiler.py::suppressed_ids"
+   ],
+   "gold": [
+    "compiler.py::_evidence",
+    "lifecycle.py::suppressed_ids",
+    "store.py::GraphStore.view"
+   ],
+   "input_tokens": 28224,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 528,
+   "possible": [],
+   "precision": 0.6666666666666666,
+   "recall": 0.6666666666666666,
+   "reply_tail": "- `suppressed_ids(store)` is called at line 448. I didn't look up where it's defined.\n- `_evidence(store, assertion, snapshot)` is called at line 458. I didn't look up where it's defined.\n\nIt also calls built-ins and methods such as `set`, `sorted` via `.sort`, `.get`, `.add`, `.append` and `.pop`, and it raises `ValueError`. I left these out as not project functions.\n\n```json\n{\"verified\": [\"store.py::GraphStore.view\", \"compiler.py::suppressed_ids\", \"compiler.py::_evidence\"], \"possible\": []}\n```",
+   "seconds": 6.5,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-compile_mentions",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "store.py::GraphStore.view",
+    "compiler.py::suppressed_ids",
+    "compiler.py::_evidence"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": true,
+   "cost_usd": 0.016214100000000002,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_child_ctx",
+    "tsgraph.py::_named",
+    "tsgraph.py::_walk"
+   ],
+   "input_tokens": 28924,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 443,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`_walk_decorator` (`tsgraph.py:821`) directly calls three functions: `_child_ctx`, `_named` and `_walk`. The function body is only four lines, and I read all of it to confirm.\n\n{\"verified\": [\"tsgraph.py::_child_ctx\", \"tsgraph.py::_named\", \"tsgraph.py::_walk\"], \"possible\": []}",
+   "seconds": 5.8,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-_walk_decorator",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "tsgraph.py::_child_ctx",
+    "tsgraph.py::_named",
+    "tsgraph.py::_walk"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": true,
+   "cost_usd": 0.0145259,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "baselines.py::_evidence_edges",
+    "store.py::GraphStore.view"
+   ],
+   "input_tokens": 27537,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 446,
+   "possible": [
+    "store.py::GraphStore.view"
+   ],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "ined in the code base. I read the function body to confirm both.\n\n- `store.view(snapshot)` is a method on the `store` argument. Its class isn't fixed in this file, so I haven't tied it to `store.py::GraphStore.view`. That class is only a likely match.\n- `_evidence_edges(view)` is a helper in `baselines.py`.\n\nThe rest of the body only uses builtins: `type`, `isinstance`, `sorted`, `sum`, `len` and `range`.\n\n{\"verified\": [\"baselines.py::_evidence_edges\"], \"possible\": [\"store.py::GraphStore.view\"]}",
+   "seconds": 6.4,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-pagerank",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "baselines.py::_evidence_edges"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": true,
+   "cost_usd": 0.0353792,
+   "denied": [],
+   "f1": 0.4615384615384615,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_named",
+    "tsgraph.py::parse_ts",
+    "tsgraph.py::scan_reassigned"
+   ],
+   "input_tokens": 42379,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 929,
+   "possible": [
+    "tsgraph.py::_decl_name",
+    "tsgraph.py::_function_decl",
+    "tsgraph.py::_has_decorator",
+    "tsgraph.py::_scan_import",
+    "tsgraph.py::_specifier_string",
+    "tsgraph.py::_pattern_names",
+    "tsgraph.py::_field"
+   ],
+   "precision": 0.3,
+   "recall": 1.0,
+   "reply_tail": "lpers:** `_decl_name`, `_function_decl`, `_has_decorator`, `_scan_import`, `_specifier_string`, `_pattern_names` and `_field`. These are indirect calls, so I listed them as possible.\n\n```json\n{\"verified\": [\"tsgraph.py::parse_ts\", \"tsgraph.py::_named\", \"tsgraph.py::scan_reassigned\"], \"possible\": [\"tsgraph.py::_decl_name\", \"tsgraph.py::_function_decl\", \"tsgraph.py::_has_decorator\", \"tsgraph.py::_scan_import\", \"tsgraph.py::_specifier_string\", \"tsgraph.py::_pattern_names\", \"tsgraph.py::_field\"]}\n```",
+   "seconds": 9.4,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-scan_module",
+   "turns": 5,
+   "valid": true,
+   "verified": [
+    "tsgraph.py::parse_ts",
+    "tsgraph.py::_named",
+    "tsgraph.py::scan_reassigned"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": true,
+   "cost_usd": 0.011222600000000001,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "structure.py::_clean_name",
+    "structure.py::_kind_of",
+    "structure.py::_name_node"
+   ],
+   "input_tokens": 18333,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 313,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "alls three functions, all defined in the same file:\n\n- `_kind_of(node)`\n- `_name_node(node)`\n- `_clean_name(name_node)`\n\nI didn't look up where these helpers are defined. The other calls in the body are `stack.pop`, `stack.extend`, `reversed` and `node.named_children`. I left those out because they are builtins or methods and attributes on objects, not package functions.\n\n```json\n{\"verified\": [\"structure.py::_kind_of\", \"structure.py::_name_node\", \"structure.py::_clean_name\"], \"possible\": []}\n```",
+   "seconds": 5.0,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-definitions",
+   "turns": 2,
+   "valid": true,
+   "verified": [
+    "structure.py::_kind_of",
+    "structure.py::_name_node",
+    "structure.py::_clean_name"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": false,
+   "cost_usd": 0.05725530000000001,
+   "denied": [],
+   "f1": 0.2857142857142857,
+   "false_verified": [
+    "__main__.py::_run_zero_config",
+    "benchmark.py::run_benchmark",
+    "benchmark.py::run_memory_suite",
+    "compiler.py::compile_claims",
+    "compiler.py::compile_drafts",
+    "compiler.py::compile_impact",
+    "compiler.py::compile_mentions",
+    "compiler.py::compile_related",
+    "compiler.py::compile_review",
+    "compiler.py::compile_timeline",
+    "compiler.py::validate_artifact",
+    "continuation.py::compare_continuation",
+    "coverage.py::fetch_grammars",
+    "coverage.py::report",
+    "eval.py::run_agent_suite",
+    "mcp.py::serve",
+    "memory.py::Memory",
+    "ollama.py::Ollama",
+    "pack.py::build",
+    "render.py::render_context",
+    "schedule.py::run_schedule",
+    "store.py::GraphStore",
+    "store.py::GraphStore.current",
+    "store.py::GraphStore.ingest",
+    "store.py::GraphStore.refresh",
+    "triage.py::analyze"
+   ],
+   "gold": [
+    "__main__.py::_zero_config_target",
+    "memory.py::Memory.__init__",
+    "memory.py::Memory.candidates",
+    "memory.py::Memory.close",
+    "memory.py::Memory.frontier_export_regression",
+    "memory.py::Memory.frontier_list",
+    "memory.py::Memory.frontier_replay"
+   ],
+   "input_tokens": 63435,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 1676,
+   "possible": [
+    "ollama.py::Ollama.models",
+    "ollama.py::Ollama.pin",
+    "memory.py::Memory.candidates",
+    "memory.py::Memory.frontier_replay",
+    "memory.py::Memory.frontier_record_miss",
+    "memory.py::Memory.frontier_list",
+    "memory.py::Memory.frontier_export_regression",
+    "memory.py::Memory.close"
+   ],
+   "precision": 0.17142857142857143,
+   "recall": 0.8571428571428571,
+   "reply_tail": "elated\", \"compiler.py::compile_timeline\", \"compiler.py::compile_drafts\", \"compiler.py::compile_review\", \"compiler.py::validate_artifact\", \"render.py::render_context\", \"continuation.py::compare_continuation\"], \"possible\": [\"ollama.py::Ollama.models\", \"ollama.py::Ollama.pin\", \"memory.py::Memory.candidates\", \"memory.py::Memory.frontier_replay\", \"memory.py::Memory.frontier_record_miss\", \"memory.py::Memory.frontier_list\", \"memory.py::Memory.frontier_export_regression\", \"memory.py::Memory.close\"]}\n```",
+   "seconds": 15.2,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-main",
+   "turns": 5,
+   "valid": true,
+   "verified": [
+    "__main__.py::_zero_config_target",
+    "__main__.py::_run_zero_config",
+    "eval.py::run_agent_suite",
+    "benchmark.py::run_memory_suite",
+    "benchmark.py::run_benchmark",
+    "ollama.py::Ollama",
+    "coverage.py::report",
+    "coverage.py::fetch_grammars",
+    "memory.py::Memory",
+    "pack.py::build",
+    "mcp.py::serve",
+    "triage.py::analyze",
+    "schedule.py::run_schedule",
+    "store.py::GraphStore",
+    "store.py::GraphStore.ingest",
+    "store.py::GraphStore.refresh",
+    "store.py::GraphStore.current",
+    "compiler.py::compile_impact",
+    "compiler.py::compile_mentions",
+    "compiler.py::compile_claims",
+    "compiler.py::compile_related",
+    "compiler.py::compile_timeline",
+    "compiler.py::compile_drafts",
+    "compiler.py::compile_review",
+    "compiler.py::validate_artifact",
+    "render.py::render_context",
+    "continuation.py::compare_continuation"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": false,
+   "cost_usd": 0.017680500000000002,
+   "denied": [],
+   "f1": 0.5,
+   "false_verified": [
+    "coverage.py::_scan"
+   ],
+   "gold": [
+    "coverage.py::rung_of",
+    "scope.py::_scan"
+   ],
+   "input_tokens": 28295,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 445,
+   "possible": [],
+   "precision": 0.5,
+   "recall": 0.5,
+   "reply_tail": "`report` in `coverage.py` directly calls two functions: `_scan` and `rung_of`. I confirmed both by reading the source at `coverage.py:48-64`.\n\nThe `callees` tool output was too large to read, so I relied on the source instead. Other calls in the body are built-ins or methods: `len`, `dict`, `sorted`, `.get`, `.setdefault` and `.items`.\n\n{\"verified\": [\"coverage.py::_scan\", \"coverage.py::rung_of\"], \"possible\": []}",
+   "seconds": 5.8,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-report",
+   "turns": 4,
+   "valid": true,
+   "verified": [
+    "coverage.py::_scan",
+    "coverage.py::rung_of"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": true,
+   "cost_usd": 0.0105689,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_named",
+    "tsgraph.py::_text_of"
+   ],
+   "input_tokens": 18345,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 244,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`_specifier_string` directly calls two functions, both in `tsgraph.py`. I read its body at `tsgraph.py:100-106` and did not run any call-graph tools.\n\n- `_named` is called twice, once on the node and once on each string child.\n- `_text_of` is called on the `string_fragment` part.\n\n{\"verified\": [\"tsgraph.py::_named\", \"tsgraph.py::_text_of\"], \"possible\": []}",
+   "seconds": 4.6,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-_specifier_string",
+   "turns": 2,
+   "valid": true,
+   "verified": [
+    "tsgraph.py::_named",
+    "tsgraph.py::_text_of"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": true,
+   "cost_usd": 0.0107802,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "identity.py::canonical",
+    "identity.py::digest"
+   ],
+   "input_tokens": 26863,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 350,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`identity` directly calls `digest` and `canonical`, both defined in the same file. The `.encode(\"utf-8\")` call is a string method, not one of the package's own functions. I read the `identity` body at `identity.py:15-16` and confirmed that `digest` and `canonical` are defined at `identity.py:11` and `identity.py:7`.\n\n{\"verified\": [\"identity.py::digest\", \"identity.py::canonical\"], \"possible\": []}",
+   "seconds": 5.3,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-identity",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "identity.py::digest",
+    "identity.py::canonical"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "complete": false,
+   "cost_usd": 0.012627099999999999,
+   "denied": [],
+   "f1": 0.5,
+   "false_verified": [
+    "memory.py::BM25",
+    "memory.py::TextNotes"
+   ],
+   "gold": [
+    "baselines.py::BM25.__init__",
+    "baselines.py::TextNotes.__init__",
+    "scope.py::iter_scope_files",
+    "scope.py::resolve_scope"
+   ],
+   "input_tokens": 18669,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 321,
+   "possible": [],
+   "precision": 0.5,
+   "recall": 0.5,
+   "reply_tail": "`) directly calls these functions. I read the function body to confirm them, and I didn't check where they are defined.\n\n- `resolve_scope`, imported from `.scope`\n- `iter_scope_files`, imported from `.scope`\n- `BM25(...)`, a constructor call\n- `TextNotes(...)`, a constructor call\n\nIt also calls `path.stat()` and the builtin `max`, but those aren't package functions.\n\n{\"verified\": [\"scope.py::resolve_scope\", \"scope.py::iter_scope_files\", \"memory.py::BM25\", \"memory.py::TextNotes\"], \"possible\": []}",
+   "seconds": 4.5,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-_ensure_discovery",
+   "turns": 2,
+   "valid": true,
+   "verified": [
+    "scope.py::resolve_scope",
+    "scope.py::iter_scope_files",
+    "memory.py::BM25",
+    "memory.py::TextNotes"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": true,
+   "cost_usd": 0.0460366,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::affected_paths"
+   ],
+   "input_tokens": 28646,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 356,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "I searched the directory for `referenced_files` and found one call site. It is in `affected_paths` (`config.py:881`), which calls `referenced_files(path, info[\"data\"])` inside a `try` block. The only other match is the definition at `config.py:980`. I only searched for the literal name, so a call through an alias or a dynamic lookup would not show up.\n\n{\"verified\": [\"config.py::affected_paths\"], \"possible\": []}",
+   "seconds": 5.7,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-referenced_files",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "config.py::affected_paths"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": true,
+   "cost_usd": 0.0201862,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::resolve_file"
+   ],
+   "input_tokens": 40026,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 464,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "The only call site is on line 1161, inside `resolve_file`, which starts at line 1101. I found no other references in the package.\n\n{\"verified\": [\"tsgraph.py::resolve_file\"], \"possible\": []}",
+   "seconds": 6.6,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_walk_module_statement",
+   "turns": 4,
+   "valid": true,
+   "verified": [
+    "tsgraph.py::resolve_file"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": true,
+   "cost_usd": 0.018185200000000002,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::_JsonWalker._parse_object",
+    "config.py::_JsonWalker._parse_value"
+   ],
+   "input_tokens": 29590,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 456,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "ls it at line 166, in the branch for a string value.\n- `_JsonWalker._parse_object` calls it at line 217, when it parses an object key.\n\nThe third grep hit, line 140, is the method definition itself.\n\nI only searched for the literal name `_parse_string`. That is enough for method calls through `self`, but it would miss a dynamic call such as `getattr`. No such call turned up in the grep.\n\n{\"verified\": [\"config.py::_JsonWalker._parse_value\", \"config.py::_JsonWalker._parse_object\"], \"possible\": []}",
+   "seconds": 9.0,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_parse_string",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "config.py::_JsonWalker._parse_value",
+    "config.py::_JsonWalker._parse_object"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": true,
+   "cost_usd": 0.030381400000000003,
+   "denied": [],
+   "f1": 0.8,
+   "false_verified": [],
+   "gold": [
+    "unigraph.py::resolve_unigraph_sources",
+    "unigraph.py::unit_affected_paths"
+   ],
+   "input_tokens": 43367,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 690,
+   "possible": [
+    "unigraph.py::admit"
+   ],
+   "precision": 0.6666666666666666,
+   "recall": 1.0,
+   "reply_tail": "aths` at line 1439, in its main loop over known paths.\n- **`unigraph.py::admit`**: this is a nested function inside `unit_affected_paths`, and it calls `_unit_paths` at line 1419. I'm listing it as possible because I'm not sure the answer key counts nested functions as separate callers.\n- **`unigraph.py::resolve_unigraph_sources`**: it calls `_unit_paths` at line 1482.\n\n{\"verified\": [\"unigraph.py::unit_affected_paths\", \"unigraph.py::resolve_unigraph_sources\"], \"possible\": [\"unigraph.py::admit\"]}",
+   "seconds": 9.1,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_unit_paths",
+   "turns": 4,
+   "valid": true,
+   "verified": [
+    "unigraph.py::unit_affected_paths",
+    "unigraph.py::resolve_unigraph_sources"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": true,
+   "cost_usd": 0.024556,
+   "denied": [],
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "__main__.py::main",
+    "memory.py::Memory.mentions"
+   ],
+   "gold": [
+    "compiler.py::compile_related",
+    "compiler.py::compile_timeline"
+   ],
+   "input_tokens": 31051,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 660,
+   "possible": [],
+   "precision": 0.5,
+   "recall": 1.0,
+   "reply_tail": "Line 760 is in compile_related (751\u2013764), line 840 is in compile_timeline (816\u2013880), memory.py:470 is in Memory.mentions, and __main__.py:334 is in main.\n\n{\"verified\": [\"compiler.py::compile_related\", \"compiler.py::compile_timeline\", \"memory.py::Memory.mentions\", \"__main__.py::main\"], \"possible\": []}",
+   "seconds": 6.8,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-compile_mentions",
+   "turns": 5,
+   "valid": true,
+   "verified": [
+    "compiler.py::compile_related",
+    "compiler.py::compile_timeline",
+    "memory.py::Memory.mentions",
+    "__main__.py::main"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": true,
+   "cost_usd": 0.0125976,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "prose.py::_build_bare_mentions",
+    "prose.py::_requalify"
+   ],
+   "input_tokens": 28588,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 323,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "Line 408 is in `_requalify` and line 552 is in `_build_bare_mentions`. The import in extract.py:25 isn't a call.\n\n```json\n{\"verified\": [\"prose.py::_requalify\", \"prose.py::_build_bare_mentions\"], \"possible\": []}\n```",
+   "seconds": 5.3,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_context_hits",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "prose.py::_requalify",
+    "prose.py::_build_bare_mentions"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": true,
+   "cost_usd": 0.0170177,
+   "denied": [],
+   "f1": 0.4,
+   "false_verified": [
+    "tsgraph.py::_walk_class",
+    "tsgraph.py::_walk_decorator",
+    "tsgraph.py::_walk_module_statement"
+   ],
+   "gold": [
+    "tsgraph.py::_walk"
+   ],
+   "input_tokens": 29521,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 439,
+   "possible": [],
+   "precision": 0.25,
+   "recall": 1.0,
+   "reply_tail": "Call sites: 830 (_walk_decorator itself, recursive), 907/914/936 (_walk_class), 973 (_walk), 1037/1049 (_walk_module_statement).\n\n```json\n{\"verified\": [\"tsgraph.py::_walk_decorator\", \"tsgraph.py::_walk_class\", \"tsgraph.py::_walk\", \"tsgraph.py::_walk_module_statement\"], \"possible\": []}\n```",
+   "seconds": 5.7,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_walk_decorator",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "tsgraph.py::_walk_decorator",
+    "tsgraph.py::_walk_class",
+    "tsgraph.py::_walk",
+    "tsgraph.py::_walk_module_statement"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": true,
+   "cost_usd": 0.018758,
+   "denied": [],
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "blocks.py::resolve_block_edges"
+   ],
+   "gold": [
+    "tsgraph.py::resolve_ts_sources"
+   ],
+   "input_tokens": 29655,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 506,
+   "possible": [],
+   "precision": 0.5,
+   "recall": 1.0,
+   "reply_tail": "Line 319 in blocks.py is in resolve_block_edges (274+). Line 1308 in tsgraph.py is in resolve_ts_sources (1289\u20131312).\n\n```json\n{\"verified\": [\"blocks.py::resolve_block_edges\", \"tsgraph.py::resolve_ts_sources\"], \"possible\": []}\n```",
+   "seconds": 6.5,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-resolve_file",
+   "turns": 4,
+   "valid": true,
+   "verified": [
+    "blocks.py::resolve_block_edges",
+    "tsgraph.py::resolve_ts_sources"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": true,
+   "cost_usd": 0.0202413,
+   "denied": [],
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "blocks.py::block_import_targets",
+    "blocks.py::resolve_block_edges",
+    "tsgraph.py::ts_import_targets"
+   ],
+   "gold": [
+    "tsgraph.py::_import_target",
+    "tsgraph.py::resolve_ts_sources",
+    "tsgraph.py::ts_affected_paths"
+   ],
+   "input_tokens": 29923,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 599,
+   "possible": [],
+   "precision": 0.5,
+   "recall": 1.0,
+   "reply_tail": "Mapping: blocks 134 \u2192 block_import_targets (125\u2013143); 299 \u2192 resolve_block_edges; tsgraph 699 \u2192 _import_target; 1244 \u2192 ts_import_targets; 1268 \u2192 ts_affected_paths; 1306 \u2192 resolve_ts_sources.\n\n{\"verified\": [\"blocks.py::block_import_targets\", \"blocks.py::resolve_block_edges\", \"tsgraph.py::_import_target\", \"tsgraph.py::ts_import_targets\", \"tsgraph.py::ts_affected_paths\", \"tsgraph.py::resolve_ts_sources\"], \"possible\": []}",
+   "seconds": 7.1,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-scan_module",
+   "turns": 4,
+   "valid": true,
+   "verified": [
+    "blocks.py::block_import_targets",
+    "blocks.py::resolve_block_edges",
+    "tsgraph.py::_import_target",
+    "tsgraph.py::ts_import_targets",
+    "tsgraph.py::ts_affected_paths",
+    "tsgraph.py::resolve_ts_sources"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": true,
+   "cost_usd": 0.018971300000000003,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "unigraph.py::_resolve_bare",
+    "unigraph.py::_v2_resolve_bare"
+   ],
+   "input_tokens": 30121,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 346,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "Line 1058 is in `_resolve_bare` (1051), line 2041 in `_v2_resolve_bare` (2032).\n\n```json\n{\"verified\": [\"unigraph.py::_resolve_bare\", \"unigraph.py::_v2_resolve_bare\"], \"possible\": []}\n```",
+   "seconds": 5.8,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_is_external_test_caller",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "unigraph.py::_resolve_bare",
+    "unigraph.py::_v2_resolve_bare"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": true,
+   "cost_usd": 0.018620499999999998,
+   "denied": [],
+   "f1": 0.8,
+   "false_verified": [
+    "config.py::_parse_yaml.walk"
+   ],
+   "gold": [
+    "config.py::_entity",
+    "config.py::_parse_ini",
+    "config.py::_parse_toml",
+    "config.py::_toml_navigate"
+   ],
+   "input_tokens": 29166,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 721,
+   "possible": [
+    "config.py::_parse_ini",
+    "config.py::_parse_ini.emit"
+   ],
+   "precision": 0.6666666666666666,
+   "recall": 1.0,
+   "reply_tail": "tity`.\n- Lines 353 and 380 are both in `walk`, which is nested inside `_parse_yaml`.\n- Line 481 is in `_toml_navigate`.\n- Line 739 is in `_parse_toml`.\n- Line 806 is in `_parse_ini`. It sits at 806, after the nested `emit` (starting at 767), so the enclosing function may be `emit` rather than `_parse_ini`.\n\n{\"verified\": [\"config.py::_entity\", \"config.py::_parse_yaml.walk\", \"config.py::_toml_navigate\", \"config.py::_parse_toml\"], \"possible\": [\"config.py::_parse_ini\", \"config.py::_parse_ini.emit\"]}",
+   "seconds": 8.2,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_is_small_scalar",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "config.py::_entity",
+    "config.py::_parse_yaml.walk",
+    "config.py::_toml_navigate",
+    "config.py::_parse_toml"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": true,
+   "cost_usd": 0.0137788,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "extract.py::_without_nested_scopes"
+   ],
+   "input_tokens": 28755,
+   "is_error": false,
+   "kind": "runtime_callers",
+   "output_tokens": 340,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`_header_calls` has one direct caller: `_without_nested_scopes`, in `extract.py`. Grep found only two matches for the name in the package. One is the definition at line 772. The other is the call at line 765, inside `_without_nested_scopes`, which I read to confirm.\n\n{\"verified\": [\"extract.py::_without_nested_scopes\"], \"possible\": []}",
+   "seconds": 5.7,
+   "subtype": "success",
+   "task": "tunic-runtime_callers-_header_calls",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "extract.py::_without_nested_scopes"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": true,
+   "cost_usd": 0.011700200000000001,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::_sibling_path"
+   ],
+   "input_tokens": 28421,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 357,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`referenced_files` (config.py:980) makes one direct call to a function defined in this package: `_sibling_path`, defined at config.py:836. It also calls built-in or library methods: `data.decode`, `_REF_SCAN.finditer`, `match.group`, `partition`, and `out.add`. I didn't open `_sibling_path` itself, because the question only asks about direct calls.\n\n{\"verified\": [\"config.py::_sibling_path\"], \"possible\": []}",
+   "seconds": 5.4,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-referenced_files",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "config.py::_sibling_path"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": true,
+   "cost_usd": 0.0191508,
+   "denied": [],
+   "f1": 0.888888888888889,
+   "false_verified": [
+    "tsgraph.py::_walk_decorator"
+   ],
+   "gold": [
+    "tsgraph.py::_decl_name",
+    "tsgraph.py::_named",
+    "tsgraph.py::_walk",
+    "tsgraph.py::_walk_function_like"
+   ],
+   "input_tokens": 29727,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 504,
+   "possible": [],
+   "precision": 0.8,
+   "recall": 1.0,
+   "reply_tail": "rator`\n- `_named`\n- `_decl_name`\n- `_walk_function_like`\n- `_walk`\n\nI counted `_walk` and `_decl_name` along with the others, so the list above has five entries, not four.\n\nThe function also reads `node.children` and `child.type`. Those are attribute accesses on tree-sitter nodes, not calls to functions in this package.\n\n```json\n{\"verified\": [\"tsgraph.py::_walk_decorator\", \"tsgraph.py::_named\", \"tsgraph.py::_decl_name\", \"tsgraph.py::_walk_function_like\", \"tsgraph.py::_walk\"], \"possible\": []}\n```",
+   "seconds": 6.3,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-_walk_module_statement",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "tsgraph.py::_walk_decorator",
+    "tsgraph.py::_named",
+    "tsgraph.py::_decl_name",
+    "tsgraph.py::_walk_function_like",
+    "tsgraph.py::_walk"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": true,
+   "cost_usd": 0.018373,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "compiler.py::_evidence",
+    "lifecycle.py::suppressed_ids",
+    "store.py::GraphStore.view"
+   ],
+   "input_tokens": 31141,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 462,
+   "possible": [
+    "store.py::GraphStore.view"
+   ],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "ethod on the store object, so I list it as `store.py::GraphStore.view` from the example in your question. I didn't open `store.py` to check that path.\n- `suppressed_ids`, defined at `lifecycle.py:161`.\n- `_evidence`, defined at `compiler.py:85`.\n\nThe other calls in the body are builtins and methods on built-in types. These are `set`, `.get`, `.append`, `.add`, `.pop`, and `.sort`.\n\n{\"verified\": [\"compiler.py::_evidence\", \"lifecycle.py::suppressed_ids\"], \"possible\": [\"store.py::GraphStore.view\"]}",
+   "seconds": 6.4,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-compile_mentions",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "compiler.py::_evidence",
+    "lifecycle.py::suppressed_ids"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": true,
+   "cost_usd": 0.0118896,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_child_ctx",
+    "tsgraph.py::_named",
+    "tsgraph.py::_walk"
+   ],
+   "input_tokens": 19475,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 231,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`_walk_decorator` (tsgraph.py:821-824) directly calls three functions: `_child_ctx`, `_named` and `_walk`. I read its body to confirm this. I didn't use the call graph tools.\n\n{\"verified\": [\"tsgraph.py::_child_ctx\", \"tsgraph.py::_named\", \"tsgraph.py::_walk\"], \"possible\": []}",
+   "seconds": 4.4,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-_walk_decorator",
+   "turns": 2,
+   "valid": true,
+   "verified": [
+    "tsgraph.py::_child_ctx",
+    "tsgraph.py::_named",
+    "tsgraph.py::_walk"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": true,
+   "cost_usd": 0.014235400000000002,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "baselines.py::_evidence_edges",
+    "store.py::GraphStore.view"
+   ],
+   "input_tokens": 28705,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 408,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`pagerank` (`baselines.py:287`) makes two calls to functions defined in the package. One is `store.view(snapshot)`, a method on the store object passed in, which I did not trace to its definition. The other is `_evidence_edges(view)`, which I did not open either. Everything else it calls is a builtin: `type`, `isinstance`, `sorted`, `sum`, `len`, `range`, plus `ValueError` for its error cases.\n\n{\"verified\": [\"baselines.py::_evidence_edges\", \"store.py::GraphStore.view\"], \"possible\": []}",
+   "seconds": 6.6,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-pagerank",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "baselines.py::_evidence_edges",
+    "store.py::GraphStore.view"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": true,
+   "cost_usd": 0.0329814,
+   "denied": [],
+   "f1": 0.4615384615384615,
+   "false_verified": [
+    "tsgraph.py::_decl_name",
+    "tsgraph.py::_field",
+    "tsgraph.py::_function_decl",
+    "tsgraph.py::_has_decorator",
+    "tsgraph.py::_pattern_names",
+    "tsgraph.py::_scan_import",
+    "tsgraph.py::_specifier_string"
+   ],
+   "gold": [
+    "tsgraph.py::_named",
+    "tsgraph.py::parse_ts",
+    "tsgraph.py::scan_reassigned"
+   ],
+   "input_tokens": 33975,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 744,
+   "possible": [],
+   "precision": 0.3,
+   "recall": 1.0,
+   "reply_tail": "g` and `_pattern_names` are defined. I also didn't check whether `_named`, `_field` and `_decl_name` are defined at module level, so I treated all of them as being in `tsgraph.py`.\n\n```json\n{\"verified\": [\"tsgraph.py::parse_ts\", \"tsgraph.py::scan_reassigned\", \"tsgraph.py::_named\", \"tsgraph.py::_decl_name\", \"tsgraph.py::_function_decl\", \"tsgraph.py::_has_decorator\", \"tsgraph.py::_scan_import\", \"tsgraph.py::_specifier_string\", \"tsgraph.py::_pattern_names\", \"tsgraph.py::_field\"], \"possible\": []}\n```",
+   "seconds": 8.1,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-scan_module",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "tsgraph.py::parse_ts",
+    "tsgraph.py::scan_reassigned",
+    "tsgraph.py::_named",
+    "tsgraph.py::_decl_name",
+    "tsgraph.py::_function_decl",
+    "tsgraph.py::_has_decorator",
+    "tsgraph.py::_scan_import",
+    "tsgraph.py::_specifier_string",
+    "tsgraph.py::_pattern_names",
+    "tsgraph.py::_field"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": true,
+   "cost_usd": 0.0124072,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "structure.py::_clean_name",
+    "structure.py::_kind_of",
+    "structure.py::_name_node"
+   ],
+   "input_tokens": 19318,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 344,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "but didn't open the helpers' own definitions.\n\n`_kind_of(node)` is called on every node. `_name_node(node)` and `_clean_name(name_node)` are called only when `kind` is truthy and a name node was found.\n\nThe other calls in the body are `stack.pop`, `stack.extend`, `reversed` and `node.named_children`. These are built-ins or methods and attributes on local objects, so I left them out.\n\n{\"verified\": [\"structure.py::_kind_of\", \"structure.py::_name_node\", \"structure.py::_clean_name\"], \"possible\": []}",
+   "seconds": 5.1,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-definitions",
+   "turns": 2,
+   "valid": true,
+   "verified": [
+    "structure.py::_kind_of",
+    "structure.py::_name_node",
+    "structure.py::_clean_name"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": false,
+   "cost_usd": 0.049302700000000005,
+   "denied": [],
+   "f1": 0.2857142857142857,
+   "false_verified": [
+    "Ollama",
+    "Ollama.models",
+    "Ollama.pin",
+    "__main__.py::_run_zero_config",
+    "compare_continuation",
+    "compile_claims",
+    "compile_drafts",
+    "compile_impact",
+    "compile_mentions",
+    "compile_related",
+    "compile_review",
+    "compile_timeline",
+    "coverage.py::fetch_grammars",
+    "coverage.py::report",
+    "mcp.py::serve",
+    "memory.py::Memory",
+    "memory.py::Memory.frontier_record_miss",
+    "pack.py::build",
+    "render_context",
+    "run_agent_suite",
+    "run_benchmark",
+    "run_memory_suite",
+    "schedule.py::run_schedule",
+    "store.py::GraphStore",
+    "store.py::GraphStore.current",
+    "store.py::GraphStore.ingest",
+    "store.py::GraphStore.refresh",
+    "triage.py::analyze",
+    "validate_artifact"
+   ],
+   "gold": [
+    "__main__.py::_zero_config_target",
+    "memory.py::Memory.__init__",
+    "memory.py::Memory.candidates",
+    "memory.py::Memory.close",
+    "memory.py::Memory.frontier_export_regression",
+    "memory.py::Memory.frontier_list",
+    "memory.py::Memory.frontier_replay"
+   ],
+   "input_tokens": 48991,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 1258,
+   "possible": [],
+   "precision": 0.17142857142857143,
+   "recall": 0.8571428571428571,
+   "reply_tail": "er_list\", \"memory.py::Memory.frontier_export_regression\", \"memory.py::Memory.close\", \"pack.py::build\", \"mcp.py::serve\", \"triage.py::analyze\", \"schedule.py::run_schedule\", \"store.py::GraphStore\", \"store.py::GraphStore.ingest\", \"store.py::GraphStore.refresh\", \"store.py::GraphStore.current\", \"compile_impact\", \"compile_mentions\", \"compile_claims\", \"compile_related\", \"compile_timeline\", \"compile_drafts\", \"compile_review\", \"render_context\", \"validate_artifact\", \"compare_continuation\"], \"possible\": []}",
+   "seconds": 11.6,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-main",
+   "turns": 4,
+   "valid": true,
+   "verified": [
+    "__main__.py::_zero_config_target",
+    "__main__.py::_run_zero_config",
+    "run_agent_suite",
+    "run_memory_suite",
+    "run_benchmark",
+    "Ollama",
+    "Ollama.models",
+    "Ollama.pin",
+    "coverage.py::report",
+    "coverage.py::fetch_grammars",
+    "memory.py::Memory",
+    "memory.py::Memory.candidates",
+    "memory.py::Memory.frontier_replay",
+    "memory.py::Memory.frontier_record_miss",
+    "memory.py::Memory.frontier_list",
+    "memory.py::Memory.frontier_export_regression",
+    "memory.py::Memory.close",
+    "pack.py::build",
+    "mcp.py::serve",
+    "triage.py::analyze",
+    "schedule.py::run_schedule",
+    "store.py::GraphStore",
+    "store.py::GraphStore.ingest",
+    "store.py::GraphStore.refresh",
+    "store.py::GraphStore.current",
+    "compile_impact",
+    "compile_mentions",
+    "compile_claims",
+    "compile_related",
+    "compile_timeline",
+    "compile_drafts",
+    "compile_review",
+    "render_context",
+    "validate_artifact",
+    "compare_continuation"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": false,
+   "cost_usd": 0.0149824,
+   "denied": [],
+   "f1": 0.5,
+   "false_verified": [
+    "coverage.py::_scan"
+   ],
+   "gold": [
+    "coverage.py::rung_of",
+    "scope.py::_scan"
+   ],
+   "input_tokens": 28750,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 453,
+   "possible": [],
+   "precision": 0.5,
+   "recall": 0.5,
+   "reply_tail": "ackage: `_scan` and `rung_of`. I read the function body to confirm this. I did not search for other functions named `report`.\n\n- `coverage.py::_scan` is called as `_scan(root, exclude)` (line 50).\n- `coverage.py::rung_of` is called once per scanned entry (line 53).\n\nIt also calls built-ins and methods (`len`, `dict`, `sorted`, `.get`, `.setdefault`). It reads `filetypes.SNIFF_BYTES`, but that is a constant, not a call.\n\n{\"verified\": [\"coverage.py::_scan\", \"coverage.py::rung_of\"], \"possible\": []}",
+   "seconds": 6.4,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-report",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "coverage.py::_scan",
+    "coverage.py::rung_of"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": true,
+   "cost_usd": 0.010377500000000001,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_named",
+    "tsgraph.py::_text_of"
+   ],
+   "input_tokens": 19131,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 217,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`_specifier_string` (defined at `tsgraph.py:100`) directly calls `_named` and `_text_of`. I read the function body to confirm this. I didn't use the graph tools or check what the two helpers call themselves.\n\n{\"verified\": [\"tsgraph.py::_named\", \"tsgraph.py::_text_of\"], \"possible\": []}",
+   "seconds": 4.1,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-_specifier_string",
+   "turns": 2,
+   "valid": true,
+   "verified": [
+    "tsgraph.py::_named",
+    "tsgraph.py::_text_of"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": true,
+   "cost_usd": 0.011918400000000001,
+   "denied": [],
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "identity.py::canonical",
+    "identity.py::digest"
+   ],
+   "input_tokens": 28100,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 430,
+   "possible": [],
+   "precision": 1.0,
+   "recall": 1.0,
+   "reply_tail": "`identity` in `identity.py` directly calls two functions, both defined in the same file: `canonical` and `digest`. Its body is `return kind + \":\" + digest(canonical(value).encode(\"utf-8\"))`. The `.encode` call is a string method, not a function in this package, so I left it out.\n\nI read `identity`'s body and confirmed that `canonical` and `digest` are defined in `identity.py`. I did not open their bodies.\n\n{\"verified\": [\"identity.py::canonical\", \"identity.py::digest\"], \"possible\": []}",
+   "seconds": 6.1,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-identity",
+   "turns": 3,
+   "valid": true,
+   "verified": [
+    "identity.py::canonical",
+    "identity.py::digest"
+   ]
+  },
+  {
+   "arm": "context",
+   "complete": false,
+   "cost_usd": 0.0131237,
+   "denied": [],
+   "f1": 0.5,
+   "false_verified": [
+    "BM25",
+    "TextNotes"
+   ],
+   "gold": [
+    "baselines.py::BM25.__init__",
+    "baselines.py::TextNotes.__init__",
+    "scope.py::iter_scope_files",
+    "scope.py::resolve_scope"
+   ],
+   "input_tokens": 19462,
+   "is_error": false,
+   "kind": "runtime_callees",
+   "output_tokens": 360,
+   "possible": [],
+   "precision": 0.5,
+   "recall": 0.5,
+   "reply_tail": "es these direct calls:\n\n- `resolve_scope` (imported from `.scope`)\n- `iter_scope_files` (imported from `.scope`)\n- `BM25(...)` (constructor)\n- `TextNotes(...)` (constructor)\n\nIt also calls builtins and methods: `max`, `path.stat()`, and `dict.get` on `policy`. I left those out of the lists.\n\nI did not check where `BM25` and `TextNotes` are defined, so I have no path for them.\n\n```json\n{\"verified\": [\"scope.py::resolve_scope\", \"scope.py::iter_scope_files\", \"BM25\", \"TextNotes\"], \"possible\": []}\n```",
+   "seconds": 5.3,
+   "subtype": "success",
+   "task": "tunic-runtime_callees-_ensure_discovery",
+   "turns": 2,
+   "valid": true,
+   "verified": [
+    "scope.py::resolve_scope",
+    "scope.py::iter_scope_files",
+    "BM25",
+    "TextNotes"
+   ]
+  }
+ ],
+ "summary": {
+  "context": {
+   "complete": 21,
+   "denied_calls": 0,
+   "errors": 0,
+   "false_verified": 50,
+   "mean_cost_usd": 0.02,
+   "mean_f1": 0.818,
+   "mean_input_tokens": 29734,
+   "mean_precision": 0.765,
+   "mean_recall": 0.952,
+   "mean_seconds": 6.6,
+   "mean_turns": 3.1,
+   "tasks": 24
+  },
+  "retrieve": {
+   "complete": 20,
+   "denied_calls": 0,
+   "errors": 0,
+   "false_verified": 41,
+   "mean_cost_usd": 0.0205,
+   "mean_f1": 0.808,
+   "mean_input_tokens": 30128,
+   "mean_precision": 0.756,
+   "mean_recall": 0.938,
+   "mean_seconds": 6.7,
+   "mean_turns": 3.3,
+   "tasks": 24
+  },
+  "search": {
+   "complete": 20,
+   "denied_calls": 0,
+   "errors": 0,
+   "false_verified": 46,
+   "mean_cost_usd": 0.0194,
+   "mean_f1": 0.809,
+   "mean_input_tokens": 20288,
+   "mean_precision": 0.757,
+   "mean_recall": 0.938,
+   "mean_seconds": 7.1,
+   "mean_turns": 3.2,
+   "tasks": 24
+  }
+ }
+}

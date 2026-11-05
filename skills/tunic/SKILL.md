@@ -29,7 +29,7 @@ server accepts only the `local` principal: a caller-supplied
 
 0. **Start with `context(task, limit?, max_bytes?, snapshot?)`.** One
    bounded pack: each relevant node with its code, proven `calls` and
-   `called_by`, unverified `refs` and `ref_by`, claims, open questions,
+   `called_by`, unverified `maybe_uses` and `maybe_used_by`, claims, open questions,
    plus doc passages and `gaps`. Read its `trust` field. Treat `refs`,
    `ref_by`, and `via: "words"` as leads to check, never as proof. An
    empty `calls` on a node below the `edges` rung means unknown, not none.

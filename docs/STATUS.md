@@ -6,7 +6,8 @@ W1 reference slice plus memory loop are implemented and regression-tested on `ma
 
 ## Active Focus
 
-- Context packs (2026-11-04, branch `coverage-ladder`): `context` is the model-facing surface, `retrieve` the audit surface. One bounded call returns code, proven edges, unverified read-time hints, claims, open questions, and stated gaps for every language. No model has been run against packs yet; that comparison is the owed acceptance test. See [context packs](architecture/context-pack.md).
+- Benchmark integrity audit (2026-11-04): no cheating in shipped code, but real Claude with Grep and Read scored the same with and without Tunic on direct and transitive call questions, at more input tokens. Interpreter-traced static edge recall is 0.812. W1, agent, and memory suites are regression checks, not quality evidence. Next: fix megabyte `related`/`callees` output, then test what search cannot do (decisions, supersession, scale). See [integrity audit](evaluation/integrity-audit.md).
+- Context packs (2026-11-04, branch `coverage-ladder`): `context` is the model-facing surface, `retrieve` the audit surface. Benefit to a capable agent is not shown. See [context packs](architecture/context-pack.md).
 - Coverage ladder (2026-11-04, branch `coverage-ladder`): per-type allowlisting replaced by default-accept admission with a reason-coded ledger. `filetypes.py` is the sole classifier, `pipeline.py` the sole stage list, `structure.py` gives symbols for any grammar with no spec, `coverage` CLI/MCP reports it. `extract.py` split into `scope.py`, `relations.py`, `prose.py`. Fixed: refresh deleting verified edges when a non-Python file shares a Python module stem; ProjectFoundry ingest crash (54 MB-class mention flood from config leaves). See [ingestion](architecture/ingestion.md).
 - TypeScript/JavaScript verified call edges v1 (shipped 2026-11-03, `tests/test_ts_call_edges.py` 27 tests) and real-site validation on seancarneywebsite.
 - Uniform tree-sitter engine v1 (shipped 2026-11-03, `tunic/unigraph.py`): one R1/R2 resolver driven by declarative per-language specs; Go first (`tests/test_go_call_edges.py` 17 tests, real-site mcp-go 1,480 verified edges). TS stays on `tunic/tsgraph.py` (frozen receipts); migration is open, gated on TS-suite parity.
@@ -18,7 +19,7 @@ W1 reference slice plus memory loop are implemented and regression-tested on `ma
 - All-file ingestion Tiers 2-4 shipped (2026-11-03): Tier 2 block-splitting (vue/svelte/astro + ipynb shared-namespace cells, 17 + 8 tests), Tier 3 config key-paths (JSON/YAML/TOML/INI, 13 tests), Tier 4 schema references (SQL/GraphQL/Protobuf, `references` never traverses impact, 10 tests). See [file-type coverage](architecture/file-type-coverage.md).
 - Document-first-class retrieval R2 and discovery scope unification R3 (shipped 2026-11-02).
 - Frontier scheduler v1 turning ranked clusters into governed investigations with proof-backed resolves.
-- Blocked: constructor acquisition/application re-measurement (needs model access); platform deployment (by design, not started).
+- Constructor acquisition/application re-measurement: no longer blocked on access (local Ollama and Claude Code both work), not yet run. Platform deployment: not started, by design.
 
 ## Architecture Summary
 

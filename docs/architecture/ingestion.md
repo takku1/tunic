@@ -100,15 +100,14 @@ PHP repositories.
 |---|---|
 | Stage registry and module split | Byte-identical on all five corpora |
 | Admission | Additive: no source, symbol, or edge lost or changed |
-| Walker against Python `ast`, true labels | 5,640 definitions, recall 1.000, precision 1.000 |
-| Walker against the hand-written specs | 2,581 symbols, 15 languages, recall 1.000 |
+| Walker against Python `ast`, held-out repositories | 9,178 definitions, recall 1.000, precision 1.000 |
+| Walker against the hand-written specs, held-out | 3,002 symbols, 11 languages, recall 0.988 |
 | Refresh against full rebuild | Equal on a mixed tree, each type edited and deleted |
-| Acceptance, base against new | W1 and memory results unchanged; agent suite 12/12 (lexical 11/12) |
+| Regression suites, base against new | W1 and memory unchanged; agent suite 12/12 (BM25 11/12) |
 
-Oracle sample sizes vary. C, C++, C#, Go, PHP, PowerShell, and Rust use
-real code (157 to 696 symbols). Java, Kotlin, Scala, Swift, Lua, Julia,
-Ruby, and Bash rest on test fixtures (4 to 13 symbols), so treat those
-rows as smoke tests. The spec oracle measures recall only, because specs
+Held-out means repositories not used while the rules were tuned; see the
+[integrity audit](../evaluation/integrity-audit.md). The spec oracle
+measures recall only, because specs
 index less than the walker finds. Extras there were inspected by node
 type and were real definitions (macros, namespaces, Go types).
 

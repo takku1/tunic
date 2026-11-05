@@ -1,0 +1,7653 @@
+{
+ "arms": [
+  "retrieve",
+  "retrieve_followup",
+  "context",
+  "context_noedges"
+ ],
+ "benchmark": "pack-ab-v1",
+ "decoding": {
+  "num_ctx": 16384,
+  "seed": 7,
+  "temperature": 0
+ },
+ "model": "qwen2.5-coder:7b",
+ "pack_schema": "tunic.pack/1",
+ "repos": [
+  "comply",
+  "hhdm",
+  "seancarneywebsite"
+ ],
+ "rows": [
+  {
+   "arm": "retrieve",
+   "bytes": 7577,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "api.py::handle_modern"
+   ],
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2875,
+   "recall": 0.0,
+   "seconds": 6.6,
+   "set": "suite",
+   "task": "stale-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "api.py::handle_modern"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 19443,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::route"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 7508,
+   "recall": 0.0,
+   "seconds": 0.8,
+   "set": "suite",
+   "task": "stale-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 2411,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::handle_modern"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 841,
+   "recall": 0.0,
+   "seconds": 0.25,
+   "set": "suite",
+   "task": "stale-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 2352,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::handle_modern"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 822,
+   "recall": 0.0,
+   "seconds": 0.21,
+   "set": "suite",
+   "task": "stale-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 10513,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "api.py::route"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 4043,
+   "recall": 1.0,
+   "seconds": 0.45,
+   "set": "suite",
+   "task": "conflict-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "api.py::route"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 23710,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "api.py::route"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::route"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 9207,
+   "recall": 1.0,
+   "seconds": 0.97,
+   "set": "suite",
+   "task": "conflict-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 2467,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "api.py::route"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 872,
+   "recall": 1.0,
+   "seconds": 0.24,
+   "set": "suite",
+   "task": "conflict-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "api.py::route"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 2413,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "api.py::route"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::route"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 855,
+   "recall": 1.0,
+   "seconds": 0.18,
+   "set": "suite",
+   "task": "conflict-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 9377,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "api.py::handle_modern"
+   ],
+   "gold": [
+    "api.py::route"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::handle_legacy"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 3625,
+   "recall": 0.0,
+   "seconds": 0.47,
+   "set": "suite",
+   "task": "irrelevant-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "api.py::handle_modern"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 23993,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "api.py::handle_legacy"
+   ],
+   "gold": [
+    "api.py::route"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::handle_modern"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 9370,
+   "recall": 0.0,
+   "seconds": 1.04,
+   "set": "suite",
+   "task": "irrelevant-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "api.py::handle_legacy"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 2510,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "api.py::handle_modern"
+   ],
+   "gold": [
+    "api.py::route"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::handle_legacy"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 888,
+   "recall": 0.0,
+   "seconds": 0.28,
+   "set": "suite",
+   "task": "irrelevant-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "api.py::handle_modern"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 2484,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "api.py::handle_modern"
+   ],
+   "gold": [
+    "api.py::route"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::handle_legacy"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 879,
+   "recall": 0.0,
+   "seconds": 0.23,
+   "set": "suite",
+   "task": "irrelevant-task",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "api.py::handle_modern"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 8761,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::route"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 3376,
+   "recall": 0.0,
+   "seconds": 0.4,
+   "set": "suite",
+   "task": "evolve-para",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 20630,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::route"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 8012,
+   "recall": 0.0,
+   "seconds": 0.53,
+   "set": "suite",
+   "task": "evolve-para",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 2472,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::route"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 878,
+   "recall": 0.0,
+   "seconds": 0.24,
+   "set": "suite",
+   "task": "evolve-para",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 2441,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "api.py::handle_legacy"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "api.py::route"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 867,
+   "recall": 0.0,
+   "seconds": 0.17,
+   "set": "suite",
+   "task": "evolve-para",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 8064,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "gold_in_payload": 2,
+   "kind": "suite",
+   "possible": [
+    "loans.py::return_book"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 2962,
+   "recall": 1.0,
+   "seconds": 0.42,
+   "set": "suite",
+   "task": "lib-impact",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "loans.py::checkout_book"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 20393,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "gold_in_payload": 2,
+   "kind": "suite",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 7987,
+   "recall": 1.0,
+   "seconds": 0.91,
+   "set": "suite",
+   "task": "lib-impact",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 2201,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "gold_in_payload": 2,
+   "kind": "suite",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 764,
+   "recall": 1.0,
+   "seconds": 0.31,
+   "set": "suite",
+   "task": "lib-impact",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 2188,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "gold_in_payload": 2,
+   "kind": "suite",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 758,
+   "recall": 1.0,
+   "seconds": 0.24,
+   "set": "suite",
+   "task": "lib-impact",
+   "unproven_verified": 2,
+   "valid_json": true,
+   "verified": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 6908,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "loans.py::checkout_book"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "loans.py::checkout_book"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 2519,
+   "recall": 1.0,
+   "seconds": 0.34,
+   "set": "suite",
+   "task": "lib-outcome",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 16699,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "loans.py::checkout_book"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "loans.py::checkout_book"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 6424,
+   "recall": 1.0,
+   "seconds": 0.71,
+   "set": "suite",
+   "task": "lib-outcome",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 1832,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "loans.py::checkout_book"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "loans.py::checkout_book"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 676,
+   "recall": 1.0,
+   "seconds": 0.22,
+   "set": "suite",
+   "task": "lib-outcome",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 1808,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "loans.py::checkout_book"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "loans.py::checkout_book"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 667,
+   "recall": 1.0,
+   "seconds": 0.21,
+   "set": "suite",
+   "task": "lib-outcome",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 8154,
+   "complete": false,
+   "f1": 0.5,
+   "false_verified": [],
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "gold_in_payload": 2,
+   "kind": "suite",
+   "possible": [
+    "loans.py::checkout_book",
+    "loans.py::overdue_fine"
+   ],
+   "precision": 0.5,
+   "prompt_tokens": 3003,
+   "recall": 0.5,
+   "seconds": 0.45,
+   "set": "suite",
+   "task": "lib-para",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 20482,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "gold_in_payload": 2,
+   "kind": "suite",
+   "possible": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 8027,
+   "recall": 1.0,
+   "seconds": 0.54,
+   "set": "suite",
+   "task": "lib-para",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 2443,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "gold_in_payload": 2,
+   "kind": "suite",
+   "possible": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 844,
+   "recall": 1.0,
+   "seconds": 0.3,
+   "set": "suite",
+   "task": "lib-para",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 2432,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "gold_in_payload": 2,
+   "kind": "suite",
+   "possible": [
+    "loans.py::checkout_book",
+    "loans.py::return_book"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 838,
+   "recall": 1.0,
+   "seconds": 0.24,
+   "set": "suite",
+   "task": "lib-para",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 6156,
+   "complete": true,
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "cart.py::total"
+   ],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [],
+   "precision": 0.5,
+   "prompt_tokens": 2359,
+   "recall": 1.0,
+   "seconds": 0.36,
+   "set": "suite",
+   "task": "code-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "cart.py::total",
+    "checkout.py::place_order"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 18051,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 7265,
+   "recall": 1.0,
+   "seconds": 0.77,
+   "set": "suite",
+   "task": "code-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "checkout.py::place_order"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 1547,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 551,
+   "recall": 1.0,
+   "seconds": 0.23,
+   "set": "suite",
+   "task": "code-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "checkout.py::place_order"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 1527,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "checkout.py::place_order"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 543,
+   "recall": 1.0,
+   "seconds": 0.19,
+   "set": "suite",
+   "task": "code-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 5326,
+   "complete": true,
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "notes/decisions.md::document"
+   ],
+   "gold": [
+    "pricing.py::round_total"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "pricing.py::round_total"
+   ],
+   "precision": 0.5,
+   "prompt_tokens": 2112,
+   "recall": 1.0,
+   "seconds": 0.34,
+   "set": "suite",
+   "task": "decision-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "notes/decisions.md::document"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 17471,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "notes/decisions.md::document"
+   ],
+   "gold": [
+    "pricing.py::round_total"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 7077,
+   "recall": 0.0,
+   "seconds": 0.78,
+   "set": "suite",
+   "task": "decision-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "notes/decisions.md::document"
+   ]
+  },
+  {
+   "arm": "context",
+   "bytes": 1616,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "notes/decisions.md::rounding-decision"
+   ],
+   "gold": [
+    "pricing.py::round_total"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 608,
+   "recall": 0.0,
+   "seconds": 0.28,
+   "set": "suite",
+   "task": "decision-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "notes/decisions.md::rounding-decision"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 1585,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "notes/decisions.md::rounding-decision"
+   ],
+   "gold": [
+    "pricing.py::round_total"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 597,
+   "recall": 0.0,
+   "seconds": 0.23,
+   "set": "suite",
+   "task": "decision-task",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "notes/decisions.md::rounding-decision"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 5323,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "checkout.py::place_order"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 2113,
+   "recall": 1.0,
+   "seconds": 0.29,
+   "set": "suite",
+   "task": "outcome-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 17468,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "checkout.py::place_order"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 7078,
+   "recall": 1.0,
+   "seconds": 0.35,
+   "set": "suite",
+   "task": "outcome-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 1624,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "checkout.py::place_order"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 610,
+   "recall": 1.0,
+   "seconds": 0.2,
+   "set": "suite",
+   "task": "outcome-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 1593,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "checkout.py::place_order"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 599,
+   "recall": 1.0,
+   "seconds": 0.18,
+   "set": "suite",
+   "task": "outcome-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 5194,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2017,
+   "recall": 1.0,
+   "seconds": 0.3,
+   "set": "suite",
+   "task": "lexical-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "checkout.py::place_order"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 20582,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "checkout.py::place_order"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 8371,
+   "recall": 1.0,
+   "seconds": 0.9,
+   "set": "suite",
+   "task": "lexical-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 1898,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "checkout.py::place_order"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 672,
+   "recall": 1.0,
+   "seconds": 0.23,
+   "set": "suite",
+   "task": "lexical-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 1872,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "checkout.py::place_order"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 663,
+   "recall": 1.0,
+   "seconds": 0.2,
+   "set": "suite",
+   "task": "lexical-task",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 7000,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "pricing.py::round_total"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 2684,
+   "recall": 0.0,
+   "seconds": 0.32,
+   "set": "suite",
+   "task": "shop-para",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 18894,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "checkout.py::place_order"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 7589,
+   "recall": 1.0,
+   "seconds": 0.41,
+   "set": "suite",
+   "task": "shop-para",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 1792,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "cart.py::total"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 631,
+   "recall": 0.0,
+   "seconds": 0.22,
+   "set": "suite",
+   "task": "shop-para",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 1772,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "checkout.py::place_order"
+   ],
+   "gold_in_payload": 1,
+   "kind": "suite",
+   "possible": [
+    "checkout.py::place_order"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 623,
+   "recall": 1.0,
+   "seconds": 0.17,
+   "set": "suite",
+   "task": "shop-para",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 11767,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2ProceduresWorkstationMd"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [
+    "internal/theme/themes_bindata.go::complySoc2ProceduresWorkstationMdBytes"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 3928,
+   "recall": 0.0,
+   "seconds": 0.73,
+   "set": "real",
+   "task": "comply-callers-complySoc2ProceduresWorkstationMdBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 407999,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2ProceduresWorkstationMd"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 1.21,
+   "set": "real",
+   "task": "comply-callers-complySoc2ProceduresWorkstationMdBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 8432,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2ProceduresWorkstationMd"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2446,
+   "recall": 1.0,
+   "seconds": 0.46,
+   "set": "real",
+   "task": "comply-callers-complySoc2ProceduresWorkstationMdBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complySoc2ProceduresWorkstationMd"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 8184,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2ProceduresWorkstationMd"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [
+    "internal/theme/themes_bindata.go::complySoc2ProceduresWorkstationMd"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 2382,
+   "recall": 1.0,
+   "seconds": 0.33,
+   "set": "real",
+   "task": "comply-callers-complySoc2ProceduresWorkstationMdBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 11149,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2TemplatesIndexAce"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [
+    "internal/theme/themes_bindata.go::complySoc2TemplatesIndexAceBytes"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 3692,
+   "recall": 0.0,
+   "seconds": 0.53,
+   "set": "real",
+   "task": "comply-callers-complySoc2TemplatesIndexAceBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 407219,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2TemplatesIndexAce"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 1.2,
+   "set": "real",
+   "task": "comply-callers-complySoc2TemplatesIndexAceBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 8029,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2TemplatesIndexAce"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2288,
+   "recall": 1.0,
+   "seconds": 0.37,
+   "set": "real",
+   "task": "comply-callers-complySoc2TemplatesIndexAceBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complySoc2TemplatesIndexAce"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 7852,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2TemplatesIndexAce"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2245,
+   "recall": 1.0,
+   "seconds": 0.3,
+   "set": "real",
+   "task": "comply-callers-complySoc2TemplatesIndexAceBytes",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complySoc2TemplatesIndexAce"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 14432,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/cli/app.go::Main"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 5236,
+   "recall": 1.0,
+   "seconds": 0.6,
+   "set": "real",
+   "task": "comply-callers-newApp",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/cli/app.go::Main"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 444747,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "internal/cli/app.go::Main"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.2,
+   "set": "real",
+   "task": "comply-callers-newApp",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 8944,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/cli/app.go::Main"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2480,
+   "recall": 1.0,
+   "seconds": 0.36,
+   "set": "real",
+   "task": "comply-callers-newApp",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/cli/app.go::Main"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 8666,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/cli/app.go::Main"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2412,
+   "recall": 1.0,
+   "seconds": 0.27,
+   "set": "real",
+   "task": "comply-callers-newApp",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "internal/cli/app.go::Main"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 21144,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "internal/config/config.go::ProjectRoot"
+   ],
+   "gold": [
+    "internal/cli/app.go::projectMustExist",
+    "internal/cli/init.go::initAction",
+    "internal/config/config.go::Exists",
+    "internal/config/config.go::YAML"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 9165,
+   "recall": 0.0,
+   "seconds": 0.95,
+   "set": "real",
+   "task": "comply-callers-ProjectRoot",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/config/config.go::ProjectRoot"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 516171,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "internal/cli/app.go::projectMustExist",
+    "internal/cli/init.go::initAction",
+    "internal/config/config.go::Exists",
+    "internal/config/config.go::YAML"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 1.56,
+   "set": "real",
+   "task": "comply-callers-ProjectRoot",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 8641,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/cli/app.go::projectMustExist",
+    "internal/cli/init.go::initAction",
+    "internal/config/config.go::Exists",
+    "internal/config/config.go::YAML"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2375,
+   "recall": 1.0,
+   "seconds": 0.5,
+   "set": "real",
+   "task": "comply-callers-ProjectRoot",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/cli/app.go::projectMustExist",
+    "internal/cli/init.go::initAction",
+    "internal/config/config.go::Exists",
+    "internal/config/config.go::YAML"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 8536,
+   "complete": false,
+   "f1": 0.5,
+   "false_verified": [
+    "internal/model/db.go::DB",
+    "internal/render/document.go::renderToFilesystem"
+   ],
+   "gold": [
+    "internal/cli/app.go::projectMustExist",
+    "internal/cli/init.go::initAction",
+    "internal/config/config.go::Exists",
+    "internal/config/config.go::YAML"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.5,
+   "prompt_tokens": 2347,
+   "recall": 0.5,
+   "seconds": 0.44,
+   "set": "real",
+   "task": "comply-callers-ProjectRoot",
+   "unproven_verified": 4,
+   "valid_json": true,
+   "verified": [
+    "internal/cli/app.go::projectMustExist",
+    "internal/cli/init.go::initAction",
+    "internal/model/db.go::DB",
+    "internal/render/document.go::renderToFilesystem"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 11946,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesReadmeMd"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesReadmeMdBytes"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 4046,
+   "recall": 0.0,
+   "seconds": 0.56,
+   "set": "real",
+   "task": "comply-callers-complySoc2PoliciesReadmeMdBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 407965,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesReadmeMd"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 1.22,
+   "set": "real",
+   "task": "comply-callers-complySoc2PoliciesReadmeMdBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 8109,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesReadmeMd"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2364,
+   "recall": 1.0,
+   "seconds": 0.39,
+   "set": "real",
+   "task": "comply-callers-complySoc2PoliciesReadmeMdBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesReadmeMd"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 7807,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesReadmeMd"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesReadmeMd"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 2281,
+   "recall": 1.0,
+   "seconds": 0.31,
+   "set": "real",
+   "task": "comply-callers-complySoc2PoliciesReadmeMdBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 11987,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complyBlankProceduresGitkeep"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [
+    "internal/theme/themes_bindata.go::complyBlankProceduresGitkeepBytes"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 3980,
+   "recall": 0.0,
+   "seconds": 0.56,
+   "set": "real",
+   "task": "comply-callers-complyBlankProceduresGitkeepBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 408042,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complyBlankProceduresGitkeep"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 1.43,
+   "set": "real",
+   "task": "comply-callers-complyBlankProceduresGitkeepBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 8165,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complyBlankProceduresGitkeep"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2302,
+   "recall": 1.0,
+   "seconds": 0.35,
+   "set": "real",
+   "task": "comply-callers-complyBlankProceduresGitkeepBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complyBlankProceduresGitkeep"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 7854,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complyBlankProceduresGitkeep"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [
+    "internal/theme/themes_bindata.go::complyBlankProceduresGitkeep"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 2229,
+   "recall": 1.0,
+   "seconds": 0.28,
+   "set": "real",
+   "task": "comply-callers-complyBlankProceduresGitkeepBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 11460,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [
+    "internal/theme/themes_bindata.go::complySoc2ProceduresWorkstationMd"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 3771,
+   "recall": 0.0,
+   "seconds": 0.53,
+   "set": "real",
+   "task": "comply-callees-complySoc2ProceduresWorkstationMdBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 407691,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 3.41,
+   "set": "real",
+   "task": "comply-callees-complySoc2ProceduresWorkstationMdBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 8119,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2279,
+   "recall": 1.0,
+   "seconds": 0.38,
+   "set": "real",
+   "task": "comply-callees-complySoc2ProceduresWorkstationMdBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 7871,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2215,
+   "recall": 1.0,
+   "seconds": 0.29,
+   "set": "real",
+   "task": "comply-callees-complySoc2ProceduresWorkstationMdBytes",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 10604,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesMediaMdBytes"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesMediaMdBytes"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 3498,
+   "recall": 1.0,
+   "seconds": 0.51,
+   "set": "real",
+   "task": "comply-callees-complySoc2PoliciesMediaMd",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 406059,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesMediaMdBytes"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 1.44,
+   "set": "real",
+   "task": "comply-callees-complySoc2PoliciesMediaMd",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 9032,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesMediaMdBytes"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2611,
+   "recall": 1.0,
+   "seconds": 0.42,
+   "set": "real",
+   "task": "comply-callees-complySoc2PoliciesMediaMd",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesMediaMdBytes"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 8871,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesMediaMdBytes"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2566,
+   "recall": 1.0,
+   "seconds": 0.36,
+   "set": "real",
+   "task": "comply-callees-complySoc2PoliciesMediaMd",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::complySoc2PoliciesMediaMdBytes"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 10840,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [
+    "internal/theme/themes_bindata.go::complySoc2TemplatesIndexAce"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 3533,
+   "recall": 0.0,
+   "seconds": 0.47,
+   "set": "real",
+   "task": "comply-callees-complySoc2TemplatesIndexAceBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 406910,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 1.88,
+   "set": "real",
+   "task": "comply-callees-complySoc2TemplatesIndexAceBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 7716,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2121,
+   "recall": 1.0,
+   "seconds": 0.33,
+   "set": "real",
+   "task": "comply-callees-complySoc2TemplatesIndexAceBytes",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 7539,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2078,
+   "recall": 1.0,
+   "seconds": 0.28,
+   "set": "real",
+   "task": "comply-callees-complySoc2TemplatesIndexAceBytes",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "internal/theme/themes_bindata.go::bindataRead"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 10820,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "internal/model/fs.go::ReadStandards",
+    "internal/util/test_utils.go::GetRootPath"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [
+    "internal/model/fs_test.go::TestReadStandards"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 3534,
+   "recall": 0.0,
+   "seconds": 0.45,
+   "set": "real",
+   "task": "comply-callees-TestReadStandards",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 409961,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "internal/model/fs.go::ReadStandards",
+    "internal/util/test_utils.go::GetRootPath"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 1.95,
+   "set": "real",
+   "task": "comply-callees-TestReadStandards",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 9796,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/model/fs.go::ReadStandards",
+    "internal/util/test_utils.go::GetRootPath"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2676,
+   "recall": 1.0,
+   "seconds": 0.47,
+   "set": "real",
+   "task": "comply-callees-TestReadStandards",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/model/fs.go::ReadStandards",
+    "internal/util/test_utils.go::GetRootPath"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 9737,
+   "complete": true,
+   "f1": 0.8,
+   "false_verified": [
+    "internal/model/fs_test.go::ReadFiles"
+   ],
+   "gold": [
+    "internal/model/fs.go::ReadStandards",
+    "internal/util/test_utils.go::GetRootPath"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.6666666666666666,
+   "prompt_tokens": 2658,
+   "recall": 1.0,
+   "seconds": 0.48,
+   "set": "real",
+   "task": "comply-callees-TestReadStandards",
+   "unproven_verified": 3,
+   "valid_json": true,
+   "verified": [
+    "internal/model/fs.go::ReadStandards",
+    "internal/model/fs_test.go::ReadFiles",
+    "internal/util/test_utils.go::GetRootPath"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 14124,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "internal/cli/app.go::feedbackError"
+   ],
+   "gold": [
+    "internal/cli/app.go::beforeCommand",
+    "internal/gitlab/gitlab.go::Register",
+    "internal/jira/jira.go::Register",
+    "internal/plugin/github/github.go::Register"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [
+    "internal/cli/app.go::Main",
+    "internal/config/config.go::SetPandoc",
+    "internal/util/test_utils.go::ExecuteTests"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 5078,
+   "recall": 0.0,
+   "seconds": 0.77,
+   "set": "real",
+   "task": "comply-callees-newApp",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/cli/app.go::feedbackError"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 444441,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "internal/cli/app.go::beforeCommand",
+    "internal/gitlab/gitlab.go::Register",
+    "internal/jira/jira.go::Register",
+    "internal/plugin/github/github.go::Register"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 1.49,
+   "set": "real",
+   "task": "comply-callees-newApp",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 8631,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/cli/app.go::beforeCommand",
+    "internal/gitlab/gitlab.go::Register",
+    "internal/jira/jira.go::Register",
+    "internal/plugin/github/github.go::Register"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2313,
+   "recall": 1.0,
+   "seconds": 0.58,
+   "set": "real",
+   "task": "comply-callees-newApp",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/cli/app.go::beforeCommand",
+    "internal/gitlab/gitlab.go::Register",
+    "internal/jira/jira.go::Register",
+    "internal/plugin/github/github.go::Register"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 8353,
+   "complete": false,
+   "f1": 0.28571428571428575,
+   "false_verified": [
+    "internal/cli/app.go::Version",
+    "internal/theme/themes_bindata.go::Name"
+   ],
+   "gold": [
+    "internal/cli/app.go::beforeCommand",
+    "internal/gitlab/gitlab.go::Register",
+    "internal/jira/jira.go::Register",
+    "internal/plugin/github/github.go::Register"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 2245,
+   "recall": 0.25,
+   "seconds": 0.39,
+   "set": "real",
+   "task": "comply-callees-newApp",
+   "unproven_verified": 3,
+   "valid_json": true,
+   "verified": [
+    "internal/cli/app.go::Version",
+    "internal/cli/app.go::beforeCommand",
+    "internal/theme/themes_bindata.go::Name"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 12760,
+   "complete": true,
+   "f1": 0.5,
+   "false_verified": [],
+   "gold": [
+    "internal/cli/app.go::Main"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [
+    "internal/config/config.go::SetPandoc",
+    "internal/config/config.go::WhichPandoc"
+   ],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 4530,
+   "recall": 1.0,
+   "seconds": 0.68,
+   "set": "real",
+   "task": "comply-callees-main",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/cli/app.go::Main"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 422585,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "internal/cli/app.go::Main"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 1.17,
+   "set": "real",
+   "task": "comply-callees-main",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6952,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/cli/app.go::Main"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1892,
+   "recall": 1.0,
+   "seconds": 0.29,
+   "set": "real",
+   "task": "comply-callees-main",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "internal/cli/app.go::Main"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 6949,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "internal/cli/app.go::Main"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1888,
+   "recall": 1.0,
+   "seconds": 0.2,
+   "set": "real",
+   "task": "comply-callees-main",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "internal/cli/app.go::Main"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 7238,
+   "complete": false,
+   "f1": 0.5,
+   "false_verified": [],
+   "gold": [
+    "src/query.rs::overview",
+    "src/query.rs::tree",
+    "src/query.rs::tree_children"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 3047,
+   "recall": 0.3333333333333333,
+   "seconds": 0.56,
+   "set": "real",
+   "task": "hhdm-callers-tree_children",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/query.rs::tree_children"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 687237,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "src/query.rs::overview",
+    "src/query.rs::tree",
+    "src/query.rs::tree_children"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.85,
+   "set": "real",
+   "task": "hhdm-callers-tree_children",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 5230,
+   "complete": false,
+   "f1": 0.5,
+   "false_verified": [],
+   "gold": [
+    "src/query.rs::overview",
+    "src/query.rs::tree",
+    "src/query.rs::tree_children"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1713,
+   "recall": 0.3333333333333333,
+   "seconds": 0.35,
+   "set": "real",
+   "task": "hhdm-callers-tree_children",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/query.rs::tree"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 4959,
+   "complete": false,
+   "f1": 0.5,
+   "false_verified": [],
+   "gold": [
+    "src/query.rs::overview",
+    "src/query.rs::tree",
+    "src/query.rs::tree_children"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1641,
+   "recall": 0.3333333333333333,
+   "seconds": 0.28,
+   "set": "real",
+   "task": "hhdm-callers-tree_children",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "src/query.rs::tree"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 3910,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/win.rs::file_identity"
+   ],
+   "gold": [
+    "src/dupes.rs::full_hash"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 1455,
+   "recall": 0.0,
+   "seconds": 0.26,
+   "set": "real",
+   "task": "hhdm-callers-file_identity",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/win.rs::file_identity"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 521797,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "src/dupes.rs::full_hash"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 1.23,
+   "set": "real",
+   "task": "hhdm-callers-file_identity",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 1896,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/dupes.rs::full_hash"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 736,
+   "recall": 1.0,
+   "seconds": 0.25,
+   "set": "real",
+   "task": "hhdm-callers-file_identity",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/dupes.rs::full_hash"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 1861,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/dupes.rs::full_hash"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 724,
+   "recall": 1.0,
+   "seconds": 0.21,
+   "set": "real",
+   "task": "hhdm-callers-file_identity",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "src/dupes.rs::full_hash"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 7445,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/install.rs::uninstall"
+   ],
+   "gold": [
+    "src/main.rs::main"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2677,
+   "recall": 0.0,
+   "seconds": 0.37,
+   "set": "real",
+   "task": "hhdm-callers-uninstall",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/install.rs::uninstall"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 558769,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "src/main.rs::main"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 1.26,
+   "set": "real",
+   "task": "hhdm-callers-uninstall",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6496,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/main.rs::main"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2073,
+   "recall": 1.0,
+   "seconds": 0.37,
+   "set": "real",
+   "task": "hhdm-callers-uninstall",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/main.rs::main"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 6391,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/main.rs::main"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2045,
+   "recall": 1.0,
+   "seconds": 0.28,
+   "set": "real",
+   "task": "hhdm-callers-uninstall",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "src/main.rs::main"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 5782,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/cleanup.rs::command"
+   ],
+   "gold": [
+    "src/cleanup.rs::describe",
+    "src/cleanup.rs::plan"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2300,
+   "recall": 0.0,
+   "seconds": 0.34,
+   "set": "real",
+   "task": "hhdm-callers-command",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/cleanup.rs::command"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 546950,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "src/cleanup.rs::describe",
+    "src/cleanup.rs::plan"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 1.66,
+   "set": "real",
+   "task": "hhdm-callers-command",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 3543,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/cleanup.rs::describe",
+    "src/cleanup.rs::plan"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1145,
+   "recall": 1.0,
+   "seconds": 0.34,
+   "set": "real",
+   "task": "hhdm-callers-command",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/cleanup.rs::describe",
+    "src/cleanup.rs::plan"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 3344,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/main.rs::Cli"
+   ],
+   "gold": [
+    "src/cleanup.rs::describe",
+    "src/cleanup.rs::plan"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 1090,
+   "recall": 0.0,
+   "seconds": 0.24,
+   "set": "real",
+   "task": "hhdm-callers-command",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "src/main.rs::Cli"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 6824,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/store.rs::list_metas"
+   ],
+   "gold": [
+    "src/store.rs::covering_meta",
+    "src/store.rs::resolve"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 3051,
+   "recall": 0.0,
+   "seconds": 0.41,
+   "set": "real",
+   "task": "hhdm-callers-list_metas",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/store.rs::list_metas"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 679218,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "src/store.rs::covering_meta",
+    "src/store.rs::resolve"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 1.4,
+   "set": "real",
+   "task": "hhdm-callers-list_metas",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 3302,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/store.rs::covering_meta",
+    "src/store.rs::resolve"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1113,
+   "recall": 1.0,
+   "seconds": 0.33,
+   "set": "real",
+   "task": "hhdm-callers-list_metas",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/store.rs::covering_meta",
+    "src/store.rs::resolve"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 3152,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/store.rs::covering_meta",
+    "src/store.rs::resolve"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callers",
+   "possible": [
+    "src/store.rs::covering_meta",
+    "src/store.rs::resolve"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 1073,
+   "recall": 1.0,
+   "seconds": 0.28,
+   "set": "real",
+   "task": "hhdm-callers-list_metas",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 5617,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/cleanup.rs::save_script"
+   ],
+   "gold": [
+    "src/cleanup.rs::plan"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2245,
+   "recall": 0.0,
+   "seconds": 0.33,
+   "set": "real",
+   "task": "hhdm-callers-save_script",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/cleanup.rs::save_script"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 534758,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "src/cleanup.rs::plan"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 1.24,
+   "set": "real",
+   "task": "hhdm-callers-save_script",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 4184,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/main.rs::main"
+   ],
+   "gold": [
+    "src/cleanup.rs::plan"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 1381,
+   "recall": 0.0,
+   "seconds": 0.32,
+   "set": "real",
+   "task": "hhdm-callers-save_script",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/main.rs::main"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 3947,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "src/cleanup.rs::plan"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callers",
+   "possible": [
+    "src/main.rs::main"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 1316,
+   "recall": 0.0,
+   "seconds": 0.27,
+   "set": "real",
+   "task": "hhdm-callers-save_script",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 10081,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "src/query.rs::entry",
+    "src/query.rs::pct",
+    "src/query.rs::tree_children"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [
+    "src/query.rs::tree",
+    "src/snapshot.rs::children",
+    "src/scan.rs::flatten",
+    "src/snapshot.rs::descendants"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 4072,
+   "recall": 0.0,
+   "seconds": 0.66,
+   "set": "real",
+   "task": "hhdm-callees-tree_children",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 690080,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "src/query.rs::entry",
+    "src/query.rs::pct",
+    "src/query.rs::tree_children"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 1.39,
+   "set": "real",
+   "task": "hhdm-callees-tree_children",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 7505,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/query.rs::entry",
+    "src/query.rs::pct",
+    "src/query.rs::tree_children"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2426,
+   "recall": 1.0,
+   "seconds": 0.44,
+   "set": "real",
+   "task": "hhdm-callees-tree_children",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/query.rs::entry",
+    "src/query.rs::pct",
+    "src/query.rs::tree_children"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 7234,
+   "complete": false,
+   "f1": 0.36363636363636365,
+   "false_verified": [
+    "src/changes.rs::disk",
+    "src/snapshot.rs::Snapshot",
+    "src/snapshot.rs::children",
+    "src/snapshot.rs::is_dir",
+    "src/snapshot.rs::node",
+    "src/store.rs::new"
+   ],
+   "gold": [
+    "src/query.rs::entry",
+    "src/query.rs::pct",
+    "src/query.rs::tree_children"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.25,
+   "prompt_tokens": 2354,
+   "recall": 0.6666666666666666,
+   "seconds": 0.65,
+   "set": "real",
+   "task": "hhdm-callees-tree_children",
+   "unproven_verified": 8,
+   "valid_json": true,
+   "verified": [
+    "src/changes.rs::disk",
+    "src/query.rs::entry",
+    "src/query.rs::pct",
+    "src/snapshot.rs::Snapshot",
+    "src/snapshot.rs::children",
+    "src/snapshot.rs::is_dir",
+    "src/snapshot.rs::node",
+    "src/store.rs::new"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 7084,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/win.rs::query"
+   ],
+   "gold": [
+    "src/win.rs::filetime_to_unix"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2538,
+   "recall": 0.0,
+   "seconds": 0.37,
+   "set": "real",
+   "task": "hhdm-callees-query",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/win.rs::query"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 527799,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "src/win.rs::filetime_to_unix"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 1.26,
+   "set": "real",
+   "task": "hhdm-callees-query",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 5243,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/win.rs::filetime_to_unix"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1723,
+   "recall": 1.0,
+   "seconds": 0.28,
+   "set": "real",
+   "task": "hhdm-callees-query",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/win.rs::filetime_to_unix"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 5169,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/store.rs::new",
+    "src/win.rs::IoStatusBlock",
+    "src/win.rs::NtQueryDirectoryFile",
+    "src/win.rs::RawEntry"
+   ],
+   "gold": [
+    "src/win.rs::filetime_to_unix"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 1702,
+   "recall": 0.0,
+   "seconds": 0.37,
+   "set": "real",
+   "task": "hhdm-callees-query",
+   "unproven_verified": 4,
+   "valid_json": true,
+   "verified": [
+    "src/store.rs::new",
+    "src/win.rs::IoStatusBlock",
+    "src/win.rs::NtQueryDirectoryFile",
+    "src/win.rs::RawEntry"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 7457,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "src/install.rs::install_dir"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [
+    "src/install.rs::uninstall"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 2686,
+   "recall": 0.0,
+   "seconds": 0.38,
+   "set": "real",
+   "task": "hhdm-callees-uninstall",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 558784,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "src/install.rs::install_dir"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 1.34,
+   "set": "real",
+   "task": "hhdm-callees-uninstall",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6501,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "src/install.rs::claude",
+    "src/install.rs::set_cleanup_rule",
+    "src/install.rs::set_user_path",
+    "std::fs::remove_dir_all"
+   ],
+   "gold": [
+    "src/install.rs::install_dir"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2075,
+   "recall": 0.0,
+   "seconds": 0.48,
+   "set": "real",
+   "task": "hhdm-callees-uninstall",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/install.rs::claude",
+    "src/install.rs::set_cleanup_rule",
+    "src/install.rs::set_user_path",
+    "std::fs::remove_dir_all"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 6396,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "claude",
+    "install_dir",
+    "set_cleanup_rule",
+    "set_user_path",
+    "std::fs::remove_dir_all"
+   ],
+   "gold": [
+    "src/install.rs::install_dir"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2047,
+   "recall": 0.0,
+   "seconds": 0.41,
+   "set": "real",
+   "task": "hhdm-callees-uninstall",
+   "unproven_verified": 5,
+   "valid_json": true,
+   "verified": [
+    "claude",
+    "install_dir",
+    "set_cleanup_rule",
+    "set_user_path",
+    "std::fs::remove_dir_all"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 8623,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "src/cleanup.rs::ps_quote"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [
+    "src/cleanup.rs::Cmd"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 3323,
+   "recall": 0.0,
+   "seconds": 0.43,
+   "set": "real",
+   "task": "hhdm-callees-command",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 549795,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "src/cleanup.rs::ps_quote"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 1.36,
+   "set": "real",
+   "task": "hhdm-callees-command",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 5818,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/cleanup.rs::ps_quote"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1858,
+   "recall": 1.0,
+   "seconds": 0.3,
+   "set": "real",
+   "task": "hhdm-callees-command",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/cleanup.rs::ps_quote"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 5619,
+   "complete": true,
+   "f1": 0.5,
+   "false_verified": [
+    "src/cleanup.rs::cmd",
+    "src/config.rs::path"
+   ],
+   "gold": [
+    "src/cleanup.rs::ps_quote"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 1803,
+   "recall": 1.0,
+   "seconds": 0.34,
+   "set": "real",
+   "task": "hhdm-callees-command",
+   "unproven_verified": 3,
+   "valid_json": true,
+   "verified": [
+    "src/cleanup.rs::ps_quote",
+    "src/cleanup.rs::cmd",
+    "src/config.rs::path"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 9671,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "src/store.rs::cache_dir"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [
+    "src/store.rs::covering_meta",
+    "src/store.rs::resolve",
+    "src/drives.rs::drives"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 4080,
+   "recall": 0.0,
+   "seconds": 0.58,
+   "set": "real",
+   "task": "hhdm-callees-list_metas",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 682066,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "src/store.rs::cache_dir"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 1.38,
+   "set": "real",
+   "task": "hhdm-callees-list_metas",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 5577,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/store.rs::cache_dir"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1826,
+   "recall": 1.0,
+   "seconds": 0.33,
+   "set": "real",
+   "task": "hhdm-callees-list_metas",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/store.rs::cache_dir"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 5427,
+   "complete": true,
+   "f1": 0.2857142857142857,
+   "false_verified": [
+    "src/cleanup.rs::collect",
+    "src/config.rs::path",
+    "src/scan.rs::flatten",
+    "src/store.rs::Meta",
+    "src/store.rs::new"
+   ],
+   "gold": [
+    "src/store.rs::cache_dir"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.16666666666666666,
+   "prompt_tokens": 1786,
+   "recall": 1.0,
+   "seconds": 0.49,
+   "set": "real",
+   "task": "hhdm-callees-list_metas",
+   "unproven_verified": 6,
+   "valid_json": true,
+   "verified": [
+    "src/cleanup.rs::collect",
+    "src/config.rs::path",
+    "src/scan.rs::flatten",
+    "src/store.rs::Meta",
+    "src/store.rs::cache_dir",
+    "src/store.rs::new"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 12863,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "src/cleanup.rs::dir_rule",
+    "src/cleanup.rs::file_rule",
+    "src/util.rs::is_drive_root",
+    "src/util.rs::join"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [
+    "src/cleanup.rs::collect"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 5612,
+   "recall": 0.0,
+   "seconds": 0.61,
+   "set": "real",
+   "task": "hhdm-callees-collect",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 710678,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "src/cleanup.rs::dir_rule",
+    "src/cleanup.rs::file_rule",
+    "src/util.rs::is_drive_root",
+    "src/util.rs::join"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 4.76,
+   "set": "real",
+   "task": "hhdm-callees-collect",
+   "unproven_verified": 0,
+   "valid_json": false,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6748,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "src/cleanup.rs::dir_rule",
+    "src/cleanup.rs::file_rule",
+    "src/util.rs::is_drive_root",
+    "src/util.rs::join"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2231,
+   "recall": 1.0,
+   "seconds": 0.53,
+   "set": "real",
+   "task": "hhdm-callees-collect",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "src/cleanup.rs::dir_rule",
+    "src/cleanup.rs::file_rule",
+    "src/util.rs::is_drive_root",
+    "src/util.rs::join"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 6403,
+   "complete": false,
+   "f1": 0.16666666666666666,
+   "false_verified": [
+    "src/cleanup.rs::Finding",
+    "src/config.rs::keep_patterns",
+    "src/snapshot.rs::Snapshot",
+    "src/snapshot.rs::children",
+    "src/snapshot.rs::node",
+    "src/snapshot.rs::path_of",
+    "src/store.rs::new"
+   ],
+   "gold": [
+    "src/cleanup.rs::dir_rule",
+    "src/cleanup.rs::file_rule",
+    "src/util.rs::is_drive_root",
+    "src/util.rs::join"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.125,
+   "prompt_tokens": 2133,
+   "recall": 0.25,
+   "seconds": 0.66,
+   "set": "real",
+   "task": "hhdm-callees-collect",
+   "unproven_verified": 8,
+   "valid_json": true,
+   "verified": [
+    "src/cleanup.rs::Finding",
+    "src/config.rs::keep_patterns",
+    "src/snapshot.rs::Snapshot",
+    "src/snapshot.rs::children",
+    "src/snapshot.rs::node",
+    "src/snapshot.rs::path_of",
+    "src/store.rs::new",
+    "src/util.rs::is_drive_root"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 17740,
+   "complete": false,
+   "f1": 0.75,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::dock"
+   ],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::dockSession",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::play_",
+    "apps/web/src/lib/media/player.ts::showDock"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.75,
+   "prompt_tokens": 6328,
+   "recall": 0.75,
+   "seconds": 1.17,
+   "set": "real",
+   "task": "seancarneywebsite-callers-dock",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::dock",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::dockSession",
+    "apps/web/src/lib/media/player.ts::showDock"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 1805182,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::dockSession",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::play_",
+    "apps/web/src/lib/media/player.ts::showDock"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 3.85,
+   "set": "real",
+   "task": "seancarneywebsite-callers-dock",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 10809,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::dockSession",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::play_",
+    "apps/web/src/lib/media/player.ts::showDock"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 3153,
+   "recall": 1.0,
+   "seconds": 0.82,
+   "set": "real",
+   "task": "seancarneywebsite-callers-dock",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::dockSession",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::play_",
+    "apps/web/src/lib/media/player.ts::showDock"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 10310,
+   "complete": false,
+   "f1": 0.4,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::dockSession",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::play_",
+    "apps/web/src/lib/media/player.ts::showDock"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 3031,
+   "recall": 0.25,
+   "seconds": 0.27,
+   "set": "real",
+   "task": "seancarneywebsite-callers-dock",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::dockSession"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 13555,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::offerNext"
+   ],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::onEnded"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 4545,
+   "recall": 0.0,
+   "seconds": 0.57,
+   "set": "real",
+   "task": "seancarneywebsite-callers-offerNext",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::offerNext"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 1832058,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::onEnded"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.89,
+   "set": "real",
+   "task": "seancarneywebsite-callers-offerNext",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 10696,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::onEnded"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2931,
+   "recall": 1.0,
+   "seconds": 0.49,
+   "set": "real",
+   "task": "seancarneywebsite-callers-offerNext",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::onEnded"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 10353,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::onEnded"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2844,
+   "recall": 1.0,
+   "seconds": 0.29,
+   "set": "real",
+   "task": "seancarneywebsite-callers-offerNext",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::onEnded"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 18832,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/analytics/experiments.ts::getExperimentProps"
+   ],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 7166,
+   "recall": 0.0,
+   "seconds": 0.83,
+   "set": "real",
+   "task": "seancarneywebsite-callers-getExperimentProps",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/analytics/experiments.ts::getExperimentProps"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 1868450,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 3.5,
+   "set": "real",
+   "task": "seancarneywebsite-callers-getExperimentProps",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 11093,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 3025,
+   "recall": 1.0,
+   "seconds": 0.4,
+   "set": "real",
+   "task": "seancarneywebsite-callers-getExperimentProps",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/analytics/track.ts::track"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 10803,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2948,
+   "recall": 1.0,
+   "seconds": 0.3,
+   "set": "real",
+   "task": "seancarneywebsite-callers-getExperimentProps",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/analytics/track.ts::track"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 14222,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::undock"
+   ],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::back",
+    "apps/web/src/lib/media/player.ts::observeTile",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 4788,
+   "recall": 0.0,
+   "seconds": 0.58,
+   "set": "real",
+   "task": "seancarneywebsite-callers-undock",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::undock"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 1793384,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::back",
+    "apps/web/src/lib/media/player.ts::observeTile",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 3.53,
+   "set": "real",
+   "task": "seancarneywebsite-callers-undock",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 9680,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::back",
+    "apps/web/src/lib/media/player.ts::observeTile",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2666,
+   "recall": 1.0,
+   "seconds": 0.49,
+   "set": "real",
+   "task": "seancarneywebsite-callers-undock",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::back",
+    "apps/web/src/lib/media/player.ts::observeTile",
+    "apps/web/src/lib/media/player.ts::play_"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 9491,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::back",
+    "apps/web/src/lib/media/player.ts::observeTile",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callers",
+   "possible": [
+    "apps/web/src/data/events.json::[1].blocks[3].items[2].v"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 2619,
+   "recall": 0.0,
+   "seconds": 0.32,
+   "set": "real",
+   "task": "seancarneywebsite-callers-undock",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 12481,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/scout/integrity.ts::visitorText"
+   ],
+   "gold": [
+    "apps/web/src/pages/api/scout.ts::POST"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 4001,
+   "recall": 0.0,
+   "seconds": 0.51,
+   "set": "real",
+   "task": "seancarneywebsite-callers-visitorText",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/scout/integrity.ts::visitorText"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 1719430,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/pages/api/scout.ts::POST"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.28,
+   "set": "real",
+   "task": "seancarneywebsite-callers-visitorText",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 9882,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/pages/api/scout.ts::POST"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2692,
+   "recall": 1.0,
+   "seconds": 0.37,
+   "set": "real",
+   "task": "seancarneywebsite-callers-visitorText",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/pages/api/scout.ts::POST"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 9837,
+   "complete": true,
+   "f1": 0.6666666666666666,
+   "false_verified": [
+    "apps/web/src/lib/scout/tools.ts::executeTool"
+   ],
+   "gold": [
+    "apps/web/src/pages/api/scout.ts::POST"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.5,
+   "prompt_tokens": 2679,
+   "recall": 1.0,
+   "seconds": 0.36,
+   "set": "real",
+   "task": "seancarneywebsite-callers-visitorText",
+   "unproven_verified": 2,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/scout/tools.ts::executeTool",
+    "apps/web/src/pages/api/scout.ts::POST"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 13610,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::close"
+   ],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::onEnded",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 4519,
+   "recall": 0.0,
+   "seconds": 0.55,
+   "set": "real",
+   "task": "seancarneywebsite-callers-close",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::close"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 1781032,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::onEnded",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.62,
+   "set": "real",
+   "task": "seancarneywebsite-callers-close",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 9490,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::onEnded",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "gold_in_payload": 2,
+   "kind": "callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2614,
+   "recall": 1.0,
+   "seconds": 0.44,
+   "set": "real",
+   "task": "seancarneywebsite-callers-close",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::onEnded",
+    "apps/web/src/lib/media/player.ts::play_"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 9361,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/components/home/Hero.astro::reel"
+   ],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::onEnded",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2581,
+   "recall": 0.0,
+   "seconds": 0.28,
+   "set": "real",
+   "task": "seancarneywebsite-callers-close",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/components/home/Hero.astro::reel"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 12763,
+   "complete": false,
+   "f1": 0.25,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::onEnded"
+   ],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::inView",
+    "apps/web/src/lib/media/player.ts::nextTile",
+    "apps/web/src/lib/media/player.ts::play_",
+    "apps/web/src/lib/media/player.ts::reduceMotion"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [
+    "apps/web/src/lib/media/player.ts::play",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 4444,
+   "recall": 0.2,
+   "seconds": 0.7,
+   "set": "real",
+   "task": "seancarneywebsite-callees-offerNext",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::onEnded"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 1831266,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::inView",
+    "apps/web/src/lib/media/player.ts::nextTile",
+    "apps/web/src/lib/media/player.ts::play_",
+    "apps/web/src/lib/media/player.ts::reduceMotion"
+   ],
+   "gold_in_payload": 5,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.59,
+   "set": "real",
+   "task": "seancarneywebsite-callees-offerNext",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 9906,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::inView",
+    "apps/web/src/lib/media/player.ts::nextTile",
+    "apps/web/src/lib/media/player.ts::play_",
+    "apps/web/src/lib/media/player.ts::reduceMotion"
+   ],
+   "gold_in_payload": 5,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2804,
+   "recall": 1.0,
+   "seconds": 0.9,
+   "set": "real",
+   "task": "seancarneywebsite-callees-offerNext",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::inView",
+    "apps/web/src/lib/media/player.ts::nextTile",
+    "apps/web/src/lib/media/player.ts::play_",
+    "apps/web/src/lib/media/player.ts::reduceMotion"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 9563,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::inView",
+    "apps/web/src/lib/media/player.ts::nextTile",
+    "apps/web/src/lib/media/player.ts::play_",
+    "apps/web/src/lib/media/player.ts::reduceMotion"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2717,
+   "recall": 0.0,
+   "seconds": 3.42,
+   "set": "real",
+   "task": "seancarneywebsite-callees-offerNext",
+   "unproven_verified": 0,
+   "valid_json": false,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 13430,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::undock"
+   ],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::move",
+    "apps/web/src/lib/media/yt-player.ts::embedUrl"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 4687,
+   "recall": 0.0,
+   "seconds": 0.57,
+   "set": "real",
+   "task": "seancarneywebsite-callees-undock",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::undock"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 1792590,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::move",
+    "apps/web/src/lib/media/yt-player.ts::embedUrl"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.46,
+   "set": "real",
+   "task": "seancarneywebsite-callees-undock",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 8890,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::move",
+    "apps/web/src/lib/media/yt-player.ts::embedUrl"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2539,
+   "recall": 1.0,
+   "seconds": 0.65,
+   "set": "real",
+   "task": "seancarneywebsite-callees-undock",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::move",
+    "apps/web/src/lib/media/yt-player.ts::embedUrl"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 8701,
+   "complete": true,
+   "f1": 0.888888888888889,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::Session"
+   ],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::move",
+    "apps/web/src/lib/media/yt-player.ts::embedUrl"
+   ],
+   "gold_in_payload": 4,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.8,
+   "prompt_tokens": 2492,
+   "recall": 1.0,
+   "seconds": 0.75,
+   "set": "real",
+   "task": "seancarneywebsite-callees-undock",
+   "unproven_verified": 5,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::Session",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::move",
+    "apps/web/src/lib/media/yt-player.ts::embedUrl"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 13098,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::offerNext",
+    "apps/web/src/lib/media/player.ts::onEnded",
+    "apps/web/src/lib/media/player.ts::play",
+    "apps/web/src/lib/media/player.ts::play_"
+   ],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::flush",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::restoreTile",
+    "apps/web/src/lib/media/player.ts::signal"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 4563,
+   "recall": 0.0,
+   "seconds": 0.78,
+   "set": "real",
+   "task": "seancarneywebsite-callees-close",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::offerNext",
+    "apps/web/src/lib/media/player.ts::onEnded",
+    "apps/web/src/lib/media/player.ts::play",
+    "apps/web/src/lib/media/player.ts::play_"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 1780523,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::flush",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::restoreTile",
+    "apps/web/src/lib/media/player.ts::signal"
+   ],
+   "gold_in_payload": 5,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.42,
+   "set": "real",
+   "task": "seancarneywebsite-callees-close",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 9005,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::flush",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::restoreTile",
+    "apps/web/src/lib/media/player.ts::signal"
+   ],
+   "gold_in_payload": 5,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2653,
+   "recall": 1.0,
+   "seconds": 0.86,
+   "set": "real",
+   "task": "seancarneywebsite-callees-close",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::flush",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::restoreTile",
+    "apps/web/src/lib/media/player.ts::signal"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 8876,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "disconnect",
+    "flush",
+    "hideDock",
+    "remove",
+    "restoreTile",
+    "signal",
+    "stop"
+   ],
+   "gold": [
+    "apps/web/src/lib/analytics/track.ts::track",
+    "apps/web/src/lib/media/player.ts::flush",
+    "apps/web/src/lib/media/player.ts::hideDock",
+    "apps/web/src/lib/media/player.ts::restoreTile",
+    "apps/web/src/lib/media/player.ts::signal"
+   ],
+   "gold_in_payload": 5,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2620,
+   "recall": 0.0,
+   "seconds": 0.32,
+   "set": "real",
+   "task": "seancarneywebsite-callees-close",
+   "unproven_verified": 7,
+   "valid_json": true,
+   "verified": [
+    "flush",
+    "stop",
+    "disconnect",
+    "remove",
+    "hideDock",
+    "restoreTile",
+    "signal"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 14882,
+   "complete": true,
+   "f1": 0.5,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::dockSession",
+    "apps/web/src/lib/media/player.ts::hideDock"
+   ],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::dock"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 5436,
+   "recall": 1.0,
+   "seconds": 0.79,
+   "set": "real",
+   "task": "seancarneywebsite-callees-showDock",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::dockSession",
+    "apps/web/src/lib/media/player.ts::dock",
+    "apps/web/src/lib/media/player.ts::hideDock"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 1772926,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::dock"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.5,
+   "set": "real",
+   "task": "seancarneywebsite-callees-showDock",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 9296,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::dock"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2625,
+   "recall": 1.0,
+   "seconds": 0.32,
+   "set": "real",
+   "task": "seancarneywebsite-callees-showDock",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::dock"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 8797,
+   "complete": true,
+   "f1": 0.5,
+   "false_verified": [
+    "apps/web/src/lib/media/player.ts::Session",
+    "apps/web/src/lib/media/player.ts::back"
+   ],
+   "gold": [
+    "apps/web/src/lib/media/player.ts::dock"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.3333333333333333,
+   "prompt_tokens": 2502,
+   "recall": 1.0,
+   "seconds": 0.42,
+   "set": "real",
+   "task": "seancarneywebsite-callees-showDock",
+   "unproven_verified": 3,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/media/player.ts::Session",
+    "apps/web/src/lib/media/player.ts::back",
+    "apps/web/src/lib/media/player.ts::dock"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 16567,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/analytics/experiments.ts::getExperimentProps",
+    "apps/web/src/lib/analytics/retention.ts::retentionProps",
+    "apps/web/src/lib/analytics/track.ts::clean"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [
+    "apps/web/src/lib/analytics/autotrack.ts::engagedTime",
+    "apps/web/src/lib/analytics/autotrack.ts::onClick",
+    "apps/web/src/lib/analytics/autotrack.ts::scrollDepth",
+    "apps/web/src/lib/analytics/autotrack.ts::sectionViews",
+    "apps/web/src/lib/analytics/autotrack.ts::startAutotrack",
+    "apps/web/src/lib/analytics/autotrack.ts::webVitals",
+    "apps/web/src/lib/analytics/new-since.ts::markNewSinceLastVisit"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 5878,
+   "recall": 0.0,
+   "seconds": 1.37,
+   "set": "real",
+   "task": "seancarneywebsite-callees-track",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 1873808,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/analytics/experiments.ts::getExperimentProps",
+    "apps/web/src/lib/analytics/retention.ts::retentionProps",
+    "apps/web/src/lib/analytics/track.ts::clean"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.46,
+   "set": "real",
+   "task": "seancarneywebsite-callees-track",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 9770,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/analytics/experiments.ts::getExperimentProps",
+    "apps/web/src/lib/analytics/retention.ts::retentionProps",
+    "apps/web/src/lib/analytics/track.ts::clean"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2696,
+   "recall": 1.0,
+   "seconds": 0.68,
+   "set": "real",
+   "task": "seancarneywebsite-callees-track",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/analytics/experiments.ts::getExperimentProps",
+    "apps/web/src/lib/analytics/retention.ts::retentionProps",
+    "apps/web/src/lib/analytics/track.ts::clean"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 9467,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "window.clarity",
+    "window.dataLayer.push",
+    "window.fbq.track",
+    "window.gtag",
+    "window.plausible"
+   ],
+   "gold": [
+    "apps/web/src/lib/analytics/experiments.ts::getExperimentProps",
+    "apps/web/src/lib/analytics/retention.ts::retentionProps",
+    "apps/web/src/lib/analytics/track.ts::clean"
+   ],
+   "gold_in_payload": 3,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2619,
+   "recall": 0.0,
+   "seconds": 0.41,
+   "set": "real",
+   "task": "seancarneywebsite-callees-track",
+   "unproven_verified": 5,
+   "valid_json": true,
+   "verified": [
+    "window.dataLayer.push",
+    "window.plausible",
+    "window.gtag",
+    "window.clarity",
+    "window.fbq.track"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 11546,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/feeds/youtube.ts::isoToSec"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [
+    "apps/web/src/lib/feeds/youtube.ts::fetchChannelVideos"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 3857,
+   "recall": 0.0,
+   "seconds": 0.52,
+   "set": "real",
+   "task": "seancarneywebsite-callees-fetchChannelVideos",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 1699979,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/feeds/youtube.ts::isoToSec"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.7,
+   "set": "real",
+   "task": "seancarneywebsite-callees-fetchChannelVideos",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 8613,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "apps/web/src/lib/feeds/youtube.ts::isoToSec"
+   ],
+   "gold_in_payload": 1,
+   "kind": "callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 2443,
+   "recall": 1.0,
+   "seconds": 0.33,
+   "set": "real",
+   "task": "seancarneywebsite-callees-fetchChannelVideos",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "apps/web/src/lib/feeds/youtube.ts::isoToSec"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 8529,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "get"
+   ],
+   "gold": [
+    "apps/web/src/lib/feeds/youtube.ts::isoToSec"
+   ],
+   "gold_in_payload": 0,
+   "kind": "callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 2418,
+   "recall": 0.0,
+   "seconds": 0.2,
+   "set": "real",
+   "task": "seancarneywebsite-callees-fetchChannelVideos",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "get"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 10025,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "config.py::referenced_files"
+   ],
+   "gold": [
+    "config.py::affected_paths"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 4377,
+   "recall": 0.0,
+   "seconds": 0.71,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-referenced_files",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "config.py::referenced_files"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 1793064,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::affected_paths"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 4.13,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-referenced_files",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6284,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::affected_paths"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1648,
+   "recall": 1.0,
+   "seconds": 0.31,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-referenced_files",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "config.py::affected_paths"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 5695,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::affected_paths"
+   ],
+   "gold_in_payload": 0,
+   "kind": "runtime_callers",
+   "possible": [
+    "extract.py::_resolve_call_target"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 1517,
+   "recall": 0.0,
+   "seconds": 0.24,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-referenced_files",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 10376,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "tsgraph.py::_walk_module_statement"
+   ],
+   "gold": [
+    "tsgraph.py::resolve_file"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 4530,
+   "recall": 0.0,
+   "seconds": 0.5,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_walk_module_statement",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "tsgraph.py::_walk_module_statement"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 2133928,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::resolve_file"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.6,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_walk_module_statement",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6889,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::resolve_file"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1754,
+   "recall": 1.0,
+   "seconds": 0.34,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_walk_module_statement",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "tsgraph.py::resolve_file"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 6260,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::resolve_file"
+   ],
+   "gold_in_payload": 0,
+   "kind": "runtime_callers",
+   "possible": [
+    "tsgraph.py::_walk_function_like"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 1610,
+   "recall": 0.0,
+   "seconds": 0.29,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_walk_module_statement",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 11811,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "config.py::_JsonWalker._parse_string"
+   ],
+   "gold": [
+    "config.py::_JsonWalker._parse_object",
+    "config.py::_JsonWalker._parse_value"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 5069,
+   "recall": 0.0,
+   "seconds": 0.59,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_parse_string",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "config.py::_JsonWalker._parse_string"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 1842844,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::_JsonWalker._parse_object",
+    "config.py::_JsonWalker._parse_value"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.59,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_parse_string",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6517,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::_JsonWalker._parse_object",
+    "config.py::_JsonWalker._parse_value"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1683,
+   "recall": 1.0,
+   "seconds": 0.39,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_parse_string",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "config.py::_JsonWalker._parse_object",
+    "config.py::_JsonWalker._parse_value"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 5879,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::_JsonWalker._parse_object",
+    "config.py::_JsonWalker._parse_value"
+   ],
+   "gold_in_payload": 0,
+   "kind": "runtime_callers",
+   "possible": [
+    "extract.py::_resolve_call_target"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 1540,
+   "recall": 0.0,
+   "seconds": 0.29,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_parse_string",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 10614,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "unigraph.py::_unit_paths"
+   ],
+   "gold": [
+    "unigraph.py::resolve_unigraph_sources",
+    "unigraph.py::unit_affected_paths"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 4631,
+   "recall": 0.0,
+   "seconds": 0.51,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_unit_paths",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "unigraph.py::_unit_paths"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 1830177,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "unigraph.py::resolve_unigraph_sources",
+    "unigraph.py::unit_affected_paths"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 3.34,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_unit_paths",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6268,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "unigraph.py::resolve_unigraph_sources",
+    "unigraph.py::unit_affected_paths"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1652,
+   "recall": 1.0,
+   "seconds": 0.39,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_unit_paths",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "unigraph.py::resolve_unigraph_sources",
+    "unigraph.py::unit_affected_paths"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 5627,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "unigraph.py::resolve_unigraph_sources",
+    "unigraph.py::unit_affected_paths"
+   ],
+   "gold_in_payload": 0,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 1507,
+   "recall": 0.0,
+   "seconds": 0.22,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_unit_paths",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 14210,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "compiler.py::compile_mentions"
+   ],
+   "gold": [
+    "compiler.py::compile_related",
+    "compiler.py::compile_timeline"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 6464,
+   "recall": 0.0,
+   "seconds": 0.69,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-compile_mentions",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "compiler.py::compile_mentions"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 2633500,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "compiler.py::compile_related",
+    "compiler.py::compile_timeline"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 3.62,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-compile_mentions",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6958,
+   "complete": true,
+   "f1": 0.8,
+   "false_verified": [
+    "memory.py::Memory.mentions"
+   ],
+   "gold": [
+    "compiler.py::compile_related",
+    "compiler.py::compile_timeline"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.6666666666666666,
+   "prompt_tokens": 1788,
+   "recall": 1.0,
+   "seconds": 0.41,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-compile_mentions",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "compiler.py::compile_related",
+    "compiler.py::compile_timeline",
+    "memory.py::Memory.mentions"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 6292,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "compiler.py::compile_related",
+    "compiler.py::compile_timeline"
+   ],
+   "gold_in_payload": 0,
+   "kind": "runtime_callers",
+   "possible": [
+    "memory.py::Memory.mentions"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 1638,
+   "recall": 0.0,
+   "seconds": 0.29,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-compile_mentions",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 9432,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "prose.py::_context_hits"
+   ],
+   "gold": [
+    "prose.py::_build_bare_mentions",
+    "prose.py::_requalify"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 4253,
+   "recall": 0.0,
+   "seconds": 0.5,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_context_hits",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "prose.py::_context_hits"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 2345112,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "prose.py::_build_bare_mentions",
+    "prose.py::_requalify"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.75,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_context_hits",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 5471,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "prose.py::_build_bare_mentions",
+    "prose.py::_requalify"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1500,
+   "recall": 1.0,
+   "seconds": 0.41,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_context_hits",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "prose.py::_build_bare_mentions",
+    "prose.py::_requalify"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 4848,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "prose.py::_build_bare_mentions",
+    "prose.py::_requalify"
+   ],
+   "gold_in_payload": 0,
+   "kind": "runtime_callers",
+   "possible": [
+    "extract.py::_resolve_call_target"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 1363,
+   "recall": 0.0,
+   "seconds": 0.27,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_context_hits",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 11099,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "tsgraph.py::_walk_decorator"
+   ],
+   "gold": [
+    "tsgraph.py::_walk"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 4890,
+   "recall": 0.0,
+   "seconds": 0.53,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_walk_decorator",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "tsgraph.py::_walk_decorator"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 2573239,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_walk"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.87,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_walk_decorator",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6021,
+   "complete": true,
+   "f1": 0.4,
+   "false_verified": [
+    "tsgraph.py::_walk_class",
+    "tsgraph.py::_walk_function_like",
+    "tsgraph.py::_walk_module_statement"
+   ],
+   "gold": [
+    "tsgraph.py::_walk"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.25,
+   "prompt_tokens": 1563,
+   "recall": 1.0,
+   "seconds": 0.47,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_walk_decorator",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "tsgraph.py::_walk",
+    "tsgraph.py::_walk_class",
+    "tsgraph.py::_walk_function_like",
+    "tsgraph.py::_walk_module_statement"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 5252,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_walk"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callers",
+   "possible": [
+    "tsgraph.py::_walk_module_statement"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 1383,
+   "recall": 0.0,
+   "seconds": 0.28,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_walk_decorator",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 14630,
+   "complete": true,
+   "f1": 0.4,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::resolve_ts_sources"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callers",
+   "possible": [
+    "extract.py::_resolve_call_target",
+    "extract.py::_resolve_code",
+    "prose.py::_mention_signals"
+   ],
+   "precision": 0.25,
+   "prompt_tokens": 6197,
+   "recall": 1.0,
+   "seconds": 0.83,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-resolve_file",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "tsgraph.py::resolve_ts_sources"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 2073655,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::resolve_ts_sources"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 5.81,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-resolve_file",
+   "unproven_verified": 0,
+   "valid_json": false,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6807,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::resolve_ts_sources"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1799,
+   "recall": 1.0,
+   "seconds": 0.34,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-resolve_file",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "tsgraph.py::resolve_ts_sources"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 6062,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::resolve_ts_sources"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callers",
+   "possible": [
+    "blocks.py::resolve_block_edges"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 1630,
+   "recall": 0.0,
+   "seconds": 0.29,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-resolve_file",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 15735,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "tsgraph.py::scan_module"
+   ],
+   "gold": [
+    "tsgraph.py::_import_target",
+    "tsgraph.py::resolve_ts_sources",
+    "tsgraph.py::ts_affected_paths"
+   ],
+   "gold_in_payload": 3,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 7855,
+   "recall": 0.0,
+   "seconds": 0.82,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-scan_module",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "tsgraph.py::scan_module"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 2473557,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_import_target",
+    "tsgraph.py::resolve_ts_sources",
+    "tsgraph.py::ts_affected_paths"
+   ],
+   "gold_in_payload": 3,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.89,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-scan_module",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6821,
+   "complete": false,
+   "f1": 0.5,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_import_target",
+    "tsgraph.py::resolve_ts_sources",
+    "tsgraph.py::ts_affected_paths"
+   ],
+   "gold_in_payload": 3,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1809,
+   "recall": 0.3333333333333333,
+   "seconds": 0.33,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-scan_module",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "tsgraph.py::resolve_ts_sources"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 6088,
+   "complete": false,
+   "f1": 0.5,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_import_target",
+    "tsgraph.py::resolve_ts_sources",
+    "tsgraph.py::ts_affected_paths"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1639,
+   "recall": 0.3333333333333333,
+   "seconds": 0.28,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-scan_module",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "tsgraph.py::resolve_ts_sources"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 8340,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "unigraph.py::_is_external_test_caller"
+   ],
+   "gold": [
+    "unigraph.py::_resolve_bare",
+    "unigraph.py::_v2_resolve_bare"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 3891,
+   "recall": 0.0,
+   "seconds": 0.46,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_is_external_test_caller",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "unigraph.py::_is_external_test_caller"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 2194373,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "unigraph.py::_resolve_bare",
+    "unigraph.py::_v2_resolve_bare"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.67,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_is_external_test_caller",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6752,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "unigraph.py::_resolve_bare",
+    "unigraph.py::_v2_resolve_bare"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1910,
+   "recall": 1.0,
+   "seconds": 0.41,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_is_external_test_caller",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "unigraph.py::_resolve_bare",
+    "unigraph.py::_v2_resolve_bare"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 5933,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "unigraph.py::_resolve_bare",
+    "unigraph.py::_v2_resolve_bare"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1719,
+   "recall": 1.0,
+   "seconds": 0.36,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_is_external_test_caller",
+   "unproven_verified": 2,
+   "valid_json": true,
+   "verified": [
+    "unigraph.py::_resolve_bare",
+    "unigraph.py::_v2_resolve_bare"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 12449,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::_entity",
+    "config.py::_parse_ini",
+    "config.py::_parse_toml",
+    "config.py::_toml_navigate"
+   ],
+   "gold_in_payload": 4,
+   "kind": "runtime_callers",
+   "possible": [
+    "config.py::_is_small_scalar"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 5523,
+   "recall": 0.0,
+   "seconds": 0.62,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_is_small_scalar",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 1910257,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::_entity",
+    "config.py::_parse_ini",
+    "config.py::_parse_toml",
+    "config.py::_toml_navigate"
+   ],
+   "gold_in_payload": 4,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.68,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_is_small_scalar",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6037,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::_entity",
+    "config.py::_parse_ini",
+    "config.py::_parse_toml",
+    "config.py::_toml_navigate"
+   ],
+   "gold_in_payload": 4,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1587,
+   "recall": 1.0,
+   "seconds": 0.44,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_is_small_scalar",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "config.py::_entity",
+    "config.py::_parse_ini",
+    "config.py::_parse_toml",
+    "config.py::_toml_navigate"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 5373,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::_entity",
+    "config.py::_parse_ini",
+    "config.py::_parse_toml",
+    "config.py::_toml_navigate"
+   ],
+   "gold_in_payload": 0,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 1433,
+   "recall": 0.0,
+   "seconds": 0.19,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_is_small_scalar",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 10884,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "extract.py::_header_calls"
+   ],
+   "gold": [
+    "extract.py::_without_nested_scopes"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 4926,
+   "recall": 0.0,
+   "seconds": 0.53,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_header_calls",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "extract.py::_header_calls"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 2312887,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "extract.py::_without_nested_scopes"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.77,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_header_calls",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6260,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "extract.py::_without_nested_scopes"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1631,
+   "recall": 1.0,
+   "seconds": 0.33,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_header_calls",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "extract.py::_without_nested_scopes"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 5657,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "extract.py::_without_nested_scopes"
+   ],
+   "gold_in_payload": 0,
+   "kind": "runtime_callers",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 1496,
+   "recall": 0.0,
+   "seconds": 0.21,
+   "set": "runtime",
+   "task": "tunic-runtime_callers-_header_calls",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 10030,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "config.py::referenced_files"
+   ],
+   "gold": [
+    "config.py::_sibling_path"
+   ],
+   "gold_in_payload": 0,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 4379,
+   "recall": 0.0,
+   "seconds": 0.19,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-referenced_files",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "config.py::referenced_files"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 1793068,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::_sibling_path"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 4.1,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-referenced_files",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6289,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::_sibling_path"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1650,
+   "recall": 1.0,
+   "seconds": 0.23,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-referenced_files",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "config.py::_sibling_path"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 5700,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "config.py::_sibling_path"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callees",
+   "possible": [
+    "_sibling_path"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 1519,
+   "recall": 0.0,
+   "seconds": 0.19,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-referenced_files",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 10380,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_decl_name",
+    "tsgraph.py::_named",
+    "tsgraph.py::_walk",
+    "tsgraph.py::_walk_function_like"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callees",
+   "possible": [
+    "extract.py::_resolve_call_target",
+    "extract.py::_resolve_code",
+    "prose.py::_mention_signals",
+    "scope.py::resolve_scope"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 4531,
+   "recall": 0.0,
+   "seconds": 0.33,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-_walk_module_statement",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 2133932,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_decl_name",
+    "tsgraph.py::_named",
+    "tsgraph.py::_walk",
+    "tsgraph.py::_walk_function_like"
+   ],
+   "gold_in_payload": 4,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 3.04,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-_walk_module_statement",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6894,
+   "complete": true,
+   "f1": 0.888888888888889,
+   "false_verified": [
+    "tsgraph.py::_walk_decorator"
+   ],
+   "gold": [
+    "tsgraph.py::_decl_name",
+    "tsgraph.py::_named",
+    "tsgraph.py::_walk",
+    "tsgraph.py::_walk_function_like"
+   ],
+   "gold_in_payload": 4,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 0.8,
+   "prompt_tokens": 1756,
+   "recall": 1.0,
+   "seconds": 0.42,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-_walk_module_statement",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "tsgraph.py::_decl_name",
+    "tsgraph.py::_named",
+    "tsgraph.py::_walk",
+    "tsgraph.py::_walk_decorator",
+    "tsgraph.py::_walk_function_like"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 6265,
+   "complete": false,
+   "f1": 0.5714285714285715,
+   "false_verified": [
+    "tsgraph.py::_walk_decorator"
+   ],
+   "gold": [
+    "tsgraph.py::_decl_name",
+    "tsgraph.py::_named",
+    "tsgraph.py::_walk",
+    "tsgraph.py::_walk_function_like"
+   ],
+   "gold_in_payload": 3,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 0.6666666666666666,
+   "prompt_tokens": 1612,
+   "recall": 0.5,
+   "seconds": 0.28,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-_walk_module_statement",
+   "unproven_verified": 3,
+   "valid_json": true,
+   "verified": [
+    "tsgraph.py::_decl_name",
+    "tsgraph.py::_walk_decorator",
+    "tsgraph.py::_walk_function_like"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 14214,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "compiler.py::_evidence",
+    "lifecycle.py::suppressed_ids",
+    "store.py::GraphStore.view"
+   ],
+   "gold_in_payload": 0,
+   "kind": "runtime_callees",
+   "possible": [
+    "extract.py::_resolve_call_target",
+    "extract.py::_resolve_code",
+    "prose.py::_mention_signals",
+    "scope.py::resolve_scope"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 6465,
+   "recall": 0.0,
+   "seconds": 0.38,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-compile_mentions",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 2633506,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "compiler.py::_evidence",
+    "lifecycle.py::suppressed_ids",
+    "store.py::GraphStore.view"
+   ],
+   "gold_in_payload": 3,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 3.17,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-compile_mentions",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6963,
+   "complete": false,
+   "f1": 0.8,
+   "false_verified": [],
+   "gold": [
+    "compiler.py::_evidence",
+    "lifecycle.py::suppressed_ids",
+    "store.py::GraphStore.view"
+   ],
+   "gold_in_payload": 3,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1790,
+   "recall": 0.6666666666666666,
+   "seconds": 0.29,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-compile_mentions",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "compiler.py::_evidence",
+    "lifecycle.py::suppressed_ids"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 6297,
+   "complete": false,
+   "f1": 0.8,
+   "false_verified": [],
+   "gold": [
+    "compiler.py::_evidence",
+    "lifecycle.py::suppressed_ids",
+    "store.py::GraphStore.view"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callees",
+   "possible": [
+    "lifecycle.py::suppressed_ids",
+    "store.py::GraphStore.view"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 1640,
+   "recall": 0.6666666666666666,
+   "seconds": 0.24,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-compile_mentions",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 11101,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_child_ctx",
+    "tsgraph.py::_named",
+    "tsgraph.py::_walk"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callees",
+   "possible": [
+    "extract.py::_resolve_call_target",
+    "extract.py::_resolve_code",
+    "prose.py::_mention_signals",
+    "tsgraph.py::_walk_module_statement"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 4889,
+   "recall": 0.0,
+   "seconds": 0.38,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-_walk_decorator",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 2573244,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_child_ctx",
+    "tsgraph.py::_named",
+    "tsgraph.py::_walk"
+   ],
+   "gold_in_payload": 3,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.85,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-_walk_decorator",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6026,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_child_ctx",
+    "tsgraph.py::_named",
+    "tsgraph.py::_walk"
+   ],
+   "gold_in_payload": 3,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1565,
+   "recall": 1.0,
+   "seconds": 0.3,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-_walk_decorator",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "tsgraph.py::_child_ctx",
+    "tsgraph.py::_named",
+    "tsgraph.py::_walk"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 5257,
+   "complete": false,
+   "f1": 0.5,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_child_ctx",
+    "tsgraph.py::_named",
+    "tsgraph.py::_walk"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1385,
+   "recall": 0.3333333333333333,
+   "seconds": 0.17,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-_walk_decorator",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "tsgraph.py::_child_ctx"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 9700,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "baselines.py::pagerank"
+   ],
+   "gold": [
+    "baselines.py::_evidence_edges",
+    "store.py::GraphStore.view"
+   ],
+   "gold_in_payload": 0,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 4246,
+   "recall": 0.0,
+   "seconds": 0.48,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-pagerank",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "baselines.py::pagerank"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 1790222,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "baselines.py::_evidence_edges",
+    "store.py::GraphStore.view"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.47,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-pagerank",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6746,
+   "complete": false,
+   "f1": 0.6666666666666666,
+   "false_verified": [],
+   "gold": [
+    "baselines.py::_evidence_edges",
+    "store.py::GraphStore.view"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1765,
+   "recall": 0.5,
+   "seconds": 0.34,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-pagerank",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "baselines.py::_evidence_edges"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 6184,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "baselines.py::_evidence_edges",
+    "store.py::GraphStore.view"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callees",
+   "possible": [
+    "baselines.py::_evidence_edges"
+   ],
+   "precision": 1.0,
+   "prompt_tokens": 1639,
+   "recall": 1.0,
+   "seconds": 0.33,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-pagerank",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "store.py::GraphStore.view"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 15741,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "tsgraph.py::resolve_ts_sources"
+   ],
+   "gold": [
+    "tsgraph.py::_named",
+    "tsgraph.py::parse_ts",
+    "tsgraph.py::scan_reassigned"
+   ],
+   "gold_in_payload": 0,
+   "kind": "runtime_callees",
+   "possible": [
+    "extract.py::_resolve_call_target",
+    "extract.py::_resolve_code",
+    "prose.py::_mention_signals"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 7858,
+   "recall": 0.0,
+   "seconds": 0.37,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-scan_module",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "tsgraph.py::resolve_ts_sources"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 2473564,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_named",
+    "tsgraph.py::parse_ts",
+    "tsgraph.py::scan_reassigned"
+   ],
+   "gold_in_payload": 3,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.86,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-scan_module",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6826,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_named",
+    "tsgraph.py::parse_ts",
+    "tsgraph.py::scan_reassigned"
+   ],
+   "gold_in_payload": 3,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1811,
+   "recall": 1.0,
+   "seconds": 0.31,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-scan_module",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "tsgraph.py::_named",
+    "tsgraph.py::parse_ts",
+    "tsgraph.py::scan_reassigned"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 6093,
+   "complete": false,
+   "f1": 0.5,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_named",
+    "tsgraph.py::parse_ts",
+    "tsgraph.py::scan_reassigned"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1641,
+   "recall": 0.3333333333333333,
+   "seconds": 0.19,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-scan_module",
+   "unproven_verified": 1,
+   "valid_json": true,
+   "verified": [
+    "tsgraph.py::parse_ts"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 11499,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "extract.py::_resolve_call_target"
+   ],
+   "gold": [
+    "structure.py::_clean_name",
+    "structure.py::_kind_of",
+    "structure.py::_name_node"
+   ],
+   "gold_in_payload": 0,
+   "kind": "runtime_callees",
+   "possible": [
+    "extract.py::_resolve_code",
+    "prose.py::_mention_signals",
+    "scope.py::resolve_scope"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 5299,
+   "recall": 0.0,
+   "seconds": 0.71,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-definitions",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "extract.py::_resolve_call_target"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 2226989,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "structure.py::_clean_name",
+    "structure.py::_kind_of",
+    "structure.py::_name_node"
+   ],
+   "gold_in_payload": 3,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 3.5,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-definitions",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6690,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "structure.py::_clean_name",
+    "structure.py::_kind_of",
+    "structure.py::_name_node"
+   ],
+   "gold_in_payload": 3,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1733,
+   "recall": 1.0,
+   "seconds": 0.42,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-definitions",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "structure.py::_clean_name",
+    "structure.py::_kind_of",
+    "structure.py::_name_node"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 6105,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "structure.py::_clean_name",
+    "structure.py::_kind_of",
+    "structure.py::_name_node"
+   ],
+   "gold_in_payload": 3,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1602,
+   "recall": 1.0,
+   "seconds": 0.38,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-definitions",
+   "unproven_verified": 3,
+   "valid_json": true,
+   "verified": [
+    "structure.py::_clean_name",
+    "structure.py::_kind_of",
+    "structure.py::_name_node"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 16120,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "__main__.py::main",
+    "extract.py::_resolve_call_target",
+    "extract.py::_resolve_code",
+    "prose.py::_mention_signals",
+    "scope.py::resolve_scope"
+   ],
+   "gold": [
+    "__main__.py::_zero_config_target",
+    "memory.py::Memory.__init__",
+    "memory.py::Memory.candidates",
+    "memory.py::Memory.close",
+    "memory.py::Memory.frontier_export_regression",
+    "memory.py::Memory.frontier_list",
+    "memory.py::Memory.frontier_replay"
+   ],
+   "gold_in_payload": 0,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 6797,
+   "recall": 0.0,
+   "seconds": 0.91,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-main",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "__main__.py::main",
+    "extract.py::_resolve_call_target",
+    "extract.py::_resolve_code",
+    "prose.py::_mention_signals",
+    "scope.py::resolve_scope"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 2828288,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "__main__.py::_zero_config_target",
+    "memory.py::Memory.__init__",
+    "memory.py::Memory.candidates",
+    "memory.py::Memory.close",
+    "memory.py::Memory.frontier_export_regression",
+    "memory.py::Memory.frontier_list",
+    "memory.py::Memory.frontier_replay"
+   ],
+   "gold_in_payload": 5,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 3.43,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-main",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6835,
+   "complete": false,
+   "f1": 0.13333333333333333,
+   "false_verified": [
+    "__main__.py::_run_zero_config",
+    "benchmark.py::run_benchmark",
+    "benchmark.py::run_memory_suite",
+    "compiler.py::compile_claims",
+    "compiler.py::compile_drafts",
+    "compiler.py::compile_impact",
+    "compiler.py::compile_mentions"
+   ],
+   "gold": [
+    "__main__.py::_zero_config_target",
+    "memory.py::Memory.__init__",
+    "memory.py::Memory.candidates",
+    "memory.py::Memory.close",
+    "memory.py::Memory.frontier_export_regression",
+    "memory.py::Memory.frontier_list",
+    "memory.py::Memory.frontier_replay"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 0.125,
+   "prompt_tokens": 1765,
+   "recall": 0.14285714285714285,
+   "seconds": 0.68,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-main",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "__main__.py::_run_zero_config",
+    "__main__.py::_zero_config_target",
+    "benchmark.py::run_benchmark",
+    "benchmark.py::run_memory_suite",
+    "compiler.py::compile_claims",
+    "compiler.py::compile_drafts",
+    "compiler.py::compile_impact",
+    "compiler.py::compile_mentions"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 6093,
+   "complete": false,
+   "f1": 0.22222222222222224,
+   "false_verified": [
+    "__main__.py::_run_zero_config"
+   ],
+   "gold": [
+    "__main__.py::_zero_config_target",
+    "memory.py::Memory.__init__",
+    "memory.py::Memory.candidates",
+    "memory.py::Memory.close",
+    "memory.py::Memory.frontier_export_regression",
+    "memory.py::Memory.frontier_list",
+    "memory.py::Memory.frontier_replay"
+   ],
+   "gold_in_payload": 1,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 0.5,
+   "prompt_tokens": 1599,
+   "recall": 0.14285714285714285,
+   "seconds": 0.36,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-main",
+   "unproven_verified": 2,
+   "valid_json": true,
+   "verified": [
+    "__main__.py::_run_zero_config",
+    "__main__.py::_zero_config_target"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 16190,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "coverage.py::report"
+   ],
+   "gold": [
+    "coverage.py::rung_of",
+    "scope.py::_scan"
+   ],
+   "gold_in_payload": 0,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 7595,
+   "recall": 0.0,
+   "seconds": 0.76,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-report",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "coverage.py::report"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 2039011,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "coverage.py::rung_of",
+    "scope.py::_scan"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.6,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-report",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6310,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "coverage.py::rung_of",
+    "scope.py::_scan"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1658,
+   "recall": 1.0,
+   "seconds": 0.35,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-report",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "coverage.py::rung_of",
+    "scope.py::_scan"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 5689,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "coverage.py::rung_of",
+    "scope.py::_scan"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1520,
+   "recall": 1.0,
+   "seconds": 0.32,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-report",
+   "unproven_verified": 2,
+   "valid_json": true,
+   "verified": [
+    "coverage.py::rung_of",
+    "scope.py::_scan"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 8465,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_named",
+    "tsgraph.py::_text_of"
+   ],
+   "gold_in_payload": 0,
+   "kind": "runtime_callees",
+   "possible": [
+    "extract.py::_resolve_call_target"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 3681,
+   "recall": 0.0,
+   "seconds": 0.45,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-_specifier_string",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 1784194,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_named",
+    "tsgraph.py::_text_of"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 2.39,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-_specifier_string",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 4738,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_named",
+    "tsgraph.py::_text_of"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1264,
+   "recall": 1.0,
+   "seconds": 0.33,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-_specifier_string",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "tsgraph.py::_named",
+    "tsgraph.py::_text_of"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 4157,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "tsgraph.py::_named",
+    "tsgraph.py::_text_of"
+   ],
+   "gold_in_payload": 0,
+   "kind": "runtime_callees",
+   "possible": [
+    "_named"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 1131,
+   "recall": 0.0,
+   "seconds": 0.21,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-_specifier_string",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 29777,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "identity.py::identity"
+   ],
+   "gold": [
+    "identity.py::canonical",
+    "identity.py::digest"
+   ],
+   "gold_in_payload": 0,
+   "kind": "runtime_callees",
+   "possible": [
+    "extract.py::_resolve_call_target",
+    "prose.py::_mention_signals",
+    "extract.py::_resolve_code",
+    "scope.py::resolve_scope"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 14141,
+   "recall": 0.0,
+   "seconds": 1.65,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-identity",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "identity.py::identity"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 4638818,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "identity.py::canonical",
+    "identity.py::digest"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 4.56,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-identity",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 6431,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "identity.py::canonical",
+    "identity.py::digest"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1676,
+   "recall": 1.0,
+   "seconds": 0.34,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-identity",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "identity.py::canonical",
+    "identity.py::digest"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 5636,
+   "complete": true,
+   "f1": 1.0,
+   "false_verified": [],
+   "gold": [
+    "identity.py::canonical",
+    "identity.py::digest"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1487,
+   "recall": 1.0,
+   "seconds": 0.29,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-identity",
+   "unproven_verified": 2,
+   "valid_json": true,
+   "verified": [
+    "identity.py::canonical",
+    "identity.py::digest"
+   ]
+  },
+  {
+   "arm": "retrieve",
+   "bytes": 27159,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [
+    "memory.py::Memory._lexical_index",
+    "memory.py::Memory._notes_index"
+   ],
+   "gold": [
+    "baselines.py::BM25.__init__",
+    "baselines.py::TextNotes.__init__",
+    "scope.py::iter_scope_files",
+    "scope.py::resolve_scope"
+   ],
+   "gold_in_payload": 0,
+   "kind": "runtime_callees",
+   "possible": [
+    "extract.py::_resolve_call_target",
+    "extract.py::_resolve_code"
+   ],
+   "precision": 0.0,
+   "prompt_tokens": 10653,
+   "recall": 0.0,
+   "seconds": 1.25,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-_ensure_discovery",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "memory.py::Memory._lexical_index",
+    "memory.py::Memory._notes_index"
+   ]
+  },
+  {
+   "arm": "retrieve_followup",
+   "bytes": 2084348,
+   "complete": false,
+   "f1": 0.0,
+   "false_verified": [],
+   "gold": [
+    "baselines.py::BM25.__init__",
+    "baselines.py::TextNotes.__init__",
+    "scope.py::iter_scope_files",
+    "scope.py::resolve_scope"
+   ],
+   "gold_in_payload": 4,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 0.0,
+   "prompt_tokens": 8194,
+   "recall": 0.0,
+   "seconds": 3.37,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-_ensure_discovery",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": []
+  },
+  {
+   "arm": "context",
+   "bytes": 5226,
+   "complete": false,
+   "f1": 0.6666666666666666,
+   "false_verified": [],
+   "gold": [
+    "baselines.py::BM25.__init__",
+    "baselines.py::TextNotes.__init__",
+    "scope.py::iter_scope_files",
+    "scope.py::resolve_scope"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1405,
+   "recall": 0.5,
+   "seconds": 0.34,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-_ensure_discovery",
+   "unproven_verified": 0,
+   "valid_json": true,
+   "verified": [
+    "scope.py::iter_scope_files",
+    "scope.py::resolve_scope"
+   ]
+  },
+  {
+   "arm": "context_noedges",
+   "bytes": 4657,
+   "complete": false,
+   "f1": 0.6666666666666666,
+   "false_verified": [],
+   "gold": [
+    "baselines.py::BM25.__init__",
+    "baselines.py::TextNotes.__init__",
+    "scope.py::iter_scope_files",
+    "scope.py::resolve_scope"
+   ],
+   "gold_in_payload": 2,
+   "kind": "runtime_callees",
+   "possible": [],
+   "precision": 1.0,
+   "prompt_tokens": 1282,
+   "recall": 0.5,
+   "seconds": 0.28,
+   "set": "runtime",
+   "task": "tunic-runtime_callees-_ensure_discovery",
+   "unproven_verified": 2,
+   "valid_json": true,
+   "verified": [
+    "scope.py::iter_scope_files",
+    "scope.py::resolve_scope"
+   ]
+  }
+ ],
+ "summary": {
+  "real/context": {
+   "complete": 33,
+   "false_verified": 5,
+   "gold_in_payload": "71/71",
+   "invalid_json": 0,
+   "mean_bytes": 7771,
+   "mean_f1": 0.931,
+   "mean_precision": 0.944,
+   "mean_recall": 0.926,
+   "tasks": 36,
+   "unproven_verified": 0
+  },
+  "real/context_noedges": {
+   "complete": 20,
+   "false_verified": 53,
+   "gold_in_payload": "51/71",
+   "invalid_json": 1,
+   "mean_bytes": 7561,
+   "mean_f1": 0.552,
+   "mean_precision": 0.556,
+   "mean_recall": 0.618,
+   "tasks": 36,
+   "unproven_verified": 81
+  },
+  "real/retrieve": {
+   "complete": 4,
+   "false_verified": 22,
+   "gold_in_payload": "36/71",
+   "invalid_json": 0,
+   "mean_bytes": 11621,
+   "mean_f1": 0.125,
+   "mean_precision": 0.132,
+   "mean_recall": 0.147,
+   "tasks": 36,
+   "unproven_verified": 0
+  },
+  "real/retrieve_followup": {
+   "complete": 0,
+   "false_verified": 0,
+   "gold_in_payload": "71/71",
+   "invalid_json": 1,
+   "mean_bytes": 941343,
+   "mean_f1": 0.0,
+   "mean_precision": 0.0,
+   "mean_recall": 0.0,
+   "tasks": 36,
+   "unproven_verified": 0
+  },
+  "runtime/context": {
+   "complete": 19,
+   "false_verified": 12,
+   "gold_in_payload": "50/58",
+   "invalid_json": 0,
+   "mean_bytes": 6377,
+   "mean_f1": 0.869,
+   "mean_precision": 0.91,
+   "mean_recall": 0.881,
+   "tasks": 24,
+   "unproven_verified": 0
+  },
+  "runtime/context_noedges": {
+   "complete": 5,
+   "false_verified": 2,
+   "gold_in_payload": "26/58",
+   "invalid_json": 0,
+   "mean_bytes": 5712,
+   "mean_f1": 0.365,
+   "mean_precision": 0.465,
+   "mean_recall": 0.325,
+   "tasks": 24,
+   "unproven_verified": 20
+  },
+  "runtime/retrieve": {
+   "complete": 1,
+   "false_verified": 23,
+   "gold_in_payload": "24/58",
+   "invalid_json": 0,
+   "mean_bytes": 13333,
+   "mean_f1": 0.017,
+   "mean_precision": 0.01,
+   "mean_recall": 0.042,
+   "tasks": 24,
+   "unproven_verified": 0
+  },
+  "runtime/retrieve_followup": {
+   "complete": 0,
+   "false_verified": 0,
+   "gold_in_payload": "56/58",
+   "invalid_json": 1,
+   "mean_bytes": 2296491,
+   "mean_f1": 0.0,
+   "mean_precision": 0.0,
+   "mean_recall": 0.0,
+   "tasks": 24,
+   "unproven_verified": 0
+  },
+  "suite/context": {
+   "complete": 7,
+   "false_verified": 2,
+   "gold_in_payload": "14/14",
+   "invalid_json": 0,
+   "mean_bytes": 2068,
+   "mean_f1": 0.583,
+   "mean_precision": 0.583,
+   "mean_recall": 0.583,
+   "tasks": 12,
+   "unproven_verified": 0
+  },
+  "suite/context_noedges": {
+   "complete": 8,
+   "false_verified": 2,
+   "gold_in_payload": "14/14",
+   "invalid_json": 0,
+   "mean_bytes": 2039,
+   "mean_f1": 0.667,
+   "mean_precision": 0.667,
+   "mean_recall": 0.667,
+   "tasks": 12,
+   "unproven_verified": 4
+  },
+  "suite/retrieve": {
+   "complete": 7,
+   "false_verified": 4,
+   "gold_in_payload": "14/14",
+   "invalid_json": 0,
+   "mean_bytes": 7363,
+   "mean_f1": 0.569,
+   "mean_precision": 0.542,
+   "mean_recall": 0.625,
+   "tasks": 12,
+   "unproven_verified": 0
+  },
+  "suite/retrieve_followup": {
+   "complete": 8,
+   "false_verified": 2,
+   "gold_in_payload": "14/14",
+   "invalid_json": 0,
+   "mean_bytes": 19818,
+   "mean_f1": 0.667,
+   "mean_precision": 0.667,
+   "mean_recall": 0.667,
+   "tasks": 12,
+   "unproven_verified": 0
+  }
+ }
+}
