@@ -189,10 +189,12 @@ class RealRepoRegressionTests(unittest.TestCase):
         # when non-Python lexical reach landed in answer() (verified by
         # inspection 2026-11-04: two calls build the fill-only symbol
         # candidates and the additive file passages; read-only, adds no
-        # edges).
+        # edges). filetypes.is_python joined with it (verified by
+        # inspection 2026-11-04: one call keeps that fill non-Python).
         self.assertEqual(direct, {"memory.py::Memory._ensure_discovery",
                                   "memory.py::Memory._graph_neighbors",
                                   "memory.py::Memory._snapshot_index",
+                                  "filetypes.py::is_python",
                                   "memory.py::Memory._frontier_upsert",
                                   "memory.py::_container_of",
                                   "memory.py::_dedup_dicts",

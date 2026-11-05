@@ -15,7 +15,7 @@ from pathlib import Path
 
 from . import compiler
 from .baselines import BM25, SnapshotLexical, TextNotes
-from .filetypes import PROSE_EXTENSIONS
+from .filetypes import PROSE_EXTENSIONS, is_python
 from .extract import CLAIM_RELATIONS, is_iso_date
 from .identity import digest as _digest
 from .lifecycle import suppressed_ids
@@ -247,6 +247,8 @@ class Memory:
         self._discovery_key = None
         self._snapshot_lexical = None
         self._snapshot_lexical_key = None
+        self._pack_adjacency = None
+        self._pack_adjacency_key = None
 
     def _ensure_discovery(self, snapshot, exclude=()):
         """Cached code + notes indexes; rebuilt only when the snapshot,
@@ -283,6 +285,14 @@ class Memory:
             self._snapshot_lexical = SnapshotLexical(self.store, snapshot, view)
             self._snapshot_lexical_key = snapshot
         return self._snapshot_lexical
+
+    def _pack_index(self, snapshot, view):
+        """Cached adjacency for context packs; one per snapshot."""
+        from .pack import Index
+        if self._pack_adjacency_key != snapshot:
+            self._pack_adjacency = Index(view)
+            self._pack_adjacency_key = snapshot
+        return self._pack_adjacency
 
     def _lexical_index(self, snapshot, exclude=()):
         """Cached BM25 over code; see _ensure_discovery."""
@@ -1314,11 +1324,16 @@ class Memory:
             index, notes = discovery
             lexical = [hit["symbol"] for hit in
                        index.search_text(task, top_k=caps["lexical"])]
-            # Fill-only: frozen Python rankings keep their positions; a
-            # repository with no Python gets its whole budget from here.
-            lexical += [hit["symbol"] for hit in
-                        self._snapshot_index(snapshot, view).symbols.search(
-                            task, caps["lexical"] - len(lexical))]
+            # Fill-only and non-Python only: frozen Python rankings keep
+            # their positions, and a repository with no Python gets its
+            # whole budget here. Adding Python to this fill regressed the
+            # agent suite by surfacing superseded symbols; context packs
+            # carry those word matches instead, labeled as hints.
+            fill = [hit["symbol"] for hit in
+                    self._snapshot_index(snapshot, view).symbols.search(
+                        task, caps["lexical"] * 2)
+                    if not is_python(hit["symbol"].split("::")[0])]
+            lexical += fill[:caps["lexical"] - len(lexical)]
             note_mentions = []
             for hit in notes.search_text(task, top_k=caps["lexical"]):
                 mentioner = hit["symbol"] + "::document"

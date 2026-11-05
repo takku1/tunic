@@ -52,8 +52,18 @@ def _policy(args):
 def tool_schemas():
     """Tool names with JSON-schema arguments; the tools/list payload."""
     return [
+        {"name": "context",
+         "description": "Start here. One bounded evidence pack for a task: each relevant node with its code, proven calls, unverified name references, claims, open questions, plus doc passages and stated gaps. The pack's trust field says how far to rely on each kind of link.",
+         "inputSchema": {"type": "object",
+                         "required": ["task"],
+                         "properties": {
+                             "task": {"type": "string"},
+                             "limit": {"type": "integer"},
+                             "max_bytes": {"type": "integer"},
+                             "snapshot": {"type": "string"}}}},
         {"name": "retrieve",
-         "description": "Answer a natural-language task with fused graph evidence. "
+         "description": "Audit view of retrieval: every stage, score, and selection decision behind an answer. Prefer context unless you need that trace. "
+                        "Answer a natural-language task with fused graph evidence. "
                         "Optional select runs the evidence-aware selection layer; "
                         "container_limit bounds method-to-class expansion.",
          "inputSchema": {"type": "object",
@@ -192,6 +202,14 @@ def handle_call(memory, name, args):
         _fail("tool arguments must be an object")
     from .memory import authorize
     authorize(args.get("principal", memory.principal), name)
+    if name == "context":
+        from . import pack
+        limit = _optional(args, "limit", int, 5)
+        if limit < 0:
+            _fail("tool argument 'limit' must be a non-negative integer")
+        return pack.build(memory, _need(args, "task", str), limit=limit,
+                          max_bytes=_optional(args, "max_bytes", int, 12000),
+                          snapshot=_optional(args, "snapshot", str))
     if name == "retrieve":
         task = _need(args, "task", str)
         limit = _optional(args, "limit", int, 5)

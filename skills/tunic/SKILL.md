@@ -27,7 +27,14 @@ server accepts only the `local` principal: a caller-supplied
 
 ## Tool workflow
 
-1. **Retrieve first.** `retrieve(task, limit?, policy?, threshold?,
+0. **Start with `context(task, limit?, max_bytes?, snapshot?)`.** One
+   bounded pack: each relevant node with its code, proven `calls` and
+   `called_by`, unverified `refs` and `ref_by`, claims, open questions,
+   plus doc passages and `gaps`. Read its `trust` field. Treat `refs`,
+   `ref_by`, and `via: "words"` as leads to check, never as proof. An
+   empty `calls` on a node below the `edges` rung means unknown, not none.
+   Use `coverage` before reading an empty answer as absence.
+1. **Retrieve for the audit trail.** `retrieve(task, limit?, policy?, threshold?,
    select?, snapshot?, container_limit?, budget?, mmr_lambda?)`
    fuses exact, name, lexical, and (if configured) semantic stages.
    Use `policy="current"` for answers (superseded knowledge

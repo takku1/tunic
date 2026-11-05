@@ -103,6 +103,7 @@ PHP repositories.
 | Walker against Python `ast`, true labels | 5,640 definitions, recall 1.000, precision 1.000 |
 | Walker against the hand-written specs | 2,581 symbols, 15 languages, recall 1.000 |
 | Refresh against full rebuild | Equal on a mixed tree, each type edited and deleted |
+| Acceptance, base against new | W1 and memory results unchanged; agent suite 12/12 (lexical 11/12) |
 
 Oracle sample sizes vary. C, C++, C#, Go, PHP, PowerShell, and Rust use
 real code (157 to 696 symbols). Java, Kotlin, Scala, Swift, Lua, Julia,
@@ -167,7 +168,8 @@ similar directories are now pruned, including prose inside them.
 
 - Lexical fill is Python-first by construction. In mixed repositories
   Python can use the whole budget, so a joint ranking is the better end
-  state. It needs the acceptance run that default-on changes require.
+  state. A first attempt to add Python word matches to `answer()` failed
+  acceptance; see [context packs](context-pack.md).
 - `BM25` and `TextNotes` still walk the filesystem. Moving them onto the
   snapshot would remove the last parallel notion of what is in scope, at
   the cost of re-baselining frozen rankings.

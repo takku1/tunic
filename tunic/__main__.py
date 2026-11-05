@@ -21,7 +21,7 @@ from .eval import run_agent_suite
 COMMANDS = {"ingest", "refresh", "impact", "mentions", "claims", "related",
             "timeline", "note", "candidates", "frontier", "triage", "draft",
             "review", "validate", "render", "models", "pin", "experiment",
-            "benchmark", "mcp", "coverage"}
+            "benchmark", "mcp", "coverage", "context"}
 
 
 def _zero_config_target(argv):
@@ -126,6 +126,11 @@ def main(argv=None):
                           help="Exclude path pattern (repeatable; gitignore syntax)")
     coverage.add_argument("--fetch-grammars", action="store_true",
                           help="download grammars this repository is missing (network; needs tunic-context[grammars])")
+    context = commands.add_parser("context", help="one bounded evidence pack for a task, shaped for an LLM")
+    context.add_argument("task")
+    context.add_argument("--root", default=".", help="workspace root the database was built from")
+    context.add_argument("--limit", type=int, default=5)
+    context.add_argument("--max-bytes", type=int, default=12000)
     refresh = commands.add_parser("refresh", help="incrementally re-ingest; equivalent to ingest with less work")
     refresh.add_argument("root", help="Source root; e.g. repository/src for a src layout")
     refresh.add_argument("--exclude", action="append", default=None,
@@ -257,6 +262,13 @@ def main(argv=None):
             return 0
         if not args.db:
             parser.error("--db is required for this command")
+        if args.command == "context":
+            from .memory import Memory
+            from .pack import build
+            with Memory(args.db, args.root) as memory:
+                result = build(memory, args.task, limit=args.limit, max_bytes=args.max_bytes)
+            print(json.dumps(result, ensure_ascii=True, sort_keys=True, separators=(",", ":")))
+            return 0
         if args.command == "mcp":
             from .mcp import serve
             return serve(args.db, args.root)

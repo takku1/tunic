@@ -23,6 +23,7 @@ minimal MCP-compatible server. The transport is newline-delimited JSON-RPC
 | `note` | — | timestamped append inside the root |
 | `promote` | duplicate/contradiction check | one explicit claim block, then ingest publishes it |
 | `refresh` | — | incremental re-ingest of the fixed root |
+| `context` | `task`, `limit`, `max_bytes`, `snapshot` | start here: one bounded evidence pack, see [context packs](context-pack.md) |
 | `coverage` | — | per-rung file counts, ledger reasons, missing grammars for the fixed root |
 
 `retrieve` takes `task`, `limit`, `policy`, and `threshold`, and returns the

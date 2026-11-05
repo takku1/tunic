@@ -11,6 +11,40 @@ def _tokens(text):
     return re.findall(r"[a-z_][a-z_0-9]*", text.lower())
 
 
+_IDENTIFIER = re.compile(r"[A-Za-z_][A-Za-z_0-9]*")
+_CAMEL_BOUNDARY = re.compile(r"(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])")
+
+
+# A use, not a mention of a local: called, reached through a path or a
+# receiver, or capitalized like a type. Measured against verified edges,
+# this keeps recall of real calls and lifts confirmed hints substantially.
+_USE = re.compile(r"\b([A-Za-z_][A-Za-z0-9_]{2,})(?=\s*\()"
+                  r"|(?:::|\.|->)([A-Za-z_][A-Za-z0-9_]{2,})"
+                  r"|\b([A-Z][A-Za-z0-9]{2,})\b")
+
+
+def used_names(text):
+    """Identifiers this code uses rather than merely binds."""
+    return {name for match in _USE.findall(text) for name in match if name}
+
+
+def _subword_tokens(text):
+    """Whole identifiers plus their words, lowercased.
+
+    Models ask in words. `chargeInvoice` and `invoice_step_0` must answer
+    to "invoice", so each identifier also yields its camelCase and
+    snake_case parts. The whole token stays, so exact names still match.
+    """
+    tokens = []
+    for identifier in _IDENTIFIER.findall(text):
+        tokens.append(identifier.lower())
+        for piece in identifier.split("_"):
+            parts = _CAMEL_BOUNDARY.split(piece)
+            if len(parts) > 1 or piece != identifier:
+                tokens.extend(part.lower() for part in parts if len(part) > 1)
+    return tokens
+
+
 def _rank(documents, lengths, average_length, frequency, terms, skip, top_k):
     """Shared BM25 scorer; skip excludes one symbol (the query itself)."""
     count = len(documents)
@@ -155,35 +189,36 @@ class _Lexicon:
         self.average_length = (sum(self.lengths) / len(self.lengths)
                                if self.lengths else 1)
         self.frequency = Counter(t for d in documents for t in d["tokens"])
+        self.by_symbol = {d["symbol"]: d for d in documents}
 
     def search(self, query, top_k):
         if top_k < 1 or not self.documents:
             return []
         return _rank(self.documents, self.lengths, self.average_length,
-                     self.frequency, set(_tokens(query)), None, top_k)
+                     self.frequency, set(_subword_tokens(query)), None, top_k)
 
 
 class SnapshotLexical:
     """Lexical reach over what BM25 and TextNotes cannot see.
 
-    Those two walk the filesystem for Python and prose, and their
-    rankings are frozen. Everything else exists only in the snapshot, so
-    it is indexed from there: non-Python symbols, and whole files on the
-    text rung. Reading the snapshot also means excluded paths cannot
-    leak in. Callers add these results after the frozen stages, which
-    is what keeps existing rankings byte-stable.
+    Those two walk the filesystem for Python and prose, match whole
+    identifiers only, and have frozen rankings. This index reads the
+    snapshot and matches words inside identifiers, across every symbol
+    and every text-rung file. Reading the snapshot also means excluded
+    paths cannot leak in. Callers add these results after the frozen
+    stages, which is what keeps existing rankings byte-stable.
     """
 
     # Harvested names span one line; a symbol's text runs to the next one.
     MAX_CHUNK_BYTES = 4096
 
     def __init__(self, store, snapshot, view):
-        from .filetypes import is_prose, is_python
+        from .filetypes import is_prose
         sources = store.snapshot_sources(snapshot)
         by_source = {}
         for symbol in view["symbols"]:
             path = symbol.get("path", "")
-            if not (is_python(path) or is_prose(path)):
+            if not is_prose(path):
                 by_source.setdefault(symbol["source"], []).append(symbol)
         chunks, files = [], []
         for source_id, symbols in sorted(by_source.items()):
@@ -193,7 +228,7 @@ class SnapshotLexical:
                 if symbol["key"].endswith("::document"):
                     text = data.decode("utf-8", "replace")
                     files.append({"symbol": path, "is_test": False,
-                                  "tokens": Counter(_tokens(path + " " + text))})
+                                  "tokens": Counter(_subword_tokens(path + " " + text))})
                     continue
                 start = symbol.get("start", 0)
                 following = symbols[index + 1].get("start", 0) \
@@ -202,8 +237,9 @@ class SnapshotLexical:
                           start + self.MAX_CHUNK_BYTES)
                 text = data[start:end].decode("utf-8", "replace")
                 chunks.append({"symbol": symbol["key"],
+                               "uses": frozenset(used_names(text)),
                                "is_test": bool(symbol.get("is_test")),
-                               "tokens": Counter(_tokens(
+                               "tokens": Counter(_subword_tokens(
                                    path + " " + symbol.get("name", "") + " " + text))})
         self.symbols = _Lexicon(chunks)
         self.files = _Lexicon(files)

@@ -14,6 +14,7 @@ Read [architecture overview](architecture/overview.md), [semantic graph contract
 | What do durable claims, evidence, identity, time, and snapshots mean? | [Semantic graph](architecture/semantic-graph.md) |
 | What does compilation produce and validate? | [Context IR](architecture/context-ir.md) |
 | Which types and relations can the graph hold? | [Graph schema](architecture/graph-schema.md) |
+| What does a model receive, and how far can it trust it? | [Context packs](architecture/context-pack.md) |
 | How does a file get in, and why might it not? | [Ingestion](architecture/ingestion.md) |
 | Which file types are ingested, at what proof strength? | [File-type coverage](architecture/file-type-coverage.md) (tiers 0-5 + explicitly out) |
 | What decides what becomes knowledge, is shown, and is acted on? | [Policy contract](architecture/policy-contract.md) |
