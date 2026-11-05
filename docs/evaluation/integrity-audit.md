@@ -100,8 +100,12 @@ showed none. Pack format appears to help small models, not strong ones.
 
 ## Defects this exposed
 
-- `related` and `callees` can return megabytes: median 1.7 MB across
-  follow-up payloads, maximum 4.6 MB. That is unusable in any context.
+- `related` and `callees` could return megabytes: median 1.7 MB across
+  follow-up payloads, maximum 4.6 MB. `frontier` reached 3.3 MB. Fixed:
+  `tunic/bounded.py` caps serialized bytes for every tool at the MCP
+  boundary (`impact` 1.86 MB to 32 KB) with continuation receipts. The
+  underlying waste remains: `selection_receipt.diagnostics` repeats
+  repository-wide diagnostics in each response.
 - The skill and tool list cost Claude about 9,500 extra input tokens per
   direct-question run, with no accuracy to show for it.
 - Tunic's recall fell behind plain search on transitive impact.

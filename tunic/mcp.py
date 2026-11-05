@@ -8,6 +8,7 @@ writes or re-root the store. Tool arguments are validated before dispatch;
 failures return structured errors, never tracebacks.
 """
 
+from . import bounded
 import json
 import sys
 
@@ -49,7 +50,24 @@ def _policy(args):
     return policy
 
 
+_BOUND_PROPERTIES = {
+    "max_response_bytes": {"type": "integer",
+                           "description": "response size limit; default %d"
+                                          % bounded.DEFAULT_MAX_BYTES},
+    "continue_path": {"type": "array",
+                      "description": "from a _truncated receipt: the field to read on"},
+    "continue_offset": {"type": "integer",
+                        "description": "from a _truncated receipt: where to resume"}}
+
+
 def tool_schemas():
+    tools = _tool_schemas()
+    for tool in tools:
+        tool["inputSchema"].setdefault("properties", {}).update(_BOUND_PROPERTIES)
+    return tools
+
+
+def _tool_schemas():
     """Tool names with JSON-schema arguments; the tools/list payload."""
     return [
         {"name": "context",
@@ -189,6 +207,24 @@ def tool_schemas():
          "description": "Report what each in-scope file can establish (edges, entities, symbols, text), what was left out and why, and which grammars are missing. Check this before reading an empty answer as absence.",
          "inputSchema": {"type": "object", "properties": {}}},
     ]
+
+
+def _bounded_call(memory, name, args):
+    """handle_call under the response bound; see tunic/bounded.py."""
+    if not isinstance(args, dict):
+        return handle_call(memory, name, args)
+    args = dict(args)
+    limit = args.pop("max_response_bytes", bounded.DEFAULT_MAX_BYTES)
+    if (type(limit) is not int
+            or not bounded.MIN_MAX_BYTES <= limit <= bounded.MAX_MAX_BYTES):
+        _fail("max_response_bytes must be an integer from %d to %d"
+              % (bounded.MIN_MAX_BYTES, bounded.MAX_MAX_BYTES))
+    path = args.pop("continue_path", None)
+    offset = args.pop("continue_offset", 0)
+    result = handle_call(memory, name, args)
+    if path is not None:
+        return bounded.page(result, path, offset, limit)
+    return bounded.bound(result, limit)
 
 
 def handle_call(memory, name, args):
@@ -379,7 +415,7 @@ def handle_request(memory, message):
         if not isinstance(name, str):
             return _error(request_id, -32602, "tool name must be a string")
         try:
-            result = handle_call(memory, name, params.get("arguments", {}))
+            result = _bounded_call(memory, name, params.get("arguments", {}))
         except PermissionError as error:
             return {"jsonrpc": "2.0", "id": request_id,
                     "result": {"content": [{"type": "text",

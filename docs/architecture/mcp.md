@@ -55,3 +55,14 @@ that need strict abstention should set `threshold` (0.05 abstained there).
   race at path-check time. Single-agent use only.
 - The semantic stage stays skipped until a local embedding model is
   installed; no download is ever attempted.
+
+## Response bound
+
+Every tool response is capped at 32,768 serialized bytes by default
+(`tunic/bounded.py`). Any tool accepts `max_response_bytes` (2,048 to
+1,048,576). A response within the limit is unchanged. An oversized one is
+reduced deterministically and gains a `_truncated` receipt listing the
+largest cuts. Pass an entry's `continue_path` and `continue_offset` to read
+on. Results are recomputed per call, so pin `snapshot` when paging across a
+refresh, where the tool accepts one.
+
